@@ -19,8 +19,12 @@ export const handlerForInput = (input, claimType = '') => {
   const budgetDomain = includesAny(text, ['presupuesto', 'gasto', 'gastos', 'personal', 'nomina', 'nominas', 'credito', 'partida', 'educacion', 'presidencia', 'ministerio']);
   const explicitFinancialMovement = includesAny(text, ['transferencia', 'transfiere', 'transferir', 'mueve', 'mover', 'quita', 'quitar', 'recorta', 'recorte', 'destina', 'asigna'])
     && includesAny(text, ['millones', 'euros', 'dinero', 'credito']);
+  const compressedPersonnelBudgetTransfer = includesAny(text, ['transferencia', 'transfiere', 'transferir'])
+    && includesAny(text, ['educacion', 'presidencia', 'hacienda', 'ministerio'])
+    && includesAny(text, ['personal', 'nomina', 'nominas', 'gastos'])
+    && !includesAny(text, ['funcionario', 'funcionarios', 'plantilla', 'trabajador', 'trabajadores', 'empleado', 'empleados']);
   const budgetMovement = explicitFinancialMovement || budgetDomain
-    && includesAny(text, ['se lleva', 'lleva', 'pierde', 'pierden', 'pasa', 'pasan']);
+    && includesAny(text, ['se lleva', 'lleva', 'pierde', 'pierden', 'pasa', 'pasan']) || compressedPersonnelBudgetTransfer;
   const budgetSignal = includesAny(text, ['presupuesto', 'gasto de personal', 'recorte', 'partida', 'credito', 'capitulo']) || budgetMovement;
   if (budgetSignal) return 'budget_transfer';
   const governmentEventSignal = includesAny(text, ['gobierno', 'ministerio', 'presidencia', 'moncloa', 'consejo de ministros', 'boe', 'ayuntamiento', 'parlamento'])

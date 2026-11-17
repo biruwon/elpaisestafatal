@@ -29,6 +29,7 @@ for (const claim of ['Los salarios pierden poder adquisitivo frente al coste de 
   assert.match(plan.shareableReply, /No es el sueldo neto o mediano/);
   assert.match(plan.shareableReply, /no mide el coste de vida de cada hogar/);
   assert.match(plan.shareableReply, /no demuestra que haya ocurrido lo mismo cada año/);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'mixed', 'A direct aggregate comparison with clear scope limits should be reported as partial');
   assert.deepEqual(new Set(plan.sourceIds), new Set(['wages', 'prices']));
   assert.ok(validateAnswerPlan(plan).ok, JSON.stringify(validateAnswerPlan(plan).errors));
   assert.ok(publicResolveResponse({ status: 'complete', requestId: 'test-real-wages', result: plan }));
@@ -48,7 +49,7 @@ assert.equal(realWagePlan('Los salarios pierden poder adquisitivo en los último
 assert.ok(realWagePlan('Los salarios han perdido poder adquisitivo entre 2018 y 2025', { observations: oldPeriods, now: later }), 'Explicit historical periods remain usable when their sources are current');
 const reversed = realWagePlan('Los salarios no han perdido poder adquisitivo desde 2018', options);
 assert.match(reversed.shareableReply, /2018 y 2025/);
-assert.equal(reversed.blocks[0].items[0].verdict, 'insufficient', 'A calculated index must not assert an unverified verdict');
+assert.equal(reversed.blocks[0].items[0].verdict, 'mixed', 'A calculated aggregate comparison should be partial rather than reported as an evidence gap');
 
 for (const claim of [
   'Las mujeres han perdido poder adquisitivo con sus salarios',

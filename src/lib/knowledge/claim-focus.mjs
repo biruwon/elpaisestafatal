@@ -303,6 +303,7 @@ const pensionDoublePaymentClaim = (t) => /\b(pension\w*|jubilaci[oó]n)\b/.test(
 const pensionWorkerSupportRatio = (t) => /\b(pension\w*|jubilad\w*|jubilaci[oó]n|sistema de reparto)\b/.test(t)
   && /\b(trabajador\w*|cotiz\w*|emple\w*|afiliad\w*)\b/.test(t)
   && /\b(por cada|ratio|relaci[oó]n|proporci[oó]n|suficient\w*|depend\w*|cotiz\w* por (?:cada )?(?:pensionist\w*|jubilad\w*))\b/.test(t)
+  && !/\b(insostenible|sostenibilidad|quebr\w*|colaps\w*)\b/.test(t)
   && !pensionDoublePaymentClaim(t) && !pensionWageContributionBase(t);
 const intergenerationalHousingPensionComparison = (t) => /\b(generaci[oó]n|generaciones|boomers?|nacid\w* entre|mayores? de)\b/.test(t)
   && /\b(viviend\w*|alquil\w*|compra de vivienda|acceso a la vivienda|propietari\w*)\b/.test(t)

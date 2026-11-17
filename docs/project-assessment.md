@@ -356,7 +356,7 @@ from 28 to 18, and metric-family routes from 92 to 82. This is a deliberate
 reduction in unsupported attachments, not a measure of accuracy: all 300
 inputs remain unverified, the audit does not exercise every live production
 path, and a family match does not establish that evidence is available. The
-focused claim suite now checks 171 paraphrases and nearby claims; the remaining
+focused claim suite now checks 174 paraphrases and nearby claims; the remaining
 gaps require source work before they can receive numeric answers.
 
 ## Pension indexation text claims — 17 November 2026
@@ -380,3 +380,20 @@ insufficient for that claim; the top-level answer can still explain them as
 context. The pension projection router also distinguishes the current year
 from years still in the future, so a published current-year increase does not
 inherit a forecast-only explanation.
+
+## Wage purchasing-power text claims — 17 November 2026
+
+The text resolver can compare Eurostat's annual gross-wage-per-hour index for
+industry, construction and services with the HICP annual average index for all
+consumer prices. Both series now run through 2025. From 2020 to 2025 the wage
+index rose 16.3% while prices rose 21.9%, a 4.6% fall in the wage index after
+price adjustment. From 2022 to 2025 that adjusted index rose 3.0%, so the
+endpoint comparison depends on the period and does not show a decline in every
+year. [Eurostat wage index](https://ec.europa.eu/eurostat/databrowser/view/lc_lci_r2_a/default/table?lang=en), [Eurostat HICP annual index](https://ec.europa.eu/eurostat/databrowser/view/prc_hicp_ainr/default/table?lang=en).
+
+The answer now reports this calculation as a partial finding instead of
+“insufficient evidence.” It keeps the source population and limitations
+visible: this is a gross hourly index, not net or median pay or each worker's
+salary, and HICP does not measure an individual household's basket. The answer
+also shows the recent positive comparison so a broad claim does not imply that
+real wages fell throughout the full period.

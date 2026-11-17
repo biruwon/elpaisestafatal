@@ -151,7 +151,7 @@ export const realWagePlan = (claim, { observations = [], now = Date.now() } = {}
     headline: `Salarios por hora y precios en España, ${main.start}–${main.end}`, summary: finding, shareableReply: reply, shareableSourceIds: sourceIds,
     interpretation: { kind: 'quantitative', subject: 'salarios por hora y precios de consumo', predicate: 'comparison', normalizedClaim: claim, evidenceNeeds: ['series salariales y de precios con las mismas fechas', 'población y definición salarial'] },
     blocks: [
-      { type: 'claim_breakdown', propositionIds: ['submitted-claim'], items: [{ text: claim, type: 'comparative', explicit: true, evidenceIds, sourceIds, verdict: 'insufficient', evidenceLevel: 'limited', finding }] },
+      { type: 'claim_breakdown', propositionIds: ['submitted-claim'], items: [{ text: claim, type: 'comparative', explicit: true, evidenceIds, sourceIds, verdict: 'mixed', evidenceLevel: 'limited', finding }] },
       { type: 'data_finding', evidenceIds, points: [finding, ...(recentFinding ? [recentFinding] : [])] },
       { type: 'cannot_conclude', evidenceIds: [], points: [limitation] },
       { type: 'conversation_reply', evidenceIds, text: reply },

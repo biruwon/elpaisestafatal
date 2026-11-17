@@ -1,7 +1,7 @@
 import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { metricPolicyFor } from './metric-evidence-policy.mjs';
-import { focusedMetricIdsFor } from '../../src/lib/knowledge/claim-focus.mjs';
+import { claimFocusFor, focusedMetricIdsFor } from '../../src/lib/knowledge/claim-focus.mjs';
 
 const normalise = (value) => String(value || '')
   .toLocaleLowerCase('es')
@@ -362,6 +362,11 @@ export const preferredMetricIdsForQuery = (query) => {
     const scoped = new Set(focused);
     scoped.delete('temporary_employment_rate');
     scoped.delete('temporary_employment_rate_europe');
+    // Rent-price movements can be background context for a claim that
+    // regulation shifted homes into seasonal contracts; they do not measure
+    // that shift or establish its cause. The focused answer keeps this series
+    // out of its direct-evidence scope.
+    if (claimFocusFor(query)?.id === 'rental-regulation-contract-shift') scoped.add('rental_price_index');
     return scoped;
   }
   const preferred = new Set(metricHints

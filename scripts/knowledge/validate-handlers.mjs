@@ -36,6 +36,8 @@ for (const wording of [
 ]) {
   if (handlerForInput(wording, 'descriptive') !== 'budget_transfer') throw new Error(`Budget event wording was not routed: ${wording}`);
 }
+if (handlerForInput({ retrievalHints: ['educacion presidencia personal transferencia'] }, '') !== 'budget_transfer') throw new Error('A compressed institutional personnel-budget transfer was not routed');
+if (handlerForInput('Transferencia de personal funcionario de Educación a Presidencia', 'descriptive') === 'budget_transfer') throw new Error('A staff transfer was mistaken for a budget transfer');
 if (handlerForInput('Los menas reciben más dinero que los jubilados', 'comparative') === 'budget_transfer') throw new Error('Generic benefit comparisons must not be routed as budget transfers');
 if (handlerForInput('La inmigración ha disparado la delincuencia', 'descriptive') !== 'causal') throw new Error('Causal wording with disparar was not routed as causal');
 if (handlerForInput('Los okupas pueden quedarse en tu casa durante años', 'descriptive') !== 'legal_rule') throw new Error('Occupation claims must use legal guidance');

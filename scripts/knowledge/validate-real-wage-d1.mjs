@@ -68,6 +68,7 @@ try {
     env: { DB: d1, LOCAL_CLASSIFIER_ENDPOINT: 'https://resolver.test', LOCAL_CLASSIFIER_TOKEN: 'test' }, waitUntil: (promise) => pending.push(promise) });
   const publicResult = await response.json();
   assert.equal(publicResult.state, 'limited');
+  assert.equal(publicResult.result.arguments?.[0]?.verdict, 'mixed', 'The public answer should label a measured, scope-limited comparison as partial');
   assert.match(publicResult.result.reply, /índice salarial bajó aproximadamente un 4,6 %/);
   assert.deepEqual(new Set(received.warehouseRecords.map((item) => item.metricId)), new Set(ids));
   assert.ok(publicResult.result.criteria.every((criterion) => criterion.sourceIds.every((id) => publicResult.result.sources.some((source) => source.id === id))));

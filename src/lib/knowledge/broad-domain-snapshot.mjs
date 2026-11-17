@@ -1233,6 +1233,24 @@ const composeScopedReply = (plan) => {
       && family.missingDimensions?.includes('efecto causal de transferencias familiares'));
     const migration = families.find((family) => family.criterionId === 'family-support-counterfactual');
     const parts = [plan.headline.replace(/[.]$/, '') + '.'];
+    if (housingBarrier) {
+      const rentAmount = rental?.match(/alquiler medio mensual de una vivienda completa,\s*([\d.]+ €)/i)?.[1];
+      const rentShare = rental?.match(/equivale al\s*([\d,]+ %)/i)?.[1];
+      const deposit = purchase?.match(/entrada estimada para comprar vivienda libre,\s*([\d.]+ €)/i)?.[1];
+      const depositYears = purchase?.match(/equivale a\s*([\d,]+ años)/i)?.[1];
+      const marketFacts = [];
+      if (rentAmount && rentShare) marketFacts.push(`alquiler completo: ${rentAmount}/mes (${rentShare} del salario individual joven de referencia)`);
+      if (deposit && depositYears) marketFacts.push(`entrada media de compra: ${deposit} (${depositYears} del salario individual anual de referencia al dedicarlo íntegro)`);
+      if (marketFacts.length) parts.push(`Observatorio de Emancipación, España (2025): ${marketFacts.join('; ')}.`);
+      parts.push('INE, ECV 2025: entre personas de 26–34 años que ya vivían con sus progenitores, el 47,3 % declaró como motivo principal no poder permitirse alquilar o comprar (34,6 % alquiler; 12,7 % compra).');
+      if (rentAmount && rentShare) parts.push('El alquiler de una vivienda completa frente a un salario de referencia no mide lo que paga cada joven si comparte casa. La ECV no mide el efecto de las ayudas familiares o herencias.');
+      else parts.push('Es un motivo declarado por quienes convivían con sus progenitores. La ECV no mide el efecto de las ayudas familiares o herencias.');
+      if (migration) parts.push('La ECV no pregunta cuántas personas se habrían trasladado fuera de España sin ayuda familiar, así que no permite cuantificar ese contrafactual.');
+      const publishers = [...new Set(families.filter((family) => family.data?.length).flatMap((family) => family.sourceIds || [])
+        .map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher).filter(Boolean))].slice(0, 3);
+      if (publishers.length) parts.push(`Fuentes: ${publishers.join('; ')}.`);
+      return parts.join('\n\n');
+    }
     const marketFacts = rental && purchase
       ? ['España: alquiler de vivienda completa, 1.176 €/mes (98,7 % del salario individual mensual medio joven); entrada de compra, 66.900 € (4,7 años del salario anual individual de referencia, dedicado íntegramente).']
       : [rental, purchase].filter(Boolean).map((item) => item.replace(/\s*\(Observatorio 2025\)\s*$/, ''));
