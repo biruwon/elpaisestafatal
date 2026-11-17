@@ -1860,7 +1860,7 @@
       "riesgo de pobreza con jornada completa"
     ],
     "unit": "percent",
-    "population": "personas ocupadas de 18 años o más a tiempo completo, EU-SILC",
+    "population": "personas ocupadas a tiempo completo; el dataset EU-SILC no ofrece un desglose de edad",
     "notEquivalentTo": [
       "in_work_poverty_rate",
       "temporary_employment_rate",
@@ -1871,9 +1871,35 @@
       "geography",
       "worktime"
     ],
-    "denominator": "personas ocupadas a tiempo completo de 18 años o más",
+    "denominator": "personas ocupadas a tiempo completo",
     "limitations": [
-      "Renta equivalente disponible del hogar inferior al 60 % de la mediana nacional tras transferencias. No mide si cada salario individual cubre los gastos ni coincide con la percepción de llegar a fin de mes."
+      "Renta equivalente disponible del hogar inferior al 60 % de la mediana nacional tras transferencias. No ofrece un desglose de edad, no mide si cada salario individual cubre los gastos ni coincide con la percepción de llegar a fin de mes."
+    ]
+  },
+  "in_work_poverty_part_time_rate": {
+    "name": "In-work at-risk-of-poverty rate, part-time",
+    "displayName": "Personas ocupadas a jornada parcial en riesgo de pobreza",
+    "aliases": [
+      "pobreza laboral a jornada parcial",
+      "trabajar a tiempo parcial y ser pobre",
+      "riesgo de pobreza con jornada parcial"
+    ],
+    "unit": "percent",
+    "population": "personas ocupadas a tiempo parcial; el dataset EU-SILC no ofrece un desglose de edad",
+    "notEquivalentTo": [
+      "in_work_poverty_rate",
+      "in_work_poverty_full_time_rate",
+      "temporary_employment_rate",
+      "unemployment_rate"
+    ],
+    "dimensions": [
+      "period",
+      "geography",
+      "worktime"
+    ],
+    "denominator": "personas ocupadas a tiempo parcial",
+    "limitations": [
+      "Renta equivalente disponible del hogar inferior al 60 % de la mediana nacional tras transferencias. No ofrece un desglose de edad, no mide si cada salario individual cubre los gastos ni coincide con la percepción de llegar a fin de mes."
     ]
   },
   "primary_care_wait_days": {

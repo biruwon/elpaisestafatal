@@ -62,7 +62,8 @@ const ageDimensionScope = (value) => {
 
 const observationAgeScope = (item) => ageDimensionScope(item?.dimensions?.age)
   || ageDimensionScope(item?.dimensionLabels?.age)
-  || extractRanges(item?.population, { requireContext: false })[0];
+  || extractRanges(item?.population, { requireContext: false })[0]
+  || requestedScopesFor(item?.population)[0];
 
 const sameScope = (requested, observed) => requested.kind === observed.kind
   && requested.minimum === observed.minimum

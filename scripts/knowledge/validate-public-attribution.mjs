@@ -3,6 +3,7 @@ import { build } from 'esbuild';
 import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
+import { WORKING_POVERTY_SNAPSHOT } from '../../src/lib/knowledge/working-poverty-snapshot.mjs';
 import { localPublicCheckResponse } from '../lib/local-public-check-response.mjs';
 
 // Bundle the real Pages mapper so this test exercises the production path as
@@ -43,6 +44,43 @@ assert.deepEqual(contextualLocal.result.arguments[0].evidenceIds, [], 'Contextua
 assert.deepEqual(contextualLocal.result.arguments[0].sourceIds, [], 'The local preview must not attribute a context-only source to the submitted claim');
 assert.deepEqual(contextualPublic.result.criteria[0].sourceIds, ['poverty-source']);
 assert.match(contextualPublic.result.reply, /Como contexto/);
+
+const textPovertyRows = WORKING_POVERTY_SNAPSHOT.observations;
+const directPovertyClaim = 'Trabajar a jornada completa no impide estar en riesgo de pobreza';
+const directPovertyPlan = focusedEvidencePlan(directPovertyClaim, { observations: textPovertyRows, now: Date.parse('2026-11-17') });
+const directPovertyPublic = checkFromPlan(directPovertyClaim, directPovertyPlan, 'text-full-time-poverty');
+assert.equal(directPovertyPublic.state, 'limited');
+assert.equal(directPovertyPublic.result.arguments[0].verdict, 'supported');
+assert.ok(directPovertyPublic.result.arguments[0].sourceIds.includes('eurostat-in-work-poverty-full-time-2026-11'));
+assert.match(directPovertyPublic.result.reply, /9,5 %/);
+
+const directPartTimeClaim = 'Trabajar a jornada parcial no evita estar en riesgo de pobreza';
+const directPartTimePlan = focusedEvidencePlan(directPartTimeClaim, { observations: textPovertyRows, now: Date.parse('2026-11-17') });
+const directPartTimePublic = checkFromPlan(directPartTimeClaim, directPartTimePlan, 'text-part-time-poverty');
+assert.equal(directPartTimePublic.state, 'limited');
+assert.equal(directPartTimePublic.result.arguments[0].verdict, 'supported');
+assert.ok(directPartTimePublic.result.arguments[0].sourceIds.includes('eurostat-in-work-poverty-part-time-2026-11'));
+assert.doesNotMatch(directPartTimePublic.result.reply, /9,5 %/);
+assert.match(directPartTimePublic.result.reply, /18,6 %/);
+
+const worktimeComparisonClaim = 'La tasa de riesgo de pobreza es más alta en la jornada parcial que en la jornada completa';
+const worktimeComparisonPlan = focusedEvidencePlan(worktimeComparisonClaim, { observations: textPovertyRows, now: Date.parse('2026-11-17') });
+const worktimeComparisonPublic = checkFromPlan(worktimeComparisonClaim, worktimeComparisonPlan, 'text-worktime-comparison');
+assert.equal(worktimeComparisonPublic.state, 'limited');
+assert.equal(worktimeComparisonPublic.result.arguments[0].verdict, 'supported');
+assert.ok(worktimeComparisonPublic.result.arguments[0].sourceIds.includes('eurostat-in-work-poverty-full-time-2026-11'));
+assert.ok(worktimeComparisonPublic.result.arguments[0].sourceIds.includes('eurostat-in-work-poverty-part-time-2026-11'));
+assert.match(worktimeComparisonPublic.result.reply, /9,1 puntos porcentuales más en jornada parcial/);
+
+const countPovertyClaim = '¿Cada vez hay más personas ocupadas en riesgo de pobreza?';
+const countPovertyPlan = focusedEvidencePlan(countPovertyClaim, { observations: textPovertyRows, now: Date.parse('2026-11-17') });
+const countPovertyPublic = checkFromPlan(countPovertyClaim, countPovertyPlan, 'text-working-poverty-count');
+assert.equal(countPovertyPublic.state, 'insufficient');
+assert.equal(countPovertyPublic.result.arguments[0].verdict, 'insufficient');
+assert.deepEqual(countPovertyPublic.result.arguments[0].evidenceIds, [], 'A rate series cannot be attributed as direct evidence for an absolute headcount claim');
+assert.match(countPovertyPublic.result.reply, /mide un porcentaje, no el número de personas/);
+assert.ok(countPovertyPublic.result.criteria.some((item) => item.sourceIds.includes('eurostat-in-work-poverty-2026-11')),
+  'The public response should retain the rate series as clearly labelled context');
 
 const compoundParaphrases = [
   'El contribuyente medio paga más impuestos pero percibe peores servicios que hace unos años',

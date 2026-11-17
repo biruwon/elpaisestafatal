@@ -598,3 +598,49 @@ attribution. The refreshed 300-claim deterministic fallback audit reports
 three complete, 18 limited and 279 uncovered replies, with 82 metric-routed
 claims. These are fallback coverage counts, not factual-accuracy results or a
 measure of the dynamic resolver.
+
+## Working-poverty text evidence — 17 November 2026
+
+The text fallback now carries reviewed 2015–2025 Spain series for the overall,
+full-time and part-time in-work at-risk-of-poverty rates. The existing warehouse
+refresh configuration also includes separate queries for each measure. In
+2025, the overall rate was 11.2% among employed people aged 18 or over who
+worked more than half of the reference year. Eurostat's full-/part-time split
+reported 9.5% for full-time workers and 18.6% for part-time workers; that
+dataset does not provide an age dimension. The split-by-hours values come from
+Eurostat's
+[full-/part-time dataset](https://ec.europa.eu/eurostat/databrowser/view/ilc_iw07/default/table?lang=en);
+the overall series comes from [ilc_iw01](https://ec.europa.eu/eurostat/databrowser/view/ilc_iw01/default/table?lang=en).
+
+These rates use household equivalised disposable income below 60% of the
+national median after social transfers. They do not measure an individual
+worker's salary or directly ask whether the household can make ends meet. The
+series period is the EU-SILC survey year, while its income reference year may
+be earlier. Claims about the number of affected people remain unresolved by a
+rate because the employed population can change. The text fallback gives the
+part-time and full-time groups their own metric, source, denominator and
+population checks; it cannot route one group's value to the other.
+For 2025, the part-time rate was 9.1 percentage points higher than the
+full-time rate. That same-period comparison describes a difference between
+groups; it does not show that working time caused it. The full-/part-time table
+does not provide an age dimension, so age-specific claims remain outside this
+evidence.
+
+Trend replies compare endpoints from one annual series and note when the
+intervening years rose and fell. From 2015 to 2025, the overall rate fell from
+13.1% to 11.2% (1.9 percentage points), the full-time rate from 10.3% to 9.5%
+(0.8 points), and the part-time rate from 27.1% to 18.6% (8.5 points). These
+endpoint comparisons do not establish a continuous decline or explain its
+cause. The fallback snapshot is reviewed through 30 April 2027; after expiry
+it supplies no observations until reviewed again.
+
+The matching item in the unverified 300-claim corpus says full-time work may
+still fail to make ends meet. It now receives the 9.5% full-time rate as clearly
+labelled context and asks for a direct measure of declared difficulty; the
+claim remains uncovered and the contextual source is not attached as direct
+proof. The audit remains at three complete, 18 limited and 279 uncovered
+fallback replies. Those status counts do not capture this improvement in
+explanation quality and are not an accuracy score. Paraphrases use the same
+work-hour-specific series; absolute headcounts, subjective affordability,
+nearby housing independence and foreign-country claims remain outside those
+series' direct scope.

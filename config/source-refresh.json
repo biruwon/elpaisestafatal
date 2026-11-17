@@ -977,6 +977,16 @@
         "riesgo de pobreza con jornada completa"
       ],
       "metricId": "in_work_poverty_full_time_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_iw07?geo=ES&worktime=PT&unit=PC&sinceTimePeriod=2015",
+      "title": "Riesgo de pobreza entre personas ocupadas a tiempo parcial · Eurostat EU-SILC",
+      "aliases": [
+        "pobreza laboral a jornada parcial",
+        "trabajar a tiempo parcial y ser pobre",
+        "riesgo de pobreza con jornada parcial"
+      ],
+      "metricId": "in_work_poverty_part_time_rate"
     }
   ]
 }

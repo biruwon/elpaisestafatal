@@ -54,7 +54,8 @@ const labels = {
   tertiary_overqualification_rate: 'Tasa de sobrecualificación entre personas con estudios terciarios ocupadas',
   tertiary_overqualification_rate_age_20_34: 'Tasa de sobrecualificación entre personas ocupadas de 20 a 34 años con educación terciaria',
   in_work_poverty_rate: 'Personas ocupadas de 18 años o más en riesgo de pobreza',
-  in_work_poverty_full_time_rate: 'Personas ocupadas de 18 años o más a jornada completa en riesgo de pobreza',
+  in_work_poverty_full_time_rate: 'Personas ocupadas a jornada completa en riesgo de pobreza',
+  in_work_poverty_part_time_rate: 'Personas ocupadas a jornada parcial en riesgo de pobreza',
   primary_care_wait_days: 'Demora entre quienes esperaron más de un día',
   primary_care_wait_over_one_day_rate: 'Pacientes de medicina de familia pública que esperaron más de un día por falta de cita',
   tourist_housing_count: 'Viviendas turísticas estimadas',
@@ -218,6 +219,64 @@ const educationOutcomeFinding = (fact) => {
   if (fact.id === 'tertiary_overqualification_rate_age_20_34') return `${source}: en ${place}, el ${value} de las personas ocupadas de 20 a 34 años con educación terciaria (ISCED 5–8) trabajaba en ocupaciones ISCO 4–9, que no requieren ese nivel, en ${period}.`;
   return fact.finding;
 };
+const workingPovertyFinding = (fact) => {
+  const item = fact.latest;
+  const population = fact.id === 'in_work_poverty_full_time_rate'
+    ? 'las personas ocupadas a jornada completa'
+    : fact.id === 'in_work_poverty_part_time_rate'
+      ? 'las personas ocupadas a jornada parcial'
+      : 'las personas ocupadas de 18 años o más, empleadas más de la mitad del año de referencia';
+  const place = placeLabel(item) || 'el territorio consultado';
+  return `En ${place}, el ${number(item.value, fact.id)} % de ${population} se encontraba en riesgo de pobreza en ${periodLabel(item.period)}.`;
+};
+const workingPovertyTrend = (fact) => {
+  const points = fact.items.filter((item) => /^\d{4}$/.test(String(item.period)) && validNumber(item.value))
+    .sort((a, b) => Number(a.period) - Number(b.period));
+  if (points.length < 2 || new Set(points.map((item) => item.source?.url)).size !== 1) return undefined;
+  const first = points[0];
+  const last = points.at(-1);
+  const change = Number((last.value - first.value).toFixed(2));
+  const subject = fact.id === 'in_work_poverty_full_time_rate'
+    ? 'el riesgo de pobreza entre personas ocupadas a jornada completa'
+    : fact.id === 'in_work_poverty_part_time_rate'
+      ? 'el riesgo de pobreza entre personas ocupadas a jornada parcial'
+      : 'el riesgo de pobreza entre personas ocupadas';
+  const periodText = `${first.period} (${number(first.value, fact.id)} %) y ${last.period} (${number(last.value, fact.id)} %)`;
+  const direction = change < 0 ? 'bajó' : change > 0 ? 'subió' : 'se mantuvo';
+  const amount = change === 0 ? '' : ` ${number(Math.abs(change), fact.id)} puntos porcentuales`;
+  const changes = points.slice(1).map((item, index) => Math.sign(item.value - points[index].value)).filter(Boolean);
+  const hasBothDirections = changes.includes(-1) && changes.includes(1);
+  const finding = `Entre ${periodText}, ${subject} ${direction}${amount}.${hasBothDirections ? ' La serie tuvo subidas y bajadas; la comparación de extremos no implica un cambio continuo.' : ''}`;
+  return {
+    finding,
+    headline: `${subject[0].toLocaleUpperCase('es')}${subject.slice(1)} ${direction}${amount} entre ${first.period} y ${last.period}`,
+    change,
+    hasBothDirections,
+  };
+};
+const workingPovertyWorktimeComparison = (facts) => {
+  const fullTime = facts.find((fact) => fact.id === 'in_work_poverty_full_time_rate');
+  const partTime = facts.find((fact) => fact.id === 'in_work_poverty_part_time_rate');
+  if (!fullTime || !partTime || fullTime.latest.period !== partTime.latest.period || fullTime.latest.unit !== partTime.latest.unit
+    || (fullTime.latest.geography || fullTime.latest.dimensions?.geo) !== (partTime.latest.geography || partTime.latest.dimensions?.geo)) return undefined;
+  const datasetId = (fact) => {
+    try { return new URL(fact.latest.source.url).pathname.match(/(?:^|\/)(ilc_iw07)(?:\/|$)/)?.[1]; } catch { return undefined; }
+  };
+  if (datasetId(fullTime) !== 'ilc_iw07' || datasetId(partTime) !== 'ilc_iw07') return undefined;
+  const difference = Number((partTime.latest.value - fullTime.latest.value).toFixed(2));
+  if (!Number.isFinite(difference)) return undefined;
+  const partRate = `${number(partTime.latest.value, partTime.id)} %`;
+  const fullRate = `${number(fullTime.latest.value, fullTime.id)} %`;
+  const place = placeLabel(partTime.latest) || 'el territorio consultado';
+  const period = periodLabel(partTime.latest.period);
+  const direction = difference > 0 ? 'más en jornada parcial' : difference < 0 ? 'más en jornada completa' : 'igual en ambos tipos de jornada';
+  const amount = difference === 0 ? '' : `${number(Math.abs(difference), partTime.id)} puntos porcentuales `;
+  return {
+    difference,
+    finding: `En ${place}, en ${period}, la tasa fue ${partRate} entre las personas ocupadas a jornada parcial y ${fullRate} entre quienes trabajaban a jornada completa; ${amount}${direction}.`,
+    headline: `En ${period}, el riesgo fue ${partRate} en jornada parcial y ${fullRate} en jornada completa`,
+  };
+};
 const educationOutcomeLimitation = (ids, fallback) => {
   const employment = ids.includes('employment_rate_tertiary_education');
   const unemployment = ids.includes('unemployment_rate_tertiary_education');
@@ -301,8 +360,19 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     if (matched) return matched;
   }
   const fullTime = /\b(?:jornada completa|tiempo completo)\b/i.test(claim);
+  const partTime = /\b(?:jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)\b/i.test(claim);
   const asksAboutTeachers = /\b(?:por (?:profesor\w*|docent\w*)|alumn\w* (?:por|entre) (?:profesor\w*|docent\w*))\b/.test(normalize(claim));
   const educationOutcome = focus.id === 'education-employment-outcomes';
+  const workingPovertyTrendRequested = focus.id === 'working-poverty'
+    && /\b(cada vez|evoluci\w*|tendencia|desde|entre \d{4}|\d{4}\s+(?:a|hasta|y)\s+\d{4}|a lo largo|ultim\w* a[nñ]os?|cada a[nñ]o|estable|se mantiene|(?:ha|han)\s+(?:sub\w*|aument\w*|crec\w*|increment\w*|descend\w*|baj\w*|disminu\w*))\b/.test(normalizedClaim);
+  const workingPovertyCountRequested = focus.id === 'working-poverty'
+    && (/\b(?:m[aá]s|menos)\s+(?:personas|trabajadores|ocupados|empleados)\b/.test(normalizedClaim)
+      || /\b(?:n[uú]mero|cantidad|recuento)\b.{0,30}\b(?:personas|trabajadores|ocupados|empleados)\b/.test(normalizedClaim)
+      || /\bcu[aá]nt[oa]s?\s+(?:personas|trabajadores|ocupados|empleados)\b/.test(normalizedClaim));
+  const workingPovertyWorktimeComparisonRequested = focus.id === 'working-poverty' && fullTime && partTime
+    && !workingPovertyCountRequested
+    && /\b(m[aá]s|mayor|superior|super\w*|exced\w*|alto|elevad\w*|menos|menor|inferior|bajo|diferenc\w*|brecha|compar\w*|frente|respecto)\b/.test(normalizedClaim)
+    && !workingPovertyTrendRequested;
   const educationTrendRequested = educationOutcome
     && /\b(ya no|antes|ahora|cada vez|subid\w*|aument\w*|crec\w*|bajad\w*|descend\w*|disminu\w*|mejor\w*|peor\w*|empeor\w*|desde|entre \d{4} y \d{4})\b/.test(normalizedClaim);
   const comparesSectorOutput = focus.id === 'sector-wage-comparison'
@@ -320,7 +390,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && /\b(pag\w*\s+(?:las?\s+)?pension\w*|cotiz\w*|contribu\w*|financ\w*)\b/.test(normalizedClaim)
     && /\b(decad\w*|durante|jubil\w*|retir\w*)\b/.test(normalizedClaim);
   const ids = [...focusedMetricIdsFor(claim)];
-  const allowedDirect = educationOutcome ? ids : focus.id === 'working-poverty' && fullTime ? ['in_work_poverty_full_time_rate'] : focus.direct;
+  const allowedDirect = educationOutcome ? ids
+    : focus.id === 'working-poverty' && fullTime && partTime ? ['in_work_poverty_full_time_rate', 'in_work_poverty_part_time_rate']
+      : focus.id === 'working-poverty' && fullTime ? ['in_work_poverty_full_time_rate']
+      : focus.id === 'working-poverty' && partTime ? ['in_work_poverty_part_time_rate'] : focus.direct;
   const asksAboutMakingEndsMeet = focus.id === 'working-poverty' && /\b(fin de mes|alcanza para vivir|llega para vivir|cubrir (?:los )?gastos)\b/.test(normalize(claim));
   const educationNeedForMetric = (id) => id === 'employment_rate_tertiary_education'
     ? 'tasa de empleo entre residentes de 20 a 64 años con educación terciaria; denominador: toda la población residente de ese grupo'
@@ -332,6 +405,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
           ? 'sobrecualificación entre personas ocupadas de 20 a 34 años con educación terciaria; denominador: todas las personas ocupadas de ese grupo'
         : '';
   const needs = asksAboutMakingEndsMeet ? ['dificultad declarada para llegar a fin de mes', 'situación laboral y jornada de las personas consultadas', 'periodo y población']
+    : focus.id === 'working-poverty' && workingPovertyCountRequested ? ['recuento anual de personas ocupadas bajo el umbral de riesgo de pobreza, con población y periodos comparables']
+    : focus.id === 'working-poverty' && workingPovertyWorktimeComparisonRequested ? ['tasas de riesgo de pobreza comparables para jornada completa y parcial en el mismo periodo, con definición y población compatibles']
+    : focus.id === 'working-poverty' && partTime ? ['tasa de riesgo de pobreza entre personas ocupadas a tiempo parcial, con periodo y población definidos']
+      : focus.id === 'working-poverty' && workingPovertyTrendRequested ? ['serie anual comparable del mismo indicador, población y umbral de pobreza para los periodos solicitados']
     : focus.id === 'class-size' ? [asksAboutTeachers ? 'alumnado por docente' : 'alumnado por grupo o aula', 'etapa educativa y titularidad', 'territorio y curso']
       : educationOutcome ? ids.length ? ids.map(educationNeedForMetric).filter(Boolean) : educationOutcomeNeedsForClaim(claim, focus.needs)
         : focus.id === 'sector-wage-comparison' ? [
@@ -345,7 +422,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
           ...focus.needs,
           ...(comparesLifetimePensionContributions ? ['cotizaciones y prestaciones futuras para la misma cohorte y ciclo laboral'] : []),
         ] : focus.needs;
-  const directIds = asksAboutMakingEndsMeet ? [] : ids.filter((id) => allowedDirect.includes(id) || allowedDirect.includes(id.replace(/_europe$/, '')));
+  const directIds = asksAboutMakingEndsMeet || workingPovertyCountRequested ? [] : ids.filter((id) => allowedDirect.includes(id) || allowedDirect.includes(id.replace(/_europe$/, '')));
   const fitsClaim = observationFitsClaim(claim);
   const facts = ids.flatMap((id) => id === 'mean_hourly_earnings_by_activity'
     ? sectorEarningsFactsForClaim(claim, observations, fitsClaim)
@@ -355,6 +432,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     return order(left) - order(right);
   });
   const limitation = educationOutcome ? educationOutcomeLimitation(ids, focus.limitation)
+    : focus.id === 'working-poverty' ? `${focus.limitation} El desglose por jornada no incluye dimensión de edad y una diferencia entre jornadas no demuestra que el tipo de jornada cause el riesgo. El periodo es el año de la encuesta EU-SILC; el año de referencia de los ingresos puede ser anterior.`
     : focus.id === 'sector-wage-comparison' ? [
       comparesSectorEmployment
         ? comparesSectorEmploymentTrend
@@ -370,13 +448,70 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && (!focus.explanationEvidence.when || focus.explanationEvidence.when(normalize(claim))) ? focus.explanationEvidence : undefined;
   const workHousingTrendRequested = focus.id === 'work-housing-independence'
     && /\b(ya no|cada vez|se ha vuelto|antes|ahora|desde (?:19|20)\d{2}|en (?:19|20)\d{2}|entre (?:19|20)\d{2} y (?:19|20)\d{2}|ultimos a[nñ]os)\b/.test(normalizedClaim);
-  const claimType = focus.id === 'private-healthcare-access'
+  const claimType = focus.id === 'working-poverty' && workingPovertyWorktimeComparisonRequested ? 'comparative'
+    : focus.id === 'working-poverty' && workingPovertyTrendRequested ? 'trend'
+    : focus.id === 'private-healthcare-access'
     ? privateHealthcareAccessClaimType(claim)
     : focus.id === 'work-housing-independence' ? (workHousingTrendRequested ? 'trend' : 'descriptive')
     : focus.claimType || (explanation ? 'definition' : 'descriptive');
   const sources = [...new Map([...facts.flatMap((fact) => fact.items.map((item) => item.source)), ...(explanation?.sources || [])].map((source) => [source.id, source])).values()];
-  const direct = facts.filter((fact) => directIds.includes(fact.id));
-  const context = facts.filter((fact) => !directIds.includes(fact.id));
+  const workingPovertyTrends = new Map(facts.flatMap((fact) => {
+    const trend = workingPovertyTrendRequested ? workingPovertyTrend(fact) : undefined;
+    return trend ? [[fact.id, trend]] : [];
+  }));
+  const workingPovertyComparison = workingPovertyWorktimeComparisonRequested ? workingPovertyWorktimeComparison(facts) : undefined;
+  const direct = facts.filter((fact) => directIds.includes(fact.id)
+    && (!workingPovertyWorktimeComparisonRequested || Boolean(workingPovertyComparison))
+    && (!workingPovertyTrendRequested || workingPovertyTrends.has(fact.id)));
+  const context = facts.filter((fact) => !direct.includes(fact));
+  const factFinding = (fact) => educationOutcome ? educationOutcomeFinding(fact)
+    : workingPovertyTrends.get(fact.id)?.finding || (focus.id === 'working-poverty' ? workingPovertyFinding(fact) : fact.finding);
+  const workingPovertyVerdict = (() => {
+    if (focus.id !== 'working-poverty' || !direct.length || propositions.length > 1) return 'insufficient';
+    if (direct.some((fact) => fact.items.some((item) => item.freshness === 'stale'))) return 'insufficient';
+    if (!/\b(riesgo de pobreza|pobreza laboral)\b/.test(normalizedClaim)) return 'mixed';
+    if (workingPovertyWorktimeComparisonRequested) {
+      if (!workingPovertyComparison || /\b(caus\w*|provoc\w*|porque|debido|hace que|por culpa)\b/.test(normalizedClaim)) return 'mixed';
+      const partTimeTerms = '(?:jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)';
+      const fullTimeTerms = '(?:jornada completa|tiempo completo|completa|completo)';
+      const higherTerms = '(?:mas|mayor(?:es)?|superior(?:es)?|super\\w*|exced\\w*|alto\\w*|elevad\\w*)';
+      const lowerTerms = '(?:menos|menor(?:es)?|inferior(?:es)?|bajo\\w*)';
+      const relation = '(?:que|a|frente a|respecto a|comparad\\w*)';
+      const saysPartTimeHigher = new RegExp(`\\b${higherTerms}\\b.{0,45}\\b${partTimeTerms}\\b.{0,35}\\b${relation}\\b.{0,35}\\b${fullTimeTerms}\\b`).test(normalizedClaim)
+        || new RegExp(`\\b${partTimeTerms}\\b.{0,50}\\b${higherTerms}\\b.{0,35}\\b${relation}\\b.{0,35}\\b${fullTimeTerms}\\b`).test(normalizedClaim);
+      const saysFullTimeHigher = new RegExp(`\\b${higherTerms}\\b.{0,45}\\b${fullTimeTerms}\\b.{0,35}\\b${relation}\\b.{0,35}\\b${partTimeTerms}\\b`).test(normalizedClaim)
+        || new RegExp(`\\b${fullTimeTerms}\\b.{0,50}\\b${higherTerms}\\b.{0,35}\\b${relation}\\b.{0,35}\\b${partTimeTerms}\\b`).test(normalizedClaim);
+      const saysPartTimeLower = new RegExp(`\\b${lowerTerms}\\b.{0,45}\\b${partTimeTerms}\\b.{0,35}\\b${relation}\\b.{0,35}\\b${fullTimeTerms}\\b`).test(normalizedClaim)
+        || new RegExp(`\\b${partTimeTerms}\\b.{0,50}\\b${lowerTerms}\\b.{0,35}\\b${relation}\\b.{0,35}\\b${fullTimeTerms}\\b`).test(normalizedClaim);
+      const saysFullTimeLower = new RegExp(`\\b${lowerTerms}\\b.{0,45}\\b${fullTimeTerms}\\b.{0,35}\\b${relation}\\b.{0,35}\\b${partTimeTerms}\\b`).test(normalizedClaim)
+        || new RegExp(`\\b${fullTimeTerms}\\b.{0,50}\\b${lowerTerms}\\b.{0,35}\\b${relation}\\b.{0,35}\\b${partTimeTerms}\\b`).test(normalizedClaim);
+      const claimsPartTimeHigher = saysPartTimeHigher || saysFullTimeLower;
+      const claimsFullTimeHigher = saysFullTimeHigher || saysPartTimeLower;
+      if (claimsPartTimeHigher === claimsFullTimeHigher || workingPovertyComparison.difference === 0) return 'mixed';
+      return (workingPovertyComparison.difference > 0) === claimsPartTimeHigher ? 'supported' : 'contradicted';
+    }
+    if (workingPovertyTrendRequested) {
+      if (direct.length > 1 && /\b(m[aá]s|menos|mayor|menor|diferenc\w*|brecha)\b/.test(normalizedClaim)) return 'mixed';
+      const changes = direct.map((fact) => workingPovertyTrends.get(fact.id)?.change).filter((value) => Number.isFinite(value));
+      if (!changes.length || changes.some((value) => value === 0) || changes.some((value) => Math.sign(value) !== Math.sign(changes[0]))) return 'mixed';
+      const claimsIncrease = /\b(sub\w*|aument\w*|crec\w*|increment\w*|m[aá]s personas|m[aá]s ocupad\w*)\b/.test(normalizedClaim);
+      const claimsDecrease = /\b(baj\w*|descend\w*|disminu\w*|reduc\w*|menos personas|menos ocupad\w*)\b/.test(normalizedClaim);
+      if (claimsIncrease === claimsDecrease) return 'mixed';
+      const negated = /\bno\b.{0,24}\b(sub\w*|aument\w*|crec\w*|increment\w*|baj\w*|descend\w*|disminu\w*|reduc\w*|m[aá]s|menos)\b/.test(normalizedClaim);
+      const requestedDirection = claimsIncrease ? 1 : -1;
+      const expectedDirection = negated ? requestedDirection * -1 : requestedDirection;
+      const strictlyEveryPeriod = /\b(cada a[nñ]o|a[nñ]o tras a[nñ]o|continuamente|sin interrupci[oó]n)\b/.test(normalizedClaim);
+      const hasNonMonotonicSeries = direct.some((fact) => workingPovertyTrends.get(fact.id)?.hasBothDirections);
+      if (strictlyEveryPeriod && hasNonMonotonicSeries && !negated) return 'contradicted';
+      return Math.sign(changes[0]) === expectedDirection ? 'supported' : 'contradicted';
+    }
+    const latestRates = direct.map((fact) => fact.latest.value).filter(Number.isFinite);
+    if (!latestRates.length || latestRates.every((value) => value === 0)) return 'mixed';
+    if (/\b(no hay|no existe|ning[uú]n\w*|ninguna\w*|nadie)\b/.test(normalizedClaim)) return 'contradicted';
+    if (/\b(todos\w*|todas\w*|cada trabajador)\b/.test(normalizedClaim)) return 'contradicted';
+    if (/\b(no impide|no evita|no garantiza|afect\w*|tambi[eé]n hay|existe\w*)\b/.test(normalizedClaim)) return 'supported';
+    return 'mixed';
+  })();
   const evidenceIds = [...new Set([...facts.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanation?.sources || []).map((source) => source.id)].filter(Boolean))];
   const explanationSourceIds = (explanation?.sources || []).map((source) => source.id);
   const explanationSupportsClaim = Boolean(explanation?.directClaimEvidence);
@@ -429,8 +564,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     const differenceText = relation === 'el mismo precio medio' ? '' : `: ${number(difference, 'industrial_electricity_price_europe')} €/kWh ${relation} en España`;
     return `En ${periodLabel(spain.latest.period)}, el precio medio fue ${number(spain.latest.value, 'industrial_electricity_price_europe')} €/kWh en España y ${number(union.latest.value, 'industrial_electricity_price_europe')} €/kWh en la Unión Europea${differenceText}.`;
   })();
-  const findingText = industrialComparison || primaryFacts.map((fact) => educationOutcome ? educationOutcomeFinding(fact) : fact.finding).join(' ');
-  const gap = missing.length ? focus.evidenceGap || `Falta una medición directa de ${missing.join('; ')}.` : '';
+  const findingText = industrialComparison || workingPovertyComparison?.finding || primaryFacts.map(factFinding).join(' ');
+  const gap = missing.length ? focus.id === 'working-poverty' && workingPovertyCountRequested
+    ? 'La serie disponible mide un porcentaje, no el número de personas. Falta un recuento comparable de personas ocupadas bajo el umbral de riesgo de pobreza.'
+    : focus.evidenceGap || `Falta una medición directa de ${missing.join('; ')}.` : '';
   const sectorEmploymentExplanation = focus.id === 'sector-wage-comparison' && comparesSectorEmployment
     ? comparesSectorEmploymentTrend
       ? 'El crecimiento del empleo debe compararse con series por actividad y periodos iguales. Salarios y productividad requieren medidas aparte.'
@@ -447,15 +584,15 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     const matching = facts.filter((fact) => fact.id === id);
     return {
       familyId: id, label: labels[id] || vocabulary.get(id)?.name || id, direction: 'qualifies',
-      status: matching.length ? directIds.includes(id) ? 'available' : 'partial' : 'missing',
-      dataKind: directIds.includes(id) ? 'observed' : 'context',
-      finding: matching.map((fact) => fact.finding).join(' ') || 'No se ha localizado una medición compatible.',
-      data: matching.map((fact) => fact.finding),
+      status: matching.length ? matching.some((fact) => direct.includes(fact)) ? 'available' : 'partial' : 'missing',
+      dataKind: matching.length && matching.every((fact) => fact.items.every((item) => item.dataKind === 'snapshot')) ? 'snapshot' : matching.some((fact) => direct.includes(fact)) ? 'observed' : 'context',
+      finding: matching.map(factFinding).join(' ') || 'No se ha localizado una medición compatible.',
+      data: matching.map(factFinding),
       evidenceIds: matching.flatMap((fact) => fact.items.map((item) => item.id)).filter(Boolean),
       sourceIds: [...new Set(matching.flatMap((fact) => fact.sourceIds))],
       dimensions: matching.length === 1 ? { subject: focus.label, period: matching[0].latest.period, geography: matching[0].latest.geography || matching[0].latest.dimensionLabels?.geo,
         population: matching[0].latest.population || vocabulary.get(id)?.population, denominator: matching[0].latest.denominator, unit: unitFor(matching[0].latest) } : undefined,
-      ...(directIds.includes(id) ? {} : { missingDimensions: needs }),
+      ...(matching.some((fact) => direct.includes(fact)) ? {} : { missingDimensions: needs }),
     };
   });
   if (explanationMeasuresClaim) families.push({
@@ -509,22 +646,30 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   }
   return {
     id: `measurement-${focus.id}`, schemaVersion: '1', evidenceLevel, coverage: facts.length || explanation ? 'qualified' : 'insufficient',
-    claimType, headline: explanationMeasuresClaim ? focus.explanationHeadline || `Datos sobre ${focus.label}` : explanation ? focus.explanationHeadline || `Contexto relacionado con ${focus.label}` : direct.length ? `Datos sobre ${focus.label}` : facts.length ? `Hay contexto, pero falta medir ${focus.label}` : `Faltan datos compatibles sobre ${focus.label}`,
+    claimType, headline: workingPovertyComparison?.headline || workingPovertyTrends.get(direct[0]?.id)?.headline
+      || (focus.id === 'working-poverty' && direct.length
+        ? fullTime && partTime ? 'Datos de riesgo de pobreza por jornada'
+          : fullTime ? 'El empleo a jornada completa no elimina el riesgo de pobreza'
+          : partTime ? 'El empleo a jornada parcial no elimina el riesgo de pobreza'
+            : 'El riesgo de pobreza también afecta a personas ocupadas'
+        : explanationMeasuresClaim ? focus.explanationHeadline || `Datos sobre ${focus.label}` : explanation ? focus.explanationHeadline || `Contexto relacionado con ${focus.label}` : direct.length ? `Datos sobre ${focus.label}` : facts.length ? `Hay contexto, pero falta medir ${focus.label}` : `Faltan datos compatibles sobre ${focus.label}`),
     summary: focus.explanation, shareableReply: reply, shareableSourceIds: sources.map((source) => source.id),
     interpretation: { kind: claimType === 'causal' ? 'causal' : claimType === 'comparative' ? 'comparative' : 'quantitative', subject: focus.label, predicate: claimType === 'causal' ? 'requires_causal_design' : 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
     blocks: [
       { type: 'claim_breakdown', items: [{ text: claim, type: claimType, explicit: true, evidenceIds: directEvidenceIds, sourceIds: directSourceIds,
-        verdict: explanationMeasuresClaim ? 'mixed' : 'insufficient', evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
-        finding: explanationMeasuresClaim ? explanation.facts.join(' ') : direct.length ? direct.slice(0, 2).map((fact) => educationOutcome ? educationOutcomeFinding(fact) : fact.finding).join(' ') : undefined }], propositionIds: ['submitted-claim'] },
+        verdict: explanationMeasuresClaim ? 'mixed' : focus.id === 'working-poverty' ? workingPovertyVerdict : 'insufficient', evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
+        finding: explanationMeasuresClaim ? explanation.facts.join(' ') : workingPovertyComparison?.finding || (direct.length ? direct.slice(0, 2).map(factFinding).join(' ') : undefined) }], propositionIds: ['submitted-claim'] },
       ...explanationBlocks,
-      ...facts.map((fact) => ({ type: 'data_finding', evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [educationOutcome ? educationOutcomeFinding(fact) : fact.finding] })),
+      ...facts.map((fact) => ({ type: 'data_finding', evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [factFinding(fact)] })),
       ...(missing.length ? [{ type: 'evidence_gap', missing, needed: missing, nextAction: `Buscar una fuente primaria que mida ${focus.label} con ese ámbito.` }] : []),
       { type: 'cannot_conclude', evidenceIds: [], points: [limitation] },
       { type: 'conversation_reply', evidenceIds, text: reply },
     ],
     limitation, evidenceIds, sourceIds: sources.map((source) => source.id), sourceLinks: sources,
-    evidenceSummary: { mode: facts.length ? 'dynamic' : explanation ? 'snapshot' : 'none', families, ...(missing.length ? { missingDimensions: missing } : {}) },
-    answerScope: { kind: 'measurement', family: focus.id, directMetrics: directIds, contextMetrics: ids.filter((id) => !directIds.includes(id)) },
+    evidenceSummary: { mode: facts.length ? facts.every((fact) => fact.items.every((item) => item.dataKind === 'snapshot')) ? 'snapshot' : 'dynamic' : explanation ? 'snapshot' : 'none', families, ...(missing.length ? { missingDimensions: missing } : {}) },
+    answerScope: { kind: 'measurement', family: focus.id,
+      directMetrics: focus.id === 'working-poverty' ? direct.map((fact) => fact.id) : directIds,
+      contextMetrics: focus.id === 'working-poverty' ? ids.filter((id) => !direct.some((fact) => fact.id === id)) : ids.filter((id) => !directIds.includes(id)) },
     knowledgeVersion: RUNTIME_VERSIONS.warehouseKnowledge,
   };
 };

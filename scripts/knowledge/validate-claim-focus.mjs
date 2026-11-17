@@ -373,6 +373,10 @@ for (const claim of [
   assert.deepEqual([...focusedMetricIdsFor(claim)], ['rental_price_index'], claim);
 }
 assert.deepEqual([...focusedMetricIdsFor('Trabajar a jornada completa y ser pobre')].filter((id) => id.includes('poverty')), ['in_work_poverty_full_time_rate']);
+assert.deepEqual([...focusedMetricIdsFor('Trabajar a jornada parcial y estar en riesgo de pobreza')].filter((id) => id.includes('poverty')), ['in_work_poverty_part_time_rate']);
+assert.deepEqual([...focusedMetricIdsFor('El empleo parcial también puede implicar riesgo de pobreza')].filter((id) => id.includes('poverty')), ['in_work_poverty_part_time_rate']);
+assert.deepEqual([...focusedMetricIdsFor('La tasa de riesgo de pobreza es mayor con jornada parcial que con jornada completa')].filter((id) => id.includes('poverty')),
+  ['in_work_poverty_full_time_rate', 'in_work_poverty_part_time_rate']);
 
 const workHousingClaim = 'Tener un trabajo a jornada completa ya no garantiza poder independizarse';
 const workHousing = focusedEvidencePlan(workHousingClaim, { observations: [
@@ -1032,6 +1036,31 @@ const fullTime = focusedEvidencePlan('Trabajar a jornada completa no impide ser 
 assert.deepEqual(fullTime.evidenceIds, ['full-time-poverty']);
 assert.match(fullTime.shareableReply, /9,5/);
 assert.doesNotMatch(fullTime.shareableReply, /11,2|14,7/);
+const partTime = focusedEvidencePlan('Trabajar a jornada parcial no impide estar en riesgo de pobreza', { observations: [
+  ...poverty,
+  { id: 'part-time-poverty', metricId: 'in_work_poverty_part_time_rate', value: 18.6, period: '2025', unit: '%', dimensions: { geo: 'ES', worktime: 'PT' }, source: povertySource },
+] });
+assert.deepEqual(partTime.evidenceIds, ['part-time-poverty']);
+assert.match(partTime.shareableReply, /18,6/);
+assert.doesNotMatch(partTime.shareableReply, /9,5|11,2|14,7/);
+const worktimeComparison = focusedEvidencePlan('La tasa de riesgo de pobreza es más alta en la jornada parcial que en la jornada completa', { observations: [
+  ...poverty,
+  { id: 'part-time-poverty', metricId: 'in_work_poverty_part_time_rate', value: 18.6, period: '2025', unit: '%', dimensions: { geo: 'ES', worktime: 'PT' }, source: povertySource },
+] });
+assert.equal(worktimeComparison.claimType, 'comparative');
+assert.equal(worktimeComparison.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported');
+assert.match(worktimeComparison.shareableReply, /9,1 puntos porcentuales más en jornada parcial/);
+const scopedWorktimeComparison = focusedEvidencePlan('En 2020 la tasa de riesgo de pobreza era más alta en jornada parcial que en jornada completa', { observations: [
+  ...poverty,
+  { id: 'part-time-poverty-2020', metricId: 'in_work_poverty_part_time_rate', value: 19, period: '2020', unit: '%', dimensions: { geo: 'ES', worktime: 'PT' }, source: povertySource },
+  { ...poverty[0], id: 'full-time-poverty-2020', value: 9.7, period: '2020' },
+] });
+assert.match(scopedWorktimeComparison.shareableReply, /En España, en 2020, .*19 % .*9,7 %/);
+assert.doesNotMatch(scopedWorktimeComparison.shareableReply, /18,6|9,5/);
+const unsupportedAgeSplit = focusedEvidencePlan('La tasa de riesgo de pobreza de trabajadores de 25 a 34 años a jornada parcial es alta', { observations: [
+  { id: 'part-time-no-age-breakdown', metricId: 'in_work_poverty_part_time_rate', value: 18.6, period: '2025', unit: '%', population: 'personas ocupadas a jornada parcial; el dataset EU-SILC no ofrece un desglose de edad', dimensions: { geo: 'ES', worktime: 'PT' }, source: povertySource },
+] });
+assert.equal(unsupportedAgeSplit.evidenceIds.length, 0, 'A worktime dataset without age breakdown must not answer an age-specific claim');
 const stalePoverty = focusedEvidencePlan('Trabajar a jornada completa no impide ser pobre', { observations: [{ ...poverty[0], freshness: 'stale', status: 'p' }] });
 assert.match(stalePoverty.shareableReply, /fuente no se ha actualizado/);
 assert.match(stalePoverty.shareableReply, /dato como provisional/);

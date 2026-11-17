@@ -73,6 +73,158 @@ if (independenceClaim.status !== 'partial' || independenceClaim.result?.id !== '
   || independenceClaim.result?.blocks?.some((block) => block.type === 'data_finding' && /temporalidad|paro/.test(block.points?.join(' ') || ''))) {
   throw new Error('A full-time-work housing claim lost its limited CJE/INE context or inherited unrelated employment metrics.');
 }
+const fullTimePoverty = deterministicApiFallback({ text: 'Trabajar a jornada completa no impide estar en riesgo de pobreza', inputType: 'text', now: Date.parse('2026-11-17') });
+if (fullTimePoverty.status !== 'partial' || fullTimePoverty.result?.evidenceLevel !== 'limited'
+  || fullTimePoverty.result?.evidenceSummary?.mode !== 'snapshot'
+  || fullTimePoverty.result?.headline !== 'El empleo a jornada completa no elimina el riesgo de pobreza'
+  || !fullTimePoverty.result?.shareableReply?.includes('9,5 %') || !fullTimePoverty.result?.shareableReply?.includes('en 2025')
+  || !fullTimePoverty.result?.shareableReply?.includes('personas ocupadas a jornada completa')
+  || !fullTimePoverty.result?.sourceIds?.includes('eurostat-in-work-poverty-full-time-2026-11')
+  || fullTimePoverty.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict !== 'supported') {
+  throw new Error('A direct full-time working-poverty claim did not use the reviewed Eurostat snapshot with its population and year.');
+}
+for (const paraphrase of [
+  'Tener un empleo a tiempo completo no te protege del riesgo de pobreza',
+  'Un trabajo de jornada completa no evita que haya personas en riesgo de pobreza',
+]) {
+  const answer = deterministicApiFallback({ text: paraphrase, inputType: 'text', now: Date.parse('2026-11-17') });
+  if (answer.status !== 'partial' || answer.result?.answerScope?.family !== 'working-poverty'
+    || !answer.result?.shareableReply?.includes('9,5 %') || !answer.result?.shareableReply?.includes('en 2025')
+    || JSON.stringify(answer.result?.sourceIds || []) !== JSON.stringify(fullTimePoverty.result.sourceIds)) {
+    throw new Error(`A full-time working-poverty paraphrase changed its source or population: ${paraphrase}`);
+  }
+}
+const workingPovertyTrend = deterministicApiFallback({ text: 'La proporción de personas ocupadas en riesgo de pobreza ha bajado entre 2015 y 2025', inputType: 'text', now: Date.parse('2026-11-17') });
+if (workingPovertyTrend.status !== 'partial' || workingPovertyTrend.result?.claimType !== 'trend'
+  || !workingPovertyTrend.result?.headline?.includes('bajó 1,9 puntos porcentuales entre 2015 y 2025')
+  || workingPovertyTrend.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict !== 'supported'
+  || !workingPovertyTrend.result?.sourceIds?.includes('eurostat-in-work-poverty-2026-11')) {
+  throw new Error('The working-poverty rate trend answer did not compare the same annual series or describe its endpoint direction.');
+}
+const workingPovertyTrendParaphrase = deterministicApiFallback({ text: 'De 2015 a 2025 bajó la proporción de personas ocupadas en riesgo de pobreza', inputType: 'text', now: Date.parse('2026-11-17') });
+if (workingPovertyTrendParaphrase.result?.claimType !== 'trend'
+  || workingPovertyTrendParaphrase.result?.headline !== workingPovertyTrend.result?.headline
+  || JSON.stringify(workingPovertyTrendParaphrase.result?.sourceIds || []) !== JSON.stringify(workingPovertyTrend.result?.sourceIds || [])) {
+  throw new Error('A period-range paraphrase of the working-poverty trend changed its source or assessment.');
+}
+const partTimePovertyTrend = deterministicApiFallback({ text: 'La tasa de riesgo de pobreza entre trabajadores a tiempo parcial ha bajado desde 2015', inputType: 'text', now: Date.parse('2026-11-17') });
+if (partTimePovertyTrend.result?.headline !== 'El riesgo de pobreza entre personas ocupadas a jornada parcial bajó 8,5 puntos porcentuales entre 2015 y 2025'
+  || !partTimePovertyTrend.result?.sourceIds?.includes('eurostat-in-work-poverty-part-time-2026-11')
+  || partTimePovertyTrend.result?.sourceIds?.includes('eurostat-in-work-poverty-full-time-2026-11')) {
+  throw new Error('The part-time trend did not use its own comparable Eurostat series.');
+}
+const worktimeComparison = deterministicApiFallback({ text: 'La tasa de riesgo de pobreza es más alta en la jornada parcial que en la jornada completa', inputType: 'text', now: Date.parse('2026-11-17') });
+if (worktimeComparison.status !== 'partial' || worktimeComparison.result?.claimType !== 'comparative'
+  || worktimeComparison.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict !== 'supported'
+  || worktimeComparison.result?.headline !== 'En 2025, el riesgo fue 18,6 % en jornada parcial y 9,5 % en jornada completa'
+  || !worktimeComparison.result?.shareableReply?.includes('9,1 puntos porcentuales más en jornada parcial')
+  || !worktimeComparison.result?.sourceIds?.includes('eurostat-in-work-poverty-full-time-2026-11')
+  || !worktimeComparison.result?.sourceIds?.includes('eurostat-in-work-poverty-part-time-2026-11')) {
+  throw new Error('The full-time/part-time comparison did not use same-period rates from both groups.');
+}
+const worktimeComparisonParaphrase = deterministicApiFallback({ text: 'La tasa de pobreza laboral a jornada parcial supera a la de jornada completa', inputType: 'text', now: Date.parse('2026-11-17') });
+if (worktimeComparisonParaphrase.result?.claimType !== 'comparative'
+  || worktimeComparisonParaphrase.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict !== 'supported'
+  || !worktimeComparisonParaphrase.result?.shareableReply?.includes('9,1 puntos porcentuales más en jornada parcial')
+  || JSON.stringify(worktimeComparisonParaphrase.result?.sourceIds || []) !== JSON.stringify(worktimeComparison.result?.sourceIds || [])) {
+  throw new Error('A paraphrased comparison did not reuse the same paired worktime evidence.');
+}
+const reverseWorktimeComparison = deterministicApiFallback({ text: 'La tasa de riesgo de pobreza es más alta en la jornada completa que en la jornada parcial', inputType: 'text', now: Date.parse('2026-11-17') });
+if (reverseWorktimeComparison.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict !== 'contradicted') {
+  throw new Error('The full-time/part-time comparison did not contradict the reverse rate ordering.');
+}
+const worktimeComparison2020 = deterministicApiFallback({ text: 'En 2020 la tasa de riesgo de pobreza era más alta en la jornada parcial que en la jornada completa', inputType: 'text', now: Date.parse('2026-11-17') });
+if (worktimeComparison2020.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict !== 'supported'
+  || worktimeComparison2020.result?.headline !== 'En 2020, el riesgo fue 19 % en jornada parcial y 9,7 % en jornada completa'
+  || !worktimeComparison2020.result?.shareableReply?.includes('9,3 puntos porcentuales más en jornada parcial')) {
+  throw new Error('An explicit comparison year was replaced by the latest available year.');
+}
+const relativeWorktimeTrend = deterministicApiFallback({ text: 'La tasa de riesgo de pobreza a jornada parcial ha bajado más que a jornada completa entre 2015 y 2025', inputType: 'text', now: Date.parse('2026-11-17') });
+if (relativeWorktimeTrend.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict !== 'mixed'
+  || !relativeWorktimeTrend.result?.shareableReply?.includes('bajó 0,8 puntos porcentuales')
+  || !relativeWorktimeTrend.result?.shareableReply?.includes('bajó 8,5 puntos porcentuales')) {
+  throw new Error('Two separate declines were treated as proof of which worktime group declined more.');
+}
+const causalWorktimeComparison = deterministicApiFallback({ text: 'La jornada parcial causa más riesgo de pobreza que la jornada completa', inputType: 'text', now: Date.parse('2026-11-17') });
+if (causalWorktimeComparison.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict !== 'mixed'
+  || !causalWorktimeComparison.result?.shareableReply?.includes('no demuestra que el tipo de jornada cause el riesgo')) {
+  throw new Error('A rate comparison was presented as proof that work hours cause poverty risk.');
+}
+const countTrend = deterministicApiFallback({ text: '¿Cada vez hay más personas ocupadas en riesgo de pobreza?', inputType: 'text', now: Date.parse('2026-11-17') });
+const countTrendArgument = countTrend.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0];
+if (countTrend.status !== 'uncovered' || countTrend.result?.evidenceLevel !== 'insufficient' || countTrend.result?.claimType !== 'trend'
+  || countTrendArgument?.verdict !== 'insufficient' || countTrendArgument?.evidenceIds?.length
+  || !countTrend.result?.shareableReply?.includes('mide un porcentaje, no el número de personas')
+  || !countTrend.result?.shareableReply?.includes('bajó 1,9 puntos porcentuales')
+  || !countTrend.result?.sourceIds?.includes('eurostat-in-work-poverty-2026-11')) {
+  throw new Error('The rate series was incorrectly used to confirm or contradict a claim about the number of affected workers.');
+}
+const contraryRateTrend = deterministicApiFallback({ text: 'La tasa de riesgo de pobreza entre ocupados ha aumentado entre 2015 y 2025', inputType: 'text', now: Date.parse('2026-11-17') });
+if (contraryRateTrend.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict !== 'contradicted'
+  || !contraryRateTrend.result?.headline?.includes('bajó 1,9 puntos porcentuales entre 2015 y 2025')) {
+  throw new Error('The working-poverty rate trend did not contradict a direction that conflicts with the same series endpoints.');
+}
+const scopedRateTrend = deterministicApiFallback({ text: 'La tasa de riesgo de pobreza entre ocupados bajó de 2019 a 2020', inputType: 'text', now: Date.parse('2026-11-17') });
+if (scopedRateTrend.result?.headline !== 'El riesgo de pobreza entre personas ocupadas bajó 0,9 puntos porcentuales entre 2019 y 2020'
+  || !scopedRateTrend.result?.shareableReply?.includes('2019 (12,7 %) y 2020 (11,8 %)')) {
+  throw new Error('A year-range trend answer included endpoints outside the requested period.');
+}
+const subjectivePoverty = deterministicApiFallback({ text: 'En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes', inputType: 'text', now: Date.parse('2026-11-17') });
+const subjectiveArgument = subjectivePoverty.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0];
+if (subjectivePoverty.status !== 'uncovered' || subjectivePoverty.result?.evidenceLevel !== 'insufficient'
+  || !subjectivePoverty.result?.shareableReply?.includes('Como contexto:')
+  || !subjectivePoverty.result?.shareableReply?.includes('Falta una medición directa de dificultad declarada para llegar a fin de mes')
+  || subjectiveArgument?.sourceIds?.length || subjectiveArgument?.evidenceIds?.length) {
+  throw new Error('The poverty threshold was presented as a direct measure of subjective difficulty making ends meet.');
+}
+const partTimePoverty = deterministicApiFallback({ text: 'Trabajar a tiempo parcial no impide ser pobre', inputType: 'text', now: Date.parse('2026-11-17') });
+if (partTimePoverty.status !== 'partial' || partTimePoverty.result?.evidenceLevel !== 'limited'
+  || partTimePoverty.result?.headline !== 'El empleo a jornada parcial no elimina el riesgo de pobreza'
+  || !partTimePoverty.result?.shareableReply?.includes('18,6 %') || !partTimePoverty.result?.shareableReply?.includes('en 2025')
+  || !partTimePoverty.result?.shareableReply?.includes('personas ocupadas a jornada parcial')
+  || !partTimePoverty.result?.shareableReply?.includes('año de la encuesta EU-SILC')
+  || !partTimePoverty.result?.sourceIds?.includes('eurostat-in-work-poverty-part-time-2026-11')
+  || partTimePoverty.result?.sourceIds?.includes('eurostat-in-work-poverty-full-time-2026-11')
+  || partTimePoverty.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict !== 'mixed') {
+  throw new Error('The part-time poverty claim did not use its own Eurostat series with the scope caveat for the broader word «pobre».');
+}
+for (const paraphrase of [
+  'Trabajar a media jornada no evita estar en riesgo de pobreza',
+  'El empleo a tiempo parcial no evita caer en riesgo de pobreza',
+  'El empleo parcial no evita estar en riesgo de pobreza',
+]) {
+  const answer = deterministicApiFallback({ text: paraphrase, inputType: 'text', now: Date.parse('2026-11-17') });
+  if (answer.status !== 'partial' || answer.result?.answerScope?.family !== 'working-poverty'
+    || !answer.result?.shareableReply?.includes('18,6 %') || !answer.result?.shareableReply?.includes('en 2025')
+    || !answer.result?.sourceIds?.includes('eurostat-in-work-poverty-part-time-2026-11')
+    || answer.result?.sourceIds?.includes('eurostat-in-work-poverty-full-time-2026-11')) {
+    throw new Error(`A part-time working-poverty paraphrase changed source or population: ${paraphrase}`);
+  }
+}
+const staleWorkingPoverty = deterministicApiFallback({ text: 'Trabajar a jornada completa no impide ser pobre', inputType: 'text', now: Date.parse('2027-05-01') });
+if (staleWorkingPoverty.result?.sourceIds?.some((sourceId) => sourceId.startsWith('eurostat-in-work-poverty'))
+  || staleWorkingPoverty.result?.evidenceIds?.length) {
+  throw new Error('The reviewed working-poverty snapshot remained usable after its expiry date.');
+}
+const nonTextWorkingPoverty = deterministicApiFallback({ text: 'Trabajar a jornada completa no impide estar en riesgo de pobreza', inputType: 'image', now: Date.parse('2026-11-17') });
+if (nonTextWorkingPoverty.result?.sourceIds?.some((sourceId) => sourceId.startsWith('eurostat-in-work-poverty'))
+  || nonTextWorkingPoverty.result?.evidenceIds?.length) {
+  throw new Error('The text-only working-poverty snapshot was reused for a non-text submission.');
+}
+const povertyHousingNeighbour = deterministicApiFallback({ text: 'Tener un trabajo a jornada completa ya no garantiza poder independizarse', inputType: 'text', now: Date.parse('2026-11-17') });
+if (povertyHousingNeighbour.result?.sourceIds?.some((sourceId) => sourceId.startsWith('eurostat-in-work-poverty'))) {
+  throw new Error('Working-poverty evidence crossed into the separate housing-independence claim.');
+}
+for (const outOfScopePoverty of [
+  'En Francia, trabajar a jornada completa no impide estar en riesgo de pobreza',
+  'Entre los trabajadores de 20 a 34 años, trabajar a jornada completa no impide estar en riesgo de pobreza',
+]) {
+  const answer = deterministicApiFallback({ text: outOfScopePoverty, inputType: 'text', now: Date.parse('2026-11-17') });
+  if (answer.result?.sourceIds?.some((sourceId) => sourceId.startsWith('eurostat-in-work-poverty'))
+    || answer.result?.evidenceIds?.length) {
+    throw new Error(`Spain-wide all-adult poverty evidence crossed into an unmeasured population: ${outOfScopePoverty}`);
+  }
+}
 const specialistRegionalWait = deterministicApiFallback({ text: 'Las listas de espera varían demasiado entre comunidades autónomas', inputType: 'text' });
 if (specialistRegionalWait.status !== 'partial' || specialistRegionalWait.result?.evidenceLevel !== 'limited'
   || !specialistRegionalWait.result?.sourceIds?.includes('sisle-sns-regional-consultations-dec-2025')

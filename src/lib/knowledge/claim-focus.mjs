@@ -779,7 +779,7 @@ const focuses = [
   {
     id: 'working-poverty', label: 'trabajar y no poder cubrir los gastos',
     when: (t) => /\b(trabaj\w*|emple\w*|ocupad\w*|jornada completa)\b/.test(t) && /\b(pobrez\w*|pobres?|fin de mes|alcanza para vivir|llega para vivir|cubrir (?:los )?gastos)\b/.test(t),
-    direct: ['in_work_poverty_rate', 'in_work_poverty_full_time_rate'], context: [],
+    direct: ['in_work_poverty_rate', 'in_work_poverty_full_time_rate', 'in_work_poverty_part_time_rate'], context: [],
     needs: ['renta disponible del hogar y umbral de pobreza', 'tipo de jornada', 'periodo y población'],
     explanation: 'Tener empleo no garantiza quedar fuera del riesgo de pobreza: Eurostat mide si la renta disponible equivalente del hogar queda por debajo del 60 % de la mediana nacional, después de transferencias.',
     limitation: 'El umbral de pobreza no equivale a declarar dificultades para llegar a fin de mes. Una tasa general de ocupación o de contratos temporales no mide ninguna de esas dos situaciones.',
@@ -1196,7 +1196,10 @@ export const focusedMetricIdsFor = (claim) => {
   const known = new Set(metricVocabulary.map((metric) => metric.id));
   const text = normalize(claim);
   const direct = focus.id === 'education-employment-outcomes' ? educationOutcomeMetrics(claim)
+    : focus.id === 'working-poverty' && /\b(jornada completa|tiempo completo)\b/.test(text) && /\b(jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)\b/.test(text) ? ['in_work_poverty_full_time_rate', 'in_work_poverty_part_time_rate']
     : focus.id === 'working-poverty' && /\b(jornada completa|tiempo completo)\b/.test(text) ? ['in_work_poverty_full_time_rate']
+    : focus.id === 'working-poverty' && /\b(jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)\b/.test(text) ? ['in_work_poverty_part_time_rate']
+    : focus.id === 'working-poverty' ? ['in_work_poverty_rate']
     : focus.id === 'primary-care-waits' && /\b(porcentaje|proporcion|por ciento)\b/.test(text) ? ['primary_care_wait_over_one_day_rate']
       : focus.id === 'primary-care-waits' && /\b(cuantos dias|demora media|tiempo medio)\b/.test(text) ? ['primary_care_wait_days'] : focus.direct;
   const european = /\b(europa|europe[oa]s?|ue|union europea)\b/.test(text);

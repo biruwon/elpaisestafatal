@@ -2,6 +2,7 @@ import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from './scorecard-snapshot.mjs';
 import { answerPlanForBroadDomains } from './broad-domain-snapshot.mjs';
 import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
+import { WORKING_POVERTY_SNAPSHOT } from './working-poverty-snapshot.mjs';
 import { spanishInstitutionalScope } from './institutional-scope.mjs';
 import { measurementMeaningPlan } from './measurement-meaning.mjs';
 import { focusedEvidencePlan } from './focused-evidence-plan.mjs';
@@ -130,7 +131,8 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
   // the warehouse-backed resolver is unavailable or still processing.
   const compiledClaim = deterministicFallbackCompiler(original);
   const propositions = (compiledClaim.explicitPropositions || []).filter((proposition) => proposition?.explicit !== false && proposition?.text);
-  const focused = analysisWasTruncated ? undefined : focusedEvidencePlan(original, { propositions, now });
+  const fallbackObservations = inputType === 'text' && snapshotLifecycle(WORKING_POVERTY_SNAPSHOT, now).usable ? WORKING_POVERTY_SNAPSHOT.observations : [];
+  const focused = analysisWasTruncated ? undefined : focusedEvidencePlan(original, { observations: fallbackObservations, propositions, now });
   const related = topicReference(original);
   if (focused) {
     const reviewedContext = reviewedContextForGap(focused, original, now);

@@ -7,6 +7,8 @@ const longTailBenchmarkCases = [
   ['working-poverty-paraphrase', 'La pobreza laboral afecta también a quienes tienen un empleo', 'in_work_poverty_rate'],
   ['working-poverty-full-time', 'Trabajar a jornada completa no evita estar en riesgo de pobreza', 'in_work_poverty_full_time_rate'],
   ['working-poverty-full-time-paraphrase', '¿Hay trabajadores pobres incluso a tiempo completo?', 'in_work_poverty_full_time_rate'],
+  ['working-poverty-part-time', 'Trabajar a jornada parcial no evita estar en riesgo de pobreza', 'in_work_poverty_part_time_rate'],
+  ['working-poverty-part-time-paraphrase', '¿Hay personas ocupadas en riesgo de pobreza incluso a media jornada?', 'in_work_poverty_part_time_rate'],
   ['primary-care-delay', '¿Cuántos días se espera para el médico de familia?', 'primary_care_wait_days'],
   ['primary-care-delay-paraphrase', 'Demora media para una cita en atención primaria', 'primary_care_wait_days'],
   ['primary-care-rate', '¿Qué porcentaje espera más de un día por una cita en atención primaria?', 'primary_care_wait_over_one_day_rate'],
