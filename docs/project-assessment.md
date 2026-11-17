@@ -190,7 +190,7 @@ scope and individual-salary denominator. Purchase comparisons state that the
 €66,900 entry estimate equals 4.7 years of the CJE's reference annual youth
 salary only if the entire salary were devoted to it; this is not observed
 savings time or a count of households able to buy. The
-[CJE's 2025 Observatory](https://www.cje.org/ca/observatorio_2025/) reports
+[CJE's 2025 Observatory](https://www.cje.org/observatorio_2025/) reports
 these figures, while the [INE's 2025 Living Conditions Survey](https://www.ine.es/dyngs/Prensa/es/m3ECV2025.htm)
 reports that 47.3% of people
 aged 26–34 already living with their parents cited inability to afford buying
@@ -253,11 +253,9 @@ cover these families, with nearby work-poverty, nonresident-count,
 coastal-price and tourist-housing claims kept in their own routes. They remain
 explicitly insufficient until compatible observations are available.
 
-The deterministic audit now routes 82 of the 300 unverified discovery claims
-through metric families, up from 81 before these focus routes. It still
-returns only four limited-evidence completions and leaves 296 uncovered; a
-recognized metric family does not itself mean the evidence warehouse contains
-a matching observation.
+The deterministic audit recognizes metric-family routes for 84 of the 300
+unverified discovery claims. A recognized family does not itself mean the
+evidence warehouse contains a matching observation.
 
 ## Text retrieval latency — 16 November 2026
 
@@ -349,15 +347,33 @@ increase without parameter updates, while the estimated contribution to the
 IRPF/GDP rise refers to 2019–2023. Neither figure is presented as the amount
 every household paid or as a measure of all taxes.
 
-In the deterministic fallback audit, the result changed from four API-complete
-responses, 24 limited responses and 272 uncovered claims to three API-complete,
-15 limited and 282 uncovered. Claims with attached evidence or sources fell
-from 28 to 18, and metric-family routes from 92 to 82. This is a deliberate
-reduction in unsupported attachments, not a measure of accuracy: all 300
-inputs remain unverified, the audit does not exercise every live production
-path, and a family match does not establish that evidence is available. The
-focused claim suite now checks 174 paraphrases and nearby claims; the remaining
-gaps require source work before they can receive numeric answers.
+The latest deterministic fallback audit returns three `complete`, 15 `limited`
+and 282 `uncovered` results. Eighteen claims have attached evidence, eighteen
+have source links, and 36 return structured compound responses; metric-family
+routes cover 84 candidates. These are routing and answer-structure counts, not
+an accuracy score: all 300 inputs remain unverified, the audit does not
+exercise every live production path, and a family match does not establish
+that evidence is available. The focused claim suite checks 174 paraphrases and
+nearby claims; the remaining gaps require source work before they can receive
+numeric answers.
+
+## Youth rental reply readability — 17 November 2026
+
+The public text fallback now keeps broad youth-rent replies under 160 words
+and selects only figures needed to distinguish the main measures. It reports
+the CJE's 2025 full-dwelling rent against a reference individual youth salary,
+then the Banco de España's 2024 average rent share among renter households
+whose reference person is up to 35 and the share of non-owner households in
+that group above 30%. The reply explains that the first is not an individual's
+observed rent and the latter measures households, so neither gives the share
+of young people spending more than half of their personal salary. It leaves
+the Banco de España's hypothetical two-young-person city scenario out of the
+general answer. The [CJE release](https://www.cje.org/observatorio_2025/),
+[Banco de España Annual Report 2025](https://www.bde.es/f/webbe/SES/Secciones/Publicaciones/PublicacionesAnuales/InformesAnuales/25/InfAnual_2025.pdf)
+and the [INE's 2025 Living Conditions Survey](https://www.ine.es/dyngs/Prensa/es/m3ECV2025.htm)
+remain attached to their respective findings. The fallback does not use these
+figures as evidence for causal claims about wages, family transfers or
+emigration.
 
 ## Pension indexation text claims — 17 November 2026
 

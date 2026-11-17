@@ -151,9 +151,15 @@ for (const claim of youthRentClaims) {
     throw new Error(`Youth-rent answer did not preserve the individual-threshold caveat: ${claim}`);
   }
   const reply = result.result?.shareableReply || '';
+  if (reply.trim().split(/\s+/).length > 160) throw new Error(`Youth-rent public reply is too long to scan: ${claim}`);
   if (!/España/.test(reply) || !/2025/.test(reply) || !/vivienda completa/.test(reply)
     || !/salario individual mensual medio/.test(reply) || !/Consejo de la Juventud de España/.test(reply)) {
     throw new Error(`Youth-rent answer omitted its geography, period, population, denominator, or named source: ${claim}`);
+  }
+  if (!/27,4 %/.test(reply) || !/34,2 %/.test(reply)
+    || /escenario potencial|municipios: Madrid|36,3 %/.test(reply)
+    || !/no indican cu[aá]ntos j[oó]venes destinan m[aá]s de la mitad de su salario individual/.test(reply)) {
+    throw new Error(`Youth-rent public reply lost a scoped household measure, included an unasked hypothetical, or omitted the individual-threshold limitation: ${claim}`);
   }
 }
 const youthPurchaseClaims = [
@@ -175,6 +181,7 @@ for (const claim of youthPurchaseClaims) {
     throw new Error(`A reference average was presented as the distribution of youth home-buying access: ${claim}`);
   }
   const reply = result.result?.shareableReply || '';
+  if (reply.trim().split(/\s+/).length > 160) throw new Error(`Youth-purchase public reply is too long to scan: ${claim}`);
   if (!/España/.test(reply) || !/2025/.test(reply) || !/66\.900 €/.test(reply)
     || !/salario individual anual/.test(reply) || !/dedicar.*íntegro/.test(reply)
     || !/Consejo de la Juventud de España/.test(reply)) {
@@ -185,6 +192,15 @@ for (const claim of youthPurchaseClaims) {
       || !result.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /herencias/.test(item))))) {
     throw new Error(`Youth purchase answer treated family support as measured when it is not: ${claim}`);
   }
+}
+const youthMigrationClaim = 'Los precios de la casa y los salarios estancados dejan a la gente joven sin futuro; ¿cuántos se irían sin herencia?';
+const youthMigration = deterministicApiFallback({ text: youthMigrationClaim, inputType: 'text', now: reviewedAt });
+const youthMigrationReply = youthMigration.result?.shareableReply || '';
+if (youthMigration.result?.id !== 'broad-youth-living-housing'
+  || youthMigrationReply.trim().split(/\s+/).length > 160
+  || !youthMigrationReply.includes('47,3 %')
+  || !/no pregunta cu[aá]ntas personas se habr[ií]an trasladado fuera de Espa[nñ]a/.test(youthMigrationReply)) {
+  throw new Error('A combined youth housing and migration claim needs a concise reply with the scoped survey result and explicit counterfactual gap');
 }
 for (const claim of [
   'El alquiler medio consume casi todo el salario de trabajadores adultos en España',

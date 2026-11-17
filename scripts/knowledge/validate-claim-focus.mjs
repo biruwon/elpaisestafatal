@@ -870,7 +870,8 @@ assert.match(youthRent.headline, /no sabemos cu[aá]ntos gastan m[aá]s de la mi
 assert.match(youthRent.shareableReply, /98,7/);
 assert.match(youthRent.shareableReply, /27,4 %/);
 assert.match(youthRent.shareableReply, /34,2 %/);
-assert.match(youthRent.shareableReply, /36,3 %.*Madrid 50,2 %.*Val[eè]ncia 50,3 %.*M[aá]laga 51,1 %/);
+assert.doesNotMatch(youthRent.shareableReply, /escenario potencial|municipios: Madrid|36,3 %/, 'A general rent reply should not add a hypothetical city scenario');
+assert.match(youthRent.evidenceSummary.families.find((family) => family.criterionId === 'youth-rental-potential-effort')?.data?.[0] || '', /36,3 %.*Madrid 50,2 %.*Val[eè]ncia 50,3 %.*M[aá]laga 51,1 %/, 'Detailed evidence should retain the distinct hypothetical measure');
 assert.match(youthRent.shareableReply, /no indican cu[aá]ntos j[oó]venes destinan m[aá]s de la mitad de su salario individual/);
 assert.deepEqual(youthRent.shareableSourceIds, ['cje-emancipation-2025', 'bank-spain-housing-annual-2025'], 'A youth-rent answer must link the observed household and potential-effort source, not unrelated family-survey evidence');
 assert.doesNotMatch(youthRent.shareableReply, /emigra|66\.900|peor que nunca/i);
@@ -887,7 +888,8 @@ for (const paraphrase of [
   const answer = answerPlanForBroadDomains(paraphrase);
   assert.ok(answer, `Youth-rent paraphrase lost the reviewed answer family: ${paraphrase}`);
   assert.match(answer.shareableReply, /27,4 %/);
-  assert.match(answer.shareableReply, /escenario potencial/);
+  assert.doesNotMatch(answer.shareableReply, /escenario potencial|municipios: Madrid/, `A general rent paraphrase acquired a hypothetical municipality scenario: ${paraphrase}`);
+  assert.match(answer.evidenceSummary.families.find((family) => family.criterionId === 'youth-rental-potential-effort')?.data?.[0] || '', /hogar hipotético/);
   assert.ok(answer.shareableSourceIds.includes('bank-spain-housing-annual-2025'));
 }
 const youthPurchase = answerPlanForBroadDomains('Los jóvenes no pueden comprar vivienda sin la ayuda de sus padres');

@@ -1225,7 +1225,6 @@ const composeScopedReply = (plan) => {
     const rental = dataFor('youth-rental-effort');
     const observedYoungRent = dataFor('youth-rental-household-effort');
     const youngRentOverburden = dataFor('youth-rental-overburden');
-    const potentialYoungRent = dataFor('youth-rental-potential-effort');
     const purchase = dataFor('youth-purchase-effort');
     const coResidence = dataFor('family-co-residence');
     const housingBarrier = dataFor('family-housing-barrier');
@@ -1233,42 +1232,30 @@ const composeScopedReply = (plan) => {
       && family.missingDimensions?.includes('efecto causal de transferencias familiares'));
     const migration = families.find((family) => family.criterionId === 'family-support-counterfactual');
     const parts = [plan.headline.replace(/[.]$/, '') + '.'];
-    if (housingBarrier) {
-      const rentAmount = rental?.match(/alquiler medio mensual de una vivienda completa,\s*([\d.]+ €)/i)?.[1];
-      const rentShare = rental?.match(/equivale al\s*([\d,]+ %)/i)?.[1];
-      const deposit = purchase?.match(/entrada estimada para comprar vivienda libre,\s*([\d.]+ €)/i)?.[1];
-      const depositYears = purchase?.match(/equivale a\s*([\d,]+ años)/i)?.[1];
-      const marketFacts = [];
-      if (rentAmount && rentShare) marketFacts.push(`alquiler completo: ${rentAmount}/mes (${rentShare} del salario individual joven de referencia)`);
-      if (deposit && depositYears) marketFacts.push(`entrada media de compra: ${deposit} (${depositYears} del salario individual anual de referencia al dedicarlo íntegro)`);
-      if (marketFacts.length) parts.push(`Observatorio de Emancipación, España (2025): ${marketFacts.join('; ')}.`);
-      parts.push('INE, ECV 2025: entre personas de 26–34 años que ya vivían con sus progenitores, el 47,3 % declaró como motivo principal no poder permitirse alquilar o comprar (34,6 % alquiler; 12,7 % compra).');
-      if (rentAmount && rentShare) parts.push('El alquiler de una vivienda completa frente a un salario de referencia no mide lo que paga cada joven si comparte casa. La ECV no mide el efecto de las ayudas familiares o herencias.');
-      else parts.push('Es un motivo declarado por quienes convivían con sus progenitores. La ECV no mide el efecto de las ayudas familiares o herencias.');
-      if (migration) parts.push('La ECV no pregunta cuántas personas se habrían trasladado fuera de España sin ayuda familiar, así que no permite cuantificar ese contrafactual.');
-      const publishers = [...new Set(families.filter((family) => family.data?.length).flatMap((family) => family.sourceIds || [])
-        .map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher).filter(Boolean))].slice(0, 3);
-      if (publishers.length) parts.push(`Fuentes: ${publishers.join('; ')}.`);
-      return parts.join('\n\n');
+    const rentAmount = rental?.match(/alquiler medio mensual de una vivienda completa,\s*([\d.]+ €)/i)?.[1];
+    const rentShare = rental?.match(/equivale al\s*([\d,]+ %)/i)?.[1];
+    const deposit = purchase?.match(/entrada estimada para comprar vivienda libre,\s*([\d.]+ €)/i)?.[1];
+    const depositYears = purchase?.match(/equivale a\s*([\d,]+ años)/i)?.[1];
+    const coResidenceRate = coResidence?.match(/progenitores el\s*([\d,]+ %)/i)?.[1];
+    const marketFacts = [];
+    if (rentAmount && rentShare) marketFacts.push(`alquiler medio de vivienda completa: ${rentAmount}/mes, ${rentShare} del salario individual mensual medio de referencia joven`);
+    if (deposit && depositYears) marketFacts.push(`entrada estimada de compra: ${deposit} (${depositYears} del salario individual anual de referencia al dedicarlo íntegro)`);
+    if (marketFacts.length) parts.push(`Consejo de la Juventud de España, España (2025): ${marketFacts.join('; ')}.`);
+
+    if (!housingBarrier && rental && observedYoungRent) {
+      const meanEffort = observedYoungRent.match(/esfuerzo medio del alquiler del\s*([\d,]+ %)/i)?.[1];
+      const referenceAge = observedYoungRent.match(/persona de referencia de hasta\s*(\d+) años/i)?.[1];
+      const overburdenShare = youngRentOverburden?.match(/:\s*([\d,]+ %)\s*\(España/i)?.[1];
+      if (meanEffort && referenceAge && overburdenShare) parts.push(`Banco de España, España (2024): entre hogares arrendatarios con persona de referencia de hasta ${referenceAge} años, el esfuerzo medio era ${meanEffort} de la renta neta del hogar; ${overburdenShare} de los hogares no propietarios de ese grupo superaba el 30 % de su renta en alquiler.`);
     }
-    const marketFacts = rental && purchase
-      ? ['España: alquiler de vivienda completa, 1.176 €/mes (98,7 % del salario individual mensual medio joven); entrada de compra, 66.900 € (4,7 años del salario anual individual de referencia, dedicado íntegramente).']
-      : [rental, purchase].filter(Boolean).map((item) => item.replace(/\s*\(Observatorio 2025\)\s*$/, ''));
-    if (marketFacts.length) parts.push(`Observatorio de Emancipación 2025: ${marketFacts.join('; ')}.`);
-    if (observedYoungRent) parts.push(`Banco de España, hogares arrendatarios (2024): ${observedYoungRent}.`);
-    if (youngRentOverburden) parts.push(`Banco de España, umbral de sobresfuerzo (2024): ${youngRentOverburden}.`);
-    if (potentialYoungRent) parts.push(`Banco de España, escenario potencial de alquiler (2024): ${potentialYoungRent}.`);
-    if (coResidence && !housingBarrier) parts.push(`INE, ECV 2025: ${coResidence.split(';')[0]}.`);
-    if (housingBarrier) parts.push(housingBarrier);
-    if (purchase) parts.push('Los 4,7 años suponen dedicar todo el salario; no son el tiempo real de ahorro ni prueban imposibilidad para todos.');
-    if (housingBarrier && familyTransferGap) parts.push('El 47,3 % es un motivo declarado por convivientes; la ECV no mide el efecto de ayudas familiares o herencias.');
-    else if (housingBarrier) parts.push('El 47,3 % es un motivo declarado por convivientes; no mide el gasto de cada hogar.');
-    else if (familyTransferGap) parts.push('La ECV no mide el efecto de las ayudas familiares o herencias sobre la compra.');
-    if (rental || observedYoungRent) parts.push('Estos datos no indican cuántos jóvenes destinan más de la mitad de su salario individual al alquiler; el alquiler de una vivienda completa, el gasto observado del hogar y el escenario potencial son medidas distintas.');
-    if (migration) parts.push('La ECV 2025 no pregunta cuántas personas se habrían trasladado fuera de España sin ayuda familiar, así que no da una cifra para ese contrafactual.');
-    const publishers = [...new Set(families.filter((family) => family.data?.length).flatMap((family) => family.sourceIds || [])
-      .map((id) => plan.sourceLinks?.find((source) => source.id === id)?.publisher).filter(Boolean))].slice(0, 3);
-    if (publishers.length) parts.push(`Fuentes: ${publishers.join('; ')}.`);
+
+    if (coResidenceRate && housingBarrier) parts.push(`INE, ECV 2025: el ${coResidenceRate} de todas las personas de 26–34 años vivía con sus progenitores.`);
+    if (housingBarrier) parts.push('Entre esas personas de 26–34 años que convivían con sus progenitores, el 47,3 % declaró como motivo principal no poder permitirse alquilar o comprar (34,6 % alquiler; 12,7 % compra).');
+    if (purchase) parts.push('La equivalencia de 4,7 años supone dedicar íntegro el salario de referencia; no es el tiempo real de ahorro ni demuestra una imposibilidad universal.');
+    if (housingBarrier && migration) parts.push('La ECV no mide el efecto de ayudas o herencias y no pregunta cuántas personas se habrían trasladado fuera de España sin apoyo.');
+    else if (housingBarrier && familyTransferGap) parts.push('La ECV registra motivos declarados, pero no mide el efecto de ayudas familiares o herencias.');
+    if (rental && !housingBarrier) parts.push('Estos datos no indican cuántos jóvenes destinan más de la mitad de su salario individual: el CJE compara una vivienda completa con un salario de referencia; el Banco de España mide hogares arrendatarios con persona de referencia de hasta 35 años.');
+    if (migration && !housingBarrier) parts.push('La ECV no mide el efecto de las ayudas familiares y no pregunta cuántas personas se habrían trasladado fuera de España sin apoyo; ese contrafactual no se puede cuantificar.');
     return parts.join('\n\n');
   }
   const measured = families.filter((family) => family.data?.length)
@@ -1415,7 +1402,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [], clai
           : 'Los indicadores mostrados son datos de referencia revisados y fechados; cada uno conserva su alcance.' } : {}),
     },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
-    knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-11-16',
+    knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-11-17',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan);
   if (packet.id === 'broad-youth-living-housing') {
@@ -1511,7 +1498,7 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
     asOf: '2026-09-25',
     evidenceSummary: { mode: families.some((family) => family.data?.length) ? 'mixed' : 'snapshot', families, ...(gaps.length ? { missingDimensions: gaps } : {}) },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
-    knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-09-2',
+    knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-11-17',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan, { compact: true });
   plan.shareableReply = plan.blocks.find((block) => block.type === 'conversation_reply').text;
