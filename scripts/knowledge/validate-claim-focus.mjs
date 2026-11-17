@@ -47,6 +47,7 @@ const cases = [
   ['intergenerational-housing-pension-comparison', ['Los boomers tuvieron acceso a vivienda y jubilación en condiciones que las generaciones posteriores no tendrán', 'Las generaciones futuras se enfrentan a peores condiciones de vivienda y pensión', 'El acceso a la vivienda y a una jubilación suficiente ha cambiado entre generaciones']],
   ['matched-pay', ['Las empresas españolas pagan menos por el mismo perfil profesional', 'Los salarios difieren entre países aun desempeñando el mismo puesto', 'Mismo trabajo y sueldo distinto según el país']],
   ['unemployment-wage-pressure', ['El paro estructural permite a las empresas ofrecer salarios bajos porque siempre hay candidatos', 'El desempleo elevado debilita la negociación salarial y presiona los sueldos a la baja', 'Cuando abundan los candidatos, las empresas pueden contener los salarios', 'Con mucho paro, los empleadores pueden frenar las subidas de sueldo']],
+  ['local-safety-trend', ['En mi barrio ha subido la inseguridad este mes', 'La delincuencia ha empeorado en mi calle estas semanas', 'En la zona hay cada vez más robos', 'En mi municipio han aumentado los hurtos este trimestre']],
   ['primary-care-waits', ['Hay que esperar demasiado para conseguir cita con el médico de familia', '¿Cuántos días tarda una cita en atención primaria?', 'La cita con el médico de cabecera llega con mucha demora']],
   ['private-healthcare-access', ['Se contrata seguro privado para evitar esperas de especialistas', '¿La sanidad privada permite acceder antes a las pruebas?', 'El seguro privado se compra por la rapidez de las citas']],
   ['electricity-price-transmission', ['El gas encarece la electricidad en el sistema marginalista', 'Los hogares no notan la electricidad barata de las renovables', 'El precio mayorista no llega íntegro a la factura de la luz']],
@@ -83,6 +84,47 @@ for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
   assert.equal(claimFocusFor(claim)?.id, family, claim);
   assert.equal(broadDomainPacketsFor(claim).length, 0, `A precise claim inherited a broad packet: ${claim}`);
 }
+const localSafetyParaphrases = [
+  'En mi barrio ha subido la inseguridad este mes',
+  'La delincuencia ha empeorado en mi calle estas semanas',
+  'En la zona hay cada vez más robos',
+  'En mi municipio han aumentado los hurtos este trimestre',
+];
+const localSafetyPlan = focusedEvidencePlan(localSafetyParaphrases[0], { now: Date.parse('2026-11-17') });
+assert.equal(localSafetyPlan.answerScope.family, 'local-safety-trend');
+assert.equal(localSafetyPlan.claimType, 'trend');
+assert.ok(validateAnswerPlan(localSafetyPlan).ok, JSON.stringify(validateAnswerPlan(localSafetyPlan).errors));
+assert.deepEqual(localSafetyPlan.answerScope.directMetrics, [], 'Local safety context must not be marked as direct evidence for the claim');
+assert.deepEqual(localSafetyPlan.sourceIds, ['interior-criminality-balance-2026-q2', 'ine-neighbourhood-crime-perception-ecv-2023']);
+assert.deepEqual(localSafetyPlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], 'National context must not be attributed to an unsupported local trend');
+assert.ok(localSafetyPlan.evidenceSummary.families[0].dimensions?.population && localSafetyPlan.evidenceSummary.families[0].dimensions?.denominator);
+assert.ok(localSafetyPlan.shareableReply.split(/\s+/).length < 180, 'The local safety answer must explain the gap concisely');
+assert.match(localSafetyPlan.shareableReply, /no tasas por habitante/);
+assert.match(localSafetyPlan.shareableReply, /porcentaje de población/);
+for (const paraphrase of localSafetyParaphrases.slice(1)) {
+  const plan = focusedEvidencePlan(paraphrase, { now: Date.parse('2026-11-17') });
+  assert.equal(plan.answerScope.family, localSafetyPlan.answerScope.family, `A local safety paraphrase changed evidence family: ${paraphrase}`);
+  assert.deepEqual(plan.sourceIds, localSafetyPlan.sourceIds, `A local safety paraphrase changed its evidence sources: ${paraphrase}`);
+  assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], `Contextual municipal or survey evidence was used as direct proof: ${paraphrase}`);
+}
+const localSafetyPublic = localPublicCheckResponse({ status: 'partial', requestId: 'local-safety-focus', result: localSafetyPlan }, localSafetyParaphrases[0]);
+assert.equal(localSafetyPublic.state, 'insufficient', 'Sourced context must not settle an unsupported neighborhood trend');
+assert.ok(localSafetyPublic.result.reply.includes('dime el municipio') && localSafetyPublic.result.reply.includes('percepción vecinal'));
+assert.deepEqual(localSafetyPublic.result.criteria.map((criterion) => criterion.sourceIds), [
+  ['interior-criminality-balance-2026-q2'],
+  ['ine-neighbourhood-crime-perception-ecv-2023'],
+], 'Each contextual source must be attributed only to the fact it supports');
+const localSafetyProcessing = localPublicCheckResponse({ status: 'processing', requestId: 'local-safety-processing' }, localSafetyParaphrases[0]);
+assert.equal(localSafetyProcessing.state, 'processing');
+assert.equal(localSafetyProcessing.preview.state, 'insufficient', 'An in-progress resolver should show the same evidence-honest provisional result');
+assert.deepEqual(localSafetyProcessing.preview.result.sources.map((source) => source.id), localSafetyPlan.sourceIds);
+const nationalSafetyNeighbor = 'En España ha subido la criminalidad registrada este año';
+assert.equal(claimFocusFor(nationalSafetyNeighbor), undefined, 'A national crime trend must not be routed through the local measurement family');
+assert.deepEqual(broadDomainPacketsFor(nationalSafetyNeighbor).map((packet) => packet.id), ['broad-security']);
+const migrationSafetyNeighbor = 'La llegada de inmigrantes ha provocado más robos en mi barrio';
+assert.notEqual(claimFocusFor(migrationSafetyNeighbor)?.id, 'local-safety-trend', 'A migration-causality claim must not inherit the local safety route');
+assert.deepEqual(broadDomainPacketsFor(migrationSafetyNeighbor).map((packet) => packet.id), ['broad-immigration-security']);
+assert.equal(claimFocusFor('La Seguridad Social ha subido en mi ciudad este mes'), undefined, 'Social Security is an institution, not a local crime trend');
 const focusedTextClaim = 'La tasa de paro de titulados universitarios ha subido';
 const focusedTextCompilation = deterministicFallbackCompiler(focusedTextClaim);
 assert.equal(canSkipLocalCompilerForFocusedMeasurement(focusedTextClaim, { propositions: focusedTextCompilation.explicitPropositions, clarificationRequired: focusedTextCompilation.clarificationRequired, claimType: focusedTextCompilation.claimType }), true, 'A reviewed descriptive measurement claim can use deterministic interpretation');

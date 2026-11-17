@@ -1,5 +1,6 @@
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { broadDomainPacketsFor } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
+import { claimFocusFor } from '../../src/lib/knowledge/claim-focus.mjs';
 import { attachExtraction, extractedClaim, publicExtraction } from '../../src/lib/knowledge/submission.mjs';
 import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
@@ -48,8 +49,9 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   const extraction = publicExtraction(safePayload?.extraction || payload?.extraction);
   claim = extraction ? extractedClaim(extraction) : claim || safePayload?.claim || payload?.claim || '';
   if (safePayload?.status === 'processing' && safePayload.requestId) {
-    const fallback = broadDomainPacketsFor(claim).length ? deterministicApiFallback({ text: claim, inputType: 'text' }) : undefined;
-    const preview = fallback?.status === 'complete'
+    const hasReviewedRoute = broadDomainPacketsFor(claim).length > 0 || Boolean(claimFocusFor(claim));
+    const fallback = hasReviewedRoute ? deterministicApiFallback({ text: claim, inputType: 'text' }) : undefined;
+    const preview = ['complete', 'partial'].includes(fallback?.status)
       ? localPublicCheckResponse({ ...fallback, requestId: safePayload.requestId }, claim)
       : undefined;
     return { state: 'processing', id: safePayload.requestId, claim, ...(preview ? { preview } : {}) };

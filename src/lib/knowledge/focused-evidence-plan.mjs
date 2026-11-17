@@ -380,6 +380,17 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const evidenceIds = [...new Set([...facts.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanation?.sources || []).map((source) => source.id)].filter(Boolean))];
   const explanationSourceIds = (explanation?.sources || []).map((source) => source.id);
   const explanationSupportsClaim = Boolean(explanation?.directClaimEvidence);
+  const explanationBlocks = !explanation ? [] : Array.isArray(explanation.factSourceIds)
+    && explanation.factSourceIds.length === explanation.facts?.length
+    ? explanation.facts.map((point, index) => ({
+      type: explanationSupportsClaim ? 'confirmed' : 'data_finding',
+      ...(explanationSupportsClaim ? {} : { dataKind: 'context' }),
+      evidenceIds: explanation.factSourceIds[index],
+      points: [point],
+    }))
+    : [explanationSupportsClaim
+      ? { type: 'confirmed', evidenceIds: explanationSourceIds, points: explanation.facts }
+      : { type: 'data_finding', dataKind: 'context', evidenceIds: explanationSourceIds, points: explanation.facts }];
   const directEvidenceIds = [...new Set([...direct.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanationSupportsClaim ? explanationSourceIds : [])].filter(Boolean))];
   const directSourceIds = [...new Set([...direct.flatMap((fact) => fact.sourceIds), ...(explanationSupportsClaim ? explanationSourceIds : [])])];
   const contextualExplanationSourceIds = explanationSupportsClaim ? [] : explanationSourceIds;
@@ -419,7 +430,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     return `En ${periodLabel(spain.latest.period)}, el precio medio fue ${number(spain.latest.value, 'industrial_electricity_price_europe')} €/kWh en España y ${number(union.latest.value, 'industrial_electricity_price_europe')} €/kWh en la Unión Europea${differenceText}.`;
   })();
   const findingText = industrialComparison || primaryFacts.map((fact) => educationOutcome ? educationOutcomeFinding(fact) : fact.finding).join(' ');
-  const gap = missing.length ? `Falta una medición directa de ${missing.join('; ')}.` : '';
+  const gap = missing.length ? focus.evidenceGap || `Falta una medición directa de ${missing.join('; ')}.` : '';
   const sectorEmploymentExplanation = focus.id === 'sector-wage-comparison' && comparesSectorEmployment
     ? comparesSectorEmploymentTrend
       ? 'El crecimiento del empleo debe compararse con series por actividad y periodos iguales. Salarios y productividad requieren medidas aparte.'
@@ -460,20 +471,42 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     sourceIds: explanation.sources.map((source) => source.id),
     dimensions: explanation.dimensions,
   });
-  else if (explanation && ids.length === 0) families.push({
-    familyId: focus.id,
-    familyLabel: focus.label,
-    label: explanation.evidenceLabel || `Contexto: ${focus.label}`,
-    direction: 'qualifies',
-    status: 'partial',
-    dataKind: 'context',
-    finding: explanation.facts.join(' '),
-    data: explanation.facts,
-    evidenceIds: explanation.sources.map((source) => source.id),
-    sourceIds: explanation.sources.map((source) => source.id),
-    dimensions: explanation.dimensions,
-    missingDimensions: needs,
-  });
+  else if (explanation && ids.length === 0) {
+    const hasFactSources = Array.isArray(explanation.factSourceIds)
+      && explanation.factSourceIds.length === explanation.facts?.length;
+    if (hasFactSources) explanation.facts.forEach((finding, index) => {
+      const sourceIds = explanation.factSourceIds[index] || [];
+      const sourceTitles = explanation.sources.filter((source) => sourceIds.includes(source.id)).map((source) => source.title);
+      families.push({
+        familyId: focus.id,
+        familyLabel: focus.label,
+        label: sourceTitles.join(' · ') || explanation.evidenceLabel || `Contexto: ${focus.label}`,
+        direction: 'qualifies',
+        status: 'partial',
+        dataKind: 'context',
+        finding,
+        data: [finding],
+        evidenceIds: sourceIds,
+        sourceIds,
+        dimensions: explanation.factDimensions?.[index] || explanation.dimensions,
+        missingDimensions: needs,
+      });
+    });
+    else families.push({
+      familyId: focus.id,
+      familyLabel: focus.label,
+      label: explanation.evidenceLabel || `Contexto: ${focus.label}`,
+      direction: 'qualifies',
+      status: 'partial',
+      dataKind: 'context',
+      finding: explanation.facts.join(' '),
+      data: explanation.facts,
+      evidenceIds: explanation.sources.map((source) => source.id),
+      sourceIds: explanation.sources.map((source) => source.id),
+      dimensions: explanation.dimensions,
+      missingDimensions: needs,
+    });
+  }
   return {
     id: `measurement-${focus.id}`, schemaVersion: '1', evidenceLevel, coverage: facts.length || explanation ? 'qualified' : 'insufficient',
     claimType, headline: explanationMeasuresClaim ? focus.explanationHeadline || `Datos sobre ${focus.label}` : explanation ? focus.explanationHeadline || `Contexto relacionado con ${focus.label}` : direct.length ? `Datos sobre ${focus.label}` : facts.length ? `Hay contexto, pero falta medir ${focus.label}` : `Faltan datos compatibles sobre ${focus.label}`,
@@ -483,9 +516,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       { type: 'claim_breakdown', items: [{ text: claim, type: claimType, explicit: true, evidenceIds: directEvidenceIds, sourceIds: directSourceIds,
         verdict: explanationMeasuresClaim ? 'mixed' : 'insufficient', evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
         finding: explanationMeasuresClaim ? explanation.facts.join(' ') : direct.length ? direct.slice(0, 2).map((fact) => educationOutcome ? educationOutcomeFinding(fact) : fact.finding).join(' ') : undefined }], propositionIds: ['submitted-claim'] },
-      ...(explanation ? [explanationSupportsClaim
-        ? { type: 'confirmed', evidenceIds: explanation.sources.map((source) => source.id), points: explanation.facts }
-        : { type: 'data_finding', dataKind: 'context', evidenceIds: explanation.sources.map((source) => source.id), points: explanation.facts }] : []),
+      ...explanationBlocks,
       ...facts.map((fact) => ({ type: 'data_finding', evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [educationOutcome ? educationOutcomeFinding(fact) : fact.finding] })),
       ...(missing.length ? [{ type: 'evidence_gap', missing, needed: missing, nextAction: `Buscar una fuente primaria que mida ${focus.label} con ese ámbito.` }] : []),
       { type: 'cannot_conclude', evidenceIds: [], points: [limitation] },

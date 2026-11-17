@@ -106,6 +106,35 @@ for (const paraphrase of [
     throw new Error(`An unemployment/wage paraphrase changed evidence family or scope: ${paraphrase}`);
   }
 }
+const localSafetyTrend = deterministicApiFallback({ text: 'En mi barrio ha subido la inseguridad este mes', inputType: 'text' });
+if (localSafetyTrend.status !== 'partial' || localSafetyTrend.result?.id !== 'measurement-local-safety-trend'
+  || localSafetyTrend.result?.claimType !== 'trend' || localSafetyTrend.result?.evidenceLevel !== 'limited'
+  || JSON.stringify(localSafetyTrend.result?.sourceIds || []) !== JSON.stringify(['interior-criminality-balance-2026-q2', 'ine-neighbourhood-crime-perception-ecv-2023'])
+  || localSafetyTrend.result?.blocks?.some((block) => block.type === 'claim_breakdown' && block.items?.[0]?.evidenceIds?.length)
+  || !localSafetyTrend.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /municipio|percepción vecinal/.test(item)))) {
+  throw new Error('A neighborhood safety claim was not kept insufficient with scoped official context and the information needed for a valid comparison.');
+}
+for (const paraphrase of [
+  'La delincuencia ha empeorado en mi calle estas semanas',
+  'En la zona hay cada vez más robos',
+  'En mi municipio han aumentado los hurtos este trimestre',
+]) {
+  const result = deterministicApiFallback({ text: paraphrase, inputType: 'text' });
+  if (result.status !== 'partial' || result.result?.id !== localSafetyTrend.result.id
+    || JSON.stringify(result.result?.sourceIds || []) !== JSON.stringify(localSafetyTrend.result.sourceIds)) {
+    throw new Error(`A local safety paraphrase changed the evidence family or its source scope: ${paraphrase}`);
+  }
+}
+const nationalSafetyTrend = deterministicApiFallback({ text: 'En España ha subido la criminalidad registrada este año', inputType: 'text' });
+if (nationalSafetyTrend.result?.id !== 'broad-security'
+  || nationalSafetyTrend.result?.sourceIds?.includes('ine-neighbourhood-crime-perception-ecv-2023')) {
+  throw new Error('A national crime trend crossed into the local-safety family or received neighborhood perception data.');
+}
+const migrationSafetyCause = deterministicApiFallback({ text: 'La llegada de inmigrantes ha provocado más robos en mi barrio', inputType: 'text' });
+if (migrationSafetyCause.result?.id !== 'broad-immigration-security'
+  || migrationSafetyCause.result?.sourceIds?.includes('ine-neighbourhood-crime-perception-ecv-2023')) {
+  throw new Error('A migration-attribution claim was routed through unrelated neighborhood context.');
+}
 const migrationHousingCause = deterministicApiFallback({ text: 'La inmigración está haciendo que suban los alquileres en algunas ciudades' });
 if (migrationHousingCause.status !== 'uncovered' || migrationHousingCause.result?.id !== 'measurement-migration-housing-demand-causality'
   || migrationHousingCause.result?.claimType !== 'causal' || migrationHousingCause.result?.evidenceLevel !== 'insufficient'

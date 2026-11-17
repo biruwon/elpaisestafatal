@@ -28,6 +28,56 @@ const unemploymentWagePressure = (t) => !migrationPopulation.test(t)
   && /\b(paro|desemple\w*|desocupad\w*|exceso de mano de obra|oferta de trabajadores|candidat\w*|demandantes? de empleo|abundancia de trabajadores|muchos aspirantes)\b/.test(t)
   && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|pagan?|cobr\w*|wage\w*)\b/.test(t)
   && /\b(permit\w*|mantener|ofrec\w*|press\w*|presion\w*|negoci\w*|fren\w*|baj\w*|reduc\w*|contener|limitar|debilit\w*|menos|sub\w*|aument\w*)\b/.test(t);
+const localSafetyTrend = (t) => {
+  const safetyClaim = t.replace(/\bseguridad social\b/g, '');
+  return !migrationPopulation.test(t)
+    && /\b(barri\w*|calle\w*|zona\w*|municip\w*|localidad\w*|distrit\w*|vecindari\w*|entorno\w*|puebl\w*|ciudad\w*|por aqui|cerca de mi casa)\b/.test(t)
+    && /\b(delincuenc\w*|criminal\w*|crimen\w*|delit\w*|insegur\w*|segur\w*|violenc\w*|robo\w*|hurt\w*|agresi\w*|asalto\w*|acuchill\w*|paliza\w*|homicid\w*|asesinat\w*|peligros\w*)\b/.test(safetyClaim)
+    && /\b(sub\w*|aument\w*|crec\w*|empeor\w*|mejor\w*|peor\w*|deterior\w*|dispar\w*|increment\w*|vari\w*|descend\w*|baj\w*|reduc\w*|disminu\w*|cambi\w*|evoluci\w*|tendenci\w*|cada vez|mas|menos|desde hace|este mes|estas semanas|ultim\w* dias?)\b/.test(t);
+};
+const localSafetyMeasurementEvidence = {
+  directClaimEvidence: false,
+  expiresAt: '2027-01-31', territories: ['ES'],
+  evidenceLabel: 'Alcance de las fuentes oficiales sobre delitos registrados y percepción de inseguridad',
+  dimensions: {
+    subject: 'delitos registrados por la policía y percepción vecinal de problemas de delincuencia o vandalismo; son medidas diferentes',
+    population: 'Interior: hechos comunicados por los cuerpos policiales que informan al Sistema Estadístico de Criminalidad; INE: personas representadas por la Encuesta de Condiciones de Vida',
+    period: 'Interior: enero–junio de 2026 frente al mismo periodo de 2025; INE: 2023, en un módulo de vivienda trienal',
+    geography: 'Interior: España y municipios de más de 20.000 habitantes; INE: España, comunidades autónomas y grados de urbanización',
+    denominator: 'Interior: recuento de infracciones registradas; INE: población que declara problemas en la zona donde habita',
+    unit: 'número de infracciones y porcentaje de población, respectivamente; no son indicadores intercambiables',
+  },
+  facts: [
+    'El Balance trimestral del Ministerio compara enero–junio de 2026 con el mismo periodo de 2025 y cuenta delitos comunicados por los cuerpos policiales que informan al sistema. Publica recuentos, no tasas por habitante, por tipo y en 433 municipios con más de 20.000 habitantes; son provisionales y no se desglosan por barrio ni mes.',
+    'La Encuesta de Condiciones de Vida del INE pregunta si hay delincuencia o vandalismo en la zona de la vivienda. Su último dato es de 2023 y desde 2021 se recoge cada tres años. Mide el porcentaje de población que declara problemas, no delitos registrados; no ofrece datos por barrio ni mes.',
+  ],
+  factSourceIds: [
+    ['interior-criminality-balance-2026-q2'],
+    ['ine-neighbourhood-crime-perception-ecv-2023'],
+  ],
+  factDimensions: [
+    {
+      subject: 'infracciones penales registradas',
+      population: 'hechos comunicados por los cuerpos policiales que informan al Sistema Estadístico de Criminalidad',
+      period: 'enero–junio de 2026 frente a enero–junio de 2025',
+      geography: 'España: comunidades autónomas, provincias, capitales y 433 municipios de más de 20.000 habitantes',
+      denominator: 'recuento de infracciones registradas; no es una tasa por población',
+      unit: 'número de infracciones',
+    },
+    {
+      subject: 'personas que declaran problemas de delincuencia o vandalismo en la zona donde habitan',
+      population: 'personas representadas por la Encuesta de Condiciones de Vida',
+      period: '2023; desde 2021, módulo de vivienda con periodicidad trienal',
+      geography: 'España, comunidades autónomas y grados de urbanización',
+      denominator: 'población total',
+      unit: 'porcentaje de población',
+    },
+  ],
+  sources: [
+    { id: 'interior-criminality-balance-2026-q2', title: 'Balance de Criminalidad · segundo trimestre de 2026', publisher: 'Ministerio del Interior', url: 'https://www.interior.gob.es/opencms/export/sites/default/.galleries/galeria-de-prensa/documentos-y-multimedia/balances-e-informes/2026/Balance-de-Criminalidad-Segundo-Trimestre-2026.pdf', retrievedAt: '2026-11-17', role: 'primary' },
+    { id: 'ine-neighbourhood-crime-perception-ecv-2023', title: 'Delincuencia o vandalismo en la zona · Indicadores de calidad de vida', publisher: 'INE', url: 'https://www.ine.es/ss/Satellite?L=es_ES&c=INESeccion_C&cid=1259944569502&p=1254735110672%3B&pagename=ProductosYServicios%2FPYSLayout&param1=PYSDetalleFichaIndicador&param3=1259937499084', retrievedAt: '2026-11-17', role: 'primary' },
+  ],
+};
 const healthcareWorkforceCausality = (t) => /\b(medic\w*|facultativ\w*|enfermer\w*|personal sanitario|profesional\w* sanitari\w*)\b/.test(t)
   && /\b(falt\w*|escasez|deficit|poc\w*|insuficient\w*)\b/.test(t)
   && /\b(condicion\w*|t[ií]tul\w*|graduad\w*|homolog\w*|plantilla|vacantes?|plazas?|zonas?|puebl\w*|rural\w*|capital\w*|provinci\w*|territorio|distribuci\w*)\b/.test(t);
@@ -733,6 +783,17 @@ const focuses = [
     needs: ['renta disponible del hogar y umbral de pobreza', 'tipo de jornada', 'periodo y población'],
     explanation: 'Tener empleo no garantiza quedar fuera del riesgo de pobreza: Eurostat mide si la renta disponible equivalente del hogar queda por debajo del 60 % de la mediana nacional, después de transferencias.',
     limitation: 'El umbral de pobreza no equivale a declarar dificultades para llegar a fin de mes. Una tasa general de ocupación o de contratos temporales no mide ninguna de esas dos situaciones.',
+  },
+  {
+    id: 'local-safety-trend', label: 'evolución local de los delitos registrados o de la percepción de inseguridad',
+    when: localSafetyTrend,
+    direct: [], context: [], claimType: 'trend',
+    needs: ['municipio y periodos comparables', 'delitos registrados por categoría o percepción vecinal', 'una fuente con ese desglose'],
+    evidenceGap: 'Falta elegir si se comprueban delitos registrados o percepción vecinal, y concretar el municipio y los periodos.',
+    explanationHeadline: 'Las fuentes oficiales distinguen delitos registrados de percepción vecinal',
+    explanation: 'El Ministerio cuenta delitos registrados; la Encuesta de Condiciones de Vida del INE pregunta por percepción vecinal. Para comparar una tendencia local, dime el municipio y cuál de las dos medidas quieres revisar.',
+    explanationEvidence: localSafetyMeasurementEvidence,
+    limitation: 'Los datos publicados no miden la tendencia local con el mismo indicador, territorio y periodo que la afirmación.',
   },
   {
     id: 'unemployment-wage-pressure', label: 'desempleo local, oferta de candidatos y negociación salarial',
