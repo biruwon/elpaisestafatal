@@ -48,13 +48,13 @@ try {
 } catch { /* Health telemetry is optional for a remote Pages endpoint. */ }
 const report = {
   generatedAt: new Date().toISOString(),
+  measurementScope: 'Text claim routing and unknown-query safety; this report does not measure factual answer accuracy.',
   base,
   resolvePath,
   offset,
   cases: outcomes.length,
   knownCases: outcomes.filter((item) => item.expected.status === 'known').length,
   unknownCases: outcomes.filter((item) => item.expected.status === 'unknown').length,
-  knownAccuracy: knownOutcomes.filter((item) => item.knownPass).length,
   knownRetrievalRecall: knownOutcomes.filter((item) => item.knownPass).length,
   unknownSafety: unknownOutcomes.filter((item) => item.unknownPass).length,
   irrelevantMatches: outcomes.filter((item) => item.irrelevantMatch).length,

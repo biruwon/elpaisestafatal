@@ -804,3 +804,21 @@ get a repeated prefix. Unsupported whole-claim replies are not kept as
 copyable sentences. Paraphrases of a causal employment claim, a
 limited-evidence variant, and a nearby single-part employment claim exercise
 the boundary in both paths.
+
+## Text answer evaluation scope — 23 November 2026
+
+The live evaluation corpus measures whether text routes to the expected claim
+family and whether unfamiliar text avoids an irrelevant verdict. Its previous
+`knownAccuracy` field duplicated route recall and overstated what was checked;
+new reports call the measure retrieval recall and state that they do not grade
+factual answer accuracy. Traceability checks now understand both internal
+answer plans and the public response shape, including per-part verdicts,
+evidence-family data and cited source IDs. A secure URL alone no longer makes a
+claim part traceable when its cited source ID does not match a listed source.
+
+This still does not score whether a number, period, population or denominator
+in the answer matches its underlying source. Those checks remain in focused
+text-family regression fixtures and reviewed evidence workflows. The next
+accuracy milestone is a held-out text set with expected evidence and scope
+fields, so end-to-end scores measure the answer users see rather than routing
+alone.
