@@ -2,6 +2,7 @@ import { readFile, writeFile } from 'node:fs/promises';
 import { normalizeCompilerOutput } from './local-compiler-contract.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { publicEvidenceGapReply } from '../../src/lib/knowledge/public-answer-composition.mjs';
+import { claimFocusFor } from '../../src/lib/knowledge/claim-focus.mjs';
 
 const resolveMode = process.argv.includes('--resolve');
 const deterministicMode = process.argv.includes('--deterministic');
@@ -54,8 +55,15 @@ const typeCounts = {};
 let parserMultiIncludingImplied = 0;
 let explicitMultiProposition = 0;
 let metricRouted = 0;
+let focusedFamilyRouted = 0;
+let metricAndFamilyRouted = 0;
+let metricOnlyRouted = 0;
+let familyOnlyRouted = 0;
+let noDeterministicRoute = 0;
 let exactCatalogue = 0;
-const unroutedExamples = [];
+const focusedFamilyCounts = {};
+const noDeterministicRouteExamples = [];
+const familyOnlyExamples = [];
 for (const candidate of candidates || []) {
   if (!candidate || typeof candidate !== 'object') { errors.push('candidate is not an object'); continue; }
   for (const field of required) if (!(field in candidate)) errors.push(`${candidate.id || '(unknown)'} missing ${field}`);
@@ -66,11 +74,49 @@ for (const candidate of candidates || []) {
   typeCounts[compiled.claimType] = (typeCounts[compiled.claimType] || 0) + 1;
   if (compiled.propositions.length > 1) parserMultiIncludingImplied += 1;
   if ((compiled.explicitPropositions || compiled.propositions.filter((item) => item.explicit !== false)).length > 1) explicitMultiProposition += 1;
-  if (compiled.metricIds?.length) metricRouted += 1;
+  const hasMetricRoute = Boolean(compiled.metricIds?.length);
+  const focus = claimFocusFor(candidate.claim);
+  if (hasMetricRoute) metricRouted += 1;
+  if (focus) {
+    focusedFamilyRouted += 1;
+    focusedFamilyCounts[focus.id] = (focusedFamilyCounts[focus.id] || 0) + 1;
+  }
+  if (hasMetricRoute && focus) metricAndFamilyRouted += 1;
+  else if (hasMetricRoute) metricOnlyRouted += 1;
+  else if (focus) {
+    familyOnlyRouted += 1;
+    if (familyOnlyExamples.length < 10) familyOnlyExamples.push({ id: candidate.id, family: focus.id, claim: candidate.claim });
+  } else {
+    noDeterministicRoute += 1;
+    if (noDeterministicRouteExamples.length < 10) noDeterministicRouteExamples.push(candidate.claim);
+  }
   if (publicPhrases.has(normalizeText(candidate.claim))) exactCatalogue += 1;
-  else if (unroutedExamples.length < 10) unroutedExamples.push(candidate.claim);
 }
-const report = { inputPath, claims: candidates?.length || 0, measures: 'Operational routing and retrieval only. Completion and source counts are not factual accuracy. Inspect the saved answers for claim/evidence fit.', requiredFields: required, fieldUsage, typeCounts, parserMultiIncludingImplied, explicitMultiProposition, metricRouted, exactCatalogue, unroutedExamples, errors };
+const routedByEither = metricAndFamilyRouted + metricOnlyRouted + familyOnlyRouted;
+const report = {
+  inputPath,
+  claims: candidates?.length || 0,
+  measures: 'Operational routing and retrieval only. Metric matches and focused-family routes do not establish compatible evidence or factual accuracy; inspect saved answers for claim/evidence fit.',
+  requiredFields: required,
+  fieldUsage,
+  typeCounts,
+  parserMultiIncludingImplied,
+  explicitMultiProposition,
+  metricRouted,
+  routing: {
+    focusedFamilyRouted,
+    metricAndFamilyRouted,
+    metricOnlyRouted,
+    familyOnlyRouted,
+    routedByEither,
+    noDeterministicRoute,
+    focusedFamilyCounts,
+    familyOnlyExamples,
+    noDeterministicRouteExamples,
+  },
+  exactCatalogue,
+  errors,
+};
 if (deterministicMode) {
   const outcomes = auditCandidates.map((candidate) => {
     const result = deterministicApiFallback({ text: candidate.claim, inputType: 'text' });
@@ -112,4 +158,4 @@ if (resolveMode) {
 }
 await writeFile(outputArg ? outputArg.slice(9) : '.local/web-observed-claims-audit.json', JSON.stringify(report, null, 2));
 if (errors.length) { console.error(errors.slice(0, 20).join('\n')); process.exit(1); }
-console.log(`Web-observed claims audited: ${report.claims} candidates, ${report.explicitMultiProposition} with multiple explicit clauses (${report.parserMultiIncludingImplied} parser outputs including implied requirements), ${report.metricRouted} metric-routed, ${report.exactCatalogue} exact published matches${report.resolve ? `; resolved ${report.resolve.completed}/${report.resolve.requested}, evidence ${report.resolve.withEvidence}, sources ${report.resolve.withSources}, ${report.resolve.structuredCompoundResponses} structured compound responses` : ''}${report.deterministic ? `; deterministic ${report.deterministic.completed} complete, ${report.deterministic.limited} limited, ${report.deterministic.uncovered} uncovered, ${report.deterministic.structuredCompoundResponses} structured compound responses` : ''}; all remain explicitly unverified discovery inputs.`);
+console.log(`Web-observed claims audited: ${report.claims} candidates, ${report.explicitMultiProposition} with multiple explicit clauses (${report.parserMultiIncludingImplied} parser outputs including implied requirements), ${report.routing.routedByEither} with a compiler metric or focused-family route (${report.metricRouted} metric matches, ${report.routing.focusedFamilyRouted} family matches, ${report.routing.metricAndFamilyRouted} overlap), ${report.routing.noDeterministicRoute} with neither route, ${report.exactCatalogue} exact published matches${report.resolve ? `; resolved ${report.resolve.completed}/${report.resolve.requested}, evidence ${report.resolve.withEvidence}, sources ${report.resolve.withSources}, ${report.resolve.structuredCompoundResponses} structured compound responses` : ''}${report.deterministic ? `; deterministic ${report.deterministic.completed} complete, ${report.deterministic.limited} limited, ${report.deterministic.uncovered} uncovered, ${report.deterministic.structuredCompoundResponses} structured compound responses` : ''}; all remain explicitly unverified discovery inputs.`);

@@ -985,3 +985,11 @@ including this food-only answer and its public qualification. The full
 deterministic run of the 300 unverified discovery claims returns 3 complete,
 33 limited and 264 uncovered responses; these measure routing and retrieval,
 not factual accuracy. The claim corpus remains unverified.
+
+The discovery audit now reports reusable focused-family routes separately from
+generic compiler metric matches. In the same 300 claims, 82 match a compiler
+metric, 109 match a focused claim family, and 43 match both; 148 match at least
+one of those routes, while 152 match neither. A family route can still return
+an explicit evidence gap, so these counts do not establish that the answer has
+compatible data. The audit also reports 32 structured multi-part responses;
+those are decomposition outcomes, not a claim-level accuracy score.
