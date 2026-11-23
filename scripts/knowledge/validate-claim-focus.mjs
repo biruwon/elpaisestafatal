@@ -67,6 +67,7 @@ const cases = [
   ['tourist-housing-share', ['¿Qué porcentaje del parque de viviendas corresponde a viviendas turísticas?', '¿Qué parte del parque de viviendas son viviendas de uso turístico?']],
   ['tourist-housing-registration', ['¿Cuántos pisos turísticos con licencia están registrados?', '¿Cuántas viviendas de uso turístico tienen número de inscripción válido?']],
   ['tourist-housing-supply', ['Los pisos turísticos están quitando viviendas del alquiler residencial', 'Los apartamentos turísticos reducen la oferta para quienes viven en las ciudades', 'La vivienda turística desplaza alquileres de larga duración']],
+  ['tourism-urban-housing-cost', ['El turismo masivo ha hecho que vivir en el centro de algunas ciudades sea un lujo', 'La presión turística convierte la vivienda del centro en un lujo para quienes viven allí', 'Los pisos turísticos encarecen el alquiler para residentes de barrios céntricos', 'Las viviendas turísticas han hecho más caro el alquiler en España']],
   ['housing-completions', ['¿Cuántas viviendas nuevas se terminaron en España en 2025?', '¿Cuál fue el recuento de viviendas terminadas en España durante 2025?', '¿Se terminaron 92.000 viviendas nuevas en España en 2025?', 'En 2025 se acabaron 92.000 viviendas nuevas en España', '¿Cuántas viviendas nuevas se concluyeron en España en 2025?']],
   ['housing-construction-pressure', ['La falta de vivienda nueva explica buena parte de la subida del alquiler', 'Se construyen pocas viviendas frente al número de hogares que se crean', 'La lentitud de las licencias urbanísticas retrasa la construcción de viviendas nuevas']],
   ['housing-supply', ['¿Cuántas casas vacías hay disponibles en la ciudad?']],
@@ -203,12 +204,17 @@ for (const claim of ['La temporalidad laboral ha bajado', 'La tasa de paro juven
 }
 assert.equal(claimFocusFor('Trabajar a jornada completa y ser pobre')?.id, 'working-poverty', 'A full-time poverty claim must not cross into housing independence');
 assert.equal(claimFocusFor('Los pisos turísticos han retirado viviendas del alquiler residencial')?.id, 'tourist-housing-supply', 'Tourist-housing supply claims must retain their causal evidence contract');
+assert.equal(claimFocusFor('Los pisos turísticos encarecen el alquiler para residentes de barrios céntricos')?.id, 'tourism-urban-housing-cost', 'A resident rent-cost claim must be separated from tourist-housing supply displacement');
 assert.equal(claimFocusFor('El alquiler se lleva más de la mitad del salario joven')?.id, 'rental-affordability', 'A rent-to-income claim must remain separate from tenant-screening claims');
 assert.equal(claimFocusFor('Un seguro de impago cubre al propietario si el inquilino deja de pagar')?.id, undefined, 'Insurance coverage alone must not be interpreted as tenant exclusion');
 assert.equal(claimFocusFor('Los precios del alquiler subieron después de aprobarse la ley')?.id, undefined, 'A rent-price trend must not be mistaken for a contract-supply shift caused by regulation');
 assert.equal(claimFocusFor('Los pisos turísticos reducen la oferta de alquiler residencial')?.id, 'tourist-housing-supply', 'Tourist conversion claims must remain separate from landlord-reason claims');
 assert.notEqual(claimFocusFor('El precio del alquiler subió en España durante 2025')?.id, 'housing-construction-pressure', 'A rent-price trend must not inherit the new-home supply context');
 assert.notEqual(claimFocusFor('El turismo eleva los alquileres en las ciudades')?.id, 'housing-construction-pressure', 'A general tourism and rent claim must not inherit the new-home supply context');
+assert.equal(claimFocusFor('El turismo eleva los alquileres en las ciudades')?.id, 'tourism-urban-housing-cost', 'General tourism and rent claims need a causal cost family, not a housing-supply proxy');
+assert.equal(claimFocusFor('Los turistas encarecen las habitaciones de hotel')?.id, undefined, 'Hotel-room prices must not cross-route into resident housing costs');
+assert.equal(claimFocusFor('Los turistas encarecen las habitaciones de hotel en los centros históricos')?.id, undefined, 'An urban location alone must not make a hotel-room price claim about resident housing');
+assert.equal(claimFocusFor('El turismo genera más empleo en las ciudades')?.id, undefined, 'Tourism employment claims must not cross-route into resident housing costs');
 assert.equal(claimFocusFor('Se construye demasiado poco por la lentitud de las licencias urbanísticas')?.id, undefined, 'An unspecified construction claim must not be assumed to concern residential homes');
 assert.equal(claimFocusFor('La falta de vivienda nueva en Madrid explica la subida del alquiler')?.id, 'housing-construction-pressure', 'A local supply claim must retain its family while national evidence is withheld by scope');
 const housingCompletionPlan = focusedEvidencePlan('¿Cuántas viviendas nuevas se terminaron en España en 2025?', { now: Date.parse('2026-11-23') });
@@ -373,6 +379,25 @@ assert.deepEqual(touristDisplacementPlan.answerScope.directMetrics, [], 'The INE
 assert.match(touristDisplacementPlan.shareableReply, /Como contexto:/);
 assert.match(touristDisplacementPlan.shareableReply, /no indican cu[aá]ntas viviendas dejaron el alquiler residencial/);
 assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'tourist-displacement', result: touristDisplacementPlan }, touristDisplacementClaim).state, 'insufficient');
+const tourismHousingCostClaim = 'El turismo encarece el coste de la vivienda en España';
+const tourismHousingCostPlan = focusedEvidencePlan(tourismHousingCostClaim, { observations: touristHousingObservations });
+assert.equal(tourismHousingCostPlan.answerScope.family, 'tourism-urban-housing-cost');
+assert.deepEqual(tourismHousingCostPlan.answerScope.directMetrics, [], 'Tourist-dwelling counts and shares cannot directly establish resident housing costs or tourism causality');
+assert.deepEqual(tourismHousingCostPlan.answerScope.contextMetrics, ['tourist_housing_count', 'tourist_housing_share']);
+assert.equal(tourismHousingCostPlan.evidenceLevel, 'insufficient');
+assert.equal(tourismHousingCostPlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+assert.equal(tourismHousingCostPlan.sourceLinks.length, 2, 'Tourist-dwelling sources may be cited only as contextual evidence');
+assert.match(tourismHousingCostPlan.shareableReply, /Como contexto:/);
+assert.match(tourismHousingCostPlan.shareableReply, /341\.001 viviendas.*1,28 %.*mayo de 2026/s);
+assert.match(tourismHousingCostPlan.shareableReply, /coste de vivir|coste.*residentes|no mide.*residentes/i);
+assert.match(tourismHousingCostPlan.limitation, /Censo.*2021/);
+assert.ok(tourismHousingCostPlan.evidenceSummary.missingDimensions.some((item) => /alquileres residenciales e ingresos de residentes/.test(item)));
+assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'tourism-housing-cost', result: tourismHousingCostPlan }, tourismHousingCostClaim).state, 'insufficient');
+validateAnswerPlan(tourismHousingCostPlan);
+const tourismCityCentreClaim = 'El turismo masivo ha hecho que vivir en el centro de algunas ciudades sea un lujo';
+const tourismCityCentrePlan = focusedEvidencePlan(tourismCityCentreClaim, { observations: touristHousingObservations });
+assert.equal(tourismCityCentrePlan.answerScope.family, 'tourism-urban-housing-cost');
+assert.equal(tourismCityCentrePlan.sourceLinks.length, 0, 'National and provincial tourist-housing aggregates cannot answer a city-centre housing-cost claim');
 const touristNeighbourhoodClaim = 'Los pisos turísticos reducen la oferta para residentes en los barrios céntricos de Barcelona';
 const touristNeighbourhoodPlan = focusedEvidencePlan(touristNeighbourhoodClaim, { observations: touristHousingObservations });
 assert.equal(touristNeighbourhoodPlan.sourceLinks.length, 0, 'A provincial or national aggregate cannot answer a neighbourhood-level claim');

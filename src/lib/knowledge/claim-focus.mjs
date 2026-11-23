@@ -251,7 +251,17 @@ const touristHousingShareQuestion = (text) => touristHousingMention(text)
   && /\b(porcent\w*|proporcion|cuota|parte del parque|de cada|represent\w*)\b/.test(text)
   && !/\b(airbnb|apartament\w*)\b/.test(text);
 const touristHousingDisplacementClaim = (text) => touristHousingMention(text)
-  && /\b(retir\w*|reduc\w*|disminu\w*|quit\w*|sac\w*|desplaz\w*|rest\w*|oferta|disponib\w*|escasez|resident\w*|alquiler residencial|alquiler de larga duracion|barri\w*|distrit\w*|centro\w*)\b/.test(text);
+  && /\b(retir\w*|reduc\w*|disminu\w*|quit\w*|sac\w*|desplaz\w*|expuls\w*|rest\w*|oferta|disponib\w*|escasez|alquiler residencial|alquiler de larga duracion|vivienda disponible|viviendas? en alquiler|stock de alquiler)\b/.test(text);
+const tourismUrbanHousingCostPressure = (text) => {
+  const mentionsTourism = /\b(turism\w*|turistic\w*|vacacional\w*)\b/.test(text) || touristHousingMention(text);
+  const mentionsResidentHousing = /\b(viviend\w*|alquil\w*|arrendam\w*|resident\w*|hogar\w*|centro\w*|barri\w*|asequib\w*|lujo|gentrific\w*)\b/.test(text);
+  const mentionsCostOrAffordability = /\b(coste\w*|costo\w*|precio\w*|car\w*|alquil\w*|encarec\w*|asequib\w*|inasequib\w*|lujo|gentrific\w*|presion\w*)\b/.test(text);
+  const mentionsCausalPressure = /\b(caus\w*|provoc\w*|hech\w*|hace que|hizo que|convierte|transform\w*|encarec\w*|aument\w*|sub\w*|eleva\w*|empuj\w*|expuls\w*|desplaz\w*|presion\w*|impact\w*|masiv\w*)\b/.test(text);
+  const hotelRoomClaim = /\b(hotel\w*|habitacion\w*)\b/.test(text)
+    && !/\b(viviend\w*|resident\w*|hogar\w*|alquiler residencial|arrendamiento residencial|vivienda habitual)\b/.test(text);
+  return mentionsTourism && mentionsResidentHousing && mentionsCostOrAffordability && mentionsCausalPressure
+    && !hotelRoomClaim && !touristHousingDisplacementClaim(text);
+};
 const waits = /\b(esper\w*|demor\w*|cita\w*|tard\w*|retras\w*|acceso|acceder)\b/;
 const privateCareMention = /\b(seguro\w*(?: medico\w*)? privad\w*|sanidad privada|medicina privada|asistencia privada|consultas? privad\w*|atencion privada)\b/;
 const primaryCareWaitClaim = (text) => has(text, waits)
@@ -877,6 +887,19 @@ const focuses = [
     needs: ['porcentaje de viviendas turísticas sobre el parque de viviendas', 'denominador del Censo de Población y Viviendas de 2021', 'mismo periodo y nivel geográfico solicitado'],
     explanation: 'El porcentaje compara la estimación de viviendas turísticas del INE con el parque total de viviendas del Censo de 2021.',
     limitation: 'El denominador es el parque total del Censo de 2021, no una estimación actualizada de viviendas disponibles para alquiler. El porcentaje no mide qué viviendas se retiraron del alquiler residencial.',
+  },
+  {
+    id: 'tourism-urban-housing-cost', label: 'presión turística sobre el coste de la vivienda para residentes',
+    when: tourismUrbanHousingCostPressure,
+    direct: [], context: ['tourist_housing_count', 'tourist_housing_share'], claimType: 'causal',
+    needs: [
+      'definir «lujo» o falta de asequibilidad mediante el coste de vivienda respecto a los ingresos netos de residentes',
+      'alquileres residenciales e ingresos de residentes para los mismos barrios y periodos',
+      'viviendas turísticas o estancias en esos mismos lugares y periodos',
+      'una comparación que separe el efecto del turismo de la oferta, la demanda, los ingresos y otros factores',
+    ],
+    explanation: 'El número de viviendas turísticas puede describir actividad de alojamiento, pero no mide el coste de vivir para residentes ni demuestra que el turismo lo haya causado.',
+    limitation: 'La estimación experimental del INE cuenta anuncios de tres plataformas y su porcentaje usa como denominador el parque total del Censo de 2021. Ninguno de esos datos mide alquileres e ingresos disponibles de hogares residentes, a escala nacional o de barrio, ni permite atribuir al turismo los cambios de coste.',
   },
   {
     id: 'tourist-housing-supply', label: 'efecto de las viviendas turísticas sobre la oferta residencial',

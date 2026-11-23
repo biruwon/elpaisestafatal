@@ -45,6 +45,10 @@ const inflationUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics
 db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('inflation-source', 'Eurostat', 'Inflación armonizada anual de España', inflationUrl, retrieved, 'primary', '[]', 'eurostat', 'daily');
 const inflationEuropeUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_minr?geo=ES&geo=EU27_2020&coicop18=TOTAL&unit=RCH_A';
 db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('inflation-europe-source', 'Eurostat', 'Inflación armonizada: España y Unión Europea', inflationEuropeUrl, retrieved, 'primary', '[]', 'eurostat', 'daily');
+const touristCountUrl = 'https://www.ine.es/jaxiT3/Tabla.htm?t=39364';
+const touristShareUrl = 'https://www.ine.es/jaxiT3/Tabla.htm?t=39365';
+db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('tourist-count-source', 'INE', 'Viviendas turísticas estimadas', touristCountUrl, retrieved, 'primary', '[]', 'ine', 'monthly');
+db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('tourist-share-source', 'INE', 'Porcentaje de viviendas turísticas sobre el parque', touristShareUrl, retrieved, 'primary', '[]', 'ine', 'monthly');
 const insert = db.prepare('INSERT INTO observations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 for (const [year, value] of [[2015, 100], [2020, 110], [2025, 120]]) {
   for (const [code, unit, measured] of [['I15', 'Index, 2015=100', value], ['RCH_A', 'Annual rate of change', 5]]) {
@@ -62,6 +66,10 @@ for (const [geo, value] of [['ES', 3.4], ['EU27_2020', 2.8]]) {
   insert.run(`inflation-europe-${geo}`, 'observation', 'prc_hicp_minr', 'Inflación armonizada: España y Unión Europea', 'inflation_rate_europe', value, 'Annual rate of change', '2026-10', geo === 'ES' ? 'España' : 'Unión Europea', null,
     JSON.stringify({ geo, coicop18: 'TOTAL', unit: 'RCH_A', time: '2026-10' }), JSON.stringify({ geo: geo === 'ES' ? 'Spain' : 'European Union', unit: 'Annual rate of change', coicop18: 'All-items HICP' }), null, null, '{}', 'inflation-europe-source', 'inflación armonizada anual España unión europea tasa interanual precios Eurostat');
 }
+insert.run('tourist-housing-count-2026M05', 'observation', 'ine-tourist-housing', 'Viviendas turísticas estimadas', 'tourist_housing_count', 341001, 'viviendas', '2026M05', 'España', 'viviendas turísticas estimadas',
+  JSON.stringify({ geo: 'ES', time: '2026M05', geographyLevel: 'country' }), JSON.stringify({ geo: 'Spain', geographyLevel: 'Country' }), null, null, '{}', 'tourist-count-source', 'viviendas turísticas estimadas España anuncios plataformas mayo 2026');
+insert.run('tourist-housing-share-2026M05', 'observation', 'ine-tourist-housing', 'Porcentaje de viviendas turísticas sobre el parque', 'tourist_housing_share', 1.28, '%', '2026M05', 'España', 'viviendas turísticas como proporción del parque total de viviendas',
+  JSON.stringify({ geo: 'ES', time: '2026M05', geographyLevel: 'country', denominator: 'total housing stock in the 2021 Population and Housing Census' }), JSON.stringify({ geo: 'Spain', geographyLevel: 'Country', denominator: 'total housing stock in the 2021 Population and Housing Census' }), null, null, '{}', 'tourist-share-source', 'porcentaje viviendas turísticas sobre parque total España Censo 2021 mayo 2026');
 for (const [year, value] of [['2015', 100], ['2020', 110], ['2025', 120]]) {
     insert.run(`rent-archive-${year}`, 'observation', 'prc_hicp_midx', 'Índice histórico de precios del alquiler', 'rental_price_index', value, 'Index, 1996=100', year, 'España', null,
     JSON.stringify({ geo: 'ES', unit: 'I96', time: year }), JSON.stringify({ geo: 'Spain', unit: 'Index, 1996=100' }), null, null, '{}', 'rent-archive-source', 'índice histórico precios alquiler España evolución subida Eurostat');
@@ -108,6 +116,28 @@ try {
     assert.notEqual(result.state, 'processing', `Timed out: ${text}`);
     return result;
   };
+  const tourismHousingCostQueries = [
+    'El turismo encarece el coste de la vivienda en España',
+    'Las viviendas turísticas han hecho más caro el alquiler en España',
+  ];
+  for (const query of tourismHousingCostQueries) {
+    const result = await check(query);
+    assert.equal(result.state, 'insufficient', JSON.stringify(result));
+    assert.equal(result.result.answerScope.family, 'tourism-urban-housing-cost');
+    assert.deepEqual(result.result.answerScope.directMetrics, []);
+    assert.deepEqual(result.result.answerScope.contextMetrics, ['tourist_housing_count', 'tourist_housing_share']);
+    assert.match(result.result.reply, /341\.001 viviendas/);
+    assert.match(result.result.reply, /1,28 %/);
+    assert.match(result.result.reply, /Censo.*2021/);
+    assert.match(result.result.reply, /no mide.*residentes|no mide.*coste/i);
+    assert.deepEqual(result.result.sources.map((source) => source.url).sort(), [touristCountUrl, touristShareUrl].sort());
+    assert.equal(result.result.arguments?.[0]?.verdict, 'insufficient');
+  }
+  const cityCentreTourismClaim = await check('El turismo masivo ha hecho que vivir en el centro de algunas ciudades sea un lujo');
+  assert.equal(cityCentreTourismClaim.state, 'insufficient');
+  assert.equal(cityCentreTourismClaim.result.answerScope?.family, 'tourism-urban-housing-cost');
+  assert.deepEqual(cityCentreTourismClaim.result.sources, [], 'National tourist-housing data cannot be used to answer a city-centre cost claim');
+  assert.doesNotMatch(cityCentreTourismClaim.result.reply, /341\.001|1,28 %/, 'A city-centre answer must not present national figures as if they measured that place');
   for (const query of ['¿Cómo ha evolucionado el índice de precios del alquiler desde 2015?', '¿Ha subido el índice del alquiler en España desde 2015?']) {
     const result = await check(query);
     assert.match(result.result.reply, /índice \(2015=100\)/, JSON.stringify(result));
