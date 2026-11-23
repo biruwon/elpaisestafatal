@@ -367,6 +367,24 @@
     "notEquivalentTo": ["house_price_index", "rental_price_index", "inflation_rate"],
     "dimensions": ["period", "geography", "consumption_group", "index_reference"]
   },
+  "annual_hicp_food_index": {
+    "name": "Annual average harmonised consumer price index for food and non-alcoholic beverages",
+    "displayName": "Índice anual medio armonizado de alimentos y bebidas no alcohólicas",
+    "aliases": ["índice armonizado anual de alimentos", "inflación de los alimentos", "precios de alimentación", "precios de comida", "índice de alimentos y bebidas no alcohólicas"],
+    "unit": "annual average index",
+    "population": "household consumption of food and non-alcoholic beverages in Spain under the harmonised consumer price index",
+    "notEquivalentTo": ["annual_hicp_index", "annual_hicp_actual_rent_index", "cpi_index", "inflation_rate"],
+    "dimensions": ["period", "geography", "consumption_group", "index_reference"]
+  },
+  "annual_hicp_actual_rent_index": {
+    "name": "Annual average harmonised consumer price index for actual rental payments for housing",
+    "displayName": "Índice anual medio armonizado de alquileres efectivamente pagados",
+    "aliases": ["índice armonizado anual de alquileres pagados", "precios de alquileres efectivamente pagados", "índice anual de alquiler real", "inflación de alquileres efectivamente pagados"],
+    "unit": "annual average index",
+    "population": "household consumption of actual rental payments for housing in Spain; excludes imputed rent for owner-occupied housing",
+    "notEquivalentTo": ["annual_hicp_index", "annual_hicp_food_index", "rental_price_index", "house_price_index", "inflation_rate"],
+    "dimensions": ["period", "geography", "consumption_group", "index_reference"]
+  },
   "median_hourly_earnings": {
     "name": "Median gross hourly earnings",
     "aliases": ["salario mediano por hora", "salario bruto por hora", "ganancia mediana por hora", "sueldo por hora", "lo que se cobra por hora"],

@@ -3,6 +3,8 @@ import measurementDefinitions, { metricVocabulary } from './measurement-definiti
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { realWagePlan } from './real-wage-comparison.mjs';
 import { REAL_WAGE_SNAPSHOT } from './real-wage-snapshot.mjs';
+import { hicpBasketComparisonPlan, hicpBasketEvidenceGapPlan } from './hicp-basket-comparison.mjs';
+import { HICP_BASKET_SNAPSHOT } from './hicp-basket-snapshot.mjs';
 import { collectiveAgreementWagePlan } from './collective-agreement-wage-comparison.mjs';
 import { COLLECTIVE_AGREEMENT_WAGE_SNAPSHOT } from './collective-agreement-wage-snapshot.mjs';
 import { gdpPerCapitaComparisonPlan, gdpPerCapitaEvidenceGapPlan } from './gdp-per-capita-comparison.mjs';
@@ -599,6 +601,11 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       && propositions.some((proposition) => /\b(?:salari\w*|sueld\w*|nomina\w*|remuner\w*)\b/.test(normalize(proposition.text)))
       && propositions.some((proposition) => /\b(?:poder adquisitivo|poder de compra|inflacion|precios|coste de la vida)\b/.test(normalize(proposition.text)))
       && propositions.every((proposition) => /\b(?:salari\w*|sueld\w*|nomina\w*|remuner\w*|poder adquisitivo|poder de compra|inflacion|precios|coste de la vida)\b/.test(normalize(proposition.text)));
+    const sameHicpBasketComparison = focus.id === 'household-inflation-basket'
+      && propositions.length <= 3 && propositions.length >= 2
+      && propositions.every((proposition) => /\b(?:ipc|hicp|inflacion\w*|precios? de consumo|aliment\w*|comid\w*|supermercad\w*|alquil\w*|arrendam\w*|viviend\w*|hogar\w*|familia\w*|cesta\w*)\b/.test(normalize(proposition.text)))
+      && propositions.some((proposition) => /\b(?:aliment\w*|comid\w*|supermercad\w*|cesta de la compra)\b/.test(normalize(proposition.text)))
+      && propositions.some((proposition) => /\b(?:alquil\w*|arrendam\w*|viviend\w*)\b/.test(normalize(proposition.text)));
     const sameLandlordMotive = focus.id === 'rental-landlord-motives'
       && (/^(?:les|le|esa modalidad|esa forma)\b/.test(clauseText)
         && /\b(flexibil\w*|seguridad|riesg\w*|rentabil\w*)\b/.test(clauseText)
@@ -625,6 +632,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       && /\b(paro|desemple\w*|candidat\w*|demandantes? de empleo|oferta de trabajadores|mano de obra|aspirantes?|vacantes?)\b/.test(clauseText);
     if (sameSectorOutput || sameGdpComparison && (gdpAggregateClause || gdpPerPersonClause)
       || sameRealWageComparison
+      || sameHicpBasketComparison
       || sameProductivityComparison && /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(clauseText)) return true;
     if (sameLandlordMotive) return true;
     if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism || unemploymentSupplyExplanation) return true;
@@ -643,6 +651,19 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       const reviewed = realWagePlan(claim, { observations: REAL_WAGE_SNAPSHOT.observations, now, allowReviewedSnapshot: true });
       if (reviewed) return reviewed;
     }
+  }
+  if (focus.id === 'household-inflation-basket') {
+    const requestedTerritories = requestedGeographyScopes(claim);
+    if (requestedTerritories.some((scope) => scope.id !== 'ES')) return hicpBasketEvidenceGapPlan(claim, { reason: 'geography' });
+    const matched = hicpBasketComparisonPlan(claim, { observations, now });
+    if (matched) return matched;
+    const metricIds = [...focus.direct, ...focus.context];
+    const hasLiveRows = observations.some((item) => metricIds.includes(item.metricId));
+    if (allowReviewedSnapshotFallback && !hasLiveRows && snapshotLifecycle(HICP_BASKET_SNAPSHOT, now).usable) {
+      const reviewed = hicpBasketComparisonPlan(claim, { observations: HICP_BASKET_SNAPSHOT.observations, now, allowReviewedSnapshot: true });
+      if (reviewed) return reviewed;
+    }
+    return hicpBasketEvidenceGapPlan(claim, { reason: /\b(?:19|20|21)\d{2}\b/.test(normalizedClaim) ? 'period' : 'data' });
   }
   if (focus.id === 'collective-agreement-wages') {
     const matched = collectiveAgreementWagePlan(claim, { observations, now });

@@ -29,5 +29,13 @@ for (const item of priceFeeds) {
   const units = url.searchParams.getAll('unit');
   assert(units.includes(item.metricId.startsWith('inflation_rate') ? 'RCH_A' : 'I15'), `Missing the required HICP measurement for ${item.metricId}`);
 }
+const annualHicpFeeds = Object.values(refreshConfig).flat().filter((item) => ['annual_hicp_index', 'annual_hicp_food_index', 'annual_hicp_actual_rent_index'].includes(item.metricId));
+const annualHicpGroups = { annual_hicp_index: 'TOTAL', annual_hicp_food_index: 'CP01', annual_hicp_actual_rent_index: 'CP041' };
+assert(annualHicpFeeds.length === 3 && annualHicpFeeds.every((item) => new URL(item.url).pathname.endsWith('/prc_hicp_ainr')), 'Annual HICP comparison must use the active annual dataset for the overall basket, food, and actual rents');
+for (const item of annualHicpFeeds) {
+  const url = new URL(item.url);
+  assert(url.searchParams.get('geo') === 'ES' && url.searchParams.get('coicop18') === annualHicpGroups[item.metricId], `Wrong annual HICP geography or group for ${item.metricId}`);
+  assert(url.searchParams.get('unit') === 'INX_A_AVG' && (!url.searchParams.has('freq') || url.searchParams.get('freq') === 'A'), `Wrong annual HICP measurement for ${item.metricId}`);
+}
 assert(Object.values(refreshConfig).flat().some((item) => item.metricId === 'cpi_index' && item.url.includes('/DATOS_SERIE/IPC290751')), 'The national CPI index must use the current single INE index series');
 console.log('Refresh resilience validation passed: BOE publication gaps are bounded and ad-hoc legal sources have their own cadence.');

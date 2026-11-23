@@ -385,6 +385,21 @@ export const preferredMetricIdsForQuery = (query) => {
   }
   const hasEuropeReference = /\b(?:europa|europeo|europea|europeos|europeas|ue|union europea)\b/.test(normalized);
   const hasAny = (...terms) => terms.some((term) => normalized.includes(normalise(term)));
+  const annualIndexRequested = /\b(?:indice|media|promedio)\w*.{0,35}\banual\b|\banual\b.{0,35}\b(?:indice|hicp|armonizad)\b/.test(normalized)
+    && (preferred.has('harmonised_price_index') || hasAny('hicp', 'armonizado'));
+  if (annualIndexRequested && hasAny('alimentos', 'alimentacion', 'comida', 'food')) {
+    preferred.add('annual_hicp_food_index');
+    preferred.delete('harmonised_price_index');
+    preferred.delete('inflation_rate');
+    preferred.delete('cpi_index');
+  }
+  if (annualIndexRequested && hasAny('alquileres pagados', 'alquiler efectivo', 'alquileres efectivamente pagados', 'actual rentals')) {
+    preferred.add('annual_hicp_actual_rent_index');
+    preferred.delete('rental_price_index');
+    preferred.delete('harmonised_price_index');
+    preferred.delete('inflation_rate');
+    preferred.delete('cpi_index');
+  }
   if (hasEuropeReference) {
     const comparisonMetric = comparisonMetricIdsForQuery(normalized);
     for (const id of comparisonMetric) preferred.add(id);

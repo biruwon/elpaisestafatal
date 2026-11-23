@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { build } from 'esbuild';
 import { LABOUR_PRODUCTIVITY_SNAPSHOT } from '../src/lib/knowledge/labour-productivity-snapshot.mjs';
+import { HICP_BASKET_SNAPSHOT } from '../src/lib/knowledge/hicp-basket-snapshot.mjs';
 
 const compiled = await build({ entryPoints: ['functions/api/check.ts'], bundle: true, platform: 'node', format: 'esm', write: false, logLevel: 'silent' });
 const api = await import(`data:text/javascript;base64,${Buffer.from(compiled.outputFiles[0].contents).toString('base64')}`);
@@ -69,6 +70,27 @@ const partialProductivityDatabase = {
     return {
       bind(value) { metricId = value; return this; },
       async all() { return { results: partialProductivityRows.filter((row) => row.metric_id === metricId) }; },
+      async run() { return {}; },
+    };
+  },
+};
+const partialHicpBasketRows = HICP_BASKET_SNAPSHOT.observations
+  .filter((item) => item.metricId === 'annual_hicp_food_index')
+  .map((item) => ({
+    id: item.id, kind: 'observation', dataset_id: 'Annual HICP basket Spain', metric: item.metric,
+    metric_id: item.metricId, value: item.value, unit: item.unit, period: item.period, geography: item.geography,
+    population: item.population, dimensions_json: JSON.stringify(item.dimensions), dimension_labels_json: '{}',
+    url: null, excerpt: null,
+    payload_json: JSON.stringify({ dataKind: 'observed', ...(item.status ? { status: item.status } : {}) }),
+    source_id: item.source.id, publisher: item.source.publisher, title: item.source.title, source_url: item.source.url,
+    published_at: null, retrieved_at: item.source.retrievedAt, trust_tier: 'primary', aliases_json: '[]', source_registry_id: 'eurostat', schedule: 'daily',
+  }));
+const partialHicpBasketDatabase = {
+  prepare() {
+    let metricId;
+    return {
+      bind(value) { metricId = value; return this; },
+      async all() { return { results: partialHicpBasketRows.filter((row) => row.metric_id === metricId) }; },
       async run() { return {}; },
     };
   },
@@ -153,6 +175,20 @@ const employmentProductivityPartial = await check(employmentProductivityClaim, p
 assert.equal(employmentProductivityPartial.body.state, 'insufficient', 'Partial live productivity data must not be completed with reviewed employment/GDP snapshot values');
 assert.deepEqual(employmentProductivityPartial.body.result.arguments[0].evidenceIds, []);
 assert.doesNotMatch(employmentProductivityPartial.body.result.reply, /0,8 %|2,0 %|10,0 %|4,9 %|46,0 %|2,5 puntos porcentuales/);
+
+const basketClaim = 'El IPC general no refleja bien lo que notan los hogares que gastan mucho en comida y alquiler';
+const basketSnapshot = await check(basketClaim);
+assert.equal(basketSnapshot.httpStatus, 200);
+assert.equal(basketSnapshot.body.state, 'limited');
+assert.equal(basketSnapshot.body.result.answerScope.family, 'household-inflation-basket');
+assert.equal(basketSnapshot.body.result.evidenceSummary.mode, 'snapshot');
+assert.match(basketSnapshot.body.result.reply, /21,9 %.*34,7 %.*8,9 %/s);
+assert.ok(basketSnapshot.body.result.sources.some((source) => source.id === 'eurostat-hicp-methodology-2026-11-23'));
+
+const basketPartial = await check(basketClaim, partialHicpBasketDatabase);
+assert.equal(basketPartial.body.state, 'insufficient', 'A partial live basket must not be completed with missing index series from the reviewed snapshot');
+assert.deepEqual(basketPartial.body.result.arguments[0].evidenceIds, []);
+assert.doesNotMatch(basketPartial.body.result.reply, /21,9 %|34,7 %|8,9 %/);
 
 const partTimeAboveThreshold = await check('En 2025 el riesgo de pobreza entre las personas ocupadas a jornada parcial superó el 15 %');
 assert.equal(partTimeAboveThreshold.body.state, 'limited');

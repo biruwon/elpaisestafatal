@@ -685,6 +685,34 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'inflation-average-basket-vs-food-and-rent',
+    equivalenceGroup: 'household-inflation-basket-spain-2020-2025',
+    input: 'El IPC general no refleja bien lo que notan los hogares que gastan mucho en comida y alquiler',
+    expected: {
+      state: 'limited', family: 'household-inflation-basket', verdict: 'mixed',
+      directSourceIds: ['eurostat-annual-hicp-spain-2026-11-23', 'eurostat-annual-hicp-food-spain-2026-11-23', 'eurostat-annual-hicp-actual-rents-spain-2026-11-23', 'eurostat-hicp-methodology-2026-11-23'],
+      replyIncludes: ['2020–2025', 'índice armonizado general subió aproximadamente un 21,9 %', 'alimentos y bebidas no alcohólicas, un 34,7 %', 'alquileres efectivamente pagados, un 8,9 %', 'la subida de alimentos fue 12,8 puntos porcentuales mayor', 'la de alquileres, 13,0 puntos porcentuales menor'],
+      replyExcludes: ['la inflación personal de cada hogar fue un 21,9 %', 'el precio de comprar vivienda subió un 8,9 %'],
+      evidence: [
+        { familyId: 'annual_hicp_index', sourceIds: ['eurostat-annual-hicp-spain-2026-11-23'], dataIncludes: ['2020: 82,05', '2025: 100,00', '+21,9 %'], dimensions: { geography: 'España', period: '2020–2025', population: 'todos los productos', unit: 'Índice armonizado medio anual' } },
+        { familyId: 'annual_hicp_food_index', sourceIds: ['eurostat-annual-hicp-food-spain-2026-11-23'], dataIncludes: ['2020: 74,23', '2025: 100,00', '+34,7 %'], dimensions: { geography: 'España', period: '2020–2025', population: 'alimentos y bebidas no alcohólicas' } },
+        { familyId: 'annual_hicp_actual_rent_index', sourceIds: ['eurostat-annual-hicp-actual-rents-spain-2026-11-23'], dataIncludes: ['2020: 91,84', '2025: 100,00', '+8,9 %'], dimensions: { geography: 'España', period: '2020–2025', population: 'pagos efectivos de alquiler de vivienda', unit: 'Índice armonizado medio anual' } },
+      ],
+      maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'inflation-average-basket-vs-food-and-rent-paraphrase',
+    equivalenceGroup: 'household-inflation-basket-spain-2020-2025',
+    input: '¿Cómo han cambiado desde 2020 los alimentos, el alquiler y la inflación general para las familias?',
+    expected: {
+      state: 'limited', family: 'household-inflation-basket', verdict: 'mixed',
+      directSourceIds: ['eurostat-annual-hicp-spain-2026-11-23', 'eurostat-annual-hicp-food-spain-2026-11-23', 'eurostat-annual-hicp-actual-rents-spain-2026-11-23', 'eurostat-hicp-methodology-2026-11-23'],
+      replyIncludes: ['entre 2020 y 2025', '21,9 %', '34,7 %', '8,9 %', 'no representa la cesta de cada hogar'],
+      replyExcludes: ['la inflación personal de cada hogar fue un 21,9 %'], evidence: [], maxReplyWords: 150,
+    },
+  },
+  {
     id: 'productivity-per-person-explicit-downward-direction',
     input: 'La productividad real por persona ocupada bajó entre 2019 y 2025',
     expected: {

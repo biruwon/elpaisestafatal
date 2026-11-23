@@ -932,8 +932,24 @@ does not measure a claimed cause; the indicators do not assign GDP growth to
 employment or productivity. Tests cover paraphrases with matching sources,
 claims that request population context, compound wage-price clauses, period
 and territory mismatches, and nearby employment claims that must not
-cross-route. The held-out text-answer benchmark passes 45/45 across ten
+cross-route.
+
+The same text path now compares Eurostat's annual all-items HICP with its food
+and actual-rent sub-indices. From 2020 to 2025, the all-items index rose 21.9%,
+food and non-alcoholic beverages rose 34.7%, and actual rental payments rose
+8.9%. This shows why a national weighted average need not match a household's
+own basket: food prices moved faster than the average in this interval, while
+actual rents moved more slowly. The answer does not calculate personal
+inflation; the HICP uses aggregate expenditure weights and excludes imputed
+rent for owner-occupied housing. Its actual-rent sub-index does not measure
+house purchases, mortgages or all housing costs. The comparison uses changes
+within each annual index, so the indices' levels are not compared across
+categories. Sources: [Eurostat annual HICP data](https://ec.europa.eu/eurostat/databrowser/view/prc_hicp_ainr/default/table?lang=en),
+[HICP coverage and classification](https://ec.europa.eu/eurostat/web/hicp/information-data),
+and [Eurostat's explanation of expenditure weights](https://ec.europa.eu/eurostat/web/european-statistics-learning-hub/statistics-for-beginners/inflation).
+
+The held-out text-answer benchmark passes 47/47 across eleven
 paraphrase groups; this regression set is not a population-wide estimate of
 factual accuracy. The 300-item unverified discovery set has 3 complete,
-31 limited and 266 uncovered deterministic responses; those are routing and
+32 limited and 265 uncovered deterministic responses; those are routing and
 retrieval outcomes, not a factual-accuracy score.

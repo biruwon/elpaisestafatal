@@ -336,6 +336,18 @@
       "metricId": "annual_hicp_index"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_ainr?freq=A&geo=ES&coicop18=CP01&unit=INX_A_AVG&sinceTimePeriod=2010",
+      "title": "Índice armonizado anual medio de alimentos y bebidas no alcohólicas · Eurostat",
+      "aliases": ["índice armonizado anual de alimentos", "inflación de los alimentos", "precios de alimentación", "precios de comida"],
+      "metricId": "annual_hicp_food_index"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_ainr?freq=A&geo=ES&coicop18=CP041&unit=INX_A_AVG&sinceTimePeriod=2010",
+      "title": "Índice armonizado anual medio de alquileres efectivamente pagados · Eurostat",
+      "aliases": ["índice armonizado anual de alquileres pagados", "precios de alquileres efectivamente pagados", "índice anual de alquiler real"],
+      "metricId": "annual_hicp_actual_rent_index"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses_pub2s?geo=ES&sizeclas=GE10&sex=T&unit=EUR&sinceTimePeriod=2010",
       "title": "Salario bruto mediano por hora en España · Eurostat",
       "aliases": ["salario mediano por hora", "salario bruto por hora", "ganancia mediana por hora", "sueldo por hora", "lo que se cobra por hora"],

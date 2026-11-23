@@ -6,6 +6,11 @@ const normalize = (value) => String(value || '').toLocaleLowerCase('es').normali
 const has = (text, expression) => expression.test(text);
 const wages = /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|cobr\w*|pagan?)\b/;
 const rents = /\b(alquil\w*|arrendam\w*|inquilin\w*|renta mensual)\b/;
+const householdInflationBasketComparison = (t) => /\b(ipc|hicp|inflacion\w*|precios? de consumo|indice general(?: de precios)?|coste de vida)\b/.test(t)
+  && /\b(aliment\w*|comid\w*|supermercad\w*|cesta de la compra)\b/.test(t)
+  && /\b(alquil\w*|arrendam\w*|viviend\w*)\b/.test(t)
+  && /\b(hogar\w*|familia\w*|gast\w*|cesta\w*|reflej\w*|sient\w*|experienc\w*|pes\w*|coste\w*|precios?\w*)\b/.test(t)
+  && !/\bhipotec\w*\b|\b(?:compr\w*|adquir\w*)\b.{0,35}\b(?:viviend\w*|casas?)\b|\b(?:viviend\w*|casas?)\b.{0,35}\b(?:compr\w*|adquir\w*|propiedad|propietari\w*)\b/.test(t);
 const rentalBurden = /\b(ingres\w*|salari\w*|sueld\w*|nomina\w*|mitad|por ciento|porcentaje|esfuerzo|asequib\w*|poder alquilar|puede alquilar|puede pagar|alquilar[^.]{0,35}sol[oa]|emancip\w*|independiz\w*)\b/;
 const absoluteRentAmount = /\b(cuant\w*|importe\w*|cantid\w*|cuant[ií]a\w*|euros?|eur|mensual\w*|al mes|por mes|€)\b/;
 const mortgageEntryVsPayment = (t) => /\b(entrada|ahorro previo|ahorro inicial|pago inicial|aportacion inicial|recursos iniciales|riqueza disponible)\b/.test(t)
@@ -1058,6 +1063,14 @@ const focuses = [
     needs: ['variación salarial pactada en convenios con efectos económicos cuantificados', 'variación del índice de precios en los mismos años', 'personas trabajadoras cubiertas y provisionalidad de las cifras'],
     explanation: 'La subida pactada en los convenios y el cambio del nivel de precios son medidas distintas. Para compararlas hay que alinear los años y aclarar a qué trabajadores cubren los convenios registrados.',
     limitation: 'La media pactada no mide lo que cobró cada trabajador ni todos los salarios. Una comparación con el índice general de precios tampoco describe el coste de vida de cada hogar ni demuestra que los convenios causen la inflación.',
+  },
+  {
+    id: 'household-inflation-basket', label: 'precios de alimentos y alquiler frente al índice general',
+    when: householdInflationBasketComparison,
+    direct: ['annual_hicp_food_index', 'annual_hicp_actual_rent_index'], context: ['annual_hicp_index'], claimType: 'comparative',
+    needs: ['índice anual general y subíndices de alimentos y alquileres efectivamente pagados en los mismos años', 'pesos de gasto de cada hogar para calcular una inflación personalizada'],
+    explanation: 'El índice general incorpora los grupos de consumo con los pesos de gasto agregados. Los índices de alimentos y alquileres permiten ver si esos precios se movieron de otra forma, pero no reproducen la cesta concreta de cada hogar.',
+    limitation: 'Los subíndices de alimentos y alquileres no miden la inflación personal de un hogar. El alquiler efectivo no equivale al coste total de vivienda y el HICP no incluye el alquiler imputado de la vivienda en propiedad.',
   },
   {
     id: 'real-wages', label: 'salarios y poder adquisitivo',
