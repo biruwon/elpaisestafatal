@@ -31,9 +31,9 @@ const cases = [
   ['unpaid-overtime', ['En hostelería se hacen horas extra sin cobrar', 'Las horas extraordinarias no remuneradas son habituales en algunos trabajos', 'Muchos trabajadores trabajan horas extra gratis']],
   ['wage-growth-job-mobility', ['Cambiar de empresa es la única forma de conseguir una subida salarial importante', 'El sueldo aumenta más al cambiar de trabajo que permaneciendo en la misma empresa', 'Quienes cambian de empleo logran mejores subidas de salario']],
   ['wage-progression', ['Los trabajadores jóvenes encadenan años de salarios de entrada sin progresión real', 'Los sueldos iniciales se estancan durante los primeros años de carrera', 'Quienes empiezan con un salario bajo apenas avanzan aunque acumulen antigüedad']],
-  ['regional-wage-housing-cost', ['Las ciudades con más empleo son aquellas donde la vivienda se come la mejora salarial', 'En las áreas con más trabajo el coste del alquiler absorbe las subidas de sueldo', 'Los salarios más altos de las grandes ciudades no compensan el gasto de vivienda']],
+  ['regional-wage-housing-cost', ['Las ciudades con más empleo son aquellas donde la vivienda se come la mejora salarial', 'En las áreas con más trabajo el coste del alquiler absorbe las subidas de sueldo', 'Los salarios más altos de las grandes ciudades no compensan el gasto de vivienda', 'El coste de vivienda ha eliminado la ventaja salarial de trabajar en Madrid o Barcelona', 'El alquiler borra la prima salarial de vivir en Madrid']],
   ['housing-investment-return-comparison', ['Los inversores compran vivienda porque ofrece más rentabilidad que los negocios productivos', 'El capital prefiere el ladrillo frente a la inversión en empresas productivas', 'La rentabilidad inmobiliaria supera a la de invertir en actividades productivas']],
-  ['education-pay-comparison', ['Los sueldos de trabajos cualificados son demasiado parecidos a los de puestos que exigen menos formación', 'Los empleos que requieren estudios superiores no pagan mucho más que los que exigen menos estudios', 'La remuneración es similar entre puestos de distinta cualificación']],
+  ['education-pay-comparison', ['Los sueldos de trabajos cualificados son demasiado parecidos a los de puestos que exigen menos formación', 'Los empleos que requieren estudios superiores no pagan mucho más que los que exigen menos estudios', 'La remuneración es similar entre puestos de distinta cualificación', 'Tener un máster o un doctorado no garantiza cobrar un salario acorde con la cualificación', 'Una titulación de posgrado no asegura un sueldo proporcional a la formación']],
   ['education-skill-demand-vs-curriculum', ['Los idiomas y competencias digitales pesan más en el empleo que muchas asignaturas del título', 'Las empresas priorizan competencias digitales e idiomas frente a muchas materias de la carrera', 'El mercado de trabajo exige habilidades que la universidad no enseña en sus asignaturas']],
   ['firm-wage-capacity', ['Las grandes empresas tienen productividad suficiente para pagar más pero contienen salarios', 'Las empresas más productivas podrían pagar mejores sueldos y no lo hacen', 'Las compañías con más beneficios frenan la remuneración de sus plantillas']],
   ['public-private-job-conditions', ['La falta de conciliación empuja a trabajadores cualificados a buscar empleo público', 'Los horarios más compatibles con la vida familiar atraen a profesionales hacia la administración', 'La estabilidad del empleo público lleva a algunas personas a dejar el sector privado']],
@@ -273,6 +273,22 @@ for (const [family, claim] of crossTopicClaims) {
   assert.equal(plan.sourceLinks.length, 0, `An unrelated wage survey was attached to this claim: ${claim}`);
   assert.equal(localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim).state, 'insufficient');
 }
+for (const claim of [
+  'Tener un máster o un doctorado no garantiza cobrar un salario acorde con la cualificación',
+  'Una titulación de posgrado no asegura un sueldo proporcional a la formación',
+  'El coste de vivienda ha eliminado la ventaja salarial de trabajar en Madrid o Barcelona',
+  'El alquiler borra la prima salarial de vivir en Madrid',
+]) {
+  const plan = focusedEvidencePlan(claim, { observations: [irrelevantWageObservation], propositions: deterministicFallbackCompiler(claim).explicitPropositions });
+  assert.ok(['education-pay-comparison', 'regional-wage-housing-cost'].includes(plan.answerScope.family), `The claim lost its scoped measurement route: ${claim}`);
+  assert.deepEqual(plan.answerScope.directMetrics, [], `National wage data became direct evidence for a comparison: ${claim}`);
+  assert.deepEqual(plan.answerScope.contextMetrics, [], `National wage data became context for an unsupported comparison: ${claim}`);
+  assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should not resolve this claim: ${claim}`);
+  assert.deepEqual(plan.sourceLinks, [], `An unrelated wage survey was attached to this claim: ${claim}`);
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'scoped-pay-gap', result: plan }, claim).state, 'insufficient');
+}
+assert.equal(claimFocusFor('La vivienda de Barcelona es cara y los salarios suben'), undefined, 'Housing and rising wages in the same city do not establish a wage-versus-housing comparison');
+assert.equal(claimFocusFor('Un título universitario ya no garantiza encontrar un empleo cualificado')?.id, 'education-employment-outcomes', 'A graduate employment claim must not cross-route into pay comparisons');
 assert.equal(claimFocusFor('¿Qué entrada necesito para comprar una vivienda con mi salario?')?.id, 'purchase-affordability', 'A genuine home-purchase deposit question must keep its housing route');
 assert.equal(claimFocusFor('Los trabajadores jóvenes cobran salarios de entrada sin progresar')?.id, 'wage-progression', 'Salary-entry wording must not be mistaken for a home-purchase deposit');
 assert.equal(claimFocusFor('Los pequeños comercios cierran por la subida del alquiler y la caída de su rentabilidad')?.id, 'small-business-cost-pressure', 'Business cost pressure must stay separate from property investment returns');

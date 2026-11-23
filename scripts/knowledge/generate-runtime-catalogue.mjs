@@ -1,4 +1,6 @@
 import { mkdir, readdir, readFile, writeFile } from 'node:fs/promises';
+import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
+import { semanticFamilyKeys } from './claim-family-routing.mjs';
 
 const root = new URL('../../', import.meta.url).pathname;
 const claimsDirectory = `${root}content/claims/`;
@@ -17,16 +19,20 @@ for (const file of (await readdir(claimsDirectory)).filter((name) => name.endsWi
   const field = (name) => frontmatter.match(new RegExp(`^${name}:\\s*(.+)$`, 'm'))?.[1]?.trim() || '';
   if (field('status') !== 'published') continue;
   const slug = field('slug') || file.replace(/\.md$/, '');
+  const curatedAliases = list(field('aliases'));
   const formulations = seedRecords.filter((record) => record.slug === slug).map((record) => record.formulation);
+  const semanticFamilyKeysForClaim = [...new Set([field('claim').replace(/^['"]|['"]$/g, ''), ...curatedAliases]
+    .flatMap((formulation) => semanticFamilyKeys(deterministicFallbackCompiler(formulation).semanticSignature)))];
   entries.push({
     kind: 'claim', slug, title: field('claim').replace(/^['"]|['"]$/g, ''),
     href: `/afirmaciones/${slug}`,
-    aliases: [...new Set([...list(field('aliases')), ...formulations])],
+    aliases: [...new Set([...curatedAliases, ...formulations])],
     keywords: list(field('topicSlugs')),
     answer: field('shareable'),
     published: true,
     evidenceIds: list(field('evidenceIds')),
     sourceRefs: list(field('sourceRefs')),
+    semanticFamilyKeys: semanticFamilyKeysForClaim,
   });
 }
 

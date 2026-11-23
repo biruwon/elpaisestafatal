@@ -188,8 +188,19 @@ try {
   for (const query of ['El índice de precios del alquiler subió un 300 % desde 2015', 'El índice del alquiler ha aumentado en un 300 % desde 2015']) {
     const magnitude = await check(query);
     assert.notEqual(magnitude.state, 'supported', JSON.stringify(magnitude));
-    assert.doesNotMatch(magnitude.result.reply, /coincide.*300|confirma.*300/i);
+    assert.match(magnitude.result.reply, /pas[oó] de 100.*\(2015\).*117,05.*\(2026-09\)/i, JSON.stringify(magnitude));
+    assert.match(magnitude.result.reply, /variaci[oó]n relativa fue \+?17,05 %.*no coincide con el \+?300 % indicado/i, JSON.stringify(magnitude));
+    assert.equal(magnitude.result.arguments?.[0]?.verdict, 'contradicted', JSON.stringify(magnitude));
+    assert.deepEqual(magnitude.result.sources.map((source) => source.url), [url], JSON.stringify(magnitude.result.sources));
   }
+  const matchingMagnitude = await check('El índice de precios del alquiler subió un 17,05 % desde 2015');
+  assert.equal(matchingMagnitude.result.arguments?.[0]?.verdict, 'supported', JSON.stringify(matchingMagnitude));
+  assert.match(matchingMagnitude.result.reply, /variaci[oó]n relativa fue \+?17,05 % y coincide/i, JSON.stringify(matchingMagnitude));
+  const unscopedMagnitude = await check('El índice de precios del alquiler subió un 300 %');
+  assert.notEqual(unscopedMagnitude.result.arguments?.[0]?.verdict, 'contradicted', JSON.stringify(unscopedMagnitude));
+  assert.match(unscopedMagnitude.result.reply, /hay que indicar desde qu[eé] a[nñ]o|entre qu[eé] periodos/i, JSON.stringify(unscopedMagnitude));
+  assert.equal(unscopedMagnitude.result.visual, undefined);
+  assert.deepEqual(unscopedMagnitude.result.sources.map((source) => source.url), [url]);
   db.prepare('UPDATE source_documents SET retrieved_at = ? WHERE id = ?').run('2020-01-01T00:00:00Z', 'rent-source');
   const stale = await check('¿Ha cambiado el índice de precios del alquiler en España desde 2015?');
   assert.notEqual(stale.state, 'supported');

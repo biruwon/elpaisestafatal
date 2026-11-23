@@ -348,17 +348,23 @@ const housingInvestmentReturnComparison = (t) => /\b(viviend\w*|inmobiliari\w*|i
   && /\b(rentabil\w*|rendimient\w*|retorno\w*|benefici\w*|invert\w*|inversion\w*)\b/.test(t)
   && /\b(negocio\w*|empres\w*|productiv\w*|economia real|capital productiv\w*)\b/.test(t)
   && /\b(mas|menos|mayor\w*|menor\w*|super\w*|inferior\w*|mejor\w*|peor\w*|compar\w*|frente a|prefier\w*|desvi\w*|compite\w*)\b/.test(t);
-const regionalWageHousingCost = (t) => /\b(ciudad\w*|municip\w*|metropolitan\w*|region\w*|territori\w*|capital\w*|area\w*|zona\w*)\b/.test(t)
-  && /\b(viviend\w*|alquil\w*|arrendam\w*|coste de (?:la )?viviend\w*|gasto(?:s)? (?:de )?viviend\w*)\b/.test(t)
-  && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w*)\b/.test(t)
-  && /\b(come|comen|comer\w*|comi\w*|absorb\w*|compens\w*|neutraliz\w*|contrarrest\w*|mejor\w*|aument\w*|sub\w*)\b/.test(t);
+const housingPlusNamedCity = (t) => /\b(viviend\w*|alquil\w*|arrendam\w*|coste de (?:la )?viviend\w*|gasto(?:s)? (?:de )?viviend\w*)\b/.test(t)
+  && /\b(madrid|barcelona|valencia|sevilla|malaga|bilbao|zaragoza)\b/.test(t);
+const regionalWageHousingCost = (t) => {
+  const housing = /\b(viviend\w*|alquil\w*|arrendam\w*|coste de (?:la )?viviend\w*|gasto(?:s)? (?:de )?viviend\w*)\b/.test(t);
+  const wages = /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w*)\b/.test(t);
+  const location = /\b(ciudad\w*|municip\w*|metropolitan\w*|region\w*|territori\w*|capital\w*|area\w*|zona\w*|madrid|barcelona|valencia|sevilla|malaga|bilbao|zaragoza)\b/.test(t);
+  const offset = /\b(come|comen|comer\w*|comi\w*|absorb\w*|compens\w*|neutraliz\w*|contrarrest\w*|elimin\w*|anul\w*|desaparec\w*|borr\w*)\b/.test(t);
+  const advantage = /\b(ventaj\w*|prima salarial|brecha salarial)\b/.test(t);
+  return housing && wages && offset && (location || advantage);
+};
 const wageProgression = (t) => /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*)\b/.test(t)
   && /\b(entrada|inicial\w*|comienzo|primeros? a[nñ]os|banda salarial|salario base|empez\w*|empiez\w*|inici\w*|antiguedad)\b/.test(t)
   && /\b(progres\w*|avanz\w*|estanc\w*|permanec\w*|encaden\w*|a[nñ]os|sub\w*|aument\w*|crec\w*|antiguedad)\b/.test(t)
   && !/\b(viviend\w*|casas?|piso\w*|hipotec\w*|comprar|compra de)\b/.test(t);
-const educationPayComparison = (t) => /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|pag\w*)\b/.test(t)
+const educationPayComparison = (t) => /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|pag\w*|cobr\w*)\b/.test(t)
   && /\b(cualificad\w*|cualificaci\w*|formaci\w*|estudios? (?:superiores?|universitarios?)|titulaci\w*|educaci\w*|puestos? que (?:exigen|requieren)|trabajos? que (?:exigen|requieren))\b/.test(t)
-  && /\b(parecid\w*|similar\w*|igual\w*|mism\w*|diferenc\w*|distint\w*|brecha\w*|compar\w*|menos|mas|mayor\w*|menor\w*|superior\w*|inferior\w*)\b/.test(t);
+  && /\b(parecid\w*|similar\w*|igual\w*|mism\w*|diferenc\w*|distint\w*|brecha\w*|compar\w*|acorde\w*|proporcional\w*|garant\w*|menos|mas|mayor\w*|menor\w*|superior\w*|inferior\w*)\b/.test(t);
 const firmWageCapacity = (t) => /\b(empres\w*|compa[nñ]i\w*|firmas?|multinacional\w*|negocio\w*)\b/.test(t)
   && /\b(productiv\w*|valor a[nñ]adido|benefici\w*|rentabil\w*)\b/.test(t)
   && /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|pag\w*)\b/.test(t)
@@ -921,9 +927,9 @@ const focuses = [
     id: 'education-pay-comparison', label: 'salarios según formación exigida por el puesto',
     when: educationPayComparison,
     direct: [], context: [], claimType: 'comparative',
-    needs: ['salarios por ocupación y nivel de formación requerido para el puesto', 'jornada, experiencia, sector, territorio y periodo comparables', 'distribuciones salariales y tamaño de las diferencias, no solo medias'],
-    explanation: 'Que puestos con distintos requisitos formativos tengan salarios parecidos es una comparación de remuneración por puesto. La tasa de sobrecualificación mide si una persona ocupada trabaja en una ocupación de menor cualificación; no compara cuánto pagan esos puestos.',
-    limitation: 'Las tasas de empleo y sobrecualificación no permiten concluir si trabajos que exigen distinta formación cobran lo mismo.',
+    needs: ['salarios por nivel educativo alcanzado y por ocupación o formación requerida para el puesto', 'jornada, experiencia, sector, territorio y periodo comparables', 'distribuciones salariales y tamaño de las diferencias, no solo medias'],
+    explanation: 'Los promedios por nivel educativo o por ocupación pueden mostrar diferencias de salario, pero no garantizan cuánto cobrará una persona con un máster, un doctorado u otra titulación. También influyen el puesto, la experiencia, la jornada, el sector y el territorio.',
+    limitation: 'Las tasas de empleo y sobrecualificación no comparan salarios. Sin una distribución salarial compatible por estudios y ocupación, no se puede determinar si la titulación se remunera «acorde» en cada caso ni si el resultado se aplica a todas las personas.',
   },
   {
     id: 'education-skill-demand-vs-curriculum', label: 'competencias laborales y contenidos de los estudios',
@@ -1107,7 +1113,8 @@ const focuses = [
     id: 'nominal-wages', label: 'salarios y remuneración',
     when: (t) => /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*)\b/.test(t)
       && /\b(sub\w*|baj\w*|aument\w*|perd\w*|estanc\w*|alt\w*|baj[oa]\w*|menor\w*|mayor\w*|menos|mas|compar\w*|difer\w*)\b/.test(t)
-      && !/\b(salari\w* minim\w*|smi|brecha salarial|median\w* por hora)\b/.test(t),
+      && !/\b(salari\w* minim\w*|smi|brecha salarial|median\w* por hora)\b/.test(t)
+      && !housingPlusNamedCity(t),
     direct: [], context: ['median_hourly_earnings'],
     needs: ['salario bruto o neto y periodo', 'jornada y población comparables', 'referencia temporal o territorial'],
     explanation: 'El salario puede medirse por hora, mes o año; las comparaciones dependen de la jornada, la población y de si se usan importes brutos o netos.',

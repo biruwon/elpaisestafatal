@@ -32,9 +32,10 @@ const brokenDatabase = {
     return { bind() { return this; }, async all() { throw new Error('D1 read failed'); }, async run() { throw new Error('D1 write failed'); } };
   },
 };
+let snapshotRequestNumber = 0;
 const context = (text, DB) => ({
   request: new Request('https://site.test/api/check?fresh=1', {
-    method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ text, inputType: 'text' }),
+    method: 'POST', headers: { 'content-type': 'application/json', 'cf-connecting-ip': `snapshot-validation-${++snapshotRequestNumber}` }, body: JSON.stringify({ text, inputType: 'text' }),
   }),
   env: { DB },
   waitUntil: (promise) => pending.push(promise),
@@ -236,5 +237,18 @@ const primaryCareUnavailable = await check('¿Cuántos días tarda una cita en a
 assert.equal(primaryCareUnavailable.body.state, 'unavailable');
 assert.doesNotMatch(primaryCareUnavailable.body.result?.reply || '', /9,71|72 %/);
 
+const graduatePay = await check('Tener un máster o un doctorado no garantiza cobrar un salario acorde con la cualificación');
+assert.equal(graduatePay.body.state, 'insufficient');
+assert.deepEqual(graduatePay.body.result.sources, []);
+assert.match(graduatePay.body.result.reply, /promedios por nivel educativo o por ocupación/);
+assert.match(graduatePay.body.result.reply, /no comparan salarios/);
+assert.doesNotMatch(graduatePay.body.result.reply, /80,2 %|34 %|17 € por hora/);
+
+const regionalPayHousing = await check('El coste de vivienda ha eliminado la ventaja salarial de trabajar en Madrid o Barcelona');
+assert.equal(regionalPayHousing.body.state, 'insufficient');
+assert.deepEqual(regionalPayHousing.body.result.sources, []);
+assert.match(regionalPayHousing.body.result.reply, /promedios nacionales no permiten medir ese balance entre ciudades/);
+assert.doesNotMatch(regionalPayHousing.body.result.reply, /17 € por hora|índice de precios de vivienda.*\d/);
+
 await Promise.all(pending);
-console.log('Reviewed text snapshot Pages fallback passed: empty D1 uses scoped education, working-poverty, primary-care, and housing-supply data; failed D1 reads remain unavailable.');
+console.log('Reviewed text snapshot Pages fallback passed: empty D1 uses scoped answers, unsupported pay comparisons exclude mismatched statistics, and failed D1 reads remain unavailable.');
