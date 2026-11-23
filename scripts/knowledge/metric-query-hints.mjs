@@ -275,6 +275,9 @@ const metricHints = [
   { ids: ['gdp_per_capita_current_prices'], terms: ['pib por habitante', 'pib per capita', 'producto interior bruto por persona', 'economia por habitante', 'pib por persona'] },
   { ids: ['gdp_real_annual'], terms: ['pib real total', 'pib agregado real', 'crecimiento del pib total en volumen', 'produccion agregada real', 'pib total a precios constantes'] },
   { ids: ['gdp_real_per_capita_annual'], terms: ['pib real por habitante', 'pib real por persona', 'pib real per capita', 'crecimiento real del pib por habitante', 'produccion real por habitante'] },
+  { ids: ['real_labour_productivity_per_person'], terms: ['productividad real por persona ocupada', 'productividad real por trabajador', 'pib real por persona empleada', 'productividad laboral por empleado'] },
+  { ids: ['real_labour_productivity_per_hour'], terms: ['productividad real por hora trabajada', 'productividad laboral por hora', 'pib real por hora', 'produccion real por hora trabajada'] },
+  { ids: ['employment_persons_per_capita_national_accounts'], terms: ['personas ocupadas por habitante', 'empleo total por habitante', 'proporcion de empleo sobre la poblacion total', 'personas empleadas por habitante'] },
   { ids: ['gdp_per_capita_europe'], terms: ['pib por habitante frente a europa', 'pib por habitante frente a la union europea', 'pib per capita frente a europa', 'pib per capita frente a la union europea', 'como queda el pib por habitante', 'pib por habitante espanol comparado', 'comparacion del pib per capita', 'espana tiene mas pib por habitante que europa', 'espana tiene menos pib por habitante que europa', 'espana tiene mas pib por habitante que la union europea', 'espana tiene menos pib por habitante que la union europea', 'tiene espana mas pib por habitante que europa', 'tiene espana menos pib por habitante que europa', 'tiene espana mas pib por habitante que la union europea', 'tiene espana menos pib por habitante que la union europea', 'pib por habitante que la union europea', 'pib por persona frente a europa', 'pib por persona frente a la union europea', 'pib por persona que europa', 'pib por persona que la union europea', 'pib europa por habitante', 'pib europa por persona'] },
   { ids: ['gdp_real_growth_quarterly'], terms: ['actividad economica', 'actividad economica cae', 'actividad economica esta cayendo', 'economia cae', 'crecimiento negativo', 'recesion', 'pib real', 'crecimiento del pib', 'crecimiento interanual pib', 'crece el pib'] },
   { ids: ['gdp_real_growth_europe'], terms: ['pib real frente a europa', 'crecimiento del pib frente a europa', 'pib real espanol crece mas', 'comparacion del crecimiento economico', 'crece espana mas que europa', 'crece espana mas que la union europea', 'espana crece mas que europa', 'espana crece mas que la union europea', 'crece espana menos que europa', 'crece espana menos que la union europea', 'espana crece menos que europa', 'espana crece menos que la union europea', 'crecimiento de espana frente a la union europea', 'crecimiento economico europeo', 'pib espana union europea', 'pib frente a europa', 'crecimiento frente a europa'] },
@@ -617,6 +620,15 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('gdp_per_capita_current_prices');
     preferred.delete('gdp_current_prices');
     preferred.delete('gdp_real_growth_quarterly');
+  }
+  if (preferred.has('real_labour_productivity_per_person') || preferred.has('real_labour_productivity_per_hour')) {
+    preferred.delete('gdp_current_prices');
+    preferred.delete('gdp_per_capita_current_prices');
+    preferred.delete('gdp_real_growth_quarterly');
+    if (!/\b(?:pib|producto interior bruto|economia|crecimiento economico|poblacion|empleo total)\b/.test(normalized)) {
+      preferred.delete('gdp_real_annual');
+      preferred.delete('gdp_real_per_capita_annual');
+    }
   }
   if (preferred.has('gdp_per_capita_current_prices')) preferred.delete('gdp_current_prices');
   if (preferred.has('gdp_per_capita_europe')) {

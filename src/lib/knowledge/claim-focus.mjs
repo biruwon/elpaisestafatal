@@ -304,6 +304,9 @@ const gdpTotalPerCapitaComparison = (t) => {
   const unrelatedGrowthMechanism = /\b(?:productividad|por trabajador|poblacion|inmigracion|migracion|empleo|horas trabajadas)\b/.test(t);
   return aggregateGrowth && personMeasure && relativeChange && !unrelatedGrowthMechanism;
 };
+const labourProductivityTrend = (t) => /\bproductividad\b/.test(t)
+  && /\b(?:laboral|pib|gdp|crecimiento|crece|crecio|poblacion|empleo|por trabajador|por persona ocupada|por empleado|por hora|horas trabajadas|estanc\w*|lent\w*|avanz\w*|tendencia|lleva anos|desde hace anos)\b/.test(t)
+  && !/\b(?:empres\w*|negocio\w*|sector\w*|industr\w*|productividad total de los factores|salari\w*|sueld\w*|antiguedad|premia\w*)\b/.test(t);
 const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios? superiores?|educacion (?:superior|terciaria)|cualific\w*|sobrecualific\w*|formacion profesional|fp)\b/.test(t)
   && !migrationPopulation.test(t) && !healthcareWorkforceCausality(t)
   && !/\b(estigma|estereotip\w*|prestigio|percepcion\w*|reputacion\w*)\b/.test(t)
@@ -600,6 +603,13 @@ const focuses = [
       sources: [{ id: 'fiscal-drag-bde', title: 'Progresividad en frío: impacto de la inflación sobre la recaudación por IRPF', publisher: 'Banco de España', url: 'https://www.bde.es/wbe/es/publicaciones/analisis-economico-investigacion/documentos-ocasionales/progresividad-en-frio--el-impacto-heterogeneo-de-la-inflacion-sobre-la-recaudacion-por-irpf.html', publishedAt: '2024-06-14', retrievedAt: '2026-11-17', role: 'primary' }],
     },
     limitation: 'La estimación describe la progresividad en frío del IRPF bajo supuestos concretos. No mide cuánto paga cada familia ni demuestra que toda inflación, cualquier impuesto o toda deducción produzca el mismo efecto.',
+  },
+  {
+    id: 'labour-productivity-and-growth', label: 'Productividad laboral real y crecimiento económico',
+    when: labourProductivityTrend,
+    direct: ['real_labour_productivity_per_person', 'real_labour_productivity_per_hour'], context: ['gdp_real_annual', 'gdp_real_per_capita_annual', 'employment_persons_per_capita_national_accounts'], claimType: 'comparative',
+    needs: ['productividad laboral real por persona ocupada y por hora para los mismos años', 'si se relaciona con el crecimiento agregado, PIB real total del mismo periodo; si menciona población o bienestar por persona, añadir PIB real por habitante', 'definición del empleo u horas usados como denominador y límites para atribuir causalidad'],
+    limitation: 'El PIB real por persona ocupada y por hora mide productividad laboral media con denominadores diferentes. No identifica productividad total de los factores, diferencias entre empresas, composición del trabajo ni las causas del crecimiento.',
   },
   {
     id: 'gdp-total-per-capita-comparison', label: 'PIB real total y PIB real por habitante',
@@ -1373,6 +1383,7 @@ export const focusedMetricIdsFor = (claim) => {
       : /\bgran dificultad\b/.test(text) && !/\bcon dificultad\b/.test(text) ? 'subjective_poverty_great_difficulty_rate' : undefined
     : undefined;
   const direct = focus.id === 'subjective-financial-strain' && subjectiveResponseMetric ? [subjectiveResponseMetric]
+    : focus.id === 'labour-productivity-and-growth' ? ['real_labour_productivity_per_person', 'real_labour_productivity_per_hour']
     : focus.id === 'education-employment-outcomes' ? educationOutcomeMetrics(claim)
     : focus.id === 'working-poverty' && /\b(jornada completa|tiempo completo)\b/.test(text) && /\b(jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)\b/.test(text) ? ['in_work_poverty_full_time_rate', 'in_work_poverty_part_time_rate']
     : focus.id === 'working-poverty' && /\b(jornada completa|tiempo completo)\b/.test(text) ? ['in_work_poverty_full_time_rate']
@@ -1385,7 +1396,19 @@ export const focusedMetricIdsFor = (claim) => {
   const subjectivePovertyContext = focus.id === 'working-poverty'
     && /\b(fin de mes|alcanza para vivir|llega para vivir|cubrir (?:los )?gastos)\b/.test(text)
     ? ['subjective_poverty_rate', 'subjective_poverty_difficulty_rate', 'subjective_poverty_great_difficulty_rate'] : [];
-  const selectedContext = focus.id === 'subjective-financial-strain' && subjectiveResponseMetric ? [] : focus.context;
+  const productivityMacroContext = focus.id === 'labour-productivity-and-growth'
+    && /\b(?:crecimiento|crecio|crece|pib|producto interior bruto|total gdp|economia en su conjunto)\b/.test(text);
+  const productivityPopulationContext = focus.id === 'labour-productivity-and-growth'
+    && /\b(?:poblacion|por habitante|por persona(?! (?:ocupad[oa]|emplead[oa]|trabajador[ao]))|nivel de vida|condiciones de vida|bienestar)\b/.test(text);
+  const productivityEmploymentContext = focus.id === 'labour-productivity-and-growth'
+    && /\b(?:aumento (?:de|del) empleo|crecimiento (?:de|del) empleo|creacion de empleo|mas empleo|mas puestos de trabajo|empleo total|personas ocupadas|personas empleadas|hay mas personas trabajando)\b/.test(text);
+  const selectedContext = focus.id === 'subjective-financial-strain' && subjectiveResponseMetric ? []
+    : focus.id === 'labour-productivity-and-growth' ? [
+      ...(productivityMacroContext || productivityPopulationContext ? ['gdp_real_annual'] : []),
+      ...(productivityPopulationContext ? ['gdp_real_per_capita_annual'] : []),
+      ...(productivityEmploymentContext ? ['employment_persons_per_capita_national_accounts'] : []),
+    ]
+      : focus.context;
   const european = /\b(europa|europe[oa]s?|ue|union europea)\b/.test(text);
   // An all-worker unemployment rate does not describe the availability of
   // vacancies with a particular contract, wage, schedule or employer.

@@ -21,6 +21,9 @@ const cases = [
   ['El PIB por persona es menor que el europeo', 'gdp_per_capita_europe'],
   ['¿Cómo cambió el PIB real total anual de España?', 'gdp_real_annual'],
   ['¿Cuál fue el crecimiento real del PIB por habitante en España?', 'gdp_real_per_capita_annual'],
+  ['¿Cómo cambió la productividad real por persona ocupada en España?', 'real_labour_productivity_per_person'],
+  ['¿Qué evolución tuvo el PIB real por hora trabajada?', 'real_labour_productivity_per_hour'],
+  ['¿Qué evolución tuvo el empleo total por habitante en las cuentas nacionales?', 'employment_persons_per_capita_national_accounts'],
   ['Cada vez hay menos nacimientos', 'fertility_rate'],
   ['La criminalidad está subiendo', 'recorded_offences'],
   // These are intentionally covered by the registry aliases rather than a

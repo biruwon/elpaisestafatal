@@ -831,15 +831,16 @@ answer plans and the public response shape, including per-part verdicts,
 evidence-family data and cited source IDs. A secure URL alone no longer makes a
 claim part traceable when its cited source ID does not match a listed source.
 
-The answer-level benchmark now grades thirty-two held-out text cases across
-seven evidence families and one unmatched case against reviewed
+The answer-level benchmark now grades forty-three held-out text cases across
+nine evidence families and one unmatched case against reviewed
 snapshot-backed evidence. It checks the public answer's evidence
 family, value, verdict, linked source, period, geography, population,
 denominator, scope exclusions, traceability and word limit. It also checks
 that paraphrases share evidence, while nearby claims with the wrong year or
 territory do not inherit that evidence. Cases include housing completions,
 tertiary-education employment, in-work poverty, primary-care waits, subjective
-financial strain and the modeled mortgage-capacity comparison. Direct
+financial strain, the modeled mortgage-capacity comparison, GDP/population
+growth and labour productivity. Direct
 percentage and day thresholds are compared with a matching measurement unit;
 the reply states how the observed value relates to the threshold. Metric
 definitions distinguish a rate for waits over one day from a rate for longer
@@ -849,7 +850,8 @@ claims from inheriting a descriptive rate verdict. It also checks regional
 outpatient-wait comparisons against the Ministry's 2025 territory table,
 including reversed and negated comparisons, source-update context and scope.
 Unmeasured claims about a gap's size or intensity stay ungraded instead of
-receiving a verdict from direction alone. The current run passes 32/32.
+receiving a verdict from direction alone. The current run passes 43/43 across
+nine paraphrase groups.
 
 This small regression set is a useful guard against known answer failures,
 not a population-wide estimate of factual accuracy. Broader validation still
@@ -897,3 +899,29 @@ values, and guard nearby employment and public-finance claims against routing
 to the broad scorecard. The acceptance suite is part of classifier validation.
 The six source observations still need editorial refresh before this broad
 scorecard can return numerical values again.
+
+## Text-first GDP and productivity claims — 23 November 2026
+
+The reusable text-analysis family now distinguishes real GDP growth,
+real GDP per capita, labour productivity per employed person, labour
+productivity per hour, and national-accounts employment per capita. For
+Spain from 2019 to 2025, the reviewed Eurostat series show real GDP up 10.0%,
+real GDP per capita up 4.9%, productivity per employed person down 0.8%,
+productivity per hour up 2.0%, and employment per capita rising from 43.5% to
+46.0% (+2.5 percentage points). The 2025 observations are provisional. The
+per-capita employment ratio uses total employment under the domestic concept
+over total population under the national concept; it is not the labour-force
+survey employment rate. [Eurostat productivity metadata](https://ec.europa.eu/eurostat/cache/metadata/en/nama_10_prod_esms.htm)
+and the [annual national-accounts series](https://ec.europa.eu/eurostat/databrowser/view/nama_10_lp_ulc/default/table?lang=en)
+define the measures and provide the underlying data.
+
+Answers compare the two productivity denominators and add GDP or employment
+context only when the submitted text calls for it. They say when a comparison
+does not measure a claimed cause; the indicators do not assign GDP growth to
+employment or productivity. Tests cover paraphrases with matching sources,
+claims that request population context, period and territory mismatches, and
+nearby employment claims that must not cross-route. The held-out text-answer
+benchmark passes 43/43; this regression set is not a population-wide estimate
+of factual accuracy. The 300-item unverified discovery set has 3 complete,
+30 limited and 267 uncovered deterministic responses; those are routing and
+retrieval outcomes, not a factual-accuracy score.

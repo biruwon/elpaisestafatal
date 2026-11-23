@@ -1,5 +1,6 @@
 import assert from 'node:assert/strict';
 import { build } from 'esbuild';
+import { LABOUR_PRODUCTIVITY_SNAPSHOT } from '../src/lib/knowledge/labour-productivity-snapshot.mjs';
 
 const compiled = await build({ entryPoints: ['functions/api/check.ts'], bundle: true, platform: 'node', format: 'esm', write: false, logLevel: 'silent' });
 const api = await import(`data:text/javascript;base64,${Buffer.from(compiled.outputFiles[0].contents).toString('base64')}`);
@@ -47,6 +48,27 @@ const partialGdpDatabase = {
     return {
       bind(value) { metricId = value; return this; },
       async all() { return { results: gdpTotalRows.filter((row) => row.metric_id === metricId) }; },
+      async run() { return {}; },
+    };
+  },
+};
+const partialProductivityRows = LABOUR_PRODUCTIVITY_SNAPSHOT.observations
+  .filter((item) => item.metricId === 'real_labour_productivity_per_person')
+  .map((item) => ({
+    id: item.id, kind: 'observation', dataset_id: 'Annual labour productivity Spain', metric: item.metric,
+    metric_id: item.metricId, value: item.value, unit: item.unit, period: item.period, geography: item.geography,
+    population: item.denominator, dimensions_json: JSON.stringify(item.dimensions), dimension_labels_json: '{}',
+    url: null, excerpt: null,
+    payload_json: JSON.stringify({ denominator: item.denominator, dataKind: 'observed', ...(item.status ? { status: item.status } : {}) }),
+    source_id: item.source.id, publisher: item.source.publisher, title: item.source.title, source_url: item.source.url,
+    published_at: null, retrieved_at: item.source.retrievedAt, trust_tier: 'primary', aliases_json: '[]', source_registry_id: 'eurostat', schedule: 'daily',
+  }));
+const partialProductivityDatabase = {
+  prepare() {
+    let metricId;
+    return {
+      bind(value) { metricId = value; return this; },
+      async all() { return { results: partialProductivityRows.filter((row) => row.metric_id === metricId) }; },
       async run() { return {}; },
     };
   },
@@ -99,6 +121,38 @@ const gdpPartial = await check('España puede crecer en PIB total mientras el ni
 assert.equal(gdpPartial.body.state, 'insufficient', 'A single successful GDP series must not be completed with a reviewed snapshot');
 assert.deepEqual(gdpPartial.body.result.arguments[0].evidenceIds, []);
 assert.doesNotMatch(gdpPartial.body.result.reply, /10,0 %|4,9 %/);
+
+const productivity = await check('El crecimiento basado en más población puede ocultar una productividad estancada');
+assert.equal(productivity.httpStatus, 200);
+assert.equal(productivity.body.state, 'limited');
+assert.equal(productivity.body.result.answerScope.family, 'labour-productivity-and-growth');
+assert.equal(productivity.body.result.evidenceSummary.mode, 'snapshot');
+assert.equal(productivity.body.result.arguments[0].verdict, 'mixed');
+assert.match(productivity.body.result.reply, /bajó aproximadamente un 0,8 %.*subió aproximadamente un 2,0 %.*10,0 %.*4,9 %.*4,8 %/s);
+assert.match(productivity.body.result.reply, /la población media/);
+assert.ok(productivity.body.result.sources.some((source) => source.id === 'eurostat-real-labour-productivity-per-person-spain-2026-11-23'));
+assert.ok(productivity.body.result.sources.some((source) => source.id === 'eurostat-real-labour-productivity-per-hour-spain-2026-11-23'));
+
+const productivityPartial = await check('El crecimiento basado en más población puede ocultar una productividad estancada', partialProductivityDatabase);
+assert.equal(productivityPartial.body.state, 'insufficient', 'A single live productivity denominator must not be completed with reviewed GDP or snapshot values');
+assert.deepEqual(productivityPartial.body.result.arguments[0].evidenceIds, []);
+assert.doesNotMatch(productivityPartial.body.result.reply, /0,8 %|2,0 %|10,0 %|4,9 %/);
+
+const employmentProductivityClaim = 'El crecimiento económico español depende demasiado del aumento de empleo y poco de la productividad';
+const employmentProductivity = await check(employmentProductivityClaim);
+assert.equal(employmentProductivity.httpStatus, 200);
+assert.equal(employmentProductivity.body.state, 'limited');
+assert.equal(employmentProductivity.body.result.answerScope.family, 'labour-productivity-and-growth');
+assert.equal(employmentProductivity.body.result.evidenceSummary.mode, 'snapshot');
+assert.equal(employmentProductivity.body.result.arguments[0].verdict, 'mixed');
+assert.match(employmentProductivity.body.result.reply, /46,0 %.*2,5 puntos porcentuales/s);
+assert.match(employmentProductivity.body.result.reply, /no cuantifican cuánto del crecimiento del PIB corresponde a más empleo frente a mejoras de productividad/);
+assert.ok(employmentProductivity.body.result.sources.some((source) => source.id === 'eurostat-employment-persons-per-capita-spain-2026-11-23'));
+
+const employmentProductivityPartial = await check(employmentProductivityClaim, partialProductivityDatabase);
+assert.equal(employmentProductivityPartial.body.state, 'insufficient', 'Partial live productivity data must not be completed with reviewed employment/GDP snapshot values');
+assert.deepEqual(employmentProductivityPartial.body.result.arguments[0].evidenceIds, []);
+assert.doesNotMatch(employmentProductivityPartial.body.result.reply, /0,8 %|2,0 %|10,0 %|4,9 %|46,0 %|2,5 puntos porcentuales/);
 
 const partTimeAboveThreshold = await check('En 2025 el riesgo de pobreza entre las personas ocupadas a jornada parcial superó el 15 %');
 assert.equal(partTimeAboveThreshold.body.state, 'limited');

@@ -7,6 +7,8 @@ import { collectiveAgreementWagePlan } from './collective-agreement-wage-compari
 import { COLLECTIVE_AGREEMENT_WAGE_SNAPSHOT } from './collective-agreement-wage-snapshot.mjs';
 import { gdpPerCapitaComparisonPlan, gdpPerCapitaEvidenceGapPlan } from './gdp-per-capita-comparison.mjs';
 import { GDP_REAL_PER_CAPITA_SNAPSHOT } from './gdp-real-per-capita-snapshot.mjs';
+import { labourProductivityAnalysisPlan, labourProductivityEvidenceGapPlan } from './labour-productivity-analysis.mjs';
+import { LABOUR_PRODUCTIVITY_SNAPSHOT } from './labour-productivity-snapshot.mjs';
 import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 import { comparisonQuality, observationFlagNotes } from './observation-quality.mjs';
 import { ageScopeMatcherFor } from './age-scope.mjs';
@@ -585,6 +587,13 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         return /\b(pib(?: real)?|producto interior bruto|economia|gdp|nivel de vida|condiciones de vida|bienestar|prosperidad)\b/.test(text)
           && !/\b(productividad|por trabajador|poblacion|inmigracion|migracion|empleo|horas trabajadas|renta mediana|ingresos del hogar)\b/.test(text);
       });
+    const sameProductivityComparison = focus.id === 'labour-productivity-and-growth'
+      && propositions.length <= 3 && propositions.length >= 2
+      && propositions.every((proposition) => {
+        const text = normalize(proposition.text);
+        return /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(text)
+          && !/\b(empres\w*|negocio\w*|sector\w*|productividad total de los factores|salario\w*|sueldo\w*)\b/.test(text);
+      });
     const sameLandlordMotive = focus.id === 'rental-landlord-motives'
       && (/^(?:les|le|esa modalidad|esa forma)\b/.test(clauseText)
         && /\b(flexibil\w*|seguridad|riesg\w*|rentabil\w*)\b/.test(clauseText)
@@ -609,7 +618,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     const unemploymentSupplyExplanation = focus.id === 'unemployment-wage-pressure'
       && propositions.length === 2 && /\b(porque|ya que|debido a que|por tener|al haber)\b/.test(normalizedClaim)
       && /\b(paro|desemple\w*|candidat\w*|demandantes? de empleo|oferta de trabajadores|mano de obra|aspirantes?|vacantes?)\b/.test(clauseText);
-    if (sameSectorOutput || sameGdpComparison && (gdpAggregateClause || gdpPerPersonClause)) return true;
+    if (sameSectorOutput || sameGdpComparison && (gdpAggregateClause || gdpPerPersonClause)
+      || sameProductivityComparison && /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(clauseText)) return true;
     if (sameLandlordMotive) return true;
     if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism || unemploymentSupplyExplanation) return true;
     if (clauseFocus) return false;
@@ -652,6 +662,25 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       if (reviewed) return reviewed;
     }
     return gdpPerCapitaEvidenceGapPlan(claim, { reason: /\b(?:19|20|21)\d{2}\b|\b(?:ultim\w*|hace|durante)\b/.test(normalizedClaim) ? 'period' : 'missing-period' });
+  }
+  if (focus.id === 'labour-productivity-and-growth') {
+    const requestedTerritories = requestedGeographyScopes(claim);
+    if (requestedTerritories.some((scope) => scope.id !== 'ES')) return labourProductivityEvidenceGapPlan(claim, { reason: 'geography' });
+    const matched = labourProductivityAnalysisPlan(claim, { observations, now });
+    if (matched) return matched;
+    const metricIds = ['real_labour_productivity_per_person', 'real_labour_productivity_per_hour', 'gdp_real_annual', 'gdp_real_per_capita_annual', 'employment_persons_per_capita_national_accounts'];
+    const hasLiveRows = observations.some((item) => metricIds.includes(item.metricId));
+    const snapshotUsable = snapshotLifecycle(LABOUR_PRODUCTIVITY_SNAPSHOT, now).usable
+      && snapshotLifecycle(GDP_REAL_PER_CAPITA_SNAPSHOT, now).usable;
+    if (allowReviewedSnapshotFallback && !hasLiveRows && snapshotUsable) {
+      const reviewed = labourProductivityAnalysisPlan(claim, {
+        observations: [...GDP_REAL_PER_CAPITA_SNAPSHOT.observations, ...LABOUR_PRODUCTIVITY_SNAPSHOT.observations],
+        now,
+        allowReviewedSnapshot: true,
+      });
+      if (reviewed) return reviewed;
+    }
+    return labourProductivityEvidenceGapPlan(claim, { reason: /\b(?:19|20|21)\d{2}\b|\b(?:ultim\w*|hace|durante)\b/.test(normalizedClaim) ? 'period' : 'missing-period' });
   }
   const fullTime = /\b(?:jornada completa|tiempo completo)\b/i.test(claim);
   const partTime = /\b(?:jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)\b/i.test(claim);

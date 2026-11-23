@@ -103,6 +103,30 @@
     "notEquivalentTo": ["gdp_real_annual", "gdp_current_prices", "gdp_per_capita_current_prices", "gdp_per_capita_europe", "median_equivalised_income"],
     "dimensions": ["period", "geography", "frequency", "unit", "national_account_item"]
   },
+  "real_labour_productivity_per_person": {
+    "name": "Real labour productivity per person employed",
+    "aliases": ["productividad laboral real por persona ocupada", "PIB real por persona empleada", "productividad real por trabajador"],
+    "unit": "index, 2020=100",
+    "population": "real GDP divided by total employment, including employees and self-employed, for the whole economy",
+    "notEquivalentTo": ["real_labour_productivity_per_hour", "gdp_real_per_capita_annual", "gdp_real_annual"],
+    "dimensions": ["period", "geography", "frequency", "unit", "national_account_indicator"]
+  },
+  "real_labour_productivity_per_hour": {
+    "name": "Real labour productivity per hour worked",
+    "aliases": ["productividad laboral real por hora trabajada", "PIB real por hora trabajada", "productividad real por hora"],
+    "unit": "index, 2020=100",
+    "population": "real GDP divided by total hours worked by employees and self-employed, for the whole economy",
+    "notEquivalentTo": ["real_labour_productivity_per_person", "gdp_real_per_capita_annual", "gdp_real_annual"],
+    "dimensions": ["period", "geography", "frequency", "unit", "national_account_indicator"]
+  },
+  "employment_persons_per_capita_national_accounts": {
+    "name": "Total employment (employed persons) per capita, national accounts",
+    "aliases": ["personas ocupadas por habitante", "empleo total por habitante", "proporción de empleo sobre la población total", "personas empleadas por habitante"],
+    "unit": "percent",
+    "population": "total employment under the domestic concept divided by total population under the national concept",
+    "notEquivalentTo": ["employment_rate", "real_labour_productivity_per_person", "real_labour_productivity_per_hour"],
+    "dimensions": ["period", "geography", "frequency", "unit", "national_account_indicator"]
+  },
   "gdp_per_capita_europe": {
     "name": "Gross domestic product per capita: Spain and the European Union",
     "aliases": ["PIB por habitante frente a Europa", "PIB per cápita frente a Europa", "España tiene más PIB por habitante que Europa", "España tiene menos PIB por habitante que Europa", "PIB por persona frente a la Unión Europea"],
