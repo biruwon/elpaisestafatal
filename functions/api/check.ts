@@ -24,7 +24,7 @@ import { searchD1Warehouse, searchD1WarehouseByMetricIds } from '../lib/d1-wareh
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-42-2026-11';
+const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-real-wage-snapshots-43-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -287,7 +287,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           if (!localResolverAvailable) return json(warehouseUnavailableResponse);
           focusedObservations = undefined;
         } else {
-          if (['working-poverty', 'education-employment-outcomes', 'primary-care-waits', 'primary-care-wait-trend', 'primary-care-wait-causes'].includes(focus.id) && focusedObservations.length === 0) {
+          if (['working-poverty', 'education-employment-outcomes', 'primary-care-waits', 'primary-care-wait-trend', 'primary-care-wait-causes', 'real-wages', 'collective-agreement-wages'].includes(focus.id) && focusedObservations.length === 0) {
             // Reviewed text snapshots can answer from their own dated source
             // when a successful warehouse lookup has no rows. A failed D1
             // query still follows the unavailable path above; absence and
@@ -310,7 +310,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       } else if (focus.id !== 'rental-price-amount' && focus.direct.length === 0 && metricIds.length === 0) {
         // If no warehouse metric is defined for this family, its reviewed
         // explanation can identify the missing measurement without a lookup.
-        const plan = focusedEvidencePlan(effectiveClaim, { observations: [] }) as AnswerPlan | undefined;
+        const plan = focusedEvidencePlan(effectiveClaim, { observations: [], allowReviewedSnapshotFallback: true }) as AnswerPlan | undefined;
         if (plan) {
           warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
           if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now()) return json(warehouseFocusedResponse);

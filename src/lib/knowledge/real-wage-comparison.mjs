@@ -61,7 +61,7 @@ const selectedWindow = (claim, years, now) => {
   return { start, end, automatic };
 };
 
-const eligibleSeries = (observations, metricId, now) => {
+const eligibleSeries = (observations, metricId, now, allowReviewedSnapshot = false) => {
   const currentYear = new Date(now).getUTCFullYear();
   const eligible = observations.filter((item) => {
     if (item.metricId !== metricId || !/^\d{4}$/.test(String(item.period || '')) || Number(item.period) >= currentYear
@@ -72,7 +72,8 @@ const eligibleSeries = (observations, metricId, now) => {
     if (metricId === WAGES && (d.unit !== 'I20' || d.nace_r2 !== 'B-S' || d.lcstruct !== 'D11')) return false;
     if (metricId === PRICES && (d.unit !== 'INX_A_AVG' || d.coicop18 !== 'TOTAL')) return false;
     const retrieved = Date.parse(item.source?.retrievedAt || '');
-    if (!item.source?.id || !item.source?.title || !Number.isFinite(retrieved) || retrieved > now + 300000 || now - retrieved > 14 * 86400000) return false;
+    if (!item.source?.id || !item.source?.title || !Number.isFinite(retrieved) || retrieved > now + 300000
+      || now - retrieved > 14 * 86400000 && !(allowReviewedSnapshot && item.dataKind === 'snapshot')) return false;
     try {
       const url = new URL(item.source.url);
       const dataset = metricId === WAGES ? 'lc_lci_r2_a' : 'prc_hicp_ainr';
@@ -111,10 +112,10 @@ const makeComparison = (wages, prices, start, end) => {
   return { start, end, wageChange, priceChange, realChange, provisional: flags.includes('p'), estimated: flags.includes('e') };
 };
 
-export const realWagePlan = (claim, { observations = [], now = Date.now() } = {}) => {
+export const realWagePlan = (claim, { observations = [], now = Date.now(), allowReviewedSnapshot = false } = {}) => {
   const text = normalize(claim);
   if (!compatibleClaimScope(claim) || !/\b(perd\w*|pierd\w*|gan\w*|baj\w*|sub\w*|aument\w*|ca[iy]\w*|crec\w*|estanc\w*|evoluc\w*|mejor\w*|empeor\w*|sigu\w*|come\w*|comid\w*|compar\w*|cambi\w*|compens\w*|reduc\w*|disminu\w*|erosion\w*|recuper\w*|mantien\w*)\b/.test(text)) return undefined;
-  const wages = eligibleSeries(observations, WAGES, now), prices = eligibleSeries(observations, PRICES, now);
+  const wages = eligibleSeries(observations, WAGES, now, allowReviewedSnapshot), prices = eligibleSeries(observations, PRICES, now, allowReviewedSnapshot);
   const years = [...wages.keys()].filter((year) => prices.has(year)).sort((a, b) => a - b);
   if (!/\b(?:19|20|21)\d{2}\b/.test(text)
     && Math.max(...wages.keys()) !== Math.max(...prices.keys())) return undefined;

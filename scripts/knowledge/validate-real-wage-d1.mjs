@@ -65,7 +65,7 @@ try {
   globalThis.fetch = async (_url, init) => {
     received = JSON.parse(init.body);
     const resolvedRows = rankWarehouseObservations(received.text, received.warehouseRecords, 100, { metricIds: new Set(ids) });
-    const answer = realWagePlan(received.text, { observations: resolvedRows, now });
+    const answer = focusedEvidencePlan(received.text, { observations: resolvedRows, now, allowReviewedSnapshotFallback: true });
     return Response.json({ status: 'complete', requestId: 'real-wage-api-test', result: answer });
   };
   const claim = 'Los salarios pierden poder adquisitivo frente a los precios';
@@ -102,8 +102,16 @@ try {
   };
   const emptyLookup = await postCheck(outageClaim, { DB: emptyDatabase });
   const emptyLookupResult = await emptyLookup.json();
-  assert.equal(emptyLookupResult.state, 'insufficient', 'A successful empty lookup is an evidence gap, not a retrieval outage');
+  assert.equal(emptyLookupResult.state, 'limited', 'A successful empty lookup can use the current reviewed wage/price fallback snapshot');
+  assert.match(emptyLookupResult.result.reply, /índice salarial bajó aproximadamente un 4,6 %/);
+  assert.ok(emptyLookupResult.result.sources.some((source) => source.id === 'eurostat-annual-hourly-wages-spain-2026-11-23'));
   assert.doesNotMatch(emptyLookupResult.result.reply, /no hemos podido consultar las series estadísticas/i);
+
+  const collectiveLookup = await postCheck('Los convenios colectivos actualizan los salarios más lentamente que los precios', { DB: emptyDatabase });
+  const collectiveLookupResult = await collectiveLookup.json();
+  assert.equal(collectiveLookupResult.state, 'limited', 'A focused collective-agreement text claim can use its reviewed comparison snapshot');
+  assert.match(collectiveLookupResult.result.reply, /15,7 %/);
+  assert.ok(collectiveLookupResult.result.sources.some((source) => source.id === 'mites-collective-agreements-2026-10'));
   await Promise.all(pending);
 
   globalThis.fetch = async (_url, init) => {

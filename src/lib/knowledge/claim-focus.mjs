@@ -258,8 +258,9 @@ export const privateHealthcareAccessClaimType = (claim) => {
 const electricity = /\b(electric\w*|luz|kwh|megavat\w*|mwh)\b/;
 const cost = /\b(preci\w*|cost\w*|car[oa]s?|barat\w*|pagan?|pagar|factura\w*|tarifa\w*)\b/;
 const wagePriceMarginPassThrough = (t) => has(t, wages)
-  && /\b(preci\w*|margen\w*|coste\w*|rentabil\w*|competitiv\w*|encarec\w*)\b/.test(t)
+  && /\b(preci\w*|inflaci\w*|margen\w*|coste\w*|rentabil\w*|competitiv\w*|encarec\w*)\b/.test(t)
   && /\b(oblig\w*|forz\w*|traslad\w*|repercut\w*|provoc\w*|caus\w*|encarec\w*|absorber|asumir|reduc\w*|sub\w*|aument\w*)\b/.test(t)
+  && !/\b(?:mas lent\w*|mas despaci\w*|mas rapid\w*|mas deprisa|menos que|mas que|por debajo|por detras|por encima|por delante|no compens\w*|no.{0,12}sigui\w*|ritmo|compens\w*|recuper\w*|super\w*|perdi\w* poder)\b/.test(t)
   && !/\b(poder adquisitivo|poder de compra|salari\w* real|coste de (?:la )?vida|viviend\w*|alquil\w*|arrendam\w*|hipotec\w*|renta mensual)\b/.test(t);
 const electricityIndustryPrice = (t) => has(t, electricity)
   && /\b(industria\w*|industrial\w*|empresas?|negocios?|f[aá]bricas?|manufactur\w*|sector productivo|no dom[eé]stic\w*|grandes? consumidores?)\b/.test(t)
@@ -1005,8 +1006,21 @@ const focuses = [
     limitation: 'Sin costes laborales, precios de venta y márgenes comparables para las empresas o sectores afectados, no se puede estimar ese traslado ni afirmar que sea inevitable.',
   },
   {
+    id: 'collective-agreement-wages', label: 'subidas salariales pactadas y precios',
+    when: (t) => /\b(?:conveni\w*\s+(?:colectiv\w*|laboral\w*)|negociacion colectiv\w*|pactos? salarial\w*|salari\w* pactad\w*)\b/.test(t)
+      && /\b(?:salari\w*|sueldo\w*|retribu\w*|remuner\w*)\b/.test(t)
+      && /\b(?:inflacion|precios|coste de (?:la )?vida|ipc)\b/.test(t)
+      && /\b(?:mas|menos|debajo|encima|ritmo|compens\w*|recuper\w*|perdi\w*|lento|rapido|retras\w*|super\w*)\b/.test(t)
+      && !/\b(?:caus\w*|provoc\w*|gener\w*|traslad\w*|oblig\w*)\b/.test(t),
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['variación salarial pactada en convenios con efectos económicos cuantificados', 'variación del índice de precios en los mismos años', 'personas trabajadoras cubiertas y provisionalidad de las cifras'],
+    explanation: 'La subida pactada en los convenios y el cambio del nivel de precios son medidas distintas. Para compararlas hay que alinear los años y aclarar a qué trabajadores cubren los convenios registrados.',
+    limitation: 'La media pactada no mide lo que cobró cada trabajador ni todos los salarios. Una comparación con el índice general de precios tampoco describe el coste de vida de cada hogar ni demuestra que los convenios causen la inflación.',
+  },
+  {
     id: 'real-wages', label: 'salarios y poder adquisitivo',
-    when: (t) => has(t, wages) && /\b(poder (?:adquisitivo|de compra)|inflacion|coste de (?:la )?vida|precios|salari\w* real(?:es)?|perdi\w* poder)\b/.test(t),
+    when: (t) => has(t, wages) && /\b(poder (?:adquisitivo|de compra)|inflacion|coste de (?:la )?vida|precios|salari\w* real(?:es)?|perdi\w* poder)\b/.test(t)
+      && !/\b(?:caus\w*|provoc\w*|gener\w*|traslad\w*|oblig\w*)\b/.test(t),
     direct: [], context: ['annual_hourly_wage_index', 'annual_hicp_index', 'median_hourly_earnings', 'cpi_index'],
     needs: ['una serie salarial y una de precios con las mismas fechas', 'salario bruto o neto y población', 'cambio acumulado descontando inflación'],
     explanation: 'El poder adquisitivo cambia según cuánto sube el salario respecto a los precios. Hay que comparar ambas series entre las mismas fechas.',

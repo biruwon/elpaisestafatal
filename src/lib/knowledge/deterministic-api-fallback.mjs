@@ -128,7 +128,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
     ? [WORKING_POVERTY_SNAPSHOT, EDUCATION_EMPLOYMENT_SNAPSHOT, PRIMARY_CARE_WAIT_SNAPSHOT].filter((snapshot) => snapshotLifecycle(snapshot, now).usable)
     : [];
   const fallbackObservations = fallbackSnapshots.flatMap((snapshot) => snapshot.observations);
-  const focused = analysisWasTruncated ? undefined : focusedEvidencePlan(original, { observations: fallbackObservations, propositions, now });
+  const focused = analysisWasTruncated ? undefined : focusedEvidencePlan(original, { observations: fallbackObservations, propositions, now, allowReviewedSnapshotFallback: true });
   const related = topicReference(original);
   if (focused) {
     const reviewedContext = reviewedContextForGap(focused, original, now);

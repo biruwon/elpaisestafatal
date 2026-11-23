@@ -2145,7 +2145,7 @@ const startUrlResolveJob = (url) => startMediaResolveJob(url, 'url');
 
 const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = [], eventPackets = undefined) => {
   const householdArrangementContrast = hasHouseholdArrangementContrast(text);
-  const focusedPlan = !classified.primary && !householdArrangementContrast ? focusedEvidencePlan(text, { observations, propositions: classified.compiler?.explicitPropositions || [] }) : undefined;
+  const focusedPlan = !classified.primary && !householdArrangementContrast ? focusedEvidencePlan(text, { observations, propositions: classified.compiler?.explicitPropositions || [], allowReviewedSnapshotFallback: true }) : undefined;
   if (focusedPlan) return { status: 'complete', requestId: resultRequestId, result: focusedPlan, relatedClaims: [] };
   const explicitPropositions = (classified.compiler?.explicitPropositions || []).filter((item) => item?.explicit !== false && item?.text);
   const scorecardLifecycle = snapshotLifecycle(GOVERNMENT_SCORECARD_SNAPSHOT);

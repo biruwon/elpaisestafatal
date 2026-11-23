@@ -2,6 +2,10 @@ import { claimFocusFor, focusedMetricIdsFor, privateHealthcareAccessClaimType, t
 import { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { realWagePlan } from './real-wage-comparison.mjs';
+import { REAL_WAGE_SNAPSHOT } from './real-wage-snapshot.mjs';
+import { collectiveAgreementWagePlan } from './collective-agreement-wage-comparison.mjs';
+import { COLLECTIVE_AGREEMENT_WAGE_SNAPSHOT } from './collective-agreement-wage-snapshot.mjs';
+import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 import { comparisonQuality, observationFlagNotes } from './observation-quality.mjs';
 import { ageScopeMatcherFor } from './age-scope.mjs';
 import { periodScopeMatcherFor } from './period-scope.mjs';
@@ -456,7 +460,7 @@ const educationOutcomeNeedsForClaim = (claim, fallback) => {
 // This composer reports only the supplied observations. It cannot turn a
 // contextual proxy into a verdict on a different measurement or silently
 // infer a real-wage change from unmatched wage and price periods.
-export const focusedEvidencePlan = (claim, { observations = [], propositions = [], now = Date.now() } = {}) => {
+export const focusedEvidencePlan = (claim, { observations = [], propositions = [], now = Date.now(), allowReviewedSnapshotFallback = false } = {}) => {
   const focus = claimFocusFor(claim);
   if (!focus) return undefined;
   const normalizedClaim = normalize(claim);
@@ -505,6 +509,20 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   if (focus.id === 'real-wages') {
     const matched = realWagePlan(claim, { observations, now });
     if (matched) return matched;
+    const hasLiveWagePriceRows = observations.some((item) => [...focus.direct, ...focus.context].includes(item.metricId));
+    if (allowReviewedSnapshotFallback && !hasLiveWagePriceRows && snapshotLifecycle(REAL_WAGE_SNAPSHOT, now).usable) {
+      const reviewed = realWagePlan(claim, { observations: REAL_WAGE_SNAPSHOT.observations, now, allowReviewedSnapshot: true });
+      if (reviewed) return reviewed;
+    }
+  }
+  if (focus.id === 'collective-agreement-wages') {
+    const matched = collectiveAgreementWagePlan(claim, { observations, now });
+    if (matched) return matched;
+    const hasLiveAgreementPriceRows = observations.some((item) => ['collective_agreement_wage_settlement_rate', 'annual_hicp_index'].includes(item.metricId));
+    if (allowReviewedSnapshotFallback && !hasLiveAgreementPriceRows && snapshotLifecycle(COLLECTIVE_AGREEMENT_WAGE_SNAPSHOT, now).usable) {
+      const reviewed = collectiveAgreementWagePlan(claim, { observations: COLLECTIVE_AGREEMENT_WAGE_SNAPSHOT.observations, now, allowReviewedSnapshot: true });
+      if (reviewed) return reviewed;
+    }
   }
   const fullTime = /\b(?:jornada completa|tiempo completo)\b/i.test(claim);
   const partTime = /\b(?:jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)\b/i.test(claim);
