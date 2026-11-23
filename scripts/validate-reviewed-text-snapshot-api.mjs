@@ -452,8 +452,8 @@ assert.doesNotMatch(primaryCareUnavailable.body.result?.reply || '', /9,71|72 %/
 const graduatePay = await check('Tener un máster o un doctorado no garantiza cobrar un salario acorde con la cualificación');
 assert.equal(graduatePay.body.state, 'insufficient');
 assert.deepEqual(graduatePay.body.result.sources, []);
-assert.match(graduatePay.body.result.reply, /salarios por nivel educativo alcanzado y por ocupación o formación requerida para el puesto/);
-assert.match(graduatePay.body.result.reply, /distribuciones salariales y tamaño de las diferencias, no solo medias/);
+assert.match(graduatePay.body.result.reply, /salarios comparables por ocupación y por formación o cualificación exigida para el puesto/);
+assert.match(graduatePay.body.result.reply, /distribuciones salariales y una definición medible de «acorde»/);
 assert.doesNotMatch(graduatePay.body.result.reply, /80,2 %|34 %|17 € por hora/);
 
 const regionalPayHousing = await check('El coste de vivienda ha eliminado la ventaja salarial de trabajar en Madrid o Barcelona');

@@ -49,6 +49,8 @@ const touristCountUrl = 'https://www.ine.es/jaxiT3/Tabla.htm?t=39364';
 const touristShareUrl = 'https://www.ine.es/jaxiT3/Tabla.htm?t=39365';
 db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('tourist-count-source', 'INE', 'Viviendas turísticas estimadas', touristCountUrl, retrieved, 'primary', '[]', 'ine', 'monthly');
 db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('tourist-share-source', 'INE', 'Porcentaje de viviendas turísticas sobre el parque', touristShareUrl, retrieved, 'primary', '[]', 'ine', 'monthly');
+const educationPayUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_16?freq=A&sex=T&indic_se=ERN&isced11=ED0-2&isced11=ED3_4&isced11=ED5-8&sizeclas=GE10&nace_r2=B-S_X_O&unit=EUR&geo=ES&time=2022&lang=EN';
+db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('education-pay-source', 'Eurostat', 'Salario bruto medio por hora según estudios alcanzados, 2022', educationPayUrl, retrieved, 'primary', '[]', 'eurostat', 'daily');
 const insert = db.prepare('INSERT INTO observations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 for (const [year, value] of [[2015, 100], [2020, 110], [2025, 120]]) {
   for (const [code, unit, measured] of [['I15', 'Index, 2015=100', value], ['RCH_A', 'Annual rate of change', 5]]) {
@@ -70,6 +72,12 @@ insert.run('tourist-housing-count-2026M05', 'observation', 'ine-tourist-housing'
   JSON.stringify({ geo: 'ES', time: '2026M05', geographyLevel: 'country' }), JSON.stringify({ geo: 'Spain', geographyLevel: 'Country' }), null, null, '{}', 'tourist-count-source', 'viviendas turísticas estimadas España anuncios plataformas mayo 2026');
 insert.run('tourist-housing-share-2026M05', 'observation', 'ine-tourist-housing', 'Porcentaje de viviendas turísticas sobre el parque', 'tourist_housing_share', 1.28, '%', '2026M05', 'España', 'viviendas turísticas como proporción del parque total de viviendas',
   JSON.stringify({ geo: 'ES', time: '2026M05', geographyLevel: 'country', denominator: 'total housing stock in the 2021 Population and Housing Census' }), JSON.stringify({ geo: 'Spain', geographyLevel: 'Country', denominator: 'total housing stock in the 2021 Population and Housing Census' }), null, null, '{}', 'tourist-share-source', 'porcentaje viviendas turísticas sobre parque total España Censo 2021 mayo 2026');
+for (const [education, value, educationLabel] of [
+  ['ED0-2', 10.04, 'Less than primary, primary and lower secondary education (levels 0-2)'],
+  ['ED3_4', 11.48, 'Upper secondary and post-secondary non-tertiary education (levels 3 and 4)'],
+  ['ED5-8', 17.71, 'Tertiary education (levels 5-8)'],
+]) insert.run(`education-earnings-${education}`, 'observation', 'earn_ses22_16', 'Salario bruto medio por hora según estudios alcanzados', 'mean_hourly_earnings_by_education', value, 'Euro', '2022', 'España', 'employees of all sexes in Spanish enterprises with 10 or more employees, in industry, construction and services except public administration, defense and compulsory social security',
+  JSON.stringify({ freq: 'A', sex: 'T', indic_se: 'ERN', isced11: education, sizeclas: 'GE10', nace_r2: 'B-S_X_O', unit: 'EUR', geo: 'ES', time: '2022' }), JSON.stringify({ freq: 'Annual', sex: 'Total', indic_se: 'Gross earnings', isced11: educationLabel, sizeclas: '10 employees or more', nace_r2: 'Industry, construction and services (except public administration, defense, compulsory social security)', unit: 'Euro', geo: 'Spain', time: '2022' }), null, null, '{}', 'education-pay-source', `salario bruto medio por hora estudios alcanzados ${education} España 2022 Eurostat`);
 for (const [year, value] of [['2015', 100], ['2020', 110], ['2025', 120]]) {
     insert.run(`rent-archive-${year}`, 'observation', 'prc_hicp_midx', 'Índice histórico de precios del alquiler', 'rental_price_index', value, 'Index, 1996=100', year, 'España', null,
     JSON.stringify({ geo: 'ES', unit: 'I96', time: year }), JSON.stringify({ geo: 'Spain', unit: 'Index, 1996=100' }), null, null, '{}', 'rent-archive-source', 'índice histórico precios alquiler España evolución subida Eurostat');
@@ -159,6 +167,36 @@ try {
     assert.deepEqual(result.result.sources.map((source) => source.url).sort(), [atlasUrl, atlasMethodologyUrl].sort());
     assert.ok(result.result.evidenceSummary.families.every((family) => family.dataKind === 'context'));
   }
+  const educationPayQueries = [
+    'Los sueldos de muchos trabajos cualificados son demasiado parecidos a los de puestos que exigen mucha menos formación',
+    'Los empleos que requieren estudios superiores no pagan mucho más que los que exigen menos estudios',
+    'Tener un máster o un doctorado no garantiza cobrar un salario acorde con la cualificación',
+  ];
+  let educationPayEvidenceIds;
+  for (const query of educationPayQueries) {
+    const result = await check(query);
+    assert.equal(result.state, 'insufficient', JSON.stringify(result));
+    assert.equal(result.result.answerScope?.family, 'education-pay-comparison');
+    assert.deepEqual(result.result.answerScope.directMetrics, []);
+    assert.deepEqual(result.result.answerScope.contextMetrics, ['mean_hourly_earnings_by_education']);
+    assert.ok(result.result.reply.includes('10,04 €/hora'));
+    assert.ok(result.result.reply.includes('11,48 €/hora'));
+    assert.ok(result.result.reply.includes('17,71 €/hora'));
+    assert.match(result.result.reply, /estudios alcanzados.*no los exigidos por el puesto/);
+    assert.match(result.result.reply, /empresas con al menos 10 empleados/);
+    assert.match(result.result.reply, /falta comparar salarios con los requisitos de cada puesto/);
+    assert.deepEqual(result.result.sources.map((source) => source.url), [educationPayUrl]);
+    assert.equal(result.result.arguments?.[0]?.verdict, 'insufficient');
+    const evidenceIds = result.result.evidenceSummary.families.find((family) => family.familyId === 'mean_hourly_earnings_by_education')?.evidenceIds || [];
+    assert.equal(evidenceIds.length, 3, 'The answer must show all education levels instead of silently dropping the highest category');
+    if (educationPayEvidenceIds) assert.deepEqual([...evidenceIds].sort(), educationPayEvidenceIds, `A paraphrase selected different education-pay observations: ${query}`);
+    educationPayEvidenceIds = [...evidenceIds].sort();
+  }
+  const educationOverqualificationNeighbour = await check('La tasa de sobrecualificación de titulados universitarios es alta');
+  assert.notEqual(educationOverqualificationNeighbour.state, 'supported');
+  assert.equal(educationOverqualificationNeighbour.result.answerScope?.family, 'education-employment-outcomes');
+  assert.ok(!educationOverqualificationNeighbour.result.sources.some((source) => source.url === educationPayUrl), 'Education-level earnings must not be attributed to an overqualification claim');
+  assert.doesNotMatch(educationOverqualificationNeighbour.result.reply, /10,04|11,48|17,71/, 'A nearby overqualification claim must not inherit salary figures');
   const plainRentTrend = await check('El precio del alquiler subió en España durante 2025');
   assert.notEqual(plainRentTrend.result.answerScope?.family, 'residential-gentrification-displacement', 'A rent trend without resident movement must not be presented as displacement');
   for (const query of ['¿Cómo ha evolucionado el índice de precios del alquiler desde 2015?', '¿Ha subido el índice del alquiler en España desde 2015?']) {

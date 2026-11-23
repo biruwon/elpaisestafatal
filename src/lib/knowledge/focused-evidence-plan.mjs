@@ -58,6 +58,7 @@ const labels = {
   median_hourly_earnings: 'Salario mediano bruto por hora',
   median_hourly_earnings_europe: 'Salario mediano bruto por hora en Europa',
   mean_hourly_earnings_by_activity: 'Salario bruto medio por hora según actividad',
+  mean_hourly_earnings_by_education: 'Salario bruto medio por hora según estudios alcanzados',
   cpi_index: 'IPC general', harmonised_price_index: 'Índice armonizado de precios',
   rental_price_index: 'Índice de alquileres pagados',
   housing_cost_overburden_rate: 'Sobrecarga de gastos de vivienda',
@@ -318,6 +319,44 @@ const sectorEarningsFactsForClaim = (claim, observations, fitsClaim) => {
   return [{
     id: 'mean_hourly_earnings_by_activity', items: selected, latest, finding,
     scope: 'España · empleados de empresas con 10 o más personas · NACE Rev. 2 · salarios brutos por hora',
+    sourceIds: [...new Set(selected.map((item) => item.source.id))],
+  }];
+};
+
+const earningsEducation = [
+  { code: 'ED0-2', label: 'educación hasta secundaria inferior' },
+  { code: 'ED3_4', label: 'secundaria superior y postsecundaria no terciaria' },
+  { code: 'ED5-8', label: 'educación terciaria' },
+];
+const educationEarningsFactsForClaim = (observations, fitsClaim) => {
+  const eligibleRows = observations.filter((item) => item.metricId === 'mean_hourly_earnings_by_education'
+    && validNumber(item.value) && item.period === '2022' && item.freshness !== 'invalid'
+    && sourceValid(item.source) && String(item.source?.url || '').includes('/earn_ses22_16?')
+    && fitsClaim(item)
+    && item.dimensions?.freq === 'A' && item.dimensions?.sex === 'T'
+    && item.dimensions?.indic_se === 'ERN' && item.dimensions?.sizeclas === 'GE10'
+    && item.dimensions?.nace_r2 === 'B-S_X_O' && item.dimensions?.unit === 'EUR'
+    && item.dimensions?.geo === 'ES' && item.dimensions?.time === '2022'
+    && earningsEducation.some(({ code }) => item.dimensions?.isced11 === code));
+  const selected = [];
+  for (const education of earningsEducation) {
+    const candidates = eligibleRows.filter((item) => item.dimensions?.isced11 === education.code)
+      .sort((a, b) => (Date.parse(b.source?.retrievedAt || '') || 0) - (Date.parse(a.source?.retrievedAt || '') || 0)
+        || String(a.id || '').localeCompare(String(b.id || '')));
+    if (!candidates.length) return [];
+    const newestTime = Date.parse(candidates[0].source?.retrievedAt || '') || 0;
+    const newest = candidates.filter((item) => (Date.parse(item.source?.retrievedAt || '') || 0) === newestTime);
+    if (newest.some((item) => item.value !== newest[0].value || String(item.status || '') !== String(newest[0].status || ''))) return [];
+    selected.push({ ...newest[0], educationLabel: education.label });
+  }
+  if (selected.some((item) => item.source.id !== selected[0].source.id || item.source.url !== selected[0].source.url
+    || item.source.retrievedAt !== selected[0].source.retrievedAt)) return [];
+  const values = selected.map((item) => `${item.educationLabel} (ISCED ${String(item.dimensions.isced11).replace(/^ED/, '').replace(/[-_]/g, '–')}): ${number(item.value, 'mean_hourly_earnings_by_education')} €/hora`);
+  const latest = { ...selected[0], status: [...new Set(selected.map((item) => String(item.status || '')).filter(Boolean))].join('') };
+  return [{
+    id: 'mean_hourly_earnings_by_education', items: selected, latest,
+    finding: `Eurostat, España, 2022: remuneración bruta media por hora según estudios alcanzados (no los exigidos por el puesto): ${values.join('; ')}. La serie cubre a empleados de empresas con al menos 10 empleados, ambos sexos, en industria, construcción y servicios; excluye administración pública, defensa y Seguridad Social obligatoria.`,
+    scope: 'España · empleados de empresas con 10 o más personas · todos los sexos · industria, construcción y servicios excepto administración pública, defensa y Seguridad Social obligatoria · estudios alcanzados',
     sourceIds: [...new Set(selected.map((item) => item.source.id))],
   }];
 };
@@ -790,7 +829,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const displayIds = ids.filter((id) => !subjectiveComponentIds.has(id) || !ids.includes('subjective_poverty_rate'));
   const ordinaryFacts = displayIds.filter((id) => id !== 'subjective_poverty_rate').flatMap((id) => id === 'mean_hourly_earnings_by_activity'
     ? sectorEarningsFactsForClaim(claim, observations, fitsClaim)
-    : factsForMetric(id, observations, fitsClaim));
+    : id === 'mean_hourly_earnings_by_education' ? educationEarningsFactsForClaim(observations, fitsClaim)
+      : factsForMetric(id, observations, fitsClaim));
   const subjectivePovertyFacts = displayIds.includes('subjective_poverty_rate')
     ? subjectivePovertyFactsFromComponents(observations, fitsClaim)
     : [];
@@ -979,7 +1019,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const gap = missing.length ? focus.id === 'working-poverty' && workingPovertyCountRequested
     ? 'La serie disponible mide un porcentaje, no el número de personas. Falta un recuento comparable de personas ocupadas bajo el umbral de riesgo de pobreza.'
     : focus.evidenceGap || `Falta una medición directa de ${missing.join('; ')}.` : '';
-  const gapForReply = educationOutcome && !ids.length && educationOutcomeLimitForQuestion(educationQuestion) ? '' : gap;
+  const gapForReply = educationOutcome && !ids.length && educationOutcomeLimitForQuestion(educationQuestion) ? ''
+    : focus.id === 'education-pay-comparison' && facts.length
+      ? 'Para comprobar la afirmación falta comparar salarios con los requisitos de cada puesto, usando ocupación, jornada, experiencia, sector, territorio y periodo comparables.'
+      : gap;
   const focusedExplanation = focus.id === 'subjective-financial-strain' && !ids.includes('subjective_poverty_rate')
     ? 'EU-SILC separa las respuestas «con dificultad» y «con gran dificultad». Esta cifra corresponde solo a la categoría solicitada; Eurostat combina ambas para su indicador de pobreza subjetiva.'
     : focus.id === 'sector-wage-comparison' && comparesSectorEmployment

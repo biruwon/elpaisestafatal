@@ -768,9 +768,18 @@ const selectCompatibleWarehouseSeries = (query, observations) => {
 
 const findWarehouseEvidence = async (query, compiler, queryEmbedding, warehouseRecords) => {
   const normalizedQuery = normalise(query);
-  const explicitComparison = /\b(?:mas|menos|mayor|menor|superior|inferior)\b[\s\S]{0,80}\b(?:que|frente a|comparad)\b/.test(normalizedQuery)
-    || /\b(?:que|frente a|comparad)\b[\s\S]{0,80}\b(?:mas|menos|mayor|menor|superior|inferior)\b/.test(normalizedQuery);
-  const rankingQuery = normalizedQuery.includes('europa') || normalizedQuery.includes('ranking') || normalizedQuery.includes('mas alta') || normalizedQuery.includes('mas baja') || normalizedQuery.includes('mayor') || normalizedQuery.includes('menor') || normalizedQuery.includes('puesto') || explicitComparison;
+  const comparisonTexts = [normalizedQuery, ...(compiler?.claimText ? [normalise(compiler.claimText)] : []), ...(Array.isArray(compiler?.explicitPropositions) ? compiler.explicitPropositions : [])
+    .filter((item) => item?.explicit !== false && item?.text).map((item) => normalise(item.text))];
+  const explicitComparison = comparisonTexts.some((value) => /\b(?:mas|menos|mayor|menor|superior|inferior)\b[\s\S]{0,80}\b(?:que|frente a|comparad)\b/.test(value)
+    || /\b(?:que|frente a|comparad)\b[\s\S]{0,80}\b(?:mas|menos|mayor|menor|superior|inferior)\b/.test(value));
+  // Comparative claims may need several dimension groups from one metric
+  // (for example, earnings by attained education). Keep the compatible rows
+  // together; the focus plan decides whether they answer the claim or only
+  // provide context.
+  const rankingQuery = comparisonTexts.some((value) => value.includes('europa') || value.includes('ranking') || value.includes('mas alta') || value.includes('mas baja') || value.includes('mayor') || value.includes('menor') || value.includes('puesto'))
+    || explicitComparison || compiler?.claimType === 'comparative'
+    || compiler?.explicitPropositions?.some((item) => item?.explicit !== false && item?.type === 'comparative')
+    || Boolean(compiler?.claimText && claimFocusFor(compiler.claimText)?.claimType === 'comparative');
   const meaningfulTerms = tokens(query).filter((token) => !lowSignalTokens.has(token));
   const locationOnlyTerms = new Set(['europa', 'europea', 'europeo', 'pais', 'paises', 'nacional', 'nacionales', 'actual', 'actualidad', 'hoy']);
   const subjectTerms = meaningfulTerms.filter((term) => !locationOnlyTerms.has(term));
@@ -3012,7 +3021,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
   const householdArrangementContrast = hasHouseholdArrangementContrast(text);
   const meaning = measurementMeaningPlan(text);
   if (meaning) return { status: 'complete', requestId: resultRequestId, result: meaning, relatedClaims: [] };
-  const retrieveWarehouseEvidence = (query, compiler, queryEmbedding) => findWarehouseEvidence(query, compiler, queryEmbedding, warehouseRecords);
+  const retrieveWarehouseEvidence = (query, compiler, queryEmbedding) => findWarehouseEvidence(query, { ...compiler, claimText: text }, queryEmbedding, warehouseRecords);
   // Preserve a canonical published answer. A short alias may express a
   // different measurement from its editorial page, so focused measurement
   // claims must not inherit an answer merely because an alias matches.

@@ -411,6 +411,16 @@
     "dimensions": ["period", "geography", "economic_activity", "enterprise_size", "sex", "currency"],
     "limitations": ["It is a mean of gross hourly earnings, not net pay, median pay, or the share of jobs above a high-wage threshold.", "The Spain series is for 2022 and does not measure productivity, employment growth, or the contribution of each activity to the national wage average.", "NACE activity I covers accommodation and food services; it is not the whole tourism economy."]
   },
+  "mean_hourly_earnings_by_education": {
+    "name": "Mean gross hourly earnings by educational attainment",
+    "displayName": "Salario bruto medio por hora según estudios alcanzados",
+    "aliases": ["salario bruto medio por hora según nivel educativo", "ganancia media por hora por nivel de estudios", "remuneración bruta media por hora según estudios alcanzados"],
+    "unit": "EUR per hour",
+    "population": "employees of all sexes in Spanish enterprises with 10 or more employees, in industry, construction and services except public administration, defense and compulsory social security; reference year 2022",
+    "notEquivalentTo": ["median_hourly_earnings", "mean_hourly_earnings_by_activity", "employment_rate_tertiary_education", "tertiary_overqualification_rate"],
+    "dimensions": ["period", "geography", "educational_attainment", "economic_activity", "enterprise_size", "sex", "currency"],
+    "limitations": ["It measures employees' educational attainment, not the education or qualification required by their jobs.", "It is a mean of gross hourly earnings, not net pay, median pay, or the pay distribution within each education group.", "The Spain reference year is 2022; enterprises with fewer than 10 employees and NACE activities outside B-S excluding O are not represented."]
+  },
   "minimum_wage_monthly": {
     "name": "Statutory minimum wage per month",
     "aliases": ["salario mínimo", "SMI", "salario mínimo interprofesional", "sueldo mínimo", "mínimo salarial"],

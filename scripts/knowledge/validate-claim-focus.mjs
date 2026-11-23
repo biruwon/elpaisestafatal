@@ -335,7 +335,7 @@ for (const [family, claim] of crossTopicClaims) {
   assert.equal(focus?.id, family, `Claim crossed into an unrelated topic instead of ${family}: ${claim}`);
   const plan = focusedEvidencePlan(claim, { observations: [irrelevantWageObservation], propositions: deterministicFallbackCompiler(claim).explicitPropositions });
   assert.deepEqual(plan.answerScope.directMetrics, [], `A nearby salary statistic became direct evidence: ${claim}`);
-  assert.deepEqual(plan.answerScope.contextMetrics, [], `A nearby salary statistic became context for a different claim: ${claim}`);
+  assert.deepEqual(plan.answerScope.contextMetrics, family === 'education-pay-comparison' ? ['mean_hourly_earnings_by_education'] : [], `A nearby salary statistic became context for a different claim: ${claim}`);
   assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should leave this claim unsupported: ${claim}`);
   assert.equal(plan.sourceLinks.length, 0, `An unrelated wage survey was attached to this claim: ${claim}`);
   assert.equal(localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim).state, 'insufficient');
@@ -349,7 +349,7 @@ for (const claim of [
   const plan = focusedEvidencePlan(claim, { observations: [irrelevantWageObservation], propositions: deterministicFallbackCompiler(claim).explicitPropositions });
   assert.ok(['education-pay-comparison', 'regional-wage-housing-cost'].includes(plan.answerScope.family), `The claim lost its scoped measurement route: ${claim}`);
   assert.deepEqual(plan.answerScope.directMetrics, [], `National wage data became direct evidence for a comparison: ${claim}`);
-  assert.deepEqual(plan.answerScope.contextMetrics, [], `National wage data became context for an unsupported comparison: ${claim}`);
+  assert.deepEqual(plan.answerScope.contextMetrics, plan.answerScope.family === 'education-pay-comparison' ? ['mean_hourly_earnings_by_education'] : [], `National wage data became context for an unsupported comparison: ${claim}`);
   assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should not resolve this claim: ${claim}`);
   assert.deepEqual(plan.sourceLinks, [], `An unrelated wage survey was attached to this claim: ${claim}`);
   assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'scoped-pay-gap', result: plan }, claim).state, 'insufficient');
@@ -366,6 +366,59 @@ assert.equal(claimFocusFor('Las cotizaciones actuales financian las pensiones de
 assert.equal(claimFocusFor('Las próximas generaciones cobrarán pensiones más bajas')?.id, 'future-pension-outlook', 'A future-pension projection without a housing claim must keep its pension route');
 assert.equal(claimFocusFor('La inflación sube los precios y reduce el poder adquisitivo de los salarios')?.id, 'real-wages', 'A general real-wage claim must not be treated as tax bracket creep');
 assert.equal(claimFocusFor('El Gobierno sube el IVA de la electricidad este verano')?.id, undefined, 'A rate change must not inherit income-tax inflation evidence');
+const educationPaySource = {
+  id: 'eurostat-education-earnings-2022',
+  title: 'Salario bruto medio por hora según estudios alcanzados, 2022 · Eurostat',
+  publisher: 'Eurostat',
+  url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_16?freq=A&sex=T&indic_se=ERN&isced11=ED0-2&isced11=ED3_4&isced11=ED5-8&sizeclas=GE10&nace_r2=B-S_X_O&unit=EUR&geo=ES&time=2022&lang=EN',
+  retrievedAt: '2026-11-23T10:00:00Z',
+};
+const educationPayRows = [
+  ['ED0-2', 10.04], ['ED3_4', 11.48], ['ED5-8', 17.71],
+].map(([education, value]) => ({
+  id: `ses-2022-${education}`, metricId: 'mean_hourly_earnings_by_education', value, period: '2022', unit: 'Euro', geography: 'Spain',
+  population: 'employees of all sexes in Spanish enterprises with 10 or more employees, in industry, construction and services except public administration, defense and compulsory social security',
+  dimensions: { freq: 'A', sex: 'T', indic_se: 'ERN', isced11: education, sizeclas: 'GE10', nace_r2: 'B-S_X_O', unit: 'EUR', geo: 'ES', time: '2022' },
+  source: educationPaySource,
+}));
+const educationPayParaphrases = [
+  'Los sueldos de muchos trabajos cualificados son demasiado parecidos a los de puestos que exigen mucha menos formación',
+  'Los empleos que requieren estudios superiores no pagan mucho más que los que exigen menos estudios',
+  'Tener un máster o un doctorado no garantiza cobrar un salario acorde con la cualificación',
+  'Una titulación de posgrado no asegura un sueldo proporcional a la formación',
+];
+let selectedEducationPayEvidence;
+for (const claim of educationPayParaphrases) {
+  const answer = focusedEvidencePlan(claim, { observations: educationPayRows });
+  assert.equal(answer.answerScope.family, 'education-pay-comparison', claim);
+  assert.deepEqual(answer.answerScope.directMetrics, [], 'Education attainment earnings cannot directly resolve job-requirement or fair-pay claims');
+  assert.deepEqual(answer.answerScope.contextMetrics, ['mean_hourly_earnings_by_education'], claim);
+  assert.equal(answer.evidenceLevel, 'insufficient', claim);
+  assert.ok(answer.shareableReply.includes('10,04 €/hora'));
+  assert.ok(answer.shareableReply.includes('11,48 €/hora'));
+  assert.ok(answer.shareableReply.includes('17,71 €/hora'));
+  assert.match(answer.shareableReply, /estudios alcanzados \(no los exigidos por el puesto\)/);
+  assert.match(answer.shareableReply, /empresas con al menos 10 empleados/);
+  assert.match(answer.shareableReply, /falta comparar salarios con los requisitos de cada puesto/);
+  assert.match(answer.shareableReply, /no determina si un empleo paga «acorde»/);
+  assert.deepEqual(answer.sourceLinks.map((source) => source.id), [educationPaySource.id], claim);
+  assert.equal(answer.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient', claim);
+  const evidence = answer.evidenceSummary.families.find((family) => family.familyId === 'mean_hourly_earnings_by_education');
+  assert.deepEqual([...evidence.evidenceIds].sort(), educationPayRows.map((item) => item.id).sort(), claim);
+  if (selectedEducationPayEvidence) assert.deepEqual([...evidence.evidenceIds].sort(), selectedEducationPayEvidence, `A paraphrase selected different education-pay context: ${claim}`);
+  selectedEducationPayEvidence = [...evidence.evidenceIds].sort();
+}
+const educationPayPublic = localPublicCheckResponse({ status: 'complete', requestId: 'education-pay-context', result: focusedEvidencePlan(educationPayParaphrases[0], { observations: educationPayRows }) }, educationPayParaphrases[0]);
+assert.equal(educationPayPublic.state, 'insufficient', 'Education-level earnings context must not be presented as a verdict on comparable jobs or adequate pay');
+assert.ok(educationPayPublic.result.sources.some((source) => source.id === educationPaySource.id));
+assert.ok(educationPayPublic.result.reply.includes('17,71 €/hora'));
+const partialEducationPay = focusedEvidencePlan(educationPayParaphrases[0], { observations: educationPayRows.slice(0, 2) });
+assert.deepEqual(partialEducationPay.sourceLinks, [], 'A partial education breakdown must not be presented as the complete distributional context');
+assert.doesNotMatch(partialEducationPay.shareableReply, /10,04|11,48/);
+const educationOverqualificationNeighbour = focusedEvidencePlan('La tasa de sobrecualificación de titulados universitarios es alta', { observations: educationPayRows });
+assert.equal(educationOverqualificationNeighbour.answerScope.family, 'education-employment-outcomes');
+assert.deepEqual(educationOverqualificationNeighbour.answerScope.contextMetrics, [], 'Hourly earnings by education must not be presented as an overqualification rate');
+assert.deepEqual(educationOverqualificationNeighbour.sourceLinks, [], 'An education-pay source must not be attributed to an overqualification claim');
 const fiscalDragClaim = 'La inflación eleva la carga fiscal cuando los tramos y deducciones no se actualizan al mismo ritmo';
 const fiscalDragPlan = focusedEvidencePlan(fiscalDragClaim);
 assert.equal(fiscalDragPlan.answerScope.family, 'inflation-tax-bracket-creep');

@@ -1105,10 +1105,10 @@ const focuses = [
   {
     id: 'education-pay-comparison', label: 'salarios según formación exigida por el puesto',
     when: educationPayComparison,
-    direct: [], context: [], claimType: 'comparative',
-    needs: ['salarios por nivel educativo alcanzado y por ocupación o formación requerida para el puesto', 'jornada, experiencia, sector, territorio y periodo comparables', 'distribuciones salariales y tamaño de las diferencias, no solo medias'],
-    explanation: 'Los promedios por nivel educativo o por ocupación pueden mostrar diferencias de salario, pero no garantizan cuánto cobrará una persona con un máster, un doctorado u otra titulación. También influyen el puesto, la experiencia, la jornada, el sector y el territorio.',
-    limitation: 'Las tasas de empleo y sobrecualificación no comparan salarios. Sin una distribución salarial compatible por estudios y ocupación, no se puede determinar si la titulación se remunera «acorde» en cada caso ni si el resultado se aplica a todas las personas.',
+    direct: [], context: ['mean_hourly_earnings_by_education'], claimType: 'comparative',
+    needs: ['salarios comparables por ocupación y por formación o cualificación exigida para el puesto', 'jornada, experiencia, sector, territorio y periodo comparables', 'distribuciones salariales y una definición medible de «acorde»'],
+    explanation: 'Eurostat ofrece una referencia de 2022 por los estudios que han alcanzado las personas empleadas. Sirve para contextualizar diferencias salariales, pero no indica qué formación exigía cada puesto.',
+    limitation: 'La media bruta por hora no muestra la distribución salarial ni iguala ocupación, jornada, experiencia o sector. Por eso no determina si un empleo paga «acorde» con sus requisitos ni cuánto cobrará una persona concreta.',
   },
   {
     id: 'education-skill-demand-vs-curriculum', label: 'competencias laborales y contenidos de los estudios',

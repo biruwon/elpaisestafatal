@@ -263,6 +263,12 @@
       "metricId": "mean_hourly_earnings_by_activity"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_16?freq=A&sex=T&indic_se=ERN&isced11=ED0-2&isced11=ED3_4&isced11=ED5-8&sizeclas=GE10&nace_r2=B-S_X_O&unit=EUR&geo=ES&time=2022&lang=EN",
+      "title": "Salario bruto medio por hora según estudios alcanzados, 2022 · Eurostat",
+      "aliases": ["salario bruto medio por hora según nivel educativo", "ganancia media por hora por nivel de estudios", "remuneración bruta media por hora según estudios alcanzados"],
+      "metricId": "mean_hourly_earnings_by_education"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/demo_pjan?geo=ES&sinceTimePeriod=2015",
       "title": "Población residente de España · Eurostat",
       "aliases": ["población", "habitantes", "demografía", "residentes"],
