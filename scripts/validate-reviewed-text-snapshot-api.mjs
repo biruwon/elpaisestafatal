@@ -9,6 +9,24 @@ const emptyDatabase = {
     return { bind() { return this; }, async all() { return { results: [] }; }, async run() { return {}; } };
   },
 };
+const primaryCareRows = [
+  {
+    id: 'primary-care-wave1-rate', kind: 'observation', dataset_id: 'Barómetro Sanitario 2026, primera oleada', metric: 'Espera superior a un día por falta de cita en atención primaria', metric_id: 'primary_care_wait_over_one_day_rate', value: 71.16324068042688, unit: '%', period: '2026-O1', geography: 'España', population: 'personas adultas que consultaron por un problema propio con medicina de familia pública en los últimos 12 meses, excluida mutualidad con atención privada', dimensions_json: JSON.stringify({ service: 'primary_care', surveyYear: '2026', surveyWave: '1', provisional: true, question: '5c', sampleSize: 2061 }), dimension_labels_json: '{}', url: null, excerpt: null, payload_json: JSON.stringify({ denominator: 'pacientes de la base de la pregunta 5c', dataKind: 'observed' }), source_id: 'sanidad-primary-care-wave1', publisher: 'Ministerio de Sanidad', title: 'Barómetro Sanitario 2026, primera oleada', source_url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/BarometroSanitario/Barom_Sanit_2026/BS_2026_CIS_1_OLA_3551.xlsx', published_at: null, retrieved_at: '2026-10-30T12:00:00.000Z', trust_tier: 'primary', aliases_json: '[]', source_registry_id: 'sanidad', schedule: 'monthly',
+  },
+  {
+    id: 'primary-care-wave1-delay', kind: 'observation', dataset_id: 'Barómetro Sanitario 2026, primera oleada', metric: 'Demora media declarada entre quienes esperaron más de un día por falta de cita', metric_id: 'primary_care_wait_days', value: 10.27, unit: 'días', period: '2026-O1', geography: 'España', population: 'personas adultas que consultaron por un problema propio con medicina de familia pública en los últimos 12 meses, excluida mutualidad con atención privada; solo quienes esperaron más de un día por falta de cita', dimensions_json: JSON.stringify({ service: 'primary_care', surveyYear: '2026', surveyWave: '1', provisional: true, question: '5c_01', eligibleSampleSize: 1467, validResponseSampleSize: 1448 }), dimension_labels_json: '{}', url: null, excerpt: null, payload_json: JSON.stringify({ denominator: 'personas de la pregunta 5c_01 con respuesta válida en días', dataKind: 'observed' }), source_id: 'sanidad-primary-care-wave1', publisher: 'Ministerio de Sanidad', title: 'Barómetro Sanitario 2026, primera oleada', source_url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/BarometroSanitario/Barom_Sanit_2026/BS_2026_CIS_1_OLA_3551.xlsx', published_at: null, retrieved_at: '2026-10-30T12:00:00.000Z', trust_tier: 'primary', aliases_json: '[]', source_registry_id: 'sanidad', schedule: 'monthly',
+  },
+];
+const stalePrimaryCareDatabase = {
+  prepare() {
+    let metricId;
+    return {
+      bind(value) { metricId = value; return this; },
+      async all() { return { results: primaryCareRows.filter((row) => row.metric_id === metricId) }; },
+      async run() { return {}; },
+    };
+  },
+};
 const brokenDatabase = {
   prepare() {
     return { bind() { return this; }, async all() { throw new Error('D1 read failed'); }, async run() { throw new Error('D1 write failed'); } };
@@ -92,6 +110,63 @@ assert.match(degreeRequirementTrend.body.result.reply, /no muestran qu[eé] titu
 assert.match(degreeRequirementTrend.body.result.evidenceSummary.missingDimensions.join(' '), /anuncios de las mismas ocupaciones en periodos comparables/);
 assert.deepEqual(degreeRequirementTrend.body.result.sources, []);
 
+const primaryCareWait = await check('Hay que esperar demasiado para conseguir cita con el médico de familia');
+assert.equal(primaryCareWait.httpStatus, 200);
+assert.equal(primaryCareWait.body.state, 'limited');
+assert.equal(primaryCareWait.body.result.evidenceSummary.mode, 'snapshot');
+assert.match(primaryCareWait.body.result.reply, /72 %/);
+assert.match(primaryCareWait.body.result.reply, /9,71 días/);
+assert.match(primaryCareWait.body.result.reply, /2026.*oleada 2/);
+assert.match(primaryCareWait.body.result.reply, /provisionales/);
+assert.match(primaryCareWait.body.result.reply, /quienes esperaron más de un día/);
+assert.match(primaryCareWait.body.result.reply, /no define un umbral universal/);
+assert.ok(primaryCareWait.body.result.sources.some((source) => source.id === 'sanidad-primary-care-2026-wave2'));
+assert.ok(primaryCareWait.body.result.reply.trim().split(/\s+/).length <= 150);
+
+const stalePrimaryCare = await check('Hay que esperar demasiado para conseguir cita con el médico de familia', stalePrimaryCareDatabase);
+assert.equal(stalePrimaryCare.body.state, 'limited');
+assert.match(stalePrimaryCare.body.result.reply, /72 %/);
+assert.match(stalePrimaryCare.body.result.reply, /9,71 días/);
+assert.doesNotMatch(stalePrimaryCare.body.result.reply, /10,27|71,2 %/);
+assert.ok(stalePrimaryCare.body.result.sources.some((source) => source.id === 'sanidad-primary-care-2026-wave2'));
+assert.ok(!stalePrimaryCare.body.result.sources.some((source) => source.id === 'sanidad-primary-care-wave1'));
+
+for (const paraphrase of [
+  'La cita con el médico de cabecera llega con mucha demora',
+  '¿Cuánto se espera para ver al médico de familia?',
+  '¿Cuántos días tarda una cita en atención primaria?',
+]) {
+  const answer = await check(paraphrase);
+  assert.equal(answer.body.state, 'limited', paraphrase);
+  assert.ok(answer.body.result.sources.some((source) => source.id === 'sanidad-primary-care-2026-wave2'), paraphrase);
+  assert.match(answer.body.result.reply, /9,71 días/, paraphrase);
+}
+
+const localPrimaryCare = await check('En Madrid se espera demasiado para una cita con el médico de familia');
+assert.equal(localPrimaryCare.body.state, 'insufficient');
+assert.doesNotMatch(localPrimaryCare.body.result.reply, /72 %|9,71/);
+assert.doesNotMatch(JSON.stringify(localPrimaryCare.body.result.sources), /sanidad-primary-care-2026-wave2/);
+
+const specialistWait = await check('Las demoras para consultas externas de especialistas varían entre comunidades autónomas');
+assert.doesNotMatch(JSON.stringify(specialistWait.body.result.sources), /sanidad-primary-care-2026-wave2/);
+assert.doesNotMatch(specialistWait.body.result.reply, /9,71|72 %/);
+
+const primaryCareCause = await check('La demora del médico de familia obliga a la gente a ir a urgencias');
+assert.equal(primaryCareCause.body.state, 'insufficient');
+assert.equal(primaryCareCause.body.result.arguments[0].verdict, 'insufficient');
+assert.deepEqual(primaryCareCause.body.result.arguments[0].evidenceIds, []);
+assert.deepEqual(primaryCareCause.body.result.arguments[0].sourceIds, []);
+assert.match(primaryCareCause.body.result.reply, /Como contexto/);
+assert.match(primaryCareCause.body.result.reply, /no indica si la demora causó|no miden el uso posterior de urgencias/);
+assert.match(primaryCareCause.body.result.reply, /9,71 días/);
+
+const primaryCareTrend = await check('Cada vez se tarda más en conseguir cita con el médico de familia');
+assert.equal(primaryCareTrend.body.state, 'insufficient');
+assert.equal(primaryCareTrend.body.result.arguments[0].verdict, 'insufficient');
+assert.deepEqual(primaryCareTrend.body.result.arguments[0].evidenceIds, []);
+assert.match(primaryCareTrend.body.result.reply, /no establece una tendencia|oleadas comparables/);
+assert.match(primaryCareTrend.body.result.reply, /9,71 días/);
+
 const unavailable = await check('Trabajar a jornada completa no impide estar en riesgo de pobreza', brokenDatabase);
 assert.equal(unavailable.body.state, 'unavailable');
 assert.match(unavailable.body.message, /no hemos podido consultar las series estadísticas/i);
@@ -101,5 +176,9 @@ const educationUnavailable = await check('Un título universitario ya no garanti
 assert.equal(educationUnavailable.body.state, 'unavailable');
 assert.doesNotMatch(educationUnavailable.body.result?.reply || '', /83,2 %|34 %/);
 
+const primaryCareUnavailable = await check('¿Cuántos días tarda una cita en atención primaria?', brokenDatabase);
+assert.equal(primaryCareUnavailable.body.state, 'unavailable');
+assert.doesNotMatch(primaryCareUnavailable.body.result?.reply || '', /9,71|72 %/);
+
 await Promise.all(pending);
-console.log('Reviewed text snapshot Pages fallback passed: empty D1 uses scoped education and working-poverty data; failed D1 reads remain unavailable.');
+console.log('Reviewed text snapshot Pages fallback passed: empty D1 uses scoped education, working-poverty, and primary-care data; failed D1 reads remain unavailable.');

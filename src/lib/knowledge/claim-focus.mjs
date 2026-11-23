@@ -200,6 +200,14 @@ const touristHousingDisplacementClaim = (text) => touristHousingMention(text)
   && /\b(retir\w*|reduc\w*|disminu\w*|quit\w*|sac\w*|desplaz\w*|rest\w*|oferta|disponib\w*|escasez|resident\w*|alquiler residencial|alquiler de larga duracion|barri\w*|distrit\w*|centro\w*)\b/.test(text);
 const waits = /\b(esper\w*|demor\w*|cita\w*|tard\w*|retras\w*|acceso|acceder)\b/;
 const privateCareMention = /\b(seguro\w*(?: medico\w*)? privad\w*|sanidad privada|medicina privada|asistencia privada|consultas? privad\w*|atencion privada)\b/;
+const primaryCareWaitClaim = (text) => has(text, waits)
+  && /\b(medic\w* de (?:familia|cabecera)|atencion primaria|centro de salud)\b/.test(text)
+  && !privateCareMention.test(text);
+const primaryCareWaitTrend = (text) => primaryCareWaitClaim(text)
+  && /\b(cada vez|evoluci\w*|tendencia|desde (?:19|20)\d{2}|entre (?:19|20)\d{2}|subid\w*|aument\w*|crec\w*|increment\w*|bajad\w*|descend\w*|disminu\w*|reduc\w*|empeor\w*|mejor\w*)\b/.test(text);
+const primaryCareWaitCausality = (text) => primaryCareWaitClaim(text)
+  && (/\b(caus\w*|provoc\w*|oblig\w*|empuj\w*|conllev\w*|lleva a|hace que|por culpa|debido a|por que|motivo\w*)\b/.test(text)
+    || /\b(urgencias?|emergencias?)\b/.test(text) && /\b(ir|acudir|recurrir|llevar|conducir)\w*\b/.test(text));
 export const privateHealthcareAccessClaimType = (claim) => {
   const text = normalize(claim);
   const statesMotiveOrEffect = /\b(contrat\w*|compr\w*|eligen|motivo\w*|porque|debido|caus\w*|evit\w*|reduc\w*)\b/.test(text)
@@ -1062,12 +1070,28 @@ const focuses = [
     limitation: 'El salario mediano bruto por hora ofrece contexto, pero no mide automáticamente el salario anual, el neto ni la remuneración de un puesto o persona concreta.',
   },
   {
+    id: 'primary-care-wait-causes', label: 'causas y efectos de las demoras en atención primaria',
+    when: primaryCareWaitCausality,
+    direct: [], context: ['primary_care_wait_days', 'primary_care_wait_over_one_day_rate'], claimType: 'causal',
+    needs: ['demoras y uso de urgencias medidos en las mismas personas y el mismo periodo', 'motivos declarados para acudir a urgencias', 'una comparación que permita distinguir asociación de efecto causal'],
+    explanation: 'El Barómetro Sanitario mide cuánto esperaron algunos pacientes para ver a su médico de familia. Esa cifra, por sí sola, no indica si la demora causó una visita a urgencias ni por qué acudieron.',
+    limitation: 'Los datos de espera en atención primaria no miden el uso posterior de urgencias ni demuestran que una demora lo cause. Para comprobar esa relación hacen falta datos enlazados de pacientes y un diseño que permita separar otros motivos de atención.',
+  },
+  {
+    id: 'primary-care-wait-trend', label: 'evolución de las demoras en atención primaria',
+    when: primaryCareWaitTrend,
+    direct: [], context: ['primary_care_wait_days', 'primary_care_wait_over_one_day_rate'], claimType: 'trend',
+    needs: ['oleadas comparables de la misma pregunta, base y población en los periodos mencionados'],
+    explanation: 'Una medición de una oleada describe ese periodo; para afirmar que las esperas aumentan o disminuyen hay que comparar la misma medida y la misma población entre periodos.',
+    limitation: 'El dato más reciente no establece una tendencia. Las diferencias entre oleadas solo son comparables si se mantiene la pregunta, la población y la base estadística.',
+  },
+  {
     id: 'primary-care-waits', label: 'citas de atención primaria',
-    when: (t) => has(t, waits) && /\b(medic\w* de (?:familia|cabecera)|atencion primaria|centro de salud)\b/.test(t) && !privateCareMention.test(t),
+    when: (t) => primaryCareWaitClaim(t) && !primaryCareWaitTrend(t) && !primaryCareWaitCausality(t),
     direct: ['primary_care_wait_days', 'primary_care_wait_over_one_day_rate'], context: [],
     needs: ['tiempo hasta la cita en atención primaria', 'base de pacientes encuestados', 'territorio y periodo'],
     explanation: 'La espera para el médico de familia debe medirse en atención primaria. Las listas hospitalarias de cirugía y especialistas son servicios diferentes.',
-    limitation: 'Una media nacional no describe cada centro de salud. La demora entre quienes esperan más de un día tampoco es la media de todos los pacientes.',
+    limitation: 'La encuesta describe esperas declaradas, pero no define un umbral universal para decir si son excesivas. Una media nacional no describe cada centro de salud, y la demora entre quienes esperaron más de un día no es la media de todos los pacientes.',
   },
   {
     id: 'private-healthcare-access', label: 'seguro privado y acceso a la atención',

@@ -4,7 +4,7 @@
       "id": "social-security-general-account-2024",
       "domain": "pension_finance",
       "url": "https://www.seg-social.es/descarga/es/01_TOMO%20I_Cuenta_General_Parlamento.pdf",
-      "schedule": "yearly",
+      "schedule": "monthly",
       "mode": "active",
       "title": "Seguridad Social Cuenta General 2024: pensiones contributivas y resultados presupuestarios"
     },
@@ -240,9 +240,17 @@
       "id": "sanidad-primary-care-2026-wave1",
       "domain": "health_primary_care",
       "url": "https://www.sanidad.gob.es/estadEstudios/estadisticas/BarometroSanitario/Barom_Sanit_2026/BS_2026_CIS_1_OLA_3551.xlsx",
-      "schedule": "monthly",
+      "schedule": "yearly",
       "mode": "active",
       "title": "Barómetro Sanitario 2026, primera oleada: cita y demora de atención primaria"
+    },
+    {
+      "id": "sanidad-primary-care-2026-wave2",
+      "domain": "health_primary_care",
+      "url": "https://www.sanidad.gob.es/estadEstudios/estadisticas/BarometroSanitario/Barom_Sanit_2026/2Oleada/2026_CIS_2_OLA_3574multi.xlsx",
+      "schedule": "monthly",
+      "mode": "active",
+      "title": "Barómetro Sanitario 2026, segunda oleada: cita y demora de atención primaria"
     }
   ]
 }

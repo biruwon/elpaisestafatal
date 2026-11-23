@@ -1057,7 +1057,7 @@ const rows = [
   ['Pregunta 5c_01'], ['¿Cuántos días?'], ['(N)', 1467], ['Media  (días)', 10.27], ['N', 1448],
   ['Pregunta 6'], ['Espera quirúrgica', 121],
 ];
-const workbook = (inputRows) => { const book = utils.book_new(); utils.book_append_sheet(book, utils.aoa_to_sheet(inputRows), 'Marginales'); return write(book, { type: 'buffer', bookType: 'xlsx' }); };
+const workbook = (inputRows, sheetName = 'Marginales') => { const book = utils.book_new(); utils.book_append_sheet(book, utils.aoa_to_sheet(inputRows), sheetName); return write(book, { type: 'buffer', bookType: 'xlsx' }); };
 const parsed = await parsePrimaryCareBarometerWorkbook(workbook(rows), source);
 assert.equal(parsed.length, 2);
 assert.equal(parsed.find((item) => item.metricId === 'primary_care_wait_days').value, 10.27);
@@ -1067,14 +1067,34 @@ assert.ok(parsed.every((item) => item.period === '2026-O1' && item.dimensions.pr
 await assert.rejects(() => parsePrimaryCareBarometerWorkbook(workbook(rows.filter((row) => row[0] !== 'Pregunta 5c_01')), source), /question 5c_01 missing/);
 await assert.rejects(() => parsePrimaryCareBarometerWorkbook(workbook(rows.map((row) => String(row[0]).includes('no había cita') ? [row[0], 101] : row)), source), /values or respondent bases/);
 
-const observations = parsed.map((row) => ({ ...row, source }));
+const waveTwoSource = { id: 'sanidad-wave-two', title: 'Barómetro Sanitario 2026, segunda oleada', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/BarometroSanitario/Barom_Sanit_2026/2Oleada/2026_CIS_2_OLA_3574multi.xlsx', retrievedAt: '2026-11-23' };
+const waveTwoRows = [
+  ['', 'BARÓMETRO SANITARIO 2026 (SEGUNDA OLEADA)'],
+  ['Pregunta 5c'], ['Desde que pidió cita hasta que le atendió el médico de familia, ¿cuánto tiempo pasó?'],
+  ['Pasó más de un día porque no había cita antes', 71.97411214663927],
+  ['Pasó más de un día porque la cita no le venía bien', 4.653845676848343], ['(N)', 2020],
+  ['Pregunta 5c_01'], ['¿Cuántos días?'], ['(N)', 1454], ['Media  (días)', 9.71], ['N', 1417],
+  ['Pregunta 6'], ['Espera quirúrgica', 121],
+];
+const parsedWaveTwo = await parsePrimaryCareBarometerWorkbook(workbook(waveTwoRows, 'Resultados'), waveTwoSource);
+assert.equal(parsedWaveTwo.length, 2);
+assert.ok(parsedWaveTwo.every((item) => item.period === '2026-O2' && item.dimensions.provisional));
+assert.equal(parsedWaveTwo.find((item) => item.metricId === 'primary_care_wait_over_one_day_rate').value, 71.97411214663927);
+assert.equal(parsedWaveTwo.find((item) => item.metricId === 'primary_care_wait_over_one_day_rate').dimensions.sampleSize, 2020);
+assert.equal(parsedWaveTwo.find((item) => item.metricId === 'primary_care_wait_days').value, 9.71);
+assert.equal(parsedWaveTwo.find((item) => item.metricId === 'primary_care_wait_days').dimensions.eligibleSampleSize, 1454);
+assert.equal(parsedWaveTwo.find((item) => item.metricId === 'primary_care_wait_days').dimensions.validResponseSampleSize, 1417);
+
+const observations = [...parsed.map((row) => ({ ...row, source })), ...parsedWaveTwo.map((row) => ({ ...row, source: waveTwoSource }))];
 const claim = cases.find(([family]) => family === 'primary-care-waits')[1][0];
 const plan = focusedEvidencePlan(claim, { observations });
 assert.equal(plan.evidenceLevel, 'limited');
-assert.match(plan.shareableReply, /10,27/);
-assert.match(plan.shareableReply, /71,2 %/);
+assert.match(plan.shareableReply, /9,71/);
+assert.match(plan.shareableReply, /72 %/);
+assert.doesNotMatch(plan.shareableReply, /10,27|71,2 %/);
 assert.match(plan.shareableReply, /provisionales/);
 assert.match(plan.shareableReply, /subgrupo|quienes esperaron|más de un día/);
+assert.match(plan.shareableReply, /no define un umbral universal/);
 assert.doesNotMatch(plan.shareableReply, /121|IMCV|peor que nunca/);
 assert.ok(plan.shareableReply.split(/\s+/).length < 180, 'The primary answer must be easy to digest');
 assert.ok(validateAnswerPlan(plan).ok, JSON.stringify(validateAnswerPlan(plan).errors));
@@ -1084,6 +1104,36 @@ const displayed = localPublicCheckResponse(payload, claim);
 assert.equal(displayed.result.sources.length, 1);
 assert.equal(displayed.result.answerScope.family, 'primary-care-waits');
 assert.equal(shouldRetainReviewedPreview({ result: { evidenceSummary: { families: [{ label: 'Toda la sanidad' }] } } }, displayed), false);
+
+for (const paraphrase of cases.find(([family]) => family === 'primary-care-waits')[1]) {
+  const answer = focusedEvidencePlan(paraphrase, { observations });
+  assert.equal(answer.answerScope.family, 'primary-care-waits', `A text paraphrase changed the primary-care evidence family: ${paraphrase}`);
+  assert.match(answer.shareableReply, /9,71/);
+  assert.deepEqual(answer.sourceIds, ['sanidad-wave-two'], `A current-wave paraphrase inherited a superseded source: ${paraphrase}`);
+}
+
+const firstWaveWait = focusedEvidencePlan('¿Cuántos días tardaba una cita en atención primaria en la primera oleada de 2026?', { observations });
+assert.match(firstWaveWait.shareableReply, /10,27/);
+assert.doesNotMatch(firstWaveWait.shareableReply, /9,71/);
+assert.deepEqual(firstWaveWait.sourceIds, ['sanidad-wave-one'], 'An explicit first-wave question must not inherit the latest wave');
+
+const waitTrendClaim = 'Cada vez se tarda más en conseguir cita con el médico de familia';
+const waitTrendPlan = focusedEvidencePlan(waitTrendClaim, { observations });
+assert.equal(waitTrendPlan.claimType, 'trend');
+assert.deepEqual(waitTrendPlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], 'A current-wave snapshot must not prove a trend claim');
+assert.match(waitTrendPlan.shareableReply, /Como contexto/);
+assert.match(waitTrendPlan.shareableReply, /comparar la misma medida|oleadas comparables/i);
+assert.match(waitTrendPlan.shareableReply, /9,71/);
+
+const waitCausalityClaim = 'La demora del médico de familia obliga a la gente a ir a urgencias';
+const waitCausalityPlan = focusedEvidencePlan(waitCausalityClaim, { observations });
+assert.equal(waitCausalityPlan.claimType, 'causal');
+assert.deepEqual(waitCausalityPlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], 'Appointment-delay data must not be attributed as proof of emergency-care effects');
+assert.match(waitCausalityPlan.shareableReply, /Como contexto/);
+assert.match(waitCausalityPlan.shareableReply, /causal|urgencias/i);
+assert.match(waitCausalityPlan.shareableReply, /9,71/);
+assert.notEqual(claimFocusFor('Las esperas para el especialista varían entre comunidades autónomas')?.id, 'primary-care-waits', 'Hospital-specialist delays must remain outside primary care');
+assert.equal(claimFocusFor('Las listas de espera para cirugías se alargan')?.id, undefined, 'Surgical waiting lists must not inherit primary-care data');
 
 for (const mismatch of ['En Madrid la cita con el médico de familia tarda mucho', 'En Francia la cita con el médico de familia tarda mucho', 'En 2010 la cita con el médico de familia tardaba mucho', 'Las mujeres esperan demasiado para la cita con el médico de familia']) {
   const answer = focusedEvidencePlan(mismatch, { observations });
@@ -1282,7 +1332,7 @@ assert.deepEqual(alignedParts[2].evidenceIds, ['source-B']);
 assert.match(composePropositionFindings(alignedParts), /«Parte A»: A/);
 assert.equal(alignPropositionOutcomes([{ text: 'La recaudación aumenta' }], [{ status: 'fulfilled', value: { result: { id: 'broad-health', evidenceIds: ['hospital'], evidenceLevel: 'limited' } } }], undefined, { requireCompatibility: true })[0].evidenceIds, undefined, 'An unrelated broad packet cannot become evidence for a clause');
 assert.equal(comparableObservationGroups([revenue, { ...revenue, id: 'eu-revenue', geography: 'UE' }, { ...revenue, id: 'people', population: 'hogares' }]).length, 3, 'Different scopes became one trend');
-assert.equal(rankWarehouseObservations('appointment delay', observations, 10, { metricIds: new Set(['primary_care_wait_days']) }).length, 1, 'An explicit metric ID must retrieve its source across languages');
+assert.equal(rankWarehouseObservations('appointment delay', observations, 10, { metricIds: new Set(['primary_care_wait_days']) }).length, 2, 'An explicit metric ID must retrieve the wave observations across languages');
 const youthRent = answerPlanForBroadDomains('El alquiler se come más de la mitad del sueldo de muchos jóvenes');
 assert.match(youthRent.headline, /no sabemos cu[aá]ntos gastan m[aá]s de la mitad/);
 assert.match(youthRent.shareableReply, /98,7/);

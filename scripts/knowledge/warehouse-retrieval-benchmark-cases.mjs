@@ -73,6 +73,8 @@ const longTailBenchmarkCases = [
   ['empleo-temporal-comparacion', 'Comparación europea del empleo temporal', 'temporary_employment_rate_europe'],
   ['salario-hora', '¿Cuál es el salario mediano por hora en España?', 'median_hourly_earnings'],
   ['sueldo-hora', 'Lo que se cobra por hora en España', 'median_hourly_earnings'],
+  ['salario-bruto-medio-actividad', 'Salario bruto medio por hora según actividad económica en España', 'mean_hourly_earnings_by_activity'],
+  ['ganancia-hora-sector-paraphrase', '¿Cómo se comparan las ganancias brutas por hora entre sectores económicos?', 'mean_hourly_earnings_by_activity'],
   ['salario-hora-ue', '¿España cobra menos por hora que Europa?', 'median_hourly_earnings_europe'],
   ['salario-hora-ue-directo', 'España cobra menos por hora que Europa', 'median_hourly_earnings_europe'],
   ['salario-hora-comparacion', 'Comparación europea del salario bruto por hora', 'median_hourly_earnings_europe'],

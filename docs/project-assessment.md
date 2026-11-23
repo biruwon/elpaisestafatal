@@ -719,3 +719,38 @@ accuracy score or a result for the dynamic resolver. The candidate claims
 remain unverified. Regression checks confirm that causal paraphrases share the
 same gap and a nearby descriptive comparison does not inherit causal
 requirements.
+
+## Primary-care appointment waits from the latest available wave — 23 November 2026
+
+The Ministry of Health has published the Barómetro Sanitario 2026 second wave.
+Its workbook renamed the results sheet from `Marginales` to `Resultados`, which
+made the existing connector fail. The reusable parser now accepts either sheet,
+requires the survey year and wave in the workbook heading, and still checks the
+family-medicine question, values and question bases. The official workbook now
+ingests as two observations for 2026-O2; wave one remains available as
+historical evidence, and the newer wave is an active monthly source.
+
+For the question base in 5c, 71.97% reported waiting more than a day because no
+earlier appointment was available (base N=2,020). Among respondents eligible
+for question 5c_01, the reported mean was 9.71 days; 1,454 were eligible and
+1,417 gave a valid number of days. These are provisional second-wave results,
+not a full-year or centre-level estimate. The delay mean applies only to the
+subgroup that waited more than a day for lack of an earlier appointment. The
+Ministry describes the survey population and timing in its
+[technical note](https://www.sanidad.gob.es/estadEstudios/estadisticas/BarometroSanitario/Barom_Sanit_2026/2Oleada/2026_2_OLA_NOTA_TECNICA.pdf)
+and [survey specification](https://www.sanidad.gob.es/estadEstudios/estadisticas/BarometroSanitario/Barom_Sanit_2026/2Oleada/FT3574.pdf).
+
+The text API and deterministic fallback use a reviewed snapshot when D1
+successfully returns no matching rows; the Pages path also merges it with older
+non-empty rows while the scheduled refresh catches up. A failed warehouse read
+remains unavailable. Appointment-delay paraphrases share the same source and latest
+wave. Region-specific, specialist and surgery claims do not inherit it. Claims
+that assign a cause, claim an upward or downward trend, or say the delay drives
+emergency visits receive the figure only as context and explicitly state what
+comparison or causal data is missing. The survey does not decide whether a
+wait is “too long” under a universal standard.
+
+Regression checks cover the old and new workbook layouts, sample bases,
+paraphrases, latest-wave selection, local and service neighbours, causal and
+trend boundaries, the empty-D1 fallback, and the unavailable-D1 path. The
+reviewed fallback expires on 28 February 2027 pending a refresh.

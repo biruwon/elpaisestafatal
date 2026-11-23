@@ -170,8 +170,10 @@ export const parseSpreadsheetBuffer = async (buffer) => {
 export const parsePrimaryCareBarometerWorkbook = async (buffer, source) => {
   const { read, utils } = await import('xlsx');
   const workbook = read(buffer, { type: 'buffer', cellDates: false });
-  const sheet = workbook.Sheets.Marginales;
-  if (!sheet) throw new Error('Barometer workbook has no Marginales sheet');
+  // The first 2026 wave used a `Marginales` worksheet. The second wave
+  // publishes the same question blocks in `Resultados` instead.
+  const sheet = workbook.Sheets.Marginales || workbook.Sheets.Resultados;
+  if (!sheet) throw new Error('Barometer workbook has no Marginales or Resultados sheet');
   const rows = utils.sheet_to_json(sheet, { header: 1, defval: '' });
   const heading = rows.slice(0, 6).flat().join(' ');
   const year = heading.match(/BAR[ÓO]METRO SANITARIO\s+(20\d{2})/i)?.[1];

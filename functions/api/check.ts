@@ -10,6 +10,8 @@ import { measurementMeaningPlan } from '../../src/lib/knowledge/measurement-mean
 import { claimFocusFor, focusedMetricIdsFor } from '../../src/lib/knowledge/claim-focus.mjs';
 import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
+import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care-wait-snapshot.mjs';
+import { snapshotLifecycle } from '../../src/lib/knowledge/snapshot-lifecycle.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import type { AnswerPlan, ResolveResult } from '../../src/lib/knowledge/contracts';
 import { routeCatalogueQuery } from '../lib/catalogue-resolver';
@@ -22,7 +24,7 @@ import { searchD1Warehouse, searchD1WarehouseByMetricIds } from '../lib/d1-wareh
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-snapshot-gap-replies-38-2026-11';
+const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-39-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -274,13 +276,20 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           if (!localResolverAvailable) return json(warehouseUnavailableResponse);
           focusedObservations = undefined;
         } else {
-          if (['working-poverty', 'education-employment-outcomes'].includes(focus.id) && focusedObservations.length === 0) {
+          if (['working-poverty', 'education-employment-outcomes', 'primary-care-waits', 'primary-care-wait-trend', 'primary-care-wait-causes'].includes(focus.id) && focusedObservations.length === 0) {
             // Reviewed text snapshots can answer from their own dated source
             // when a successful warehouse lookup has no rows. A failed D1
             // query still follows the unavailable path above; absence and
             // infrastructure failure are not interchangeable.
             warehouseFocusedResponse = fallbackResponse(effectiveClaim, 'text');
           } else {
+            if (focus.id.startsWith('primary-care-wait-') || focus.id === 'primary-care-waits') {
+              // Keep the reviewed latest wave available while the scheduled
+              // source refresh catches up with an older but non-empty D1 row.
+              if (snapshotLifecycle(PRIMARY_CARE_WAIT_SNAPSHOT).usable) {
+                focusedObservations = [...focusedObservations, ...PRIMARY_CARE_WAIT_SNAPSHOT.observations];
+              }
+            }
             const plan = focusedEvidencePlan(effectiveClaim, { observations: focusedObservations as never[] }) as AnswerPlan | undefined;
             if (plan) warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
           }

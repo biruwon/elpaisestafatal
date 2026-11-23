@@ -16,9 +16,14 @@ const observationFitsClaim = (claim) => {
   const matchesGeography = geographyScopeMatcherFor(claim);
   const matchesSex = sexScopeMatcherFor(claim);
   const text = normalize(claim);
+  const requestedPrimaryCareWave = /\b(?:primera|1(?:a|era)?)\s+(?:oleada|ola)\b|\b(?:oleada|ola)\s+1\b/.test(text) ? '1'
+    : /\b(?:segunda|2(?:a|da)?)\s+(?:oleada|ola)\b|\b(?:oleada|ola)\s+2\b/.test(text) ? '2'
+      : /\b(?:tercera|3(?:a|era)?)\s+(?:oleada|ola)\b|\b(?:oleada|ola)\s+3\b/.test(text) ? '3' : undefined;
   const requestedTerritories = requestedGeographyScopes(claim);
   return (item) => {
     if (!matchesAge(item) || !matchesPeriod(item) || !matchesGeography(item) || !matchesSex(item)) return false;
+    if (/^primary_care_wait_/.test(item.metricId || '') && requestedPrimaryCareWave
+      && String(item.dimensions?.surveyWave || '') !== requestedPrimaryCareWave) return false;
     if (!tertiaryOverqualificationCitizenshipFitsClaim(claim, item)) return false;
     if (/^tourist_housing_(?:count|share)$/.test(item.metricId || '')
       && requestedTerritories.length === 0 && item.dimensions?.geographyLevel !== 'country') return false;
@@ -89,8 +94,11 @@ const isRentalIndexObservation = (item) => {
 const scopeKey = (item) => JSON.stringify({
   geography: item.geography || item.dimensions?.geo || '',
   population: item.population || '', denominator: item.denominator || '', unit: item.unit || '',
-  dimensions: Object.fromEntries(Object.entries(item.dimensions || {}).filter(([key]) => !['time', 'period', 'year'].includes(key)).sort(([a], [b]) => a.localeCompare(b))),
-  dataKind: item.dataKind || 'observed',
+  dimensions: Object.fromEntries(Object.entries(item.dimensions || {}).filter(([key]) => !['time', 'period', 'year'].includes(key)
+    && (!/^primary_care_wait_/.test(item.metricId || '')
+      || !['surveyYear', 'surveyWave', 'sampleSize', 'eligibleSampleSize', 'validResponseSampleSize', 'question'].includes(key)))
+    .sort(([a], [b]) => a.localeCompare(b))),
+  dataKind: /^primary_care_wait_/.test(item.metricId || '') ? 'observed' : item.dataKind || 'observed',
 });
 const citizenshipGroupLabel = (item) => ({
   NAT: 'ciudadanía española',
@@ -145,7 +153,10 @@ const factsForMetric = (id, observations, fitsClaim) => {
     const scope = [latest.geography || latest.dimensionLabels?.geo, citizenship, latest.population || metric?.population].filter(Boolean).join(' · ');
     const place = placeLabel(latest);
     const finding = `${labels[id] || metric?.name || latest.metric}${place ? ` · ${place}` : ''}${citizenship ? ` · ${citizenship}` : ''}: ${value} (${periodLabel(latest.period)}).`;
-    return { id, items: rows, latest, finding, scope, sourceIds: [...new Set(rows.map((item) => item.source.id))] };
+    // Primary-care answers cite the latest matching wave. Its source
+    // attribution must not imply that older waves were also cited.
+    const answerItems = /^primary_care_wait_/.test(id) ? [latest] : rows;
+    return { id, items: answerItems, latest, finding, scope, sourceIds: [...new Set(answerItems.map((item) => item.source.id))] };
   }).filter(Boolean);
 };
 
