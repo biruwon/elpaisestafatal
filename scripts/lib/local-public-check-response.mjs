@@ -3,7 +3,7 @@ import { broadDomainPacketsFor } from '../../src/lib/knowledge/broad-domain-snap
 import { claimFocusFor } from '../../src/lib/knowledge/claim-focus.mjs';
 import { attachExtraction, extractedClaim, publicExtraction } from '../../src/lib/knowledge/submission.mjs';
 import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
-import { publicArgumentsFromPlan } from '../../src/lib/knowledge/public-arguments.mjs';
+import { publicArgumentsFromPlan, publicEvidenceLevelForArguments, qualifyPublicClaimReply, requiresPublicClaimQualification } from '../../src/lib/knowledge/public-arguments.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import { publicEvidenceGapReply } from '../../src/lib/knowledge/public-answer-composition.mjs';
 
@@ -101,6 +101,15 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   const coverageGapReply = plan.evidenceLevel === 'insufficient' && !sources.length && coverageGap
     ? publicEvidenceGapReply(plan, { attributionUnavailable: true }) || plan.limitation?.trim() || coverageGap.nextAction
     : undefined;
+  const claimNeedsQualification = plan.evidenceLevel === 'supported' && requiresPublicClaimQualification(plan, argumentsList);
+  const evidenceLevel = missingPublicEvidence ? 'insufficient' : plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
+  const claimHasDirectEvidence = argumentsList.some((item) => item.evidenceIds.length > 0);
+  const publicEvidenceLevel = evidenceLevel === 'limited' && claimItems.length > 0 && !claimHasDirectEvidence
+    ? 'insufficient'
+    : publicEvidenceLevelForArguments(evidenceLevel, plan, argumentsList);
+  const publicReply = missingPublicEvidence
+    ? coverageGapReply || 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
+    : claimNeedsQualification ? qualifyPublicClaimReply(reply) : reply;
   const publishedSlug = !extraction && missingPublicEvidence ? exactPublishedSlugFor(safePayload, claim) : undefined;
   if (publishedSlug) {
     const message = 'Esta afirmación tiene una ficha revisada con datos, fuentes y límites. Abrimos esa comprobación.';
@@ -114,12 +123,6 @@ export const localPublicCheckResponse = (payload, claim = '') => {
       },
     };
   }
-  const evidenceLevel = missingPublicEvidence ? 'insufficient' : plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
-  const claimHasDirectEvidence = argumentsList.some((item) => item.evidenceIds.length > 0);
-  const publicEvidenceLevel = evidenceLevel === 'limited' && claimItems.length > 0 && !claimHasDirectEvidence ? 'insufficient' : evidenceLevel;
-  const publicReply = missingPublicEvidence
-    ? coverageGapReply || 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
-    : reply;
   const nextQuestion = typeof plan.clarificationQuestion === 'string'
     ? plan.clarificationQuestion
     : safePayload.guidance?.questions?.[0];
@@ -137,9 +140,9 @@ export const localPublicCheckResponse = (payload, claim = '') => {
       ...(nextQuestion ? { nextQuestion } : {}),
       reply: publicReply,
       answer: publicReply || plan.summary || plan.headline,
-      shareableReply: missingPublicEvidence ? undefined : plan.shareableReply,
-      shareableSourceIds: !missingPublicEvidence && shareableSourceIds.length ? shareableSourceIds : undefined,
-      keyFact: missingPublicEvidence ? 'Evidencia verificable no recuperada' : plan.headline,
+      shareableReply: missingPublicEvidence || claimNeedsQualification ? undefined : plan.shareableReply,
+      shareableSourceIds: !missingPublicEvidence && !claimNeedsQualification && shareableSourceIds.length ? shareableSourceIds : undefined,
+      keyFact: missingPublicEvidence ? 'Evidencia verificable no recuperada' : claimNeedsQualification ? 'La evidencia no permite confirmar todas las partes de la afirmación' : plan.headline,
       criteria: missingPublicEvidence ? [] : criteria,
       whatWeKnow: missingPublicEvidence ? [] : criteria.map((item) => item.finding),
       limitations: [...new Set([plan.limitation, ...(missingPublicEvidence ? ['La respuesta no contiene hallazgos atribuibles a una fuente que se pueda consultar.'] : [])].filter(Boolean))],

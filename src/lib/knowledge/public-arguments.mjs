@@ -1,6 +1,33 @@
 import { sourcesForEvidenceIds } from './evidence-source-ids.mjs';
 
 const stringArray = (value) => Array.isArray(value) && value.every((item) => typeof item === 'string');
+const argumentVerdicts = new Set(['supported', 'contradicted', 'mixed', 'insufficient', 'not_verifiable']);
+export const publicClaimQualification = 'La evidencia disponible no permite confirmar toda la afirmación; cada parte requiere su propio respaldo.';
+
+export const requiresPublicClaimQualification = (plan, argumentsList) => {
+  const breakdown = (Array.isArray(plan?.blocks) ? plan.blocks : []).find((block) => block?.type === 'claim_breakdown');
+  const items = Array.isArray(breakdown?.items) ? breakdown.items : [];
+  const explicit = items.flatMap((item, index) => item?.explicit === false ? [] : [breakdown.propositionIds?.[index] || `argument-${index + 1}`]);
+  if (!explicit.length) return false;
+  const publicById = new Map((argumentsList || []).map((argument) => [argument.id, argument]));
+  if (explicit.some((id) => !publicById.has(id))) return true;
+  return explicit.some((id) => {
+    const argument = publicById.get(id);
+    return argument.verdict !== 'supported' || !argument.evidenceIds.length || !argument.sourceIds.length;
+  });
+};
+
+export const publicEvidenceLevelForArguments = (level, plan, argumentsList) => level === 'supported'
+  && requiresPublicClaimQualification(plan, argumentsList)
+  ? 'limited'
+  : level;
+
+export const qualifyPublicClaimReply = (reply) => {
+  const text = String(reply || '').trim();
+  if (!text) return publicClaimQualification;
+  if (/no permite confirmar toda la afirmaci[oó]n|no demuestra toda la afirmaci[oó]n/i.test(text)) return text;
+  return `${publicClaimQualification}\n\n${text}`;
+};
 
 // Keep proposition evidence and its public source attribution consistent in
 // the Pages response and the local preview response. A list of clauses alone
@@ -26,28 +53,39 @@ export const publicArgumentsFromPlan = (plan) => {
 
   return breakdown.items.map((item, index) => {
     const evidenceIds = evidenceByItem[index];
-    const verdict = item.verdict || (evidenceIds.length
-      ? plan.evidenceLevel === 'supported' ? 'supported' : plan.evidenceLevel === 'limited' ? 'mixed' : 'insufficient'
-      : 'insufficient');
-    const matchingBlock = evidenceBlocks.find((block) => stringArray(block.evidenceIds) && evidenceIds.some((id) => block.evidenceIds.includes(id)));
-    const finding = matchingBlock && Array.isArray(matchingBlock.points) && matchingBlock.points.length
-      ? matchingBlock.points.join(' ')
-      : plan.summary || plan.headline;
     const relatedFamilySourceIds = (plan.evidenceSummary?.families || [])
       .filter((family) => stringArray(family.evidenceIds) && family.evidenceIds.some((id) => evidenceIds.includes(id)))
       .flatMap((family) => stringArray(family.sourceIds) ? family.sourceIds : []);
     const evidenceSourceIds = sourcesForEvidenceIds(plan, evidenceIds);
+    const sourceIds = (stringArray(plan.sourceIds) ? plan.sourceIds : []).filter((sourceId) => (stringArray(item.sourceIds) && item.sourceIds.includes(sourceId))
+      || evidenceIds.includes(sourceId) || relatedFamilySourceIds.includes(sourceId) || evidenceSourceIds.includes(sourceId));
+    const proposedVerdict = item.verdict === undefined
+      ? evidenceIds.length
+        ? plan.evidenceLevel === 'supported' ? 'supported' : plan.evidenceLevel === 'limited' ? 'mixed' : 'insufficient'
+        : 'insufficient'
+      : argumentVerdicts.has(item.verdict) ? item.verdict : 'insufficient';
+    const hasTraceableEvidence = evidenceIds.length > 0 && sourceIds.length > 0;
+    const verdict = !hasTraceableEvidence && ['supported', 'contradicted', 'mixed'].includes(proposedVerdict)
+      ? 'insufficient'
+      : proposedVerdict;
+    const matchingBlock = evidenceBlocks.find((block) => stringArray(block.evidenceIds) && evidenceIds.some((id) => block.evidenceIds.includes(id)));
+    const finding = hasTraceableEvidence
+      ? item.finding || (matchingBlock && Array.isArray(matchingBlock.points) && matchingBlock.points.length
+        ? matchingBlock.points.join(' ')
+        : plan.summary || plan.headline)
+      : 'No se ha vinculado evidencia directa con una fuente consultable a esta parte.';
 
     return {
       id: breakdown.propositionIds?.[index] || `argument-${index + 1}`,
       claim: item.text,
       kind: typeof item.type === 'string' ? item.type : typeof plan.claimType === 'string' ? plan.claimType : 'specific_fact',
       verdict,
-      evidenceLevel: item.evidenceLevel || (verdict === 'supported' ? 'strong' : verdict === 'mixed' ? 'limited' : 'none'),
-      finding: item.finding || finding,
+      evidenceLevel: !hasTraceableEvidence && verdict === 'insufficient'
+        ? 'none'
+        : item.evidenceLevel || (verdict === 'supported' ? 'strong' : verdict === 'mixed' ? 'limited' : 'none'),
+      finding,
       evidenceIds,
-      sourceIds: (stringArray(plan.sourceIds) ? plan.sourceIds : []).filter((sourceId) => (stringArray(item.sourceIds) && item.sourceIds.includes(sourceId))
-        || evidenceIds.includes(sourceId) || relatedFamilySourceIds.includes(sourceId) || evidenceSourceIds.includes(sourceId)),
+      sourceIds,
       limitations: typeof plan.limitation === 'string' && plan.limitation ? [plan.limitation] : [],
     };
   });

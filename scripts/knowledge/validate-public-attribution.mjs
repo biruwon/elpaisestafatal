@@ -103,6 +103,65 @@ const neighboringFallback = deterministicApiFallback({ text: neighboringSingle, 
 const neighboringLocal = localPublicCheckResponse({ ...neighboringFallback, requestId: 'neighboring-single' }, neighboringSingle);
 assert.deepEqual(neighboringLocal.result.arguments?.map((argument) => argument.claim), [neighboringSingle], 'A single tax claim must not inherit the separate services clause');
 
+const employmentSource = { id: 'employment-source', title: 'Empleo en España', publisher: 'Estadística oficial', url: 'https://example.test/employment' };
+const compoundEvidencePlan = ({ includeCause = true, causeVerdict = 'insufficient', attachCauseEvidence = false } = {}) => {
+  const items = [
+    { text: 'El empleo aumentó en 2025', type: 'trend', explicit: true, evidenceIds: ['employment-observation'], sourceIds: ['employment-source'], verdict: 'supported', evidenceLevel: 'strong', finding: 'La tasa de empleo subió en 2025.' },
+  ];
+  if (includeCause) items.push({
+    text: 'Ese aumento redujo el paro juvenil', type: 'causal', explicit: true,
+    evidenceIds: attachCauseEvidence ? ['unattributed-causal-observation'] : [],
+    sourceIds: attachCauseEvidence ? ['unlisted-causal-source'] : [],
+    verdict: causeVerdict, evidenceLevel: causeVerdict === 'supported' ? 'strong' : 'none',
+    finding: 'El aumento causó el descenso del paro juvenil.',
+  });
+  const propositionIds = includeCause ? ['employment-trend', 'employment-cause'] : ['employment-trend'];
+  return {
+    schemaVersion: '1', evidenceLevel: 'supported', headline: 'La relación causal está demostrada',
+    summary: 'La evidencia confirma todas las partes de esta frase.', coverage: 'complete', claimType: includeCause ? 'mixed' : 'trend',
+    blocks: [
+      { type: 'claim_breakdown', propositionIds, items },
+      { type: 'data_finding', propositionIds: ['employment-trend'], evidenceIds: ['employment-observation'], points: ['La tasa de empleo subió en 2025.'] },
+      { type: 'conversation_reply', text: 'La subida del empleo demuestra que el paro juvenil bajó por esa causa.' },
+    ],
+    evidenceIds: ['employment-observation', ...(includeCause && attachCauseEvidence ? ['unattributed-causal-observation'] : [])],
+    sourceIds: ['employment-source'], sourceLinks: [employmentSource],
+    shareableReply: 'La subida del empleo causó el descenso del paro juvenil.', shareableSourceIds: ['employment-source'],
+    evidenceSummary: { mode: 'dynamic', families: [{ label: 'Tasa de empleo', direction: 'supports', evidenceIds: ['employment-observation'], sourceIds: ['employment-source'], finding: 'La tasa de empleo subió en 2025.' }] },
+    knowledgeVersion: 'test',
+  };
+};
+const compoundTextParaphrases = [
+  'El empleo aumentó en 2025 y redujo el paro juvenil',
+  'Crece el empleo y por eso baja el desempleo de los jóvenes',
+];
+for (const [index, text] of compoundTextParaphrases.entries()) {
+  const compoundPlan = compoundEvidencePlan(index === 0
+    ? { causeVerdict: 'supported', attachCauseEvidence: true }
+    : { causeVerdict: 'insufficient' });
+  const pages = checkFromPlan(text, compoundPlan, `partially-evidenced-${index}`);
+  const preview = localPublicCheckResponse({ status: 'complete', requestId: `partially-evidenced-${index}`, result: compoundPlan }, text);
+  for (const response of [pages, preview]) {
+    assert.equal(response.state, 'limited', 'A cited fact must not make an unsupported compound claim look supported');
+    assert.equal(response.result.arguments?.[0]?.verdict, 'supported');
+    assert.equal(response.result.arguments?.[1]?.verdict, 'insufficient', 'A claim part with no traceable source must lose its positive verdict');
+    assert.deepEqual(response.result.arguments?.[1]?.sourceIds, []);
+    assert.equal(response.result.arguments?.[1]?.finding, 'No se ha vinculado evidencia directa con una fuente consultable a esta parte.');
+    assert.match(response.result.keyFact, /no permite confirmar todas las partes/i);
+    assert.match(response.result.reply, /no permite confirmar toda la afirmaci[oó]n/i);
+    assert.equal(response.result.shareableReply, undefined, 'A shareable sentence must not repeat the unsupported whole-claim verdict');
+  }
+}
+const neighboringEmployment = 'El empleo aumentó en 2025';
+const neighboringEmploymentPlan = compoundEvidencePlan({ includeCause: false });
+const neighboringEmploymentPages = checkFromPlan(neighboringEmployment, neighboringEmploymentPlan, 'single-employment-fact');
+const neighboringEmploymentLocal = localPublicCheckResponse({ status: 'complete', requestId: 'single-employment-fact', result: neighboringEmploymentPlan }, neighboringEmployment);
+for (const response of [neighboringEmploymentPages, neighboringEmploymentLocal]) {
+  assert.equal(response.state, 'supported', 'A directly evidenced single-part claim must retain its supported status');
+  assert.equal(response.result.arguments?.length, 1, 'The nearby single-part claim must not inherit the causal clause');
+  assert.equal(response.result.shareableReply, neighboringEmploymentPlan.shareableReply);
+}
+
 const unassessedCompoundPlan = {
   schemaVersion: '1', evidenceLevel: 'insufficient', headline: 'Faltan medidas compatibles',
   summary: 'No se ha localizado evidencia compatible para estas partes.', coverage: 'insufficient', claimType: 'mixed',

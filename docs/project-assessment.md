@@ -787,3 +787,17 @@ The deterministic audit moved from 3 complete, 22 limited and 275 uncovered
 responses to 3 complete, 23 limited and 274 uncovered. These are routing
 counts for an unverified discovery corpus, not an accuracy score or a result
 for the optional live resolver.
+
+## Compound text verdicts and source attribution — 23 November 2026
+
+A compound answer could receive an overall “supported” label when one clause
+had a cited observation and another clause was unsupported. Per-part
+assessments were visible, but the headline and copyable answer could still
+imply that the whole statement was established. The Pages response and local
+preview now require every explicit part to have its own evidence ID and
+attributable source before labelling the whole claim supported. Unlinked
+positive verdicts become insufficient; an overall supported plan with an
+unevidenced part is shown as limited, receives a clear qualification, and
+cannot retain its copyable whole-claim sentence. Paraphrases of a causal
+employment claim and a nearby single-part employment claim exercise the
+boundary in both paths.

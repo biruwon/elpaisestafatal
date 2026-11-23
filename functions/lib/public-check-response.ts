@@ -4,7 +4,7 @@ import type { CatalogueEntry as RuntimeCatalogueEntry } from './catalogue-resolv
 import type { ClaimAssessment, CheckResult, CheckSource, CheckVisual, PublicCheckResponse, ClaimInterpretation, CheckCriterion, CheckScorecard } from '../../src/lib/knowledge/public-check';
 import { composeFamilyReply } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
-import { publicArgumentsFromPlan } from '../../src/lib/knowledge/public-arguments.mjs';
+import { publicArgumentsFromPlan, publicEvidenceLevelForArguments, qualifyPublicClaimReply, requiresPublicClaimQualification } from '../../src/lib/knowledge/public-arguments.mjs';
 import { publicMetricLabel } from '../../src/lib/knowledge/public-presentation';
 import { publicEvidenceGapReply } from '../../src/lib/knowledge/public-answer-composition.mjs';
 
@@ -160,7 +160,9 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
     ? `El cuadro de datos compara ${scorecardItems.baseline.period} con ${scorecardItems.comparison.period}: ${improved} indicadores mejoran y ${worsened} empeoran. Esa evidencia permite valorar resultados concretos, pero no convierte por sí sola la comparación en una clasificación histórica objetiva.`
     : 'La tesis se evalúa mejor separando sus argumentos y comparando resultados concretos con un periodo y criterios definidos.';
   const scorecard = scorecardFromPlan(plan, sources);
-  const reply = plan.shareableReply?.trim() || replyFromPlan(plan);
+  const claimNeedsQualification = plan.evidenceLevel === 'supported' && requiresPublicClaimQualification(plan, argumentsList);
+  const originalReply = plan.shareableReply?.trim() || replyFromPlan(plan);
+  const reply = claimNeedsQualification ? qualifyPublicClaimReply(originalReply) : originalReply;
   const visuals = visualsFromPlan(plan);
   const hasVisibleFindings = criteria.length > 0
     || (plan.evidenceSummary?.families || []).some((family) => family.status !== 'missing' && Boolean(family.finding?.trim() || family.data?.length))
@@ -176,11 +178,12 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
     ? coverageGapReply || 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
     : reply;
   const publicLimitation = 'La respuesta no contiene hallazgos atribuibles a una fuente que se pueda consultar.';
-  const result: CheckResult = { claim, interpretation, nextQuestion: plan.clarificationQuestion, thesis: evaluative ? { text: claim, kind: 'evaluative', conclusion: thesisConclusion, criteria: ['resultados económicos y sociales', 'calidad institucional', 'cumplimiento legal', 'comparación con otros gobiernos'] } : undefined, reply, answer: reply || plan.summary || plan.headline, shareableReply: plan.shareableReply, shareableSourceIds: plan.shareableSourceIds, keyFact: plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, answerScope: plan.answerScope, sources, visual: visuals[0], visuals: visuals.length > 1 ? visuals : undefined, scorecard, evidenceSummary: publicEvidenceSummary(plan.evidenceSummary) };
+  const result: CheckResult = { claim, interpretation, nextQuestion: plan.clarificationQuestion, thesis: evaluative ? { text: claim, kind: 'evaluative', conclusion: thesisConclusion, criteria: ['resultados económicos y sociales', 'calidad institucional', 'cumplimiento legal', 'comparación con otros gobiernos'] } : undefined, reply, answer: reply || plan.summary || plan.headline, shareableReply: claimNeedsQualification ? undefined : plan.shareableReply, shareableSourceIds: claimNeedsQualification ? undefined : plan.shareableSourceIds, keyFact: claimNeedsQualification ? 'La evidencia no permite confirmar todas las partes de la afirmación' : plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: [plan.limitation].filter((value): value is string => Boolean(value)), scope: { checkedAt: plan.asOf }, answerScope: plan.answerScope, sources, visual: visuals[0], visuals: visuals.length > 1 ? visuals : undefined, scorecard, evidenceSummary: publicEvidenceSummary(plan.evidenceSummary) };
   const argumentEvidence = argumentsList.reduce((count, item) => count + item.evidenceIds.length, 0);
+  const effectiveEvidenceLevel = publicEvidenceLevelForArguments(plan.evidenceLevel || (supported ? 'supported' : 'limited'), plan, argumentsList) || (supported ? 'supported' : 'limited');
   const state = missingPublicEvidence ? 'insufficient' : argumentsList.length && argumentEvidence === 0
     ? 'insufficient'
-    : (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length)) ? 'insufficient' : (plan.evidenceLevel || (supported ? 'supported' : 'limited'));
+    : (effectiveEvidenceLevel === 'supported' && (!criteria.length || !sources.length)) ? 'insufficient' : effectiveEvidenceLevel;
   const safeResult = missingPublicEvidence ? {
     ...result,
     reply: publicReply,
