@@ -186,9 +186,11 @@ assert.match(basketSnapshot.body.result.reply, /21,9 %.*34,7 %.*8,9 %/s);
 assert.ok(basketSnapshot.body.result.sources.some((source) => source.id === 'eurostat-hicp-methodology-2026-11-23'));
 
 const basketPartial = await check(basketClaim, partialHicpBasketDatabase);
-assert.equal(basketPartial.body.state, 'insufficient', 'A partial live basket must not be completed with missing index series from the reviewed snapshot');
-assert.deepEqual(basketPartial.body.result.arguments[0].evidenceIds, []);
-assert.doesNotMatch(basketPartial.body.result.reply, /21,9 %|34,7 %|8,9 %/);
+assert.equal(basketPartial.body.state, 'limited', 'A partial live basket can fall back to one complete reviewed revision');
+assert.equal(basketPartial.body.result.evidenceSummary.mode, 'snapshot', 'Partial D1 data must not be mixed with the reviewed snapshot');
+assert.match(basketPartial.body.result.reply, /21,9 %.*34,7 %.*8,9 %/s);
+assert.ok(basketPartial.body.result.sources.some((source) => source.id === 'eurostat-annual-hicp-spain-2026-11-23'));
+assert.ok(basketPartial.body.result.sources.some((source) => source.id === 'eurostat-annual-hicp-actual-rents-spain-2026-11-23'));
 
 const partTimeAboveThreshold = await check('En 2025 el riesgo de pobreza entre las personas ocupadas a jornada parcial superó el 15 %');
 assert.equal(partTimeAboveThreshold.body.state, 'limited');

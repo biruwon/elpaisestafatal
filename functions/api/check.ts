@@ -301,7 +301,10 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
                 focusedObservations = [...focusedObservations, ...PRIMARY_CARE_WAIT_SNAPSHOT.observations];
               }
             }
-            const plan = focusedEvidencePlan(effectiveClaim, { observations: focusedObservations as never[] }) as AnswerPlan | undefined;
+            const plan = focusedEvidencePlan(effectiveClaim, {
+              observations: focusedObservations as never[],
+              allowReviewedSnapshotFallback: focus.id === 'household-inflation-basket',
+            }) as AnswerPlan | undefined;
             if (plan) warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
           }
           if (warehouseFocusedResponse

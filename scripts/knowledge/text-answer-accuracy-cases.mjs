@@ -713,6 +713,33 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'inflation-shopping-basket-vs-headline-cpi',
+    equivalenceGroup: 'household-inflation-food-spain-2020-2025',
+    input: 'La cesta de la compra ha subido más de lo que percibe quien mira solo el IPC general',
+    expected: {
+      state: 'limited', family: 'household-inflation-basket', verdict: 'mixed',
+      directSourceIds: ['eurostat-annual-hicp-spain-2026-11-23', 'eurostat-annual-hicp-food-spain-2026-11-23', 'eurostat-hicp-methodology-2026-11-23'],
+      replyIncludes: ['2020–2025', 'índice armonizado general subió aproximadamente un 21,9 %', 'alimentos y bebidas no alcohólicas, un 34,7 %', 'la subida de alimentos fue 12,8 puntos porcentuales mayor', 'no lo que compra o percibe cada hogar', 'no permite confirmar'],
+      replyExcludes: ['alquileres efectivamente pagados', '8,9 %', 'la inflación personal de cada hogar fue un 21,9 %'],
+      evidence: [
+        { familyId: 'annual_hicp_index', sourceIds: ['eurostat-annual-hicp-spain-2026-11-23'], dataIncludes: ['2020: 82,05', '2025: 100,00', '+21,9 %'], dimensions: { geography: 'España', period: '2020–2025', population: 'todos los productos', unit: 'Índice armonizado medio anual' } },
+        { familyId: 'annual_hicp_food_index', sourceIds: ['eurostat-annual-hicp-food-spain-2026-11-23'], dataIncludes: ['2020: 74,23', '2025: 100,00', '+34,7 %'], dimensions: { geography: 'España', period: '2020–2025', population: 'alimentos y bebidas no alcohólicas', unit: 'Índice armonizado medio anual' } },
+      ],
+      maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'inflation-food-subindex-paraphrase',
+    equivalenceGroup: 'household-inflation-food-spain-2020-2025',
+    input: 'Los precios de los alimentos han subido más que la inflación general',
+    expected: {
+      state: 'limited', family: 'household-inflation-basket', verdict: 'mixed',
+      directSourceIds: ['eurostat-annual-hicp-spain-2026-11-23', 'eurostat-annual-hicp-food-spain-2026-11-23', 'eurostat-hicp-methodology-2026-11-23'],
+      replyIncludes: ['2020–2025', '21,9 %', '34,7 %', '12,8 puntos porcentuales mayor', 'no lo que compra o percibe cada hogar', 'no permite confirmar'],
+      replyExcludes: ['alquileres efectivamente pagados', '8,9 %'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
     id: 'productivity-per-person-explicit-downward-direction',
     input: 'La productividad real por persona ocupada bajó entre 2019 y 2025',
     expected: {

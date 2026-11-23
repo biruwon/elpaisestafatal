@@ -20,7 +20,7 @@ import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 const cases = [
   ['youth-housing-family-formation-costs', ['La combinación de vivienda cara y cotizaciones altas reduce la capacidad de los jóvenes para tener hijos y ahorrar', 'El alquiler y las contribuciones elevadas limitan que la juventud ahorre y forme una familia', 'La vivienda costosa y los impuestos reducen la capacidad económica de los jóvenes para ahorrar y tener hijos']],
   ['inflation-tax-bracket-creep', ['La inflación eleva la carga fiscal cuando los tramos y deducciones no se actualizan al mismo ritmo', 'Si el IRPF no actualiza sus tramos con los precios, la inflación aumenta la recaudación', 'La progresividad en frío hace subir el IRPF cuando las rentas nominales crecen por la inflación']],
-  ['household-inflation-basket', ['El IPC general no refleja bien lo que notan los hogares que gastan mucho en comida y alquiler', '¿Cómo han cambiado desde 2020 los alimentos, el alquiler y la inflación general para las familias?', 'El índice general no describe toda la cesta de familias que destinan más dinero a alimentación y vivienda']],
+  ['household-inflation-basket', ['El IPC general no refleja bien lo que notan los hogares que gastan mucho en comida y alquiler', '¿Cómo han cambiado desde 2020 los alimentos, el alquiler y la inflación general para las familias?', 'El índice general no describe toda la cesta de familias que destinan más dinero a alimentación y vivienda', 'La cesta de la compra ha subido más de lo que percibe quien mira solo el IPC general', 'Los precios de los alimentos han subido más que la inflación general', 'Los alimentos se encarecieron por encima del IPC general']],
   ['gdp-household-welfare', ['Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', 'Que el PIB crezca no se traduce directamente en una mejora de la vida de las familias', 'El PIB por habitante no refleja cómo se reparte la prosperidad entre los hogares']],
   ['education-employment-outcomes', ['Un título universitario ya no garantiza encontrar un empleo cualificado', 'Tener estudios superiores no asegura trabajar en un puesto acorde con la titulación', 'La universidad ya no asegura encontrar trabajo acorde con sus estudios', 'La tasa de paro de titulados universitarios ha subido', 'Los graduados tienen menos empleo que quienes cursan formación profesional']],
   ['job-opportunities', ['No hay trabajo', 'Aquí hay pocas ofertas de empleo', 'Es difícil encontrar trabajo en España', 'Los jóvenes no encuentran empleo', 'Empleo no hay', 'No hay empleo temporal', 'Hay pocos trabajos bien pagados']],
@@ -92,10 +92,15 @@ for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
 assert.deepEqual([...focusedMetricIdsFor('El IPC general no refleja bien lo que notan los hogares que gastan mucho en comida y alquiler')].sort(), [
   'annual_hicp_actual_rent_index', 'annual_hicp_food_index', 'annual_hicp_index',
 ], 'A household basket comparison must retrieve the general, food, and actual-rent HICP indices');
+assert.deepEqual([...focusedMetricIdsFor('La cesta de la compra ha subido más de lo que percibe quien mira solo el IPC general')].sort(), [
+  'annual_hicp_food_index', 'annual_hicp_index',
+], 'A food-basket comparison must retrieve the general and food HICP indices without requesting unrelated rent data');
 for (const nearby of [
   'El IPC no refleja el precio de comprar una vivienda y comida',
   'Los hogares con hipoteca sufren más por la subida de alimentos y vivienda',
   'La cesta de la compra subió, aunque no se menciona el alquiler ni la vivienda',
+  'El IPC general no refleja cuánto subió el aceite de oliva',
+  'El precio de la vivienda y los alimentos dificulta pagar la hipoteca',
 ]) assert.notEqual(claimFocusFor(nearby)?.id, 'household-inflation-basket', `A nearby claim crossed into household inflation basket evidence: ${nearby}`);
 const localSafetyParaphrases = [
   'En mi barrio ha subido la inseguridad este mes',

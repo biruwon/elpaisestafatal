@@ -605,7 +605,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       && propositions.length <= 3 && propositions.length >= 2
       && propositions.every((proposition) => /\b(?:ipc|hicp|inflacion\w*|precios? de consumo|aliment\w*|comid\w*|supermercad\w*|alquil\w*|arrendam\w*|viviend\w*|hogar\w*|familia\w*|cesta\w*)\b/.test(normalize(proposition.text)))
       && propositions.some((proposition) => /\b(?:aliment\w*|comid\w*|supermercad\w*|cesta de la compra)\b/.test(normalize(proposition.text)))
-      && propositions.some((proposition) => /\b(?:alquil\w*|arrendam\w*|viviend\w*)\b/.test(normalize(proposition.text)));
+      && propositions.some((proposition) => /\b(?:ipc|hicp|inflacion\w*|precios? de consumo)\b/.test(normalize(proposition.text)));
     const sameLandlordMotive = focus.id === 'rental-landlord-motives'
       && (/^(?:les|le|esa modalidad|esa forma)\b/.test(clauseText)
         && /\b(flexibil\w*|seguridad|riesg\w*|rentabil\w*)\b/.test(clauseText)
@@ -657,9 +657,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     if (requestedTerritories.some((scope) => scope.id !== 'ES')) return hicpBasketEvidenceGapPlan(claim, { reason: 'geography' });
     const matched = hicpBasketComparisonPlan(claim, { observations, now });
     if (matched) return matched;
-    const metricIds = [...focus.direct, ...focus.context];
-    const hasLiveRows = observations.some((item) => metricIds.includes(item.metricId));
-    if (allowReviewedSnapshotFallback && !hasLiveRows && snapshotLifecycle(HICP_BASKET_SNAPSHOT, now).usable) {
+    if (allowReviewedSnapshotFallback && snapshotLifecycle(HICP_BASKET_SNAPSHOT, now).usable) {
+      // Re-run the entire comparison from one reviewed revision. This can
+      // recover from a partial live refresh without combining source vintages.
       const reviewed = hicpBasketComparisonPlan(claim, { observations: HICP_BASKET_SNAPSHOT.observations, now, allowReviewedSnapshot: true });
       if (reviewed) return reviewed;
     }

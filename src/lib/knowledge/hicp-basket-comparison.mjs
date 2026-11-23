@@ -15,6 +15,9 @@ const format = (value) => new Intl.NumberFormat('es-ES', { maximumFractionDigits
 const formatIndex = (value) => new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2, minimumFractionDigits: 2 }).format(value);
 const change = (start, end) => (end / start - 1) * 100;
 const describeChange = (value) => Math.abs(value) < 0.05 ? 'prácticamente no cambió' : `${value > 0 ? 'subió' : 'bajó'} aproximadamente un ${format(Math.abs(value))} %`;
+const requestedSpecs = (claim) => /\b(alquil\w*|arrendam\w*|viviend\w*)\b/.test(normalize(claim))
+  ? SPECS
+  : SPECS.filter((spec) => spec.id !== ACTUAL_RENT);
 
 const requestedWindow = (claim, years, latest) => {
   const text = normalize(claim);
@@ -112,35 +115,51 @@ const family = (spec, series, rows, start, end, delta) => {
 
 export const hicpBasketComparisonPlan = (claim, { observations = [], now = Date.now(), allowReviewedSnapshot = false } = {}) => {
   const currentYear = new Date(now).getUTCFullYear();
-  const series = new Map(SPECS.map((spec) => [spec.id, latestSeries(observations, spec.id, now, allowReviewedSnapshot)]));
+  const specs = requestedSpecs(claim);
+  const series = new Map(specs.map((spec) => [spec.id, latestSeries(observations, spec.id, now, allowReviewedSnapshot)]));
   if ([...series.values()].some((item) => !item)) return undefined;
   const timestamps = [...series.values()].map((item) => item.retrievedAt);
   if (Math.max(...timestamps) - Math.min(...timestamps) > 24 * 60 * 60 * 1000) return undefined;
-  const allYears = SPECS.map((spec) => [...series.get(spec.id).values.keys()].filter((year) => year < currentYear));
+  const allYears = specs.map((spec) => [...series.get(spec.id).values.keys()].filter((year) => year < currentYear));
   const commonYears = allYears.reduce((common, years) => common.filter((year) => years.includes(year)));
   const latest = commonYears.at(-1);
   const window = requestedWindow(claim, commonYears, latest);
   if (!window || window.start >= window.end || window.end >= currentYear
     || !commonYears.includes(window.start) || !commonYears.includes(window.end)) return undefined;
-  const rowsByMetric = new Map(SPECS.map((spec) => [spec.id, measurementValues(series.get(spec.id), window.start, window.end)]));
+  const rowsByMetric = new Map(specs.map((spec) => [spec.id, measurementValues(series.get(spec.id), window.start, window.end)]));
   if ([...rowsByMetric.values()].some((rows) => !rows)) return undefined;
-  const changes = new Map(SPECS.map((spec) => {
+  const changes = new Map(specs.map((spec) => {
     const item = series.get(spec.id);
     return [spec.id, change(item.values.get(window.start).value, item.values.get(window.end).value)];
   }));
   if ([...changes.values()].some((value) => !Number.isFinite(value))) return undefined;
 
-  const totalChange = changes.get(TOTAL), foodChange = changes.get(FOOD), rentChange = changes.get(ACTUAL_RENT);
-  const foodGap = foodChange - totalChange, rentGap = rentChange - totalChange;
-  const comparison = `En España, ${window.start}–${window.end}: el índice armonizado general subió aproximadamente un ${format(totalChange)} %; alimentos y bebidas no alcohólicas, un ${format(foodChange)} %; alquileres efectivamente pagados, un ${format(rentChange)} %. Frente al índice general, la subida de alimentos fue ${format(Math.abs(foodGap))} puntos porcentuales ${foodGap >= 0 ? 'mayor' : 'menor'} y la de alquileres, ${format(Math.abs(rentGap))} puntos porcentuales ${rentGap >= 0 ? 'mayor' : 'menor'}.`;
-  const interpretation = 'El índice general pondera los grupos según el gasto agregado; no representa la cesta de cada hogar.';
-  const limitation = 'El índice armonizado excluye el alquiler imputado de viviendas en propiedad. El subíndice de alquileres cubre pagos efectivos, pero no compra, hipotecas ni todos los gastos de vivienda. Sin los pesos de gasto del hogar no se calcula su inflación personal.';
-  const method = `Cálculo propio: variación acumulada de los índices anuales medios entre ${window.start} y ${window.end}.`;
+  const totalChange = changes.get(TOTAL);
+  const comparisonParts = specs.map((spec) => spec.id === TOTAL
+    ? `el índice armonizado general subió aproximadamente un ${format(changes.get(spec.id))} %`
+    : spec.id === FOOD
+      ? `alimentos y bebidas no alcohólicas, un ${format(changes.get(spec.id))} %`
+      : `alquileres efectivamente pagados, un ${format(changes.get(spec.id))} %`);
+  const relativeChanges = specs.filter((spec) => spec.id !== TOTAL).map((spec) => {
+    const difference = changes.get(spec.id) - totalChange;
+    return spec.id === FOOD
+      ? `la subida de alimentos fue ${format(Math.abs(difference))} puntos porcentuales ${difference >= 0 ? 'mayor' : 'menor'}`
+      : `la de alquileres, ${format(Math.abs(difference))} puntos porcentuales ${difference >= 0 ? 'mayor' : 'menor'}`;
+  });
+  const comparison = `En España, ${window.start}–${window.end}: ${comparisonParts.join('; ')}. Frente al índice general, ${relativeChanges.join(' y ')}.`;
+  const includesRent = specs.some((spec) => spec.id === ACTUAL_RENT);
+  const interpretation = includesRent
+    ? 'El índice general usa pesos de gasto agregados; no representa la cesta de cada hogar. Los subíndices comparan categorías.'
+    : 'El índice general usa pesos de gasto agregados; el subíndice de alimentos mide precios, no lo que compra o percibe cada hogar.';
+  const limitation = includesRent
+    ? 'El HICP excluye el alquiler imputado de viviendas en propiedad. El subíndice de alquileres mide pagos efectivos, no compra, hipotecas ni todos los gastos de vivienda. Sin pesos del hogar, no se calcula su inflación personal.'
+    : 'La diferencia no permite confirmar que el IPC represente mal cada experiencia. Para calcular la inflación personal hacen falta la cesta y los pesos de gasto del hogar.';
+  const method = `Cálculo propio: variación de los índices anuales medios entre ${window.start} y ${window.end}.`;
   const flags = [...rowsByMetric.values()].flat().map((row) => String(row.status || '').toLowerCase()).join('');
   const flagNote = [flags.includes('p') ? 'Algunas observaciones son provisionales.' : '', flags.includes('e') ? 'Algunas observaciones son estimadas.' : ''].filter(Boolean).join(' ');
   const reply = [comparison, interpretation, method, flagNote, limitation].filter(Boolean).join('\n\n');
   const families = [
-    ...SPECS.map((spec) => family(spec, series.get(spec.id), rowsByMetric.get(spec.id), window.start, window.end, changes.get(spec.id))),
+    ...specs.map((spec) => family(spec, series.get(spec.id), rowsByMetric.get(spec.id), window.start, window.end, changes.get(spec.id))),
     {
       familyId: 'hicp-methodology',
       label: 'Cobertura y ponderación del índice armonizado',
@@ -167,7 +186,7 @@ export const hicpBasketComparisonPlan = (claim, { observations = [], now = Date.
     evidenceLevel: 'limited',
     coverage: 'qualified',
     claimType: 'comparative',
-    headline: `Inflación general, alimentos y alquileres en España, ${window.start}–${window.end}`,
+    headline: `Inflación general, alimentos${includesRent ? ' y alquileres' : ''} en España, ${window.start}–${window.end}`,
     summary: finding,
     shareableReply: reply,
     shareableSourceIds: sourceIds,
@@ -183,23 +202,28 @@ export const hicpBasketComparisonPlan = (claim, { observations = [], now = Date.
     sourceIds,
     sourceLinks: sources,
     evidenceSummary: { mode: dataKind, families },
-    answerScope: { kind: 'measurement', family: 'household-inflation-basket', directMetrics: [FOOD, ACTUAL_RENT], contextMetrics: [TOTAL] },
+    answerScope: { kind: 'measurement', family: 'household-inflation-basket', directMetrics: specs.filter((spec) => spec.id !== TOTAL).map((spec) => spec.id), contextMetrics: [TOTAL] },
     knowledgeVersion: RUNTIME_VERSIONS.warehouseKnowledge,
   };
 };
 
 export const hicpBasketEvidenceGapPlan = (claim, { reason = 'data' } = {}) => {
-  const missing = reason === 'geography' ? 'La serie disponible cubre España; falta una serie comparable de HICP general, alimentos y alquileres para el territorio solicitado.'
-    : reason === 'period' ? 'No hay datos anuales compatibles para todos los años solicitados; indica otro intervalo con datos publicados.'
-      : 'Falta un índice anual armonizado general, de alimentos y de alquileres efectivamente pagados para los mismos años.';
-  const limitation = 'Los índices por categoría no bastan para calcular la inflación de una familia concreta. Para ello también hacen falta sus pesos de gasto y una cobertura de vivienda que corresponda a su situación.';
+  const specs = requestedSpecs(claim);
+  const categories = specs.filter((spec) => spec.id !== TOTAL).map((spec) => spec.label.toLocaleLowerCase('es'));
+  const requestedSeries = `el índice general y los subíndices de ${categories.join(' y ')}`;
+  const missing = reason === 'geography' ? `Las series disponibles cubren España; faltan datos comparables para ${requestedSeries} en el territorio solicitado.`
+    : reason === 'period' ? `No hay datos anuales compatibles para ${requestedSeries} en todos los años solicitados; indica otro intervalo con datos publicados.`
+      : `Faltan datos anuales compatibles para ${requestedSeries} en los mismos años.`;
+  const limitation = specs.some((spec) => spec.id === ACTUAL_RENT)
+    ? 'Los índices por categoría no bastan para calcular la inflación de una familia concreta. Para ello también hacen falta sus pesos de gasto y una cobertura de vivienda que corresponda a su situación.'
+    : 'El índice de alimentos no mide la percepción ni la cesta de una familia concreta. Para calcular su inflación personal hacen falta sus pesos de gasto y precios para las demás categorías.';
   return {
     id: 'measurement-household-inflation-basket-gap', schemaVersion: '1', evidenceLevel: 'insufficient', coverage: 'unavailable', claimType: 'comparative',
     headline: 'No hay una comparación compatible para ese intervalo o territorio',
     summary: missing,
     shareableReply: `${missing} ${limitation}`,
     shareableSourceIds: [],
-    interpretation: { kind: 'quantitative', subject: 'inflación por grupo de consumo', predicate: 'comparison', normalizedClaim: claim, evidenceNeeds: ['índices anuales general, de alimentos y de alquileres con la misma geografía e intervalo'] },
+    interpretation: { kind: 'quantitative', subject: 'inflación por grupo de consumo', predicate: 'comparison', normalizedClaim: claim, evidenceNeeds: [requestedSeries, 'mismos años y geografía'] },
     blocks: [
       { type: 'claim_breakdown', propositionIds: ['submitted-claim'], items: [{ text: claim, type: 'comparative', explicit: true, evidenceIds: [], sourceIds: [], verdict: 'insufficient', evidenceLevel: 'insufficient', finding: missing }] },
       { type: 'cannot_conclude', evidenceIds: [], points: [limitation] },
@@ -208,7 +232,7 @@ export const hicpBasketEvidenceGapPlan = (claim, { reason = 'data' } = {}) => {
     limitation,
     evidenceIds: [], sourceIds: [], sourceLinks: [],
     evidenceSummary: { mode: 'none', families: [], missingDimensions: [missing, limitation] },
-    answerScope: { kind: 'measurement', family: 'household-inflation-basket', directMetrics: [FOOD, ACTUAL_RENT], contextMetrics: [TOTAL] },
+    answerScope: { kind: 'measurement', family: 'household-inflation-basket', directMetrics: specs.filter((spec) => spec.id !== TOTAL).map((spec) => spec.id), contextMetrics: [TOTAL] },
     knowledgeVersion: RUNTIME_VERSIONS.warehouseKnowledge,
   };
 };

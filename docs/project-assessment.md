@@ -953,3 +953,35 @@ paraphrase groups; this regression set is not a population-wide estimate of
 factual accuracy. The 300-item unverified discovery set has 3 complete,
 32 limited and 265 uncovered deterministic responses; those are routing and
 retrieval outcomes, not a factual-accuracy score.
+
+## Shopping-basket wording versus headline inflation — 23 November 2026
+
+The same discovery audit found a common food-only formulation that the initial
+food-and-rent comparison missed: that the shopping basket has risen more than
+the general CPI suggests. The text route now accepts this wording and
+paraphrases, retrieves the all-items and food HICP series, and adds the actual-
+rent series only when the claim mentions housing or rent. A specific-product
+claim, a mortgage claim or an unqualified shopping-basket statement without a
+comparison does not inherit this family.
+
+The local warehouse currently has the all-items series but can lack one or both
+category series. If that live lookup cannot form a compatible comparison, the
+resolver uses the complete reviewed HICP snapshot for all requested series;
+it does not combine partial live observations with snapshot values. If the
+snapshot is expired or does not cover the requested period, the answer remains
+an explicit gap.
+
+For Spain in 2020–2025, food and non-alcoholic beverage prices rose 34.7%,
+compared with 21.9% for the all-items index: 12.8 percentage points more. The
+reply labels this as limited evidence. It says that the category index measures
+average prices, not what people bought or perceived, and that the comparison
+does not establish that the general index misrepresents every household. It
+does not calculate personal inflation without a household basket and its
+spending weights. The underlying [Eurostat annual HICP series](https://ec.europa.eu/eurostat/databrowser/view/prc_hicp_ainr/default/table?lang=en)
+uses the same aligned annual observations as the broader comparison.
+
+The held-out text-answer benchmark now passes 49/49 across 12 paraphrase groups,
+including this food-only answer and its public qualification. The full
+deterministic run of the 300 unverified discovery claims returns 3 complete,
+33 limited and 264 uncovered responses; these measure routing and retrieval,
+not factual accuracy. The claim corpus remains unverified.

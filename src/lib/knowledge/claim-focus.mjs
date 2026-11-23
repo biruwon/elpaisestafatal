@@ -6,10 +6,10 @@ const normalize = (value) => String(value || '').toLocaleLowerCase('es').normali
 const has = (text, expression) => expression.test(text);
 const wages = /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|cobr\w*|pagan?)\b/;
 const rents = /\b(alquil\w*|arrendam\w*|inquilin\w*|renta mensual)\b/;
-const householdInflationBasketComparison = (t) => /\b(ipc|hicp|inflacion\w*|precios? de consumo|indice general(?: de precios)?|coste de vida)\b/.test(t)
+const householdInflationBasketComparison = (t) => /\b(ipc|hicp|inflacion\w*|precios? de consumo|indice general(?: de precios)?)\b/.test(t)
   && /\b(aliment\w*|comid\w*|supermercad\w*|cesta de la compra)\b/.test(t)
-  && /\b(alquil\w*|arrendam\w*|viviend\w*)\b/.test(t)
-  && /\b(hogar\w*|familia\w*|gast\w*|cesta\w*|reflej\w*|sient\w*|experienc\w*|pes\w*|coste\w*|precios?\w*)\b/.test(t)
+  && (/\b(hogar\w*|familia\w*|gast\w*|cesta\w*|reflej\w*|sient\w*|experienc\w*|pes\w*|coste\w*|precios?\w*)\b/.test(t)
+    || /\b(mas que|menos que|mayor que|menor que|mas de lo que|menos de lo que|por encima (?:de|del)|por debajo (?:de|del)|superior a|inferior a|frente a|respecto a|compar\w*|no reflej\w*)\b/.test(t))
   && !/\bhipotec\w*\b|\b(?:compr\w*|adquir\w*)\b.{0,35}\b(?:viviend\w*|casas?)\b|\b(?:viviend\w*|casas?)\b.{0,35}\b(?:compr\w*|adquir\w*|propiedad|propietari\w*)\b/.test(t);
 const rentalBurden = /\b(ingres\w*|salari\w*|sueld\w*|nomina\w*|mitad|por ciento|porcentaje|esfuerzo|asequib\w*|poder alquilar|puede alquilar|puede pagar|alquilar[^.]{0,35}sol[oa]|emancip\w*|independiz\w*)\b/;
 const absoluteRentAmount = /\b(cuant\w*|importe\w*|cantid\w*|cuant[ií]a\w*|euros?|eur|mensual\w*|al mes|por mes|€)\b/;
@@ -1065,12 +1065,12 @@ const focuses = [
     limitation: 'La media pactada no mide lo que cobró cada trabajador ni todos los salarios. Una comparación con el índice general de precios tampoco describe el coste de vida de cada hogar ni demuestra que los convenios causen la inflación.',
   },
   {
-    id: 'household-inflation-basket', label: 'precios de alimentos y alquiler frente al índice general',
+    id: 'household-inflation-basket', label: 'alimentos y alquiler frente al índice general de precios',
     when: householdInflationBasketComparison,
     direct: ['annual_hicp_food_index', 'annual_hicp_actual_rent_index'], context: ['annual_hicp_index'], claimType: 'comparative',
-    needs: ['índice anual general y subíndices de alimentos y alquileres efectivamente pagados en los mismos años', 'pesos de gasto de cada hogar para calcular una inflación personalizada'],
-    explanation: 'El índice general incorpora los grupos de consumo con los pesos de gasto agregados. Los índices de alimentos y alquileres permiten ver si esos precios se movieron de otra forma, pero no reproducen la cesta concreta de cada hogar.',
-    limitation: 'Los subíndices de alimentos y alquileres no miden la inflación personal de un hogar. El alquiler efectivo no equivale al coste total de vivienda y el HICP no incluye el alquiler imputado de la vivienda en propiedad.',
+    needs: ['índice anual general y subíndice de cada categoría mencionada, para los mismos años', 'pesos de gasto de cada hogar para calcular una inflación personalizada'],
+    explanation: 'El índice general incorpora los grupos de consumo con pesos de gasto agregados. Un subíndice permite comparar una categoría concreta, pero no reproduce la cesta ni la percepción de cada hogar.',
+    limitation: 'Los subíndices no miden la inflación personal de un hogar. El alquiler efectivamente pagado no equivale al coste total de vivienda y el HICP no incluye el alquiler imputado de la vivienda en propiedad.',
   },
   {
     id: 'real-wages', label: 'salarios y poder adquisitivo',
@@ -1397,6 +1397,7 @@ export const focusedMetricIdsFor = (claim) => {
     : undefined;
   const direct = focus.id === 'subjective-financial-strain' && subjectiveResponseMetric ? [subjectiveResponseMetric]
     : focus.id === 'labour-productivity-and-growth' ? ['real_labour_productivity_per_person', 'real_labour_productivity_per_hour']
+    : focus.id === 'household-inflation-basket' && !/\b(alquil\w*|arrendam\w*|viviend\w*)\b/.test(text) ? ['annual_hicp_food_index']
     : focus.id === 'education-employment-outcomes' ? educationOutcomeMetrics(claim)
     : focus.id === 'working-poverty' && /\b(jornada completa|tiempo completo)\b/.test(text) && /\b(jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)\b/.test(text) ? ['in_work_poverty_full_time_rate', 'in_work_poverty_part_time_rate']
     : focus.id === 'working-poverty' && /\b(jornada completa|tiempo completo)\b/.test(text) ? ['in_work_poverty_full_time_rate']
