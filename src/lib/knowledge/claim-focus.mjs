@@ -481,7 +481,7 @@ const futurePensionOutlook = (t) => {
 };
 const housingCompletionReference = (t) => !touristHousingMention(t)
   && /\b(viviend\w*|casas?|pisos?)\b/.test(t)
-  && /\b(termin\w*|complet\w*|finaliz\w*)\b/.test(t);
+  && /\b(termin\w*|complet\w*|finaliz\w*|acab\w*|conclu\w*)\b/.test(t);
 const housingCompletionCountQuestion = (t) => housingCompletionReference(t)
   && (/\b(cuant\w*|numero|recuento|cantidad)\b/.test(t)
     || /\b92\s*000\b/.test(t) && /\b2025\b/.test(t));

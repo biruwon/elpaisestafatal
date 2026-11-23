@@ -64,7 +64,7 @@ const cases = [
   ['tourist-housing-share', ['¿Qué porcentaje del parque de viviendas corresponde a viviendas turísticas?', '¿Qué parte del parque de viviendas son viviendas de uso turístico?']],
   ['tourist-housing-registration', ['¿Cuántos pisos turísticos con licencia están registrados?', '¿Cuántas viviendas de uso turístico tienen número de inscripción válido?']],
   ['tourist-housing-supply', ['Los pisos turísticos están quitando viviendas del alquiler residencial', 'Los apartamentos turísticos reducen la oferta para quienes viven en las ciudades', 'La vivienda turística desplaza alquileres de larga duración']],
-  ['housing-completions', ['¿Cuántas viviendas nuevas se terminaron en España en 2025?', '¿Cuál fue el recuento de viviendas terminadas en España durante 2025?', '¿Se terminaron 92.000 viviendas nuevas en España en 2025?']],
+  ['housing-completions', ['¿Cuántas viviendas nuevas se terminaron en España en 2025?', '¿Cuál fue el recuento de viviendas terminadas en España durante 2025?', '¿Se terminaron 92.000 viviendas nuevas en España en 2025?', 'En 2025 se acabaron 92.000 viviendas nuevas en España', '¿Cuántas viviendas nuevas se concluyeron en España en 2025?']],
   ['housing-construction-pressure', ['La falta de vivienda nueva explica buena parte de la subida del alquiler', 'Se construyen pocas viviendas frente al número de hogares que se crean', 'La lentitud de las licencias urbanísticas retrasa la construcción de viviendas nuevas']],
   ['housing-supply', ['¿Cuántas casas vacías hay disponibles en la ciudad?']],
   ['foreign-housing-price-causality', ['Las compras de vivienda por extranjeros no residentes están encareciendo el mercado en zonas costeras', 'Las adquisiciones de compradores extranjeros elevan los precios de las casas en la costa']],
@@ -199,8 +199,13 @@ const housingCompletionPlan = focusedEvidencePlan('¿Cuántas viviendas nuevas s
 assert.equal(housingCompletionPlan.answerScope.family, 'housing-completions');
 assert.equal(housingCompletionPlan.claimType, 'descriptive');
 assert.equal(housingCompletionPlan.evidenceLevel, 'limited');
+assert.equal(housingCompletionPlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported', 'Directly measured national completion counts must answer the stated measurement rather than imply that the fact is unverified');
 assert.match(housingCompletionPlan.shareableReply, /92\.000.*2025/);
 assert.ok(housingCompletionPlan.sourceIds.includes('bde-housing-supply-2025'));
+const housingCompletionStatement = focusedEvidencePlan('En 2025 se acabaron 92.000 viviendas nuevas en España', { now: Date.parse('2026-11-23') });
+assert.equal(housingCompletionStatement.answerScope.family, 'housing-completions', 'A completed-homes statement must reuse the reviewed count family');
+assert.equal(housingCompletionStatement.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported');
+assert.match(housingCompletionStatement.shareableReply, /92\.000.*2025/);
 const housingCompletionOldPeriod = focusedEvidencePlan('¿Cuántas viviendas nuevas se terminaron en España en 2024?', { now: Date.parse('2026-11-23') });
 assert.equal(housingCompletionOldPeriod.evidenceLevel, 'insufficient', 'The 2025 snapshot must not answer a different year');
 assert.deepEqual(housingCompletionOldPeriod.sourceIds, []);
@@ -666,6 +671,22 @@ const educationOutcomeObservations = [
   { id: 'tertiary-employment-2025', metricId: 'employment_rate_tertiary_education', value: 83.2, period: '2025', unit: 'Percentage', geography: 'España', population: 'residents aged 20 to 64 with tertiary education', dimensions: { geo: 'ES', age: 'Y20-64', isced11: 'ED5-8' }, status: 'd', freshness: 'fresh', source: employmentSource },
   { id: 'tertiary-overqualification-2025', metricId: 'tertiary_overqualification_rate', value: 34, period: '2025', unit: 'Percentage', geography: 'España', population: 'employed residents aged 20 to 64 with tertiary education', dimensions: { geo: 'ES', age: 'Y20-64' }, status: 'd', freshness: 'fresh', source: overqualificationSource },
 ];
+const tertiaryEmploymentAbove80 = focusedEvidencePlan('La tasa de empleo de las personas con estudios universitarios superó el 80 % en 2025', { observations: educationOutcomeObservations });
+assert.equal(tertiaryEmploymentAbove80.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported', 'A measured employment rate above the submitted threshold must be assessed against the same population and year');
+assert.match(tertiaryEmploymentAbove80.shareableReply, /83,2 %.*20 a 64 a[nñ]os.*2025/);
+const tertiaryEmploymentBelow80 = focusedEvidencePlan('La tasa de empleo de las personas con estudios universitarios no llegó al 80 % en 2025', { observations: educationOutcomeObservations });
+assert.equal(tertiaryEmploymentBelow80.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'contradicted', 'A directly measured rate above 80% must contradict a claim that it did not reach 80%');
+assert.match(tertiaryEmploymentBelow80.shareableReply, /83,2 %/);
+assert.doesNotMatch(tertiaryEmploymentBelow80.shareableReply, /La evidencia no basta para confirmar toda la afirmaci[oó]n/);
+const exactThresholdObservations = educationOutcomeObservations.map((item) => item.metricId === 'employment_rate_tertiary_education' ? { ...item, value: 80 } : item);
+const strictThresholdClaim = focusedEvidencePlan('La tasa de empleo de las personas con estudios universitarios superó el 80 % en 2025', { observations: exactThresholdObservations });
+assert.equal(strictThresholdClaim.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'contradicted', 'Strictly exceeding a threshold must not accept an exact match');
+const inclusiveThresholdClaim = focusedEvidencePlan('La tasa de empleo de las personas con estudios universitarios fue al menos el 80 % en 2025', { observations: exactThresholdObservations });
+assert.equal(inclusiveThresholdClaim.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported', 'An inclusive lower bound accepts an exact match');
+const maximumThresholdClaim = focusedEvidencePlan('La tasa de empleo de las personas con estudios universitarios no superó el 80 % en 2025', { observations: exactThresholdObservations });
+assert.equal(maximumThresholdClaim.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported', 'An inclusive upper bound accepts an exact match');
+const strictMaximumThresholdClaim = focusedEvidencePlan('La tasa de empleo de las personas con estudios universitarios no llegó al 80 % en 2025', { observations: exactThresholdObservations });
+assert.equal(strictMaximumThresholdClaim.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'contradicted', 'Failing to reach a threshold is strict and excludes an exact match');
 const educationOutcomeGapFamilies = [
   {
     claims: [

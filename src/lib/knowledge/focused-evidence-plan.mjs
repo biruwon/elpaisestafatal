@@ -230,6 +230,31 @@ const educationOutcomeFinding = (fact) => {
   if (fact.id === 'tertiary_overqualification_rate_age_20_34') return `${source}: en ${place}, el ${value} de las personas ocupadas de 20 a 34 años con educación terciaria (ISCED 5–8) trabajaba en ocupaciones ISCO 4–9, que no requieren ese nivel, en ${period}.`;
   return fact.finding;
 };
+const educationOutcomeThresholdVerdict = (claim, direct) => {
+  if (direct.length !== 1 || direct[0].items.some((item) => item.freshness === 'stale')) return 'insufficient';
+  const text = String(claim || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
+  const comparisons = [
+    { relation: 'at-most', expression: /\b(?:no supera|no supero|no sobrepasa|no excede)\s+(?:(?:a|al|de|del)\s+)?(?:(?:el|la)\s+)?(\d+(?:[.,]\d+)?)\s*(?:%|por\s+ciento)/ },
+    { relation: 'below', expression: /\b(?:no alcanza|no lleg\w*)\s+(?:(?:a|al|de|del)\s+)?(?:(?:el|la)\s+)?(\d+(?:[.,]\d+)?)\s*(?:%|por\s+ciento)/ },
+    { relation: 'below', expression: /\b(?:por debajo de|por debajo del|menos de|menos del|inferior a|inferior al|menor de|menor del)\s+(?:(?:el|la)\s+)?(\d+(?:[.,]\d+)?)\s*(?:%|por\s+ciento)/ },
+    { relation: 'above', expression: /\b(?:supera|supero|superaba|sobrepasa|excede|superior a|superior al|mayor de|mayor del|mas de|mas del|por encima de)\s+(?:(?:el|la)\s+)?(\d+(?:[.,]\d+)?)\s*(?:%|por\s+ciento)/ },
+    { relation: 'at-least', expression: /\b(?:al menos|no baja de|no desciende de|no cae por debajo de)\s+(?:(?:el|la)\s+)?(\d+(?:[.,]\d+)?)\s*(?:%|por\s+ciento)/ },
+  ];
+  for (const { relation, expression } of comparisons) {
+    const match = text.match(expression);
+    if (!match) continue;
+    const threshold = Number(match[1].replace(',', '.'));
+    if (!Number.isFinite(threshold)) return 'insufficient';
+    const actual = direct[0].latest.value;
+    if (!Number.isFinite(actual)) return 'insufficient';
+    const claimMatchesMeasurement = relation === 'at-most' ? actual <= threshold
+      : relation === 'below' ? actual < threshold
+        : relation === 'above' ? actual > threshold
+          : actual >= threshold;
+    return claimMatchesMeasurement ? 'supported' : 'contradicted';
+  }
+  return 'insufficient';
+};
 const workingPovertyFinding = (fact) => {
   const item = fact.latest;
   const population = fact.id === 'in_work_poverty_full_time_rate'
@@ -470,7 +495,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   });
   const educationQuestion = educationOutcome ? educationOutcomeQuestion(claim) : undefined;
   const limitation = educationOutcome ? educationOutcomeLimitation(ids, focus.limitation, educationQuestion)
-    : focus.id === 'working-poverty' ? `${focus.limitation} El desglose por jornada no incluye dimensión de edad y una diferencia entre jornadas no demuestra que el tipo de jornada cause el riesgo. El periodo es el año de la encuesta EU-SILC; el año de referencia de los ingresos puede ser anterior.`
+    : focus.id === 'working-poverty' ? 'El umbral relativo no mide la dificultad subjetiva para llegar a fin de mes. El desglose por jornada no incluye la edad; el dato no demuestra que el tipo de jornada cause el riesgo. El periodo es el año de la encuesta EU-SILC y los ingresos pueden referirse a un año anterior.'
     : focus.id === 'sector-wage-comparison' ? [
       comparesSectorEmployment
         ? comparesSectorEmploymentTrend
@@ -551,6 +576,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     if (/\b(no impide|no evita|no garantiza|afect\w*|tambi[eé]n hay|existe\w*)\b/.test(normalizedClaim)) return 'supported';
     return 'mixed';
   })();
+  const educationOutcomeVerdict = educationOutcome && claimType === 'descriptive' && propositions.length <= 1
+    ? educationOutcomeThresholdVerdict(claim, direct)
+    : 'insufficient';
   const evidenceIds = [...new Set([...facts.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanation?.sources || []).map((source) => source.id)].filter(Boolean))];
   const explanationSourceIds = (explanation?.sources || []).map((source) => source.id);
   const explanationSupportsClaim = Boolean(explanation?.directClaimEvidence);
@@ -731,7 +759,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     interpretation: { kind: claimType === 'causal' ? 'causal' : claimType === 'comparative' ? 'comparative' : 'quantitative', subject: focus.label, predicate: claimType === 'causal' ? 'requires_causal_design' : 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
     blocks: [
       { type: 'claim_breakdown', items: [{ text: claim, type: claimType, explicit: true, evidenceIds: directEvidenceIds, sourceIds: directSourceIds,
-        verdict: explanationMeasuresClaim ? 'mixed' : focus.id === 'working-poverty' ? workingPovertyVerdict : 'insufficient', evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
+        verdict: explanationMeasuresClaim ? explanation.claimVerdict || 'mixed'
+          : educationOutcome ? educationOutcomeVerdict
+            : focus.id === 'working-poverty' ? workingPovertyVerdict : 'insufficient', evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
         finding: explanationMeasuresClaim ? explanation.facts.join(' ') : workingPovertyComparison?.finding || (direct.length ? direct.slice(0, 2).map(factFinding).join(' ') : undefined) }], propositionIds: ['submitted-claim'] },
       ...explanationBlocks,
       ...facts.map((fact) => ({ type: 'data_finding', evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [factFinding(fact)] })),

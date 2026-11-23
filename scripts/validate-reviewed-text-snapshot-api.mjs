@@ -114,11 +114,15 @@ assert.deepEqual(degreeRequirementTrend.body.result.sources, []);
 for (const paraphrase of [
   '¿Cuántas viviendas nuevas se terminaron en España en 2025?',
   '¿Cuál fue el recuento de viviendas terminadas en España durante 2025?',
+  'En 2025 se acabaron 92.000 viviendas nuevas en España',
+  '¿Cuántas viviendas nuevas se concluyeron en España en 2025?',
 ]) {
   const housingCompletion = await check(paraphrase);
   assert.equal(housingCompletion.body.state, 'limited', paraphrase);
   assert.equal(housingCompletion.body.result.answerScope.family, 'housing-completions', paraphrase);
+  assert.equal(housingCompletion.body.result.arguments[0].verdict, 'supported', paraphrase);
   assert.match(housingCompletion.body.result.reply, /92\.000.*2025/, paraphrase);
+  assert.doesNotMatch(housingCompletion.body.result.reply, /^La evidencia no basta para confirmar toda la afirmaci[oó]n/, paraphrase);
   assert.ok(housingCompletion.body.result.sources.some((source) => source.id === 'bde-housing-supply-2025'), paraphrase);
   assert.ok(housingCompletion.body.result.reply.trim().split(/\s+/).length <= 160, paraphrase);
 }

@@ -816,12 +816,19 @@ answer plans and the public response shape, including per-part verdicts,
 evidence-family data and cited source IDs. A secure URL alone no longer makes a
 claim part traceable when its cited source ID does not match a listed source.
 
-This still does not score whether a number, period, population or denominator
-in the answer matches its underlying source. Those checks remain in focused
-text-family regression fixtures and reviewed evidence workflows. The next
-accuracy milestone is a held-out text set with expected evidence and scope
-fields, so end-to-end scores measure the answer users see rather than routing
-alone.
+The answer-level benchmark now grades nine held-out text cases against
+reviewed snapshot-backed evidence. It checks the public answer's evidence
+family, value, verdict, linked source, period, geography, population,
+denominator, scope exclusions, traceability and word limit. It also checks
+that paraphrases share evidence, while nearby claims with the wrong year or
+territory do not inherit that evidence. Cases include housing completions,
+tertiary-education employment and in-work poverty. The current run passes 9/9.
+
+This small regression set is a useful guard against known answer failures,
+not a population-wide estimate of factual accuracy. Broader validation still
+needs a larger independently reviewed set spanning more claim families,
+paraphrases, dates, places and unsupported claims; all answers also remain
+bounded by the available reviewed sources and their definitions.
 
 ## Expired political scorecard fallback — 23 November 2026
 

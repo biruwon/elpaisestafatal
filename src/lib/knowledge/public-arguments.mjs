@@ -34,6 +34,18 @@ export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
   const text = String(reply || '').trim();
   if (!text) return publicClaimQualification;
   if (assertsUnsupportedCausalPart(text, argumentsList)) return publicClaimQualification;
+  // A sourced contradiction already has a specific, evidence-backed answer.
+  // Keep that answer and label the result instead of replacing it with the
+  // generic qualification, which otherwise hides the measured value and scope.
+  const directlyContradicted = argumentsList.length === 1
+    && argumentsList[0].verdict === 'contradicted'
+    && argumentsList[0].evidenceIds?.length > 0
+    && argumentsList[0].sourceIds?.length > 0;
+  if (directlyContradicted) {
+    const finding = String(argumentsList[0].finding || '').trim();
+    const measuredFinding = finding && !text.includes(finding) ? `${finding}\n\n` : '';
+    return `La fuente contradice la afirmación.\n\n${measuredFinding}${text}`;
+  }
   const alreadyStatesNonConclusion = /\bno (?:se puede|permite|podemos|alcanza a)\s+(?:confirmar|descartar|demostrar|sostener|afirmar|concluir|determinar|medir|calcular|comparar|establecer|atribuir|saber|evaluar)\b/i.test(text);
   const missingEvidenceAlreadyExplained = /\b(?:no se ha localizado|no hemos localizado|no hemos encontrado)\b[^.!?]{0,120}\b(?:medici[oó]n|evidencia|datos?|fuente|respaldo)\b[^.!?]{0,120}\b(?:no demuestra|no permite|no se puede|no podemos|no alcanza|falta|pendiente)\b/i.test(text)
     || /\b(?:no se ha localizado|no hemos localizado|no hemos encontrado)\b[^.!?]{0,160}\b(?:medici[oó]n|evidencia|datos?|fuente|respaldo)\b[^.!?]*[.!?]\s*(?:esto\s+)?no demuestra que la afirmaci[oó]n sea falsa\b/i.test(text)

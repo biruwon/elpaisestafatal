@@ -31,7 +31,7 @@ const partTimeSource = {
   trust: 'primary',
 };
 
-const annualSeries = (source, metricId, metric, unit, population, dimensions, values) => values.map(([period, value]) => ({
+const annualSeries = (source, metricId, metric, unit, population, denominator, dimensions, values) => values.map(([period, value]) => ({
   id: `${source.id}-${period}`,
   kind: 'observation',
   dataKind: 'snapshot',
@@ -42,6 +42,7 @@ const annualSeries = (source, metricId, metric, unit, population, dimensions, va
   period,
   geography: 'España',
   population,
+  denominator,
   dimensions: { ...dimensions, geo: 'ES', time: period },
   dimensionLabels: { geo: 'Spain', time: period },
   source,
@@ -64,6 +65,7 @@ export const WORKING_POVERTY_SNAPSHOT = Object.freeze({
       'Personas ocupadas en riesgo de pobreza',
       'Percentage',
       'Personas ocupadas de 18 años o más, empleadas más de la mitad del año de referencia; renta disponible equivalente del hogar inferior al 60 % de la mediana nacional tras transferencias',
+      'Personas ocupadas de 18 años o más, según su situación laboral más frecuente en el año de referencia',
       { freq: 'A', wstatus: 'EMP', sex: 'T', age: 'Y_GE18', unit: 'PC' },
       [['2015', 13.1], ['2016', 13.1], ['2017', 13.1], ['2018', 12.9], ['2019', 12.7], ['2020', 11.8], ['2021', 12.7], ['2022', 11.7], ['2023', 11.3], ['2024', 11.2], ['2025', 11.2]],
     ),
@@ -73,6 +75,7 @@ export const WORKING_POVERTY_SNAPSHOT = Object.freeze({
       'Personas ocupadas a jornada completa en riesgo de pobreza',
       'Percentage',
       'Personas ocupadas a jornada completa; renta disponible equivalente del hogar inferior al 60 % de la mediana nacional tras transferencias; el dataset no ofrece un desglose de edad',
+      'Personas ocupadas a jornada completa',
       { freq: 'A', worktime: 'FT', unit: 'PC' },
       [['2015', 10.3], ['2016', 10.7], ['2017', 10.7], ['2018', 10.9], ['2019', 10.7], ['2020', 9.7], ['2021', 10.9], ['2022', 9.7], ['2023', 9.3], ['2024', 9.6], ['2025', 9.5]],
     ),
@@ -82,6 +85,7 @@ export const WORKING_POVERTY_SNAPSHOT = Object.freeze({
       'Personas ocupadas a jornada parcial en riesgo de pobreza',
       'Percentage',
       'Personas ocupadas a jornada parcial; renta disponible equivalente del hogar inferior al 60 % de la mediana nacional tras transferencias; el dataset no ofrece un desglose de edad',
+      'Personas ocupadas a jornada parcial',
       { freq: 'A', worktime: 'PT', unit: 'PC' },
       [['2015', 27.1], ['2016', 24.3], ['2017', 26.9], ['2018', 22.5], ['2019', 22.1], ['2020', 19], ['2021', 21.4], ['2022', 21.2], ['2023', 20.5], ['2024', 19.2], ['2025', 18.6]],
     ),

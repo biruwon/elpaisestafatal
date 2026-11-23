@@ -61,6 +61,11 @@ assert.equal(focusedEvidencePlan('¿Cuántos días tarda una cita con el médico
 }).answerScope.family, 'primary-care-waits', 'A descriptive wait question must not inherit the urgent-care causal route');
 assert.equal(qualifyPublicClaimReply('No demuestra que el reconocimiento de títulos cause esas diferencias.'), 'No demuestra que el reconocimiento de títulos cause esas diferencias.');
 assert.match(qualifyPublicClaimReply('La falta de pruebas no demuestra que la afirmación sea falsa.'), /^La evidencia no basta para confirmar toda la afirmación/);
+const contradictedReply = 'Datos de Eurostat: la tasa fue 83,2 % en 2025, por encima del 80 % indicado.';
+assert.equal(qualifyPublicClaimReply(contradictedReply, [{ verdict: 'contradicted', evidenceIds: ['employment-rate-2025'], sourceIds: ['eurostat-tertiary-employment'] }]),
+  `La fuente contradice la afirmación.\n\n${contradictedReply}`, 'A directly sourced contradiction should retain its measured value and period');
+assert.equal(qualifyPublicClaimReply(contradictedReply, [{ verdict: 'contradicted', evidenceIds: ['employment-rate-2025'], sourceIds: [] }]),
+  'La evidencia no basta para confirmar toda la afirmación.', 'A contradiction without a public source must not be presented as verified');
 
 const povertySource = { id: 'poverty-source', title: 'Poverty survey', publisher: 'Eurostat', url: 'https://example.test/poverty' };
 const poverty = [{ id: 'poverty-observation', metricId: 'in_work_poverty_full_time_rate', value: 9.5, unit: '%', period: '2025', geography: 'España', source: povertySource }];

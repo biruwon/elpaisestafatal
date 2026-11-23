@@ -20,6 +20,7 @@ export const HOUSING_COMPLETION_EVIDENCE = Object.freeze({
   expiresAt: '2027-04-30',
   territories: ['ES'],
   directClaimEvidence: true,
+  claimVerdict: 'supported',
   when: (claim) => yearsWithin(claim, ['2025'])
     && !/\b(?:este ano|actualmente|en lo que va de ano|2026)\b/.test(claim),
   evidenceLabel: 'Viviendas residenciales nuevas terminadas',
