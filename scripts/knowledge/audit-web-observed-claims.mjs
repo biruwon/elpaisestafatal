@@ -3,6 +3,7 @@ import { normalizeCompilerOutput } from './local-compiler-contract.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { publicEvidenceGapReply } from '../../src/lib/knowledge/public-answer-composition.mjs';
 import { claimFocusFor } from '../../src/lib/knowledge/claim-focus.mjs';
+import { localPublicCheckResponse } from '../lib/local-public-check-response.mjs';
 
 const resolveMode = process.argv.includes('--resolve');
 const deterministicMode = process.argv.includes('--deterministic');
@@ -33,11 +34,35 @@ const candidates = data.candidates.map((candidate) => ({
 const resolveLimit = limitArg ? Math.max(1, Number.parseInt(limitArg.slice(8), 10) || 1) : candidates.length;
 const resolveOffset = offsetArg ? Math.max(0, Number.parseInt(offsetArg.slice(9), 10) || 0) : 0;
 const auditCandidates = candidates.filter((candidate) => !selectedIds || selectedIds.has(candidate.id)).slice(resolveOffset, resolveOffset + resolveLimit);
-const answerDetails = (candidate, result) => includeAnswers ? {
+const answerDetails = (candidate, result, publicResponse) => includeAnswers ? {
   claim: candidate.claim, headline: result?.headline, reply: result?.shareableReply || result?.blocks?.find((block) => block.type === 'conversation_reply')?.text || publicEvidenceGapReply(result) || result?.summary,
   evidenceLevel: result?.evidenceLevel, limitation: result?.limitation, answerScope: result?.answerScope,
   families: result?.evidenceSummary?.families, sourceLinks: result?.sourceLinks,
+  publicReply: publicResponse?.result?.reply,
+  publicArguments: publicResponse?.result?.arguments,
+  publicSources: publicResponse?.result?.sources,
 } : {};
+const publicOutcome = (candidate, payload) => {
+  const response = localPublicCheckResponse(payload, candidate.claim);
+  const args = response.result?.arguments || [];
+  const untraceableArgumentVerdicts = args.filter((item) => ['supported', 'contradicted', 'mixed'].includes(item.verdict)
+    && (!item.evidenceIds?.length || !item.sourceIds?.length)).length;
+  if (response.state === 'supported' && (response.result?.evidenceLevel !== 'supported' || !response.result?.sources?.length)) {
+    errors.push(`${candidate.id} supported_public_answer_without_supported_level_and_sources`);
+  }
+  if (response.state === 'limited' && (response.result?.evidenceLevel !== 'limited' || !response.result?.sources?.length)) {
+    errors.push(`${candidate.id} limited_public_answer_without_limited_level_and_sources`);
+  }
+  if (untraceableArgumentVerdicts) errors.push(`${candidate.id} has ${untraceableArgumentVerdicts} non-traceable argument verdict(s)`);
+  return {
+    state: response.state,
+    evidenceLevel: response.result?.evidenceLevel || 'none',
+    sourceCount: response.result?.sources?.length || 0,
+    untraceableArgumentVerdicts,
+    ...(includeAnswers ? { reply: response.result?.reply, arguments: args, sources: response.result?.sources } : {}),
+  };
+};
+const countBy = (items, key) => Object.fromEntries([...new Set(items.map((item) => item[key]))].map((value) => [value, items.filter((item) => item[key] === value).length]));
 const runtimeCatalogue = JSON.parse(await readFile('dist/claim-catalog.json', 'utf8'));
 const normalizeText = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const publicPhrases = new Set(runtimeCatalogue.filter((entry) => entry.status === 'published' && entry.basis !== 'model').flatMap((entry) => [entry.claim, ...(entry.aliases || [])]).map(normalizeText));
@@ -120,9 +145,33 @@ const report = {
 if (deterministicMode) {
   const outcomes = auditCandidates.map((candidate) => {
     const result = deterministicApiFallback({ text: candidate.claim, inputType: 'text' });
-    return { id: candidate.id, status: result.status, evidence: result.result?.evidenceIds?.length || 0, sources: result.result?.sourceIds?.length || 0, propositions: result.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0, ...answerDetails(candidate, result.result) };
+    const publicResult = publicOutcome(candidate, result);
+    return {
+      id: candidate.id,
+      status: result.status,
+      evidence: result.result?.evidenceIds?.length || 0,
+      sources: result.result?.sourceIds?.length || 0,
+      propositions: result.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0,
+      publicState: publicResult.state,
+      publicEvidenceLevel: publicResult.evidenceLevel,
+      publicSourceCount: publicResult.sourceCount,
+      untraceableArgumentVerdicts: publicResult.untraceableArgumentVerdicts,
+      ...answerDetails(candidate, result.result, { result: { reply: publicResult.reply, arguments: publicResult.arguments, sources: publicResult.sources } }),
+    };
   });
-  report.deterministic = { outcomes, completed: outcomes.filter((item) => item.status === 'complete').length, limited: outcomes.filter((item) => item.status === 'partial' || item.status === 'draft').length, uncovered: outcomes.filter((item) => item.status === 'uncovered').length, withEvidence: outcomes.filter((item) => item.evidence > 0).length, withSources: outcomes.filter((item) => item.sources > 0).length, structuredCompoundResponses: outcomes.filter((item) => item.propositions > 1).length };
+  report.deterministic = {
+    outcomes,
+    completed: outcomes.filter((item) => item.status === 'complete').length,
+    limited: outcomes.filter((item) => item.status === 'partial' || item.status === 'draft').length,
+    uncovered: outcomes.filter((item) => item.status === 'uncovered').length,
+    withEvidence: outcomes.filter((item) => item.evidence > 0).length,
+    withSources: outcomes.filter((item) => item.sources > 0).length,
+    structuredCompoundResponses: outcomes.filter((item) => item.propositions > 1).length,
+    publicStates: countBy(outcomes, 'publicState'),
+    publicEvidenceLevels: countBy(outcomes, 'publicEvidenceLevel'),
+    publicWithSources: outcomes.filter((item) => item.publicSourceCount > 0).length,
+    untraceableArgumentVerdicts: outcomes.reduce((total, item) => total + item.untraceableArgumentVerdicts, 0),
+  };
   const candidateById = new Map(candidates.map((candidate) => [candidate.id, candidate]));
   report.deterministic.uncoveredByTopic = {};
   report.deterministic.uncoveredExamples = outcomes.filter((item) => item.status === 'uncovered').slice(0, 50).map((item) => ({ id: item.id, claim: candidateById.get(item.id)?.claim, claimType: candidateById.get(item.id)?.claimType }));
@@ -149,13 +198,41 @@ if (resolveMode) {
       }
       const result = payload.result;
       const timedOut = payload.status === 'processing';
-      return { id: candidate.id, status: timedOut ? 'timeout' : payload.status, evidence: result?.evidenceIds?.length || 0, sources: result?.sourceLinks?.length || 0, propositions: result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0, latencyMs: Date.now() - started, ...answerDetails(candidate, result) };
+      const publicResult = publicOutcome(candidate, payload);
+      return {
+        id: candidate.id,
+        status: timedOut ? 'timeout' : payload.status,
+        evidence: result?.evidenceIds?.length || 0,
+        sources: result?.sourceLinks?.length || 0,
+        propositions: result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.length || 0,
+        publicState: publicResult.state,
+        publicEvidenceLevel: publicResult.evidenceLevel,
+        publicSourceCount: publicResult.sourceCount,
+        untraceableArgumentVerdicts: publicResult.untraceableArgumentVerdicts,
+        latencyMs: Date.now() - started,
+        ...answerDetails(candidate, result, { result: { reply: publicResult.reply, arguments: publicResult.arguments, sources: publicResult.sources } }),
+      };
     } catch (error) { return { id: candidate.id, status: 'error', error: error instanceof Error ? error.message : String(error), latencyMs: Date.now() - started }; }
   };
   const worker = async () => { while (cursor < resolveCandidates.length) { const candidate = resolveCandidates[cursor++]; outcomes.push(await resolveOne(candidate)); } };
   await Promise.all(Array.from({ length: Math.min(3, resolveCandidates.length) }, worker));
-  report.resolve = { base, offset: resolveOffset, requested: resolveCandidates.length, outcomes, completed: outcomes.filter((item) => !['error', 'timeout'].includes(item.status)).length, errors: outcomes.filter((item) => item.status === 'error').length, timeouts: outcomes.filter((item) => item.status === 'timeout').length, withEvidence: outcomes.filter((item) => item.status !== 'timeout' && item.evidence > 0).length, withSources: outcomes.filter((item) => item.status !== 'timeout' && item.sources > 0).length, structuredCompoundResponses: outcomes.filter((item) => item.propositions > 1).length };
+  report.resolve = {
+    base,
+    offset: resolveOffset,
+    requested: resolveCandidates.length,
+    outcomes,
+    completed: outcomes.filter((item) => !['error', 'timeout'].includes(item.status)).length,
+    errors: outcomes.filter((item) => item.status === 'error').length,
+    timeouts: outcomes.filter((item) => item.status === 'timeout').length,
+    withEvidence: outcomes.filter((item) => item.status !== 'timeout' && item.evidence > 0).length,
+    withSources: outcomes.filter((item) => item.status !== 'timeout' && item.sources > 0).length,
+    structuredCompoundResponses: outcomes.filter((item) => item.propositions > 1).length,
+    publicStates: countBy(outcomes, 'publicState'),
+    publicEvidenceLevels: countBy(outcomes, 'publicEvidenceLevel'),
+    publicWithSources: outcomes.filter((item) => item.publicSourceCount > 0).length,
+    untraceableArgumentVerdicts: outcomes.reduce((total, item) => total + (item.untraceableArgumentVerdicts || 0), 0),
+  };
 }
 await writeFile(outputArg ? outputArg.slice(9) : '.local/web-observed-claims-audit.json', JSON.stringify(report, null, 2));
 if (errors.length) { console.error(errors.slice(0, 20).join('\n')); process.exit(1); }
-console.log(`Web-observed claims audited: ${report.claims} candidates, ${report.explicitMultiProposition} with multiple explicit clauses (${report.parserMultiIncludingImplied} parser outputs including implied requirements), ${report.routing.routedByEither} with a compiler metric or focused-family route (${report.metricRouted} metric matches, ${report.routing.focusedFamilyRouted} family matches, ${report.routing.metricAndFamilyRouted} overlap), ${report.routing.noDeterministicRoute} with neither route, ${report.exactCatalogue} exact published matches${report.resolve ? `; resolved ${report.resolve.completed}/${report.resolve.requested}, evidence ${report.resolve.withEvidence}, sources ${report.resolve.withSources}, ${report.resolve.structuredCompoundResponses} structured compound responses` : ''}${report.deterministic ? `; deterministic ${report.deterministic.completed} complete, ${report.deterministic.limited} limited, ${report.deterministic.uncovered} uncovered, ${report.deterministic.structuredCompoundResponses} structured compound responses` : ''}; all remain explicitly unverified discovery inputs.`);
+console.log(`Web-observed claims audited: ${report.claims} candidates, ${report.explicitMultiProposition} with multiple explicit clauses (${report.parserMultiIncludingImplied} parser outputs including implied requirements), ${report.routing.routedByEither} with a compiler metric or focused-family route (${report.metricRouted} metric matches, ${report.routing.focusedFamilyRouted} family matches, ${report.routing.metricAndFamilyRouted} overlap), ${report.routing.noDeterministicRoute} with neither route, ${report.exactCatalogue} exact published matches${report.resolve ? `; resolved ${report.resolve.completed}/${report.resolve.requested}, evidence ${report.resolve.withEvidence}, sources ${report.resolve.withSources}, public states ${JSON.stringify(report.resolve.publicStates)}` : ''}${report.deterministic ? `; deterministic ${report.deterministic.completed} complete, ${report.deterministic.limited} limited, ${report.deterministic.uncovered} uncovered, public states ${JSON.stringify(report.deterministic.publicStates)}, ${report.deterministic.structuredCompoundResponses} multi-part responses` : ''}; all remain explicitly unverified discovery inputs.`);

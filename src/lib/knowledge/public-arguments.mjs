@@ -127,7 +127,9 @@ export const publicArgumentsFromPlan = (plan) => {
       finding,
       evidenceIds,
       sourceIds,
-      limitations: typeof plan.limitation === 'string' && plan.limitation ? [plan.limitation] : [],
+      limitations: hasTraceableEvidence
+        ? typeof plan.limitation === 'string' && plan.limitation ? [plan.limitation] : []
+        : ['No hay una fuente consultable vinculada a esta parte.'],
     };
   });
 };

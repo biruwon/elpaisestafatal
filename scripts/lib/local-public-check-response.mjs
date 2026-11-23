@@ -106,7 +106,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
     || (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length));
   const coverageGap = blocks.find((block) => block?.type === 'evidence_gap');
   const coverageGapReply = plan.evidenceLevel === 'insufficient' && !sources.length && coverageGap
-    ? publicEvidenceGapReply(plan, { attributionUnavailable: true }) || plan.limitation?.trim() || coverageGap.nextAction
+    ? publicEvidenceGapReply(plan, { attributionUnavailable: true, claim }) || plan.limitation?.trim() || coverageGap.nextAction
     : undefined;
   const claimNeedsQualification = requiresPublicClaimQualification(plan, argumentsList);
   const answerNeedsQualification = claimNeedsQualification || plan.evidenceLevel === 'insufficient';
@@ -115,9 +115,9 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   const publicEvidenceLevel = evidenceLevel === 'limited' && claimItems.length > 0 && !claimHasDirectEvidence
     ? 'insufficient'
     : publicEvidenceLevelForArguments(evidenceLevel, plan, argumentsList);
-  const publicReply = missingPublicEvidence
-    ? coverageGapReply || 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
-    : answerNeedsQualification ? qualifyPublicClaimReply(reply, argumentsList) : reply;
+  const publicReply = coverageGapReply
+    || (missingPublicEvidence ? 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
+      : answerNeedsQualification ? qualifyPublicClaimReply(reply, argumentsList) : reply);
   const alreadyQualifiedShareableReply = !missingPublicEvidence && Boolean(plan.shareableReply?.trim()) && publicReply === reply;
   const suppressShareableReply = missingPublicEvidence || answerNeedsQualification && !alreadyQualifiedShareableReply;
   const publishedSlug = !extraction && missingPublicEvidence ? exactPublishedSlugFor(safePayload, claim) : undefined;
@@ -136,6 +136,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   const nextQuestion = typeof plan.clarificationQuestion === 'string'
     ? plan.clarificationQuestion
     : safePayload.guidance?.questions?.[0];
+  const publicLimitation = 'La respuesta no contiene hallazgos atribuibles a una fuente que se pueda consultar.';
 
   return attachExtraction({
     state: publicEvidenceLevel,
@@ -155,7 +156,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
       keyFact: missingPublicEvidence ? 'Evidencia verificable no recuperada' : answerNeedsQualification ? 'La evidencia no basta para confirmar toda la afirmación' : plan.headline,
       criteria: missingPublicEvidence ? [] : criteria,
       whatWeKnow: missingPublicEvidence ? [] : criteria.map((item) => item.finding),
-      limitations: [...new Set([plan.limitation, ...(missingPublicEvidence ? ['La respuesta no contiene hallazgos atribuibles a una fuente que se pueda consultar.'] : [])].filter(Boolean))],
+      limitations: sources.length ? [plan.limitation].filter(Boolean) : [publicLimitation],
       scope: { checkedAt: plan.asOf },
       sources: missingPublicEvidence ? [] : sources,
       visual: missingPublicEvidence ? undefined : plannedVisuals[0],

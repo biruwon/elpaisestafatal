@@ -124,6 +124,13 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
   // A focused answer must not erase a second independent proposition while
   // the warehouse-backed resolver is unavailable or still processing.
   const compiledClaim = deterministicFallbackCompiler(original);
+  const requestedStartYear = !analysisWasTruncated
+    && compiledClaim.evidenceNeeds?.includes('periodo')
+    && !compiledClaim.evidenceNeeds.some((need) => ['causa', 'fecha', 'norma', 'programa'].includes(need))
+    && /\bdesde\b/.test(String(compiledClaim.normalized || '').toLocaleLowerCase('es'))
+    && /^\d{4}$/.test(String(compiledClaim.period || ''))
+    ? String(compiledClaim.period)
+    : undefined;
   const propositions = (compiledClaim.explicitPropositions || []).filter((proposition) => proposition?.explicit !== false && proposition?.text);
   const fallbackSnapshots = inputType === 'text'
     ? [WORKING_POVERTY_SNAPSHOT, SUBJECTIVE_POVERTY_SNAPSHOT, EDUCATION_EMPLOYMENT_SNAPSHOT, PRIMARY_CARE_WAIT_SNAPSHOT].filter((snapshot) => snapshotLifecycle(snapshot, now).usable)
@@ -255,6 +262,8 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
     ]
     : analysisWasTruncated
       ? [`interpretación y comprobación del texto posterior a los primeros ${FALLBACK_CLAIM_MAX_CHARS} caracteres`]
+      : requestedStartYear
+        ? [`observación del indicador en el año inicial solicitado (${requestedStartYear})`]
       : compiledClaim.claimType === 'causal'
         ? ['datos compatibles para las partes relacionadas', 'evidencia que permita valorar el vínculo causal']
         : compiledClaim.claimType === 'predictive'
@@ -272,6 +281,8 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
     ]
     : analysisWasTruncated
       ? ['una afirmación concreta dentro del límite analizado', 'una fuente compatible con su población, territorio y periodo']
+      : requestedStartYear
+        ? [`serie del mismo indicador que incluya ${requestedStartYear} y el periodo final, con territorio y unidad compatibles`]
       : compiledClaim.claimType === 'causal'
         ? ['medidas comparables de los hechos relacionados', 'evidencia del mecanismo o diseño que permita atribuir causalidad']
         : compiledClaim.claimType === 'predictive'
@@ -287,6 +298,8 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
       : 'Buscar evidencia para cada parte con población, territorio y periodo explícitos antes de resumirlas juntas.'
     : analysisWasTruncated
       ? `Seleccionar una frase concreta de hasta ${FALLBACK_CLAIM_MAX_CHARS} caracteres para evitar omitir el resto del texto.`
+      : requestedStartYear
+        ? `Buscar una serie del mismo indicador que incluya ${requestedStartYear} y comparar los periodos con la misma definición, territorio y unidad.`
       : compiledClaim.claimType === 'causal'
         ? 'Separar los hechos relacionados y buscar un estudio o comparación que permita valorar el vínculo causal.'
         : compiledClaim.claimType === 'predictive'

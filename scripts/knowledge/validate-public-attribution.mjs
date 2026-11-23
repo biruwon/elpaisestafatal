@@ -329,6 +329,42 @@ assert.equal(uncoveredPages.state, 'insufficient');
 assert.match(uncoveredPages.result.reply, /esto no demuestra que la afirmación sea falsa/i);
 assert.doesNotMatch(uncoveredPages.result.reply, /^La evidencia no basta para confirmar toda la afirmación/i, 'The Pages reply must not repeat an existing no-evidence limitation');
 assert.equal(uncoveredPages.result.evidenceSummary?.families[0]?.status, 'missing');
+
+const touristHousingGapPlan = {
+  schemaVersion: '1', evidenceLevel: 'insufficient', headline: 'Falta una medición del cambio de uso residencial',
+  summary: 'El INE no clasifica cada vivienda por su uso anterior y posterior.', coverage: 'insufficient', claimType: 'causal',
+  limitation: 'La metodología del INE no identifica el cambio de uso de cada vivienda.',
+  shareableReply: 'El INE demuestra que el alquiler turístico expulsa a residentes.',
+  blocks: [
+    { type: 'claim_breakdown', propositionIds: ['tourist-housing-claim'], items: [
+      { text: 'El alquiler turístico expulsa a residentes', type: 'causal', verdict: 'insufficient' },
+    ] },
+    { type: 'evidence_gap', missing: ['cambio de uso residencial'], needed: [
+      'observar qué viviendas pasan del alquiler residencial al turístico en el mismo territorio y periodo',
+      'comparar la oferta residencial antes y después',
+      'un diseño causal que permita atribuir el cambio al alquiler turístico',
+    ], nextAction: 'Reunir datos longitudinales de vivienda por zona y periodo.' },
+  ],
+  evidenceIds: [], sourceIds: [], sourceLinks: [], knowledgeVersion: 'test',
+};
+const touristHousingGapPages = checkFromPlan('El alquiler turístico expulsa a los residentes', touristHousingGapPlan, 'tourist-housing-gap');
+const touristHousingGapLocal = localPublicCheckResponse({ status: 'uncovered', requestId: 'tourist-housing-gap', result: touristHousingGapPlan }, 'El alquiler turístico expulsa a los residentes');
+for (const response of [touristHousingGapPages, touristHousingGapLocal]) {
+  assert.equal(response.state, 'insufficient');
+  assert.match(response.result.reply, /observar qué viviendas pasan del alquiler residencial al turístico/i, 'Keep the specific missing measurement visible');
+  assert.match(response.result.reply, /comparar la oferta residencial antes y después/i);
+  assert.match(response.result.reply, /diseño causal que permita atribuir/i);
+  assert.match(response.result.reply, /Siguiente paso: Reunir datos longitudinales/i);
+  assert.doesNotMatch(response.result.reply, /INE|expulsa a los residentes/i, 'Do not repeat source-dependent details when no source is linked');
+  assert.equal(response.result.shareableReply, undefined);
+  assert.deepEqual(response.result.sources, []);
+  assert.deepEqual(response.result.limitations, ['La respuesta no contiene hallazgos atribuibles a una fuente que se pueda consultar.']);
+  assert.doesNotMatch(JSON.stringify(response.result.arguments), /INE|metodología/i, 'Un argument without traceable evidence must not expose source-dependent limitations');
+  assert.deepEqual(response.result.arguments?.[0]?.limitations, ['No hay una fuente consultable vinculada a esta parte.']);
+  assert.equal(response.result.reply, response.result.answer);
+}
+assert.equal(touristHousingGapPages.result.reply, touristHousingGapLocal.result.reply, 'Pages and local evidence-gap answers must match');
+
 const directNonConclusion = 'Sin una medición compatible no se puede confirmar ni descartar la afirmación.';
 assert.equal(qualifyPublicClaimReply(directNonConclusion), directNonConclusion);
 const sourcedNonConclusion = 'No se ha localizado una medición compatible; esto no demuestra que la afirmación sea falsa.';
@@ -380,7 +416,8 @@ const periodGapPages = checkFromPlan('¿Cómo ha cambiado el índice desde 2010?
 const periodGapLocal = localPublicCheckResponse({ status: 'uncovered', requestId: 'period-gap', result: periodGapPlan }, '¿Cómo ha cambiado el índice desde 2010?');
 for (const result of [periodGapPages, periodGapLocal]) {
   assert.equal(result.state, 'insufficient');
-  assert.match(result.result.reply, /no incluye 2010/i, 'The missing requested period should remain visible');
+  assert.match(result.result.reply, /observación para 2010/i, 'The missing requested period should remain visible as an evidence requirement');
+  assert.doesNotMatch(result.result.reply, /no incluye 2010/i, 'An unattributed limitation must not be presented as a sourced finding');
   assert.doesNotMatch(result.result.reply, /100|120/, 'Unattributed values from other periods must stay hidden');
   assert.deepEqual(result.result.criteria, [], 'Nearby years without source attribution must not appear as findings');
   assert.deepEqual(result.result.sources, [], 'A source without an observation-to-document link must not be attributed');

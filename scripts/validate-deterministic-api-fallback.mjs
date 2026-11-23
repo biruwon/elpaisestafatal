@@ -54,6 +54,19 @@ if (forecastResult.result?.claimType !== 'predictive'
   || !/horizonte temporal/i.test(forecastResult.result?.clarificationQuestion || '')) {
   throw new Error('The unsupported forecast did not request a horizon and projection evidence.');
 }
+const sinceYear = deterministicApiFallback({ text: '¿Cómo ha cambiado el índice de alquiler desde 2010?', inputType: 'text' });
+const sinceYearParaphrase = deterministicApiFallback({ text: '¿Qué evolución ha tenido el índice de alquiler desde el año 2010?', inputType: 'text' });
+const sinceYearGap = sinceYear.result?.blocks?.find((block) => block.type === 'evidence_gap');
+const sinceYearParaphraseGap = sinceYearParaphrase.result?.blocks?.find((block) => block.type === 'evidence_gap');
+if (sinceYearGap?.needed?.[0] !== 'serie del mismo indicador que incluya 2010 y el periodo final, con territorio y unidad compatibles'
+  || sinceYearParaphraseGap?.needed?.[0] !== sinceYearGap.needed[0]
+  || sinceYearGap?.nextAction !== sinceYearParaphraseGap?.nextAction) {
+  throw new Error('A historical since-year paraphrase did not preserve the same requested period and evidence dimensions.');
+}
+const singleYear = deterministicApiFallback({ text: '¿Cuál fue el índice de alquiler en 2010?', inputType: 'text' });
+if (singleYear.result?.blocks?.find((block) => block.type === 'evidence_gap')?.needed?.[0] === sinceYearGap?.needed?.[0]) {
+  throw new Error('A single-year value question inherited the missing baseline requirement of a historical trend.');
+}
 const legalGap = deterministicApiFallback({ text: 'Es ilegal que una empresa no declare este pago' });
 const normativeGap = deterministicApiFallback({ text: 'El ayuntamiento debería priorizar los parques frente a las carreteras' });
 if (legalGap.result?.claimType !== 'legal' || !/jurisdicci[oó]n/.test(legalGap.result?.clarificationQuestion || '')

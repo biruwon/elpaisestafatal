@@ -183,8 +183,13 @@ try {
   assert.equal(currentRentIndex.result.visual, undefined);
   const missing = await check('¿Cómo ha cambiado el índice de alquiler desde 2010?');
   assert.equal(missing.state, 'insufficient', JSON.stringify(missing));
-  assert.match(missing.result.reply, /no incluye 2010/);
+  assert.match(missing.result.reply, /serie del mismo indicador que incluya 2010 y el periodo final/);
+  assert.doesNotMatch(missing.result.reply, /100|120/, 'A source-free gap should name the missing time coverage without revealing unlinked nearby values');
   assert.equal(missing.result.visual, undefined);
+  const missingParaphrase = await check('¿Qué evolución ha tenido el índice de alquiler desde el año 2010?');
+  assert.equal(missingParaphrase.state, 'insufficient');
+  assert.match(missingParaphrase.result.reply, /serie del mismo indicador que incluya 2010 y el periodo final/);
+  assert.doesNotMatch(missingParaphrase.result.reply, /100|120/);
   for (const query of ['El índice de precios del alquiler subió un 300 % desde 2015', 'El índice del alquiler ha aumentado en un 300 % desde 2015']) {
     const magnitude = await check(query);
     assert.notEqual(magnitude.state, 'supported', JSON.stringify(magnitude));

@@ -243,18 +243,18 @@ assert.doesNotMatch(youthOverqualification.body.result.reply, /34 % de las perso
 const educationNeighbour = await check('La FP tiene más salidas laborales que la universidad');
 assert.equal(educationNeighbour.body.state, 'insufficient');
 assert.doesNotMatch(JSON.stringify(educationNeighbour.body.result?.sources || []), /eurostat-tertiary-/);
-assert.match(educationNeighbour.body.result.reply, /no compara por s[ií] sola los grupos que menciona/);
+assert.match(educationNeighbour.body.result.reply, /tasas de empleo de los grupos de titulaciones comparados, con edad, tiempo desde la titulaci[oó]n, territorio y periodo compatibles/);
 assert.doesNotMatch(educationNeighbour.body.result.reply, /83,2 %|34 %/);
 
 const fpTiming = await check('La Formación Profesional permite entrar antes al mercado laboral que muchas carreras');
 assert.equal(fpTiming.body.state, 'insufficient');
-assert.match(fpTiming.body.result.reply, /no indica cu[aá]nto tardan las personas tituladas en encontrar su primer trabajo/);
+assert.match(fpTiming.body.result.reply, /tiempo desde terminar FP o universidad hasta el primer empleo, por cohorte, territorio y periodo comparables/);
 assert.doesNotMatch(fpTiming.body.result.reply, /83,2 %|34,4 %/);
 assert.deepEqual(fpTiming.body.result.sources, []);
 
 const degreeRequirementTrend = await check('Cada vez se exige un máster para trabajos que antes pedían solo una carrera');
 assert.equal(degreeRequirementTrend.body.state, 'insufficient');
-assert.match(degreeRequirementTrend.body.result.reply, /no muestran qu[eé] titulaci[oó]n piden las ofertas/);
+assert.match(degreeRequirementTrend.body.result.reply, /anuncios de las mismas ocupaciones en periodos comparables, contando qu[eé] proporci[oó]n exige un m[aá]ster/);
 assert.match(degreeRequirementTrend.body.result.evidenceSummary.missingDimensions.join(' '), /anuncios de las mismas ocupaciones en periodos comparables/);
 assert.deepEqual(degreeRequirementTrend.body.result.sources, []);
 
@@ -452,14 +452,15 @@ assert.doesNotMatch(primaryCareUnavailable.body.result?.reply || '', /9,71|72 %/
 const graduatePay = await check('Tener un máster o un doctorado no garantiza cobrar un salario acorde con la cualificación');
 assert.equal(graduatePay.body.state, 'insufficient');
 assert.deepEqual(graduatePay.body.result.sources, []);
-assert.match(graduatePay.body.result.reply, /promedios por nivel educativo o por ocupación/);
-assert.match(graduatePay.body.result.reply, /no comparan salarios/);
+assert.match(graduatePay.body.result.reply, /salarios por nivel educativo alcanzado y por ocupación o formación requerida para el puesto/);
+assert.match(graduatePay.body.result.reply, /distribuciones salariales y tamaño de las diferencias, no solo medias/);
 assert.doesNotMatch(graduatePay.body.result.reply, /80,2 %|34 %|17 € por hora/);
 
 const regionalPayHousing = await check('El coste de vivienda ha eliminado la ventaja salarial de trabajar en Madrid o Barcelona');
 assert.equal(regionalPayHousing.body.state, 'insufficient');
 assert.deepEqual(regionalPayHousing.body.result.sources, []);
-assert.match(regionalPayHousing.body.result.reply, /promedios nacionales no permiten medir ese balance entre ciudades/);
+assert.match(regionalPayHousing.body.result.reply, /empleo, salarios netos y costes de vivienda de las mismas ciudades/);
+assert.match(regionalPayHousing.body.result.reply, /medida de cuánto cambia el poder de compra después del coste de vivienda/);
 assert.doesNotMatch(regionalPayHousing.body.result.reply, /17 € por hora|índice de precios de vivienda.*\d/);
 
 const mortgageEntry = await check('La entrada de una hipoteca es una barrera mayor que la cuota mensual para acceder a una vivienda');
