@@ -11,6 +11,7 @@ import { claimFocusFor, focusedMetricIdsFor } from '../../src/lib/knowledge/clai
 import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care-wait-snapshot.mjs';
+import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/tourism-employment-snapshot.mjs';
 import { snapshotLifecycle } from '../../src/lib/knowledge/snapshot-lifecycle.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import type { AnswerPlan, ResolveResult } from '../../src/lib/knowledge/contracts';
@@ -25,7 +26,7 @@ import { vacancyMeasurementClarificationMetricIdsForQuery, vacancyMeasurementMet
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-46-2026-11';
+const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-47-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -349,7 +350,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           if (!localResolverAvailable) return json(warehouseUnavailableResponse);
           focusedObservations = undefined;
         } else {
-          if (['working-poverty', 'education-employment-outcomes', 'primary-care-waits', 'primary-care-wait-trend', 'primary-care-wait-causes', 'real-wages', 'collective-agreement-wages', 'gdp-total-per-capita-comparison', 'labour-productivity-and-growth', 'household-inflation-basket'].includes(focus.id) && focusedObservations.length === 0) {
+          if (['working-poverty', 'education-employment-outcomes', 'primary-care-waits', 'primary-care-wait-trend', 'primary-care-wait-causes', 'real-wages', 'collective-agreement-wages', 'gdp-total-per-capita-comparison', 'labour-productivity-and-growth', 'household-inflation-basket', 'tourism-employment-contribution'].includes(focus.id) && focusedObservations.length === 0) {
             // Reviewed text snapshots can answer from their own dated source
             // when a successful warehouse lookup has no rows. A failed D1
             // query still follows the unavailable path above; absence and
@@ -362,6 +363,12 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
               if (snapshotLifecycle(PRIMARY_CARE_WAIT_SNAPSHOT).usable) {
                 focusedObservations = [...focusedObservations, ...PRIMARY_CARE_WAIT_SNAPSHOT.observations];
               }
+            }
+            if (focus.id === 'tourism-employment-contribution' && snapshotLifecycle(TOURISM_EMPLOYMENT_SNAPSHOT).usable) {
+              // The reviewed INE release publishes both the employment share
+              // and job count; the source API refreshes the count separately.
+              // Keep the same dated share available while that refresh runs.
+              focusedObservations = [...focusedObservations, ...TOURISM_EMPLOYMENT_SNAPSHOT.observations];
             }
             const plan = focusedEvidencePlan(effectiveClaim, {
               observations: focusedObservations as never[],

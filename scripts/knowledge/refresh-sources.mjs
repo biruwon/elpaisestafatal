@@ -56,6 +56,8 @@ const jobs = Object.entries(config).flatMap(([sourceId, urls]) => {
       aliases: Array.isArray(definition.aliases) ? definition.aliases : [],
       metricId: metricForResource(sourceId, definition),
       metricIdByDimension: definition.metricIdByDimension,
+      unit: definition.unit,
+      dimensions: definition.dimensions,
     };
   });
 });
@@ -67,6 +69,8 @@ const runIngest = (job, url) => new Promise((resolve, reject) => {
   if (job.aliases.length) childArgs.push('--aliases', JSON.stringify(job.aliases));
   if (job.metricId) childArgs.push('--metric-id', job.metricId);
   if (job.metricIdByDimension) childArgs.push('--metric-id-by-dimension', JSON.stringify(job.metricIdByDimension));
+  if (job.unit) childArgs.push('--unit', job.unit);
+  if (job.dimensions) childArgs.push('--dimensions', JSON.stringify(job.dimensions));
   const child = spawn(process.execPath, childArgs, { stdio: ['ignore', 'pipe', 'pipe'], timeout: 45000 });
   let output = '';
   child.stdout.on('data', (chunk) => { output += chunk; });

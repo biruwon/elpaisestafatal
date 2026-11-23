@@ -38,6 +38,14 @@
       "title": "Población por sexo, nacionalidad y país de nacimiento",
       "aliases": ["población por nacionalidad", "españoles", "extranjeros", "país de nacimiento", "denominador migratorio"],
       "metricId": "foreign_citizenship_population"
+    },
+    {
+      "url": "https://servicios.ine.es/wstempus/js/ES/DATOS_TABLA/72970?tip=AM",
+      "title": "Empleo en las ramas características del turismo · INE",
+      "aliases": ["empleo turístico", "puestos de trabajo en ramas turísticas", "Cuenta Satélite del Turismo"],
+      "metricId": "tourism_characteristic_employment_jobs",
+      "unit": "thousand jobs",
+      "dimensions": { "geo": "ES", "industry_scope": "tourism_characteristic_branches" }
     }
   ],
   "eurostat": [

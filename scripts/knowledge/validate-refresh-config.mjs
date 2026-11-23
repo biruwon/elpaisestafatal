@@ -34,6 +34,11 @@ for (const file of files) {
       seen.add(value.url);
       if (value.title !== undefined && typeof value.title !== 'string') errors.push(`${file}: ${sourceId}[${index}] title must be a string`);
       if (value.aliases !== undefined && (!Array.isArray(value.aliases) || value.aliases.some((alias) => typeof alias !== 'string'))) errors.push(`${file}: ${sourceId}[${index}] aliases must be strings`);
+      if (value.unit !== undefined && (typeof value.unit !== 'string' || !value.unit.trim())) errors.push(`${file}: ${sourceId}[${index}] unit must be a non-empty string`);
+      if (value.dimensions !== undefined && (!value.dimensions || typeof value.dimensions !== 'object' || Array.isArray(value.dimensions)
+        || Object.entries(value.dimensions).some(([key, dimension]) => !/^[A-Za-z][A-Za-z0-9_]*$/.test(key) || !['string', 'number', 'boolean'].includes(typeof dimension)))) {
+        errors.push(`${file}: ${sourceId}[${index}] dimensions must be a flat JSON object`);
+      }
       if (value.metricId !== undefined && (typeof value.metricId !== 'string' || !(await hasMetric(value.metricId)))) errors.push(`${file}: ${sourceId}[${index}] references unknown metricId ${value.metricId}`);
       if (value.metricIdByDimension !== undefined) {
         const mappings = value.metricIdByDimension;

@@ -24,6 +24,29 @@ if (records.some((record) => record.metric === 'FK_Unidad' || record.metric === 
 const seriesRecords = normalizeJsonPayload(payload[0], source);
 if (seriesRecords.length !== 2 || seriesRecords[0].metric !== records[0].metric || seriesRecords[0].period !== '2025-12') throw new Error('A single INE DATOS_SERIE response did not preserve the selected series and periods');
 
+const tourismTableRecords = normalizeJsonPayload([{
+  COD: 'empleoturistico',
+  Nombre: 'Empleo turístico',
+  Data: [
+    { NombrePeriodo: '2024(A)', Valor: 2776.7 },
+    { NombrePeriodo: '2023(P)', Valor: 2687.1 },
+  ],
+}], {
+  id: 'source-ine-tourism-employment',
+  title: 'Empleo turístico · INE',
+  metricId: 'tourism_characteristic_employment_jobs',
+  unit: 'thousand jobs',
+  dimensions: { geo: 'ES', industry_scope: 'tourism_characteristic_branches' },
+});
+if (tourismTableRecords.length !== 2 || tourismTableRecords[0].period !== '2024' || tourismTableRecords[0].status !== 'a'
+  || tourismTableRecords[1].period !== '2023' || tourismTableRecords[1].status !== 'p') {
+  throw new Error('INE annual labels did not preserve their periods and advance/provisional status');
+}
+if (tourismTableRecords.some((record) => record.unit !== 'thousand jobs' || record.geography !== 'España'
+  || record.dimensions.geo !== 'ES' || record.dimensions.industry_scope !== 'tourism_characteristic_branches')) {
+  throw new Error('Configured INE unit or geography dimensions were not retained in observations');
+}
+
 const flagged = normalizeJsonPayload({ id: ['time'], size: [2], dimension: { time: { category: { index: { '2024': 0, '2025': 1 }, label: { '2024': '2024', '2025': '2025' } } } }, value: { '0': 100, '1': 103 }, status: { '0': 'b', '1': 'p' } }, { id: 'source-jsonstat', title: 'Flagged statistical series' });
 if (flagged[0].status !== 'b' || flagged[1].status !== 'p') throw new Error('JSON-stat observation status flags were lost');
 

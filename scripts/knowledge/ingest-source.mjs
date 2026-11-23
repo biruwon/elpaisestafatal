@@ -18,11 +18,18 @@ const urlValue = args.get('url');
 const publisher = args.get('publisher') || 'unclassified';
 const title = args.get('title') || publisher;
 const metricId = args.get('metric-id');
+const unit = args.get('unit');
 let metricIdByDimension;
+let dimensions;
 let aliases = [];
 try { aliases = args.has('aliases') ? JSON.parse(args.get('aliases')) : []; } catch { aliases = []; }
 try { metricIdByDimension = args.has('metric-id-by-dimension') ? JSON.parse(args.get('metric-id-by-dimension')) : undefined; } catch { metricIdByDimension = undefined; }
+try { dimensions = args.has('dimensions') ? JSON.parse(args.get('dimensions')) : undefined; } catch { dimensions = undefined; }
 if (!Array.isArray(aliases)) aliases = [];
+if (dimensions !== undefined && (!dimensions || typeof dimensions !== 'object' || Array.isArray(dimensions))) {
+  console.error('Source dimensions must be a JSON object');
+  process.exit(1);
+}
 const allowUnlisted = args.get('allow-unlisted') === 'true';
 if (!urlValue) {
   console.error('Usage: npm run knowledge:ingest -- --url https://official.example/source --publisher "Publisher"');
@@ -89,11 +96,11 @@ const parserVersion = metricIdByDimension
 // metric and URL in the manifest identity so one refresh cannot overwrite the
 // other metric's record while still deduplicating the raw object by content hash.
 const manifestId = createHash('sha256').update(`${metricId || ''}|${sourceUrl.toString()}|${hash}`).digest('hex');
-const manifest = { id: `source-${manifestId.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, schedule, metricId, ...(metricIdByDimension ? { metricIdByDimension } : {}), url: sourceUrl.toString(), publisher: resolvedPublisher, title, aliases, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector, parserVersion };
+const manifest = { id: `source-${manifestId.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, schedule, metricId, ...(metricIdByDimension ? { metricIdByDimension } : {}), ...(unit ? { unit } : {}), ...(dimensions ? { dimensions } : {}), url: sourceUrl.toString(), publisher: resolvedPublisher, title, aliases, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector, parserVersion };
 await writeFile(join(root, 'manifests', `${manifest.id}.json`), JSON.stringify(manifest, null, 2));
 let records = [];
 if (contentType.includes('json')) {
-  try { records = normalizeJsonPayload(JSON.parse(bytes.toString('utf8')), { id: manifest.id, title: manifest.title, metricId, metricIdByDimension }); } catch { /* Keep the raw source when it is not a supported JSON shape. */ }
+  try { records = normalizeJsonPayload(JSON.parse(bytes.toString('utf8')), { id: manifest.id, title: manifest.title, metricId, metricIdByDimension, unit, dimensions }); } catch { /* Keep the raw source when it is not a supported JSON shape. */ }
 }
 if (contentType.includes('csv') || contentType.includes('tab-separated')) records = parseDelimitedRows(bytes.toString('utf8'), { rowId: (index) => `${manifest.id}-row-${index + 1}`, sourceId: manifest.id, metricId, retrievedAt: manifest.retrievedAt });
 if (contentType.includes('xml')) {

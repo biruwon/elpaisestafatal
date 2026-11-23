@@ -66,6 +66,14 @@ assert.equal(qualifyPublicClaimReply(contradictedReply, [{ verdict: 'contradicte
   `La fuente contradice la afirmación.\n\n${contradictedReply}`, 'A directly sourced contradiction should retain its measured value and period');
 assert.equal(qualifyPublicClaimReply(contradictedReply, [{ verdict: 'contradicted', evidenceIds: ['employment-rate-2025'], sourceIds: [] }]),
   'La evidencia no basta para confirmar toda la afirmación.', 'A contradiction without a public source must not be presented as verified');
+const causalContextReply = 'La cifra cuenta empleo en ramas características del turismo; no identifica qué puestos fueron causados por visitantes, su calidad o estacionalidad, y no decide si ese peso es excesivo.';
+const qualifiedCausalContext = qualifyPublicClaimReply(causalContextReply, [{ kind: 'causal', verdict: 'insufficient', evidenceIds: ['tourism-share-2024'], sourceIds: ['ine-tourism-employment-share-cste-2024'] }]);
+assert.match(qualifiedCausalContext, /^La evidencia no basta para confirmar toda la afirmación\.\n\n/);
+assert.ok(qualifiedCausalContext.includes(causalContextReply), 'A clear causal limitation must retain the sourced employment context');
+const pluralCausalLimit = 'Las cifras cuentan empleo en ramas turísticas; no identifican qué puestos fueron causados por visitantes.';
+const qualifiedPluralCausalLimit = qualifyPublicClaimReply(pluralCausalLimit, [{ kind: 'descriptive', verdict: 'insufficient', evidenceIds: ['tourism-jobs'], sourceIds: ['ine-tourism-employment-share-cste-2024'] }]);
+assert.match(qualifiedPluralCausalLimit, /^La evidencia no basta para confirmar toda la afirmación\.\n\n/);
+assert.ok(qualifiedPluralCausalLimit.includes(pluralCausalLimit), 'A plural causal limitation must not hide sourced context');
 
 const povertySource = { id: 'poverty-source', title: 'Poverty survey', publisher: 'Eurostat', url: 'https://example.test/poverty' };
 const poverty = [{ id: 'poverty-observation', metricId: 'in_work_poverty_full_time_rate', value: 9.5, unit: '%', period: '2025', geography: 'España', source: povertySource }];

@@ -993,3 +993,22 @@ one of those routes, while 152 match neither. A family route can still return
 an explicit evidence gap, so these counts do not establish that the answer has
 compatible data. The audit also reports 32 structured multi-part responses;
 those are decomposition outcomes, not a claim-level accuracy score.
+
+## Tourism employment claims — 24 November 2026
+
+Text claims about tourism's role in employment now use the INE Cuenta Satélite
+del Turismo. In its 2021–2024 series, employment in tourism-characteristic
+branches represented 12.3% of total Spanish employment in 2024, about 2.78
+million jobs; the INE marks 2024 as an advance estimate and 2023 as provisional.
+The INE's source table reports jobs in thousands, and the release reports their
+share of total employment.
+
+This measures employment in tourism-characteristic branches. It does not
+identify jobs caused by tourism demand, net job creation attributable to
+tourism, job quality or seasonality, or whether the sector's share is "too
+much." Those claims need an explicit assessment criterion and, for causation,
+evidence that can compare outcomes with and without tourism demand. The
+job-count feed is included in the INE refresh configuration; the reviewed share
+snapshot expires on 21 December 2026 unless refreshed. The text route returns a
+limited, sourced explanation and keeps unsupported regional, causal and
+normative claims unverified.

@@ -113,6 +113,29 @@ const check = async (text, DB = emptyDatabase) => {
   return { httpStatus: response.status, body: await response.json() };
 };
 
+const tourismEmploymentClaim = 'España depende demasiado del turismo para sostener el empleo';
+const tourismEmployment = await check(tourismEmploymentClaim);
+assert.equal(tourismEmployment.body.state, 'limited');
+assert.equal(tourismEmployment.body.result.answerScope.family, 'tourism-employment-contribution');
+assert.equal(tourismEmployment.body.result.arguments[0].verdict, 'insufficient', 'A measured employment share cannot determine whether dependence is excessive');
+assert.match(tourismEmployment.body.result.reply, /En 2024.*12,3 %.*empleo total en España/s);
+assert.match(tourismEmployment.body.result.reply, /2,78 millones de puestos/);
+assert.match(tourismEmployment.body.result.reply, /estimaci[oó]n de avance/);
+assert.ok(tourismEmployment.body.result.sources.some((source) => source.id === 'ine-tourism-employment-share-cste-2024'));
+assert.ok(tourismEmployment.body.result.sources.some((source) => source.id === 'ine-tourism-characteristic-jobs-2024'));
+const tourismEmploymentParaphrase = await check('¿Qué parte del empleo español corresponde a las actividades turísticas?');
+assert.equal(tourismEmploymentParaphrase.body.state, 'limited');
+assert.equal(tourismEmploymentParaphrase.body.result.answerScope.family, tourismEmployment.body.result.answerScope.family);
+assert.deepEqual(tourismEmploymentParaphrase.body.result.sources.map((source) => source.id), tourismEmployment.body.result.sources.map((source) => source.id));
+assert.match(tourismEmploymentParaphrase.body.result.reply, /12,3 %/);
+const tourismEmploymentRegional = await check('El turismo genera más empleo en Andalucía que la agricultura');
+assert.equal(tourismEmploymentRegional.body.state, 'insufficient');
+assert.deepEqual(tourismEmploymentRegional.body.result.answerScope.directMetrics, []);
+assert.deepEqual(tourismEmploymentRegional.body.result.answerScope.contextMetrics, []);
+assert.deepEqual(tourismEmploymentRegional.body.result.sources, [], 'National figures must not settle a regional cross-sector comparison');
+assert.doesNotMatch(tourismEmploymentRegional.body.result.reply, /12,3 %|2,78 millones/);
+assert.match(tourismEmploymentRegional.body.result.reply, /recuentos comparables de empleo en turismo y agricultura/);
+
 const fullTime = await check('Trabajar a jornada completa no impide estar en riesgo de pobreza');
 assert.equal(fullTime.httpStatus, 200);
 assert.equal(fullTime.body.state, 'limited');

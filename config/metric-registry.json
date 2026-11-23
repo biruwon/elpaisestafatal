@@ -2196,5 +2196,56 @@
     "limitations": [
       "The denominator is the 2021 housing census and does not change with current listings. The numerator is an experimental platform-based estimate under definitions that vary by autonomous community; this share does not measure homes removed from long-term rental."
     ]
+  },
+  "tourism_characteristic_employment_share": {
+    "name": "Employment in tourism-characteristic branches as a share of total employment",
+    "displayName": "Peso del empleo en las ramas características del turismo",
+    "aliases": [
+      "empleo de las ramas características del turismo",
+      "porcentaje del empleo en ramas turísticas",
+      "proporción del empleo total en actividades características del turismo",
+      "peso del empleo turístico",
+      "parte del empleo que corresponde a las ramas turísticas"
+    ],
+    "unit": "percent",
+    "population": "Employment in tourism-characteristic economic branches as a share of total employment in Spain",
+    "notEquivalentTo": [
+      "tourism_characteristic_employment_jobs",
+      "tourism_nights",
+      "tourism_nights_europe"
+    ],
+    "dimensions": [
+      "period",
+      "geography",
+      "industry_scope",
+      "denominator"
+    ],
+    "denominator": "Total employment in the Spanish economy",
+    "supports": ["descriptive", "comparative", "trend"],
+    "limitations": [
+      "This is employment in tourism-characteristic economic branches, not a count of jobs caused by tourism demand. The share does not define whether dependence is excessive or measure job quality, seasonality, or the net employment effect of tourism."
+    ]
+  },
+  "tourism_characteristic_employment_jobs": {
+    "name": "Jobs in tourism-characteristic economic branches",
+    "displayName": "Puestos de trabajo en ramas características del turismo",
+    "aliases": [
+      "empleo turístico",
+      "puestos de trabajo en las ramas turísticas",
+      "empleos en actividades características del turismo",
+      "número de empleos en el turismo"
+    ],
+    "unit": "thousand jobs",
+    "population": "Jobs in tourism-characteristic economic branches in Spain",
+    "notEquivalentTo": [
+      "tourism_characteristic_employment_share",
+      "tourism_nights",
+      "tourism_nights_europe"
+    ],
+    "dimensions": ["period", "geography", "industry_scope"],
+    "supports": ["descriptive", "comparative", "trend"],
+    "limitations": [
+      "This count covers tourism-characteristic economic branches; it is not the number of jobs caused by visitors or tourism demand and does not measure job quality or seasonality."
+    ]
   }
 }

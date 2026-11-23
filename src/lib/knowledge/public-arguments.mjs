@@ -25,7 +25,7 @@ export const publicEvidenceLevelForArguments = (level, plan, argumentsList) => l
 const assertsUnsupportedCausalPart = (text, argumentsList) => {
   if (!(argumentsList || []).some((argument) => argument.kind === 'causal' && argument.verdict !== 'supported')) return false;
   const unqualified = text
-    .replace(/\b(?:no (?:se puede|podemos|permite|permiten|mide|miden|demuestra|demuestran|acredita|acreditan|prueba|prueban|establece|establecen)\b|sin (?:datos|evidencia|una medici[oó]n)\b)[^.!?;,:]*(?:[.!?;,:]|$)/gi, ' ')
+    .replace(/\b(?:no (?:se puede|podemos|permite|permiten|mide|miden|demuestra|demuestran|acredita|acreditan|prueba|prueban|establece|establecen|identifica|identifican)\b|sin (?:datos|evidencia|una medici[oó]n)\b)[^.!?;,:]*(?:[.!?;,:]|$)/gi, ' ')
     .replace(/\b(?:para (?:comprobar|saber|valorar|establecer)|hace falta|faltan|se necesita|necesitamos|hay que)\b[^.!?]*(?:[.!?]|$)/gi, ' ');
   return /(?:^|[^\p{L}])(?:causa|causan|causó|causaron|causaba|causaban|causaría|causarían|provoca|provocan|provocó|provocaron|provocaba|provocarían|obliga|obligan|obligó|obligaron|empuja|empujan|empujó|empujaron|lleva|llevan|llevó|llevaron|llevaría|generan?|generó|generaron|determina|determinan|determinó|determinaron|explica|explican|explicó|explicaron|reduce|reducen|redujo|redujeron|aumenta|aumentan|aumentó|aumentaron|disminuye|disminuyen|disminuyó|disminuyeron|demuestra|demuestran|demostró|demostraron|confirma|confirman|confirmó|confirmaron|prueba|prueban|probó|probaron)(?=$|[^\p{L}])/iu.test(unqualified);
 };
@@ -55,7 +55,7 @@ export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
   const explicitCausalLimit = /\bno (?:demuestra|acredita|prueba|establece) que\b[^.!?]{0,180}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|determin\w*|explique\w*)\b/i.test(text)
     || /\bno mide\b[^.!?]{0,120}\bsi\b[^.!?]{0,100}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|urgencias?)\b/i.test(text);
   const explicitlyBoundsWholeClaim = /\b(?:no (?:permite|basta para) confirmar toda la afirmaci[oó]n|no demuestra toda la afirmaci[oó]n)\b/i.test(text);
-  const contextualLimit = /\bno mide\b|\bno miden?\b|\bno (?:indica|indican|informa|informan|muestra|muestran|publica|publican|compara|comparan|cuenta|identifica|incluye|desglosa|estima|representa|establece|define)\b|\bsolo incluye\b|\bexcluye\b/i.test(text)
+  const contextualLimit = /\bno mide\b|\bno miden?\b|\bno (?:indica|indican|informa|informan|muestra|muestran|publica|publican|compara|comparan|cuenta|identifica|identifican|incluye|desglosa|estima|representa|establece|define)\b|\bsolo incluye\b|\bexcluye\b/i.test(text)
     || /\bno (?:define|fija|establece)\b[^.!?]{0,100}\b(?:umbral|criterio|regla|est[aá]ndar|una tendencia)\b/i.test(text)
     || /\bsolo (?:es|son|resulta|resultan) comparables? si\b/i.test(text)
     || /\bno demuestra\b[^.!?]{0,120}\b(?:universal|a todas las personas|para todo el mundo)\b/i.test(text);

@@ -8,6 +8,7 @@ import { join } from 'node:path';
 import { DatabaseSync } from 'node:sqlite';
 import { build } from 'esbuild';
 import { normalizeJsonPayload } from './knowledge/normalize-json.mjs';
+import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/tourism-employment-snapshot.mjs';
 
 // Exercise the real Pages handler, D1 hydration, local resolver and public
 // response together; nullable dates and source flags cross all four boundaries.
@@ -53,6 +54,12 @@ const educationPayUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statist
 db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('education-pay-source', 'Eurostat', 'Salario bruto medio por hora según estudios alcanzados, 2022', educationPayUrl, retrieved, 'primary', '[]', 'eurostat', 'daily');
 const vacancyUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/jvs_q_nace2?geo=ES&sinceTimePeriod=2015';
 db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('vacancy-source', 'Eurostat', 'Vacantes, puestos ocupados y tasa de vacantes en España', vacancyUrl, retrieved, 'primary', '[]', 'eurostat', 'daily');
+for (const source of new Map(TOURISM_EMPLOYMENT_SNAPSHOT.observations.map((item) => [item.source.id, item.source])).values()) {
+  db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(
+    source.id, source.publisher, source.title, source.url, source.publishedAt || null, source.retrievedAt,
+    'primary', '[]', 'ine', 'daily',
+  );
+}
 const insert = db.prepare('INSERT INTO observations VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)');
 for (const [year, value] of [[2015, 100], [2020, 110], [2025, 120]]) {
   for (const [code, unit, measured] of [['I15', 'Index, 2015=100', value], ['RCH_A', 'Annual rate of change', 5]]) {
@@ -74,6 +81,14 @@ insert.run('tourist-housing-count-2026M05', 'observation', 'ine-tourist-housing'
   JSON.stringify({ geo: 'ES', time: '2026M05', geographyLevel: 'country' }), JSON.stringify({ geo: 'Spain', geographyLevel: 'Country' }), null, null, '{}', 'tourist-count-source', 'viviendas turísticas estimadas España anuncios plataformas mayo 2026');
 insert.run('tourist-housing-share-2026M05', 'observation', 'ine-tourist-housing', 'Porcentaje de viviendas turísticas sobre el parque', 'tourist_housing_share', 1.28, '%', '2026M05', 'España', 'viviendas turísticas como proporción del parque total de viviendas',
   JSON.stringify({ geo: 'ES', time: '2026M05', geographyLevel: 'country', denominator: 'total housing stock in the 2021 Population and Housing Census' }), JSON.stringify({ geo: 'Spain', geographyLevel: 'Country', denominator: 'total housing stock in the 2021 Population and Housing Census' }), null, null, '{}', 'tourist-share-source', 'porcentaje viviendas turísticas sobre parque total España Censo 2021 mayo 2026');
+for (const item of TOURISM_EMPLOYMENT_SNAPSHOT.observations) {
+  insert.run(
+    item.id, 'observation', 'ine-tourism-employment', item.metric, item.metricId, item.value, item.unit, item.period,
+    item.geography, item.population, JSON.stringify(item.dimensions), '{}', null, null,
+    JSON.stringify({ denominator: item.denominator, dataKind: 'observed', ...(item.status ? { status: item.status } : {}) }),
+    item.source.id, `empleo turístico ramas características turismo total empleo España ${item.period} INE ${item.metricId}`,
+  );
+}
 for (const [education, value, educationLabel] of [
   ['ED0-2', 10.04, 'Less than primary, primary and lower secondary education (levels 0-2)'],
   ['ED3_4', 11.48, 'Upper secondary and post-secondary non-tertiary education (levels 3 and 4)'],
@@ -159,6 +174,55 @@ try {
   const vacancyOnly = process.env.STATISTICAL_RUNTIME_VACANCY_ONLY === '1';
   const rentMagnitudeOnly = process.env.STATISTICAL_RUNTIME_RENT_MAGNITUDE_ONLY === '1';
   if (!vacancyOnly && !rentMagnitudeOnly) {
+  const tourismEmploymentQueries = [
+    'España depende demasiado del turismo para sostener el empleo',
+    'El turismo representa una parte excesiva del empleo español',
+    'El empleo en España depende demasiado de las actividades turísticas',
+  ];
+  let tourismEmploymentSourceIds;
+  for (const query of tourismEmploymentQueries) {
+    const result = await check(query);
+    assert.equal(result.state, 'limited', JSON.stringify(result));
+    assert.equal(result.result.answerScope?.family, 'tourism-employment-contribution');
+    assert.deepEqual(result.result.answerScope.directMetrics, ['tourism_characteristic_employment_share']);
+    assert.deepEqual(result.result.answerScope.contextMetrics, ['tourism_characteristic_employment_jobs']);
+    assert.equal(result.result.arguments?.[0]?.verdict, 'insufficient', 'The data must not decide whether sector dependence is excessive');
+    assert.match(result.result.reply, /En 2024.*12,3 %.*empleo total en España/s);
+    assert.match(result.result.reply, /2,78 millones de puestos/);
+    assert.match(result.result.reply, /estimaci[oó]n de avance/);
+    assert.match(result.result.reply, /La evidencia no basta para confirmar toda la afirmaci[oó]n/);
+    assert.doesNotMatch(result.result.reply, /Tasa de vacantes|15[234]\d{3}|2025-Q[234]/, 'An unrelated vacancy series must never stand in for tourism employment');
+    const sourceIds = result.result.sources.map((source) => source.id).sort();
+    assert.deepEqual(sourceIds, ['ine-tourism-characteristic-jobs-2024', 'ine-tourism-employment-share-cste-2024'].sort());
+    if (tourismEmploymentSourceIds) assert.deepEqual(sourceIds, tourismEmploymentSourceIds, `Tourism-employment paraphrase changed its source family: ${query}`);
+    tourismEmploymentSourceIds = sourceIds;
+  }
+  const regionalTourismEmployment = await check('El turismo genera más empleo en Andalucía que la agricultura');
+  assert.equal(regionalTourismEmployment.state, 'insufficient');
+  assert.equal(regionalTourismEmployment.result.answerScope?.family, 'tourism-employment-contribution');
+  assert.deepEqual(regionalTourismEmployment.result.answerScope.directMetrics, []);
+  assert.deepEqual(regionalTourismEmployment.result.answerScope.contextMetrics, []);
+  assert.deepEqual(regionalTourismEmployment.result.sources, [], 'National figures must not settle a regional cross-sector comparison');
+  assert.doesNotMatch(regionalTourismEmployment.result.reply, /12,3 %|2,78 millones/);
+  assert.match(regionalTourismEmployment.result.reply, /recuentos comparables de empleo en turismo y agricultura/);
+  for (const [query, family, requiredText] of [
+    ['El empleo crece más en la industria que en la hostelería', 'sector-employment-growth-comparison', /valores iniciales y finales/],
+    ['El turismo genera más empleo que la agricultura', 'sector-employment-level-comparison', /recuentos de empleo/],
+  ]) {
+    const result = await check(query);
+    assert.equal(result.state, 'insufficient', JSON.stringify(result));
+    assert.equal(result.result.answerScope?.family, family);
+    assert.deepEqual(result.result.answerScope.directMetrics, []);
+    assert.deepEqual(result.result.answerScope.contextMetrics, []);
+    assert.deepEqual(result.result.sources, [], 'A sector comparison must not borrow unrelated national employment or tourism figures');
+    assert.match(result.result.reply, requiredText);
+    assert.doesNotMatch(result.result.reply, /80,2 %|12,3 %|2,78 millones/);
+  }
+  const tourismWageNeighbour = await check('Los empleos turísticos están peor pagados que los agrícolas');
+  assert.equal(tourismWageNeighbour.result.answerScope?.family, 'sector-wage-comparison');
+  assert.ok(!tourismWageNeighbour.result.sources.some((source) => source.id === 'ine-tourism-employment-share-cste-2024' || source.id === 'ine-tourism-characteristic-jobs-2024'));
+  assert.doesNotMatch(tourismWageNeighbour.result.reply, /12,3 %|2,78 millones/);
+
   const tourismHousingCostQueries = [
     'El turismo encarece el coste de la vivienda en España',
     'Las viviendas turísticas han hecho más caro el alquiler en España',

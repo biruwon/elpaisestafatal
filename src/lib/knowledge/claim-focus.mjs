@@ -1,6 +1,7 @@
 import { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { HOUSING_COMPLETION_EVIDENCE, HOUSING_SUPPLY_PRESSURE_EVIDENCE } from './housing-supply-snapshot.mjs';
 import { MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE } from './mortgage-entry-snapshot.mjs';
+import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 const has = (text, expression) => expression.test(text);
@@ -596,6 +597,31 @@ const sectorWages = (t) => !businessTaxBurdenComparison(t) && !smallBusinessCost
   && (namedSector.test(t) || /\bsectores?\b/.test(t))
   && sectorSalaryReference(t)
   && /\b(productiv\w*|compar\w*|mas|menos|mejor\w*|peor\w*|bien pagad\w*|mal pagad\w*|bien remunerad\w*|mal remunerad\w*|mayor\w*|menor\w*|inferior\w*|superior\w*|alt\w*|baj\w*|media|promedio|tir\w* hacia abajo|por debajo|por encima|arrastr\w*|deprim\w*|lastr\w*|reduc\w*|diferenc\w*)\b/.test(t);
+const namedEmploymentSectorPatterns = [
+    /\b(turism\w*|turistic\w*)\b/, /\b(hosteler\w*|hotel\w*)\b/, /\b(agricultur\w*|sector primario)\b/,
+    /\b(construcci\w*)\b/, /\b(industr\w*|manufactur\w*)\b/, /\b(comerci\w*)\b/, /\b(transporte)\b/,
+    /\b(financier\w*|finanzas?)\b/, /\b(tecnolog\w*)\b/,
+  ];
+const sectorEmploymentChange = /\b(crec\w*|aument\w*|increment\w*|evoluc\w*|variac\w*|sub\w*|dismin\w*|baj\w*|cae|caen|cay\w*|caid\w*|descend\w*|retroced\w*|reduc\w*)\b/;
+const sectorEmploymentComparison = (t) => namedEmploymentSectorPatterns.filter((pattern) => pattern.test(t)).length >= 2
+    && /\b(emple\w*|trabaj\w*|ocupaci\w*|puestos? de trabajo|contrataci\w*)\b/.test(t)
+    && /\b(mas|menos|mayor\w*|menor\w*|super\w*|inferior\w*|compar\w*|frente a|que)\b/.test(t)
+    && !/\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|productiv\w*)\b/.test(t);
+const sectorEmploymentGrowthComparison = (t) => sectorEmploymentComparison(t) && sectorEmploymentChange.test(t);
+const sectorEmploymentLevelComparison = (t) => sectorEmploymentComparison(t)
+  && !sectorEmploymentChange.test(t);
+const tourismEmploymentContribution = (t) => {
+  const tourism = /\b(turism\w*|turistic\w*|hosteler\w*|ramas caracteristicas del turismo)\b/.test(t);
+  const employment = /\b(emple\w*|trabaj\w*|ocupaci\w*|puestos? de trabajo|contrataci\w*)\b/.test(t);
+  const contributionOrDependence = /\b(depende\w*|dependencia|dependient\w*|demasiad\w*|excesiv\w*|motor|principal|proporcion|porcentaj\w*|peso|parte|cuant\w*|crea\w*|genera\w*|aporta\w*|emplea\w*|concentr\w*)\b/.test(t);
+  const regionalSectorComparison = requestedGeographyScopes(t).some((scope) => scope.type === 'region')
+    && /\b(mas|menos|mayor|menor|super\w*|inferior\w*)\b/.test(t)
+    && /\b(que|a|al|frente a|respecto a)\b/.test(t)
+    && !/\b(crec\w*|aument\w*|increment\w*|evoluc\w*|variac\w*)\b/.test(t);
+  const differentFamily = /\b(viviend\w*|alquil\w*|arrendam\w*|salari\w*|sueld\w*|productiv\w*|pernoctacion\w*|noches? de hotel)\b/.test(t);
+  return tourism && employment && (contributionOrDependence || regionalSectorComparison)
+    && (!sectorEmploymentComparison(t) || regionalSectorComparison) && !differentFamily;
+};
 const selfEmploymentCostViability = (t) =>
   /\b(autonom\w*|trabajador\w* por cuenta propia|cuenta propia|freelance)\b/.test(t)
   && /\b(cuot\w*|cotiz\w*|cost\w* fijo\w*|gasto\w* (?:fijo\w*|obligatori\w*)|gestor\w*|carga administrat\w*|impuesto\w*)\b/.test(t)
@@ -956,6 +982,21 @@ const focuses = [
     limitation: 'La estimación experimental del INE cuenta anuncios de tres plataformas y su porcentaje usa como denominador el parque total del Censo de 2021. Ninguno de esos datos mide alquileres e ingresos disponibles de hogares residentes, a escala nacional o de barrio, ni permite atribuir al turismo los cambios de coste.',
   },
   {
+    id: 'tourism-employment-contribution', label: 'peso del empleo en las ramas características del turismo',
+    when: tourismEmploymentContribution,
+    direct: ['tourism_characteristic_employment_share'], context: ['tourism_characteristic_employment_jobs'],
+    claimTypeFor: (t) => /\b(depende\w*|dependencia|dependient\w*|demasiad\w*|excesiv\w*|caus\w*|crea\w*|genera\w*)\b/.test(t) ? 'causal'
+      : /\b(mas|menos|mayor\w*|menor\w*|super\w*|inferior\w*|compar\w*)\b/.test(t) ? 'comparative' : 'descriptive',
+    needs: [
+      'un criterio explícito para decidir qué peso sectorial sería «demasiado»',
+      'empleo y demanda que permitan estimar cuántos puestos se deben causalmente al turismo',
+      'calidad, salarios, jornada y estacionalidad de esos puestos',
+    ],
+    explanation: 'La Cuenta Satélite del Turismo mide el peso del empleo en las ramas económicas características del turismo.',
+    evidenceGap: 'La cuota de empleo mide el tamaño de esas ramas, pero no establece un umbral estadístico para decidir si su peso es excesivo.',
+    limitation: 'Las cifras cuentan empleo en ramas económicas características del turismo; no identifican qué puestos fueron causados por visitantes ni miden su calidad o estacionalidad.',
+  },
+  {
     id: 'tourist-housing-supply', label: 'efecto de las viviendas turísticas sobre la oferta residencial',
     when: touristHousingDisplacementClaim,
     direct: [], context: ['tourist_housing_count', 'tourist_housing_share'], claimType: 'causal',
@@ -1285,6 +1326,29 @@ const focuses = [
     limitation: 'El precio de compraventa por sí solo no mide cuántos hogares pueden reunir la entrada ni pagar la cuota.',
   },
   {
+    id: 'sector-employment-growth-comparison', label: 'crecimiento del empleo por actividad económica',
+    when: sectorEmploymentGrowthComparison,
+    direct: [], context: [], claimType: 'comparative',
+    needs: [
+      'series de empleo de las actividades comparadas para el mismo territorio y periodos',
+      'la misma medida de empleo y cobertura sectorial en ambas actividades',
+      'valores iniciales y finales para calcular y comparar el crecimiento',
+    ],
+    explanation: 'La tasa de empleo de todo el país no muestra cómo creció el empleo en sectores concretos.',
+    limitation: 'Una tasa nacional o de vacantes no mide el crecimiento del empleo por actividad. Para comparar sectores hacen falta series de la misma medida, territorio y periodos.',
+  },
+  {
+    id: 'sector-employment-level-comparison', label: 'empleo por actividad económica',
+    when: sectorEmploymentLevelComparison,
+    direct: [], context: [], claimType: 'comparative',
+    needs: [
+      'recuentos de empleo de las actividades comparadas para el mismo territorio y periodo',
+      'la misma población, unidad y definición de las actividades en ambas cifras',
+    ],
+    explanation: 'La tasa de empleo nacional no compara cuántos puestos hay en actividades concretas.',
+    limitation: 'Una cifra nacional no permite ordenar sectores. La comparación requiere recuentos con el mismo territorio, periodo y definición; algunas actividades pueden solaparse según la clasificación usada.',
+  },
+  {
     id: 'sector-wage-comparison', label: 'salarios y productividad por sector',
     when: sectorWages,
     direct: [], context: ['mean_hourly_earnings_by_activity'],
@@ -1481,6 +1545,10 @@ export const focusedMetricIdsFor = (claim) => {
   if (!focus) return undefined;
   const known = new Set(metricVocabulary.map((metric) => metric.id));
   const text = normalize(claim);
+  if (focus.id === 'tourism-employment-contribution'
+    && requestedGeographyScopes(claim).some((scope) => scope.type === 'region')
+    && /\b(mas|menos|mayor|menor|super\w*|inferior\w*)\b/.test(text)
+    && /\b(que|a|al|frente a|respecto a)\b/.test(text)) return new Set();
   const primaryCareRateRequested = /\b(porcentaje|proporcion|por ciento)\b/.test(text) || /\d+(?:[.,]\d+)?\s*%/i.test(String(claim));
   const primaryCareDurationRequested = /\b(cuantos dias|demora media|tiempo medio|duracion media|media de (?:la )?(?:espera|demora)|promedio(?: de (?:la )?(?:espera|demora|tiempo))?|en promedio|average wait|mean wait|average delay)\b/.test(text);
   const subjectiveDifficultyAndGreatDifficulty = /\b(?:dificultad\s+(?:o|y)\s+gran dificultad|con dificultad\s+(?:o|y)\s+con gran dificultad|pobreza subjetiva)\b/.test(text);

@@ -12,6 +12,8 @@ import { localPublicCheckResponse } from '../lib/local-public-check-response.mjs
 import { parsePrimaryCareBarometerWorkbook } from './domain-connectors.mjs';
 import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care-wait-snapshot.mjs';
 import { WORKING_POVERTY_SNAPSHOT } from '../../src/lib/knowledge/working-poverty-snapshot.mjs';
+import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/tourism-employment-snapshot.mjs';
+import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { validateAnswerPlan } from './answer-plan-validation.mjs';
 import { alignPropositionOutcomes, comparableObservationGroups, composePropositionFindings, evidenceForProposition } from '../lib/compound-evidence.mjs';
 import { rankWarehouseObservations } from './warehouse-query.mjs';
@@ -68,6 +70,9 @@ const cases = [
   ['tourist-housing-registration', ['¿Cuántos pisos turísticos con licencia están registrados?', '¿Cuántas viviendas de uso turístico tienen número de inscripción válido?']],
   ['tourist-housing-supply', ['Los pisos turísticos están quitando viviendas del alquiler residencial', 'Los apartamentos turísticos reducen la oferta para quienes viven en las ciudades', 'La vivienda turística desplaza alquileres de larga duración']],
   ['tourism-urban-housing-cost', ['El turismo masivo ha hecho que vivir en el centro de algunas ciudades sea un lujo', 'La presión turística convierte la vivienda del centro en un lujo para quienes viven allí', 'Los pisos turísticos encarecen el alquiler para residentes de barrios céntricos', 'Las viviendas turísticas han hecho más caro el alquiler en España']],
+  ['tourism-employment-contribution', ['España depende demasiado del turismo para sostener el empleo', 'El turismo representa una parte excesiva del empleo español', 'El empleo en España depende demasiado de las actividades turísticas']],
+  ['sector-employment-growth-comparison', ['El empleo crece más en la industria que en la hostelería', 'La contratación aumenta más en la construcción que en la agricultura', 'La ocupación cae menos en el comercio que en el transporte']],
+  ['sector-employment-level-comparison', ['El turismo genera más empleo que la agricultura', 'Hay más puestos de trabajo en la industria que en la hostelería', 'El transporte emplea a menos personas que la construcción']],
   ['residential-gentrification-displacement', ['La gentrificación está expulsando a residentes de barrios donde han vivido toda su vida', 'El aumento del alquiler obliga a vecinos de toda la vida a abandonar el barrio', 'La renovación de zonas céntricas termina desplazando a quienes ya vivían allí']],
   ['housing-completions', ['¿Cuántas viviendas nuevas se terminaron en España en 2025?', '¿Cuál fue el recuento de viviendas terminadas en España durante 2025?', '¿Se terminaron 92.000 viviendas nuevas en España en 2025?', 'En 2025 se acabaron 92.000 viviendas nuevas en España', '¿Cuántas viviendas nuevas se concluyeron en España en 2025?']],
   ['housing-construction-pressure', ['La falta de vivienda nueva explica buena parte de la subida del alquiler', 'Se construyen pocas viviendas frente al número de hogares que se crean', 'La lentitud de las licencias urbanísticas retrasa la construcción de viviendas nuevas']],
@@ -254,7 +259,7 @@ assert.notEqual(claimFocusFor('El turismo eleva los alquileres en las ciudades')
 assert.equal(claimFocusFor('El turismo eleva los alquileres en las ciudades')?.id, 'tourism-urban-housing-cost', 'General tourism and rent claims need a causal cost family, not a housing-supply proxy');
 assert.equal(claimFocusFor('Los turistas encarecen las habitaciones de hotel')?.id, undefined, 'Hotel-room prices must not cross-route into resident housing costs');
 assert.equal(claimFocusFor('Los turistas encarecen las habitaciones de hotel en los centros históricos')?.id, undefined, 'An urban location alone must not make a hotel-room price claim about resident housing');
-assert.equal(claimFocusFor('El turismo genera más empleo en las ciudades')?.id, undefined, 'Tourism employment claims must not cross-route into resident housing costs');
+assert.equal(claimFocusFor('El turismo genera más empleo en las ciudades')?.id, 'tourism-employment-contribution', 'Tourism employment claims must use employment evidence rather than resident housing data');
 assert.equal(claimFocusFor('Se construye demasiado poco por la lentitud de las licencias urbanísticas')?.id, undefined, 'An unspecified construction claim must not be assumed to concern residential homes');
 assert.equal(claimFocusFor('La falta de vivienda nueva en Madrid explica la subida del alquiler')?.id, 'housing-construction-pressure', 'A local supply claim must retain its family while national evidence is withheld by scope');
 const housingCompletionPlan = focusedEvidencePlan('¿Cuántas viviendas nuevas se terminaron en España en 2025?', { now: Date.parse('2026-11-23') });
@@ -491,6 +496,68 @@ const tourismCityCentreClaim = 'El turismo masivo ha hecho que vivir en el centr
 const tourismCityCentrePlan = focusedEvidencePlan(tourismCityCentreClaim, { observations: touristHousingObservations });
 assert.equal(tourismCityCentrePlan.answerScope.family, 'tourism-urban-housing-cost');
 assert.equal(tourismCityCentrePlan.sourceLinks.length, 0, 'National and provincial tourist-housing aggregates cannot answer a city-centre housing-cost claim');
+const tourismEmploymentParaphrases = [
+  'España depende demasiado del turismo para sostener el empleo',
+  'El turismo representa una parte excesiva del empleo español',
+  'El empleo en España depende demasiado de las actividades turísticas',
+];
+const tourismEmploymentPlan = focusedEvidencePlan(tourismEmploymentParaphrases[0], {
+  observations: TOURISM_EMPLOYMENT_SNAPSHOT.observations,
+  now: Date.parse('2026-11-24'),
+});
+assert.equal(tourismEmploymentPlan.answerScope.family, 'tourism-employment-contribution');
+assert.equal(tourismEmploymentPlan.evidenceLevel, 'limited');
+assert.deepEqual(tourismEmploymentPlan.answerScope.directMetrics, ['tourism_characteristic_employment_share']);
+assert.deepEqual(tourismEmploymentPlan.answerScope.contextMetrics, ['tourism_characteristic_employment_jobs']);
+assert.match(tourismEmploymentPlan.shareableReply, /2024.*12,3 %/s);
+assert.match(tourismEmploymentPlan.shareableReply, /2,78 millones/);
+assert.match(tourismEmploymentPlan.shareableReply, /estimaci[oó]n de avance/);
+assert.match(tourismEmploymentPlan.shareableReply, /no establece un umbral estad[ií]stico/);
+assert.match(tourismEmploymentPlan.shareableReply, /no identifican qu[eé] puestos fueron causados por visitantes/);
+assert.equal(tourismEmploymentPlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient', 'A measured sector share does not decide whether dependence is excessive');
+assert.ok(validateAnswerPlan(tourismEmploymentPlan).ok, JSON.stringify(validateAnswerPlan(tourismEmploymentPlan).errors));
+for (const paraphrase of tourismEmploymentParaphrases) {
+  const plan = focusedEvidencePlan(paraphrase, {
+    observations: TOURISM_EMPLOYMENT_SNAPSHOT.observations,
+    now: Date.parse('2026-11-24'),
+  });
+  assert.equal(plan.answerScope.family, tourismEmploymentPlan.answerScope.family, `Tourism-employment paraphrase changed evidence family: ${paraphrase}`);
+  assert.deepEqual(plan.sourceIds, tourismEmploymentPlan.sourceIds, `Tourism-employment paraphrase changed its sources: ${paraphrase}`);
+  assert.match(plan.shareableReply, /2024.*12,3 %/s);
+  assert.equal(localPublicCheckResponse({ status: 'partial', requestId: 'tourism-employment-paraphrase', result: plan }, paraphrase).state, 'limited');
+}
+for (const tourismEmploymentRegional of [
+  'El turismo genera más empleo en Andalucía que la agricultura',
+  '¿Andalucía tiene más empleo turístico que agrícola?',
+  'El empleo turístico en Andalucía supera al empleo agrícola',
+]) {
+  assert.equal(claimFocusFor(tourismEmploymentRegional)?.id, 'tourism-employment-contribution');
+  assert.deepEqual([...focusedMetricIdsFor(tourismEmploymentRegional)], [], 'National tourism metrics should not be retrieved for a regional sector comparison');
+  const plan = focusedEvidencePlan(tourismEmploymentRegional, {
+    observations: TOURISM_EMPLOYMENT_SNAPSHOT.observations,
+    now: Date.parse('2026-11-24'),
+  });
+  assert.equal(plan.answerScope.family, 'tourism-employment-contribution');
+  assert.equal(plan.claimType, 'comparative');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  assert.deepEqual(plan.sourceIds, [], 'National tourism shares cannot answer an Andalusia comparison with agriculture');
+  assert.doesNotMatch(plan.shareableReply, /12,3 %|2,78 millones/);
+  assert.match(plan.shareableReply, /recuentos comparables de empleo tur[ií]stico y agr[ií]cola/);
+  assert.equal(localPublicCheckResponse({ status: 'uncovered', requestId: 'tourism-regional-comparison', result: plan }, tourismEmploymentRegional).state, 'insufficient');
+}
+const tourismWageNeighbour = 'Los empleos turísticos están peor pagados que los agrícolas';
+assert.equal(claimFocusFor(tourismWageNeighbour)?.id, 'sector-wage-comparison');
+assert.ok(!focusedMetricIdsFor(tourismWageNeighbour)?.has('tourism_characteristic_employment_share'));
+assert.ok(!focusedMetricIdsFor(tourismWageNeighbour)?.has('tourism_characteristic_employment_jobs'));
+assert.equal(claimFocusFor('El turismo encarece los alquileres en España')?.id, 'tourism-urban-housing-cost');
+assert.equal(claimFocusFor('El turismo aporta muchas pernoctaciones'), undefined, 'Tourism-night claims must not inherit employment evidence');
+const tourismEmploymentFallback = deterministicApiFallback({ text: tourismEmploymentParaphrases[0], inputType: 'text', now: Date.parse('2026-11-24') });
+assert.equal(tourismEmploymentFallback.status, 'partial');
+assert.deepEqual(tourismEmploymentFallback.result.sourceIds, tourismEmploymentPlan.sourceIds);
+const expiredTourismEmploymentFallback = deterministicApiFallback({ text: tourismEmploymentParaphrases[0], inputType: 'text', now: Date.parse('2027-01-01') });
+assert.equal(expiredTourismEmploymentFallback.status, 'uncovered');
+assert.doesNotMatch(expiredTourismEmploymentFallback.result.shareableReply, /12,3 %|2,78 millones/, 'Expired reviewed figures must not be returned as current data');
 const touristNeighbourhoodClaim = 'Los pisos turísticos reducen la oferta para residentes en los barrios céntricos de Barcelona';
 const touristNeighbourhoodPlan = focusedEvidencePlan(touristNeighbourhoodClaim, { observations: touristHousingObservations });
 assert.equal(touristNeighbourhoodPlan.sourceLinks.length, 0, 'A provincial or national aggregate cannot answer a neighbourhood-level claim');
@@ -1248,7 +1315,22 @@ for (const claim of ['La hostelería arrastra hacia abajo el promedio de los sue
   assert.equal(answer.answerScope.family, sectorSalaryGap.answerScope.family, 'Average-wage impact paraphrases must use the same family');
   assert.ok(answer.evidenceSummary.missingDimensions.some((item) => /proporci[oó]n del empleo/.test(item)), 'Average-wage impact paraphrases must require the employment weight');
 }
-assert.equal(claimFocusFor('El empleo crece más en la industria que en la hostelería'), undefined, 'A sector employment-growth claim without a wage or productivity comparison must not be routed to the wage family');
+assert.equal(claimFocusFor('El empleo crece más en la industria que en la hostelería')?.id, 'sector-employment-growth-comparison', 'A sector employment-growth claim must not fall through to an unrelated national employment rate');
+assert.equal(claimFocusFor('El empleo en la industria es mayor que en la hostelería')?.id, 'sector-employment-level-comparison', 'An employment-level comparison must not inherit a growth measure');
+for (const [claim, family, expectedNeed] of [
+  ['El empleo crece más en la industria que en la hostelería', 'sector-employment-growth-comparison', /valores iniciales y finales/],
+  ['El turismo genera más empleo que la agricultura', 'sector-employment-level-comparison', /recuentos de empleo/],
+]) {
+  const plan = focusedEvidencePlan(claim);
+  assert.equal(plan.answerScope.family, family);
+  assert.equal(plan.claimType, 'comparative');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  assert.deepEqual(plan.sourceIds, [], 'National employment rates and tourism shares cannot answer an unmatched sector comparison');
+  assert.ok(plan.evidenceSummary.missingDimensions.some((item) => expectedNeed.test(item)));
+  assert.doesNotMatch(plan.shareableReply, /80,2 %|12,3 %|2,78 millones/);
+}
+assert.equal(claimFocusFor('El salario crece más en la industria que en la hostelería')?.id, 'sector-wage-comparison', 'A sector salary comparison must stay out of employment-growth evidence');
 assert.equal(claimFocusFor('El salario medio español aumenta este año')?.id, 'nominal-wages', 'A national wage trend without sector comparison must stay outside the sector wage family');
 assert.equal(focusedEvidencePlan('El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', { propositions: [
   { text: 'La vivienda se encarece en Madrid' },

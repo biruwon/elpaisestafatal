@@ -84,7 +84,17 @@ const periodLabel = (point) => {
   if (Number.isFinite(point?.Anyo) && Number.isFinite(point?.FK_Periodo)) return `${point.Anyo}-${String(point.FK_Periodo).padStart(2, '0')}`;
   if (Number.isFinite(point?.Anyo)) return String(point.Anyo);
   if (Number.isFinite(point?.Fecha)) return new Date(point.Fecha).toISOString().slice(0, 10);
+  const ineLabel = typeof point?.NombrePeriodo === 'string' ? point.NombrePeriodo.trim() : '';
+  const annual = ineLabel.match(/^(\d{4})\s*(?:\(([A-Za-z]+)\))?$/);
+  if (annual) return annual[1];
+  if (ineLabel) return ineLabel;
   return undefined;
+};
+
+const periodStatus = (point) => {
+  const label = typeof point?.NombrePeriodo === 'string' ? point.NombrePeriodo.trim() : '';
+  const code = label.match(/^\d{4}\s*\(([A-Za-z]+)\)$/)?.[1]?.toLocaleLowerCase('en');
+  return code === 'p' ? 'p' : code === 'a' ? 'a' : undefined;
 };
 
 // INE's DATOS_TABLA endpoints return one series per row with a nested Data
@@ -95,24 +105,33 @@ const flattenIneTable = (payload, source) => {
   return rows.flatMap((row, rowIndex) => {
     if (!row || typeof row !== 'object' || !Array.isArray(row.Data)) return [];
     const metric = typeof row.Nombre === 'string' ? row.Nombre.trim() : row.COD || `series-${rowIndex}`;
-    return row.Data.filter((point) => point && typeof point === 'object' && typeof point.Valor === 'number' && Number.isFinite(point.Valor)).map((point, pointIndex) => ({
-      id: `${source.id}-ine-${rowIndex}-${pointIndex}`,
-      kind: 'observation',
-      sourceId: source.id,
-      metricId: source.metricId,
-      datasetId: source.title,
-      metric,
-      value: point.Valor,
-      period: periodLabel(point),
-      unit: row.FK_Unidad == null ? undefined : `INE unit ${row.FK_Unidad}`,
-      dimensions: {
-        code: row.COD,
-        series: metric,
-        year: point.Anyo,
-        period: point.FK_Periodo,
-        dataType: point.FK_TipoDato,
-      },
-    }));
+    return row.Data.filter((point) => point && typeof point === 'object' && typeof point.Valor === 'number' && Number.isFinite(point.Valor)).map((point, pointIndex) => {
+        const sourceDimensions = source.dimensions && typeof source.dimensions === 'object' && !Array.isArray(source.dimensions) ? source.dimensions : {};
+        const rawPeriod = typeof point.NombrePeriodo === 'string' ? point.NombrePeriodo.trim() : undefined;
+        const status = periodStatus(point);
+        return {
+          id: `${source.id}-ine-${rowIndex}-${pointIndex}`,
+          kind: 'observation',
+          sourceId: source.id,
+          metricId: source.metricId,
+          datasetId: source.title,
+          metric,
+          value: point.Valor,
+          period: periodLabel(point),
+          unit: source.unit || (row.FK_Unidad == null ? undefined : `INE unit ${row.FK_Unidad}`),
+          ...(status ? { status } : {}),
+          dimensions: {
+            ...sourceDimensions,
+            code: row.COD,
+            series: metric,
+            year: point.Anyo,
+            period: point.FK_Periodo,
+            dataType: point.FK_TipoDato,
+            ...(rawPeriod ? { periodLabel: rawPeriod } : {}),
+          },
+          geography: sourceDimensions.geo === 'ES' ? 'España' : undefined,
+        };
+      });
   });
 };
 

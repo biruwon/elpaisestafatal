@@ -83,11 +83,14 @@ const labels = {
   primary_care_wait_over_one_day_rate: 'Pacientes de medicina de familia pública que esperaron más de un día por falta de cita',
   tourist_housing_count: 'Viviendas turísticas estimadas',
   tourist_housing_share: 'Viviendas turísticas como parte del parque total de viviendas',
+  tourism_characteristic_employment_share: 'Empleo en ramas características del turismo como parte del empleo total',
+  tourism_characteristic_employment_jobs: 'Puestos de trabajo en ramas características del turismo',
 };
 const unitFor = (item) => /^(?:household|industrial)_electricity_price/.test(item.metricId || '') && item.dimensions?.currency && (item.dimensions?.unit === 'KWH' || /^(?:kilowatt-hour|kwh)$/i.test(item.unit || ''))
   ? `${item.dimensions.currency === 'EUR' ? '€' : item.dimensions.currency}/kWh`
   : /^(?:household|industrial)_electricity_price/.test(item.metricId || '') && /eur|euro/i.test(item.unit || '') ? '€/kWh'
   : /percent|percentage|^pc$|%/i.test(item.unit || '') ? '%' : /days|d[ií]as/i.test(item.unit || '') ? 'días'
+  : item.metricId === 'tourism_characteristic_employment_jobs' ? 'miles de puestos de trabajo'
   : item.metricId === 'rental_price_index' && /index|índice/i.test(item.unit || '')
     ? `índice${String(item.unit).match(/\b(?:19|20)\d{2}\s*=\s*100\b/) ? ` (${String(item.unit).match(/\b(?:19|20)\d{2}\s*=\s*100\b/)[0].replace(/\s/g, '')})` : ''}`
   : item.metricId === 'cpi_index' || /index/i.test(item.unit || '') ? 'índice'
@@ -612,6 +615,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const focus = claimFocusFor(claim);
   if (!focus) return undefined;
   const normalizedClaim = normalize(claim);
+  const tourismRegionalSectorComparison = focus.id === 'tourism-employment-contribution'
+    && requestedGeographyScopes(claim).some((scope) => scope.type === 'region')
+    && /\b(mas|menos|mayor|menor|super\w*|inferior\w*)\b/.test(normalizedClaim)
+    && /\b(que|a|al|frente a|respecto a)\b/.test(normalizedClaim);
   const sectorNames = [/\bturis\w*\b/, /\bhosteler\w*\b/, /\bhotel\w*\b/, /\bagricultur\w*\b/, /\bsector primario\b/, /\bconstrucci\w*\b/, /\bindustri\w*\b/, /\bmanufactur\w*\b/, /\bcomerci\w*\b/, /\btransporte\b/, /\bfinancier\w*\b/, /\btecnolog\w*\b/];
   const continuesSameSubject = (item) => {
     const clauseFocus = claimFocusFor(item.text);
@@ -786,7 +793,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const comparesLifetimePensionContributions = focus.id === 'future-pension-outlook'
     && /\b(pag\w*\s+(?:las?\s+)?pension\w*|cotiz\w*|contribu\w*|financ\w*)\b/.test(normalizedClaim)
     && /\b(decad\w*|durante|jubil\w*|retir\w*)\b/.test(normalizedClaim);
-  const ids = [...focusedMetricIdsFor(claim)];
+  const ids = tourismRegionalSectorComparison ? [] : [...focusedMetricIdsFor(claim)];
   const allowedDirect = educationOutcome ? ids
     : focus.id === 'subjective-financial-strain' ? ids
     : focus.id === 'working-poverty' && fullTime && partTime ? ['in_work_poverty_full_time_rate', 'in_work_poverty_part_time_rate']
@@ -802,7 +809,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         : id === 'tertiary_overqualification_rate_age_20_34'
           ? 'sobrecualificación entre personas ocupadas de 20 a 34 años con educación terciaria; denominador: todas las personas ocupadas de ese grupo'
         : '';
-  const needs = subjectiveHouseholdShareRequested ? ['porcentaje de hogares, no solo proporción de población residente en hogares que responden así', 'periodo, territorio y población comparables']
+  const needs = tourismRegionalSectorComparison
+    ? ['recuento de empleo por actividad económica en el territorio solicitado, con el mismo año y unidad para las ramas turísticas y la agricultura', 'definición compatible de empleo y cobertura de actividades en ambos sectores']
+    : subjectiveHouseholdShareRequested ? ['porcentaje de hogares, no solo proporción de población residente en hogares que responden así', 'periodo, territorio y población comparables']
     : subjectiveIndividualClaim ? ['medición directa de la situación del hogar o la persona concreta; la encuesta publicada resume a la población']
     : asksAboutMakingEndsMeet ? ['cruce de la dificultad declarada con la situación laboral y la jornada de las personas consultadas', 'periodo y población comparables']
     : focus.id === 'working-poverty' && workingPovertyCountRequested ? ['recuento anual de personas ocupadas bajo el umbral de riesgo de pobreza, con población y periodos comparables']
@@ -845,7 +854,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const educationQuestion = educationOutcome ? educationOutcomeQuestion(claim) : undefined;
   const specialistMagnitudeNotAssessed = focus.id === 'specialist-outpatient-regional-waits'
     && specialistOutpatientMagnitudeNotAssessed(claim);
-  const limitation = educationOutcome ? educationOutcomeLimitation(ids, focus.limitation, educationQuestion)
+  const limitation = tourismRegionalSectorComparison
+    ? 'La serie disponible describe el conjunto de España; no compara empleo turístico y agrícola en el territorio solicitado.'
+    : educationOutcome ? educationOutcomeLimitation(ids, focus.limitation, educationQuestion)
     : focus.id === 'working-poverty' ? 'El umbral relativo de pobreza y la respuesta subjetiva del hogar son medidas distintas. EU-SILC no cruza la dificultad declarada con la jornada laboral; el desglose por jornada tampoco incluye la edad. El dato no demuestra que el tipo de jornada cause el riesgo. El periodo es el año de la encuesta EU-SILC y los ingresos del umbral de pobreza pueden referirse a un año anterior.'
     : focus.id === 'sector-wage-comparison' ? [
       comparesSectorEmployment
@@ -877,7 +888,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     : explanation?.facts || [];
   const workHousingTrendRequested = focus.id === 'work-housing-independence'
     && /\b(ya no|cada vez|se ha vuelto|antes|ahora|desde (?:19|20)\d{2}|en (?:19|20)\d{2}|entre (?:19|20)\d{2} y (?:19|20)\d{2}|ultimos a[nñ]os)\b/.test(normalizedClaim);
-  const claimType = typeof focus.claimTypeFor === 'function' ? focus.claimTypeFor(normalizedClaim)
+  const claimType = tourismRegionalSectorComparison ? 'comparative'
+    : typeof focus.claimTypeFor === 'function' ? focus.claimTypeFor(normalizedClaim)
     : focus.id === 'working-poverty' && workingPovertyWorktimeComparisonRequested ? 'comparative'
     : focus.id === 'working-poverty' && workingPovertyTrendRequested ? 'trend'
     : focus.id === 'private-healthcare-access'
@@ -977,9 +989,13 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       return `${place}, ${periodLabel(fact.latest.period)}: el ${number(fact.latest.value, fact.id)} % ${measurement}`;
     })()
     : undefined;
+  const tourismDependencyClaim = focus.id === 'tourism-employment-contribution'
+    && !tourismRegionalSectorComparison
+    && /\b(depende\w*|dependencia|dependient\w*|demasiad\w*|excesiv\w*|caus\w*|crea\w*|genera\w*)\b/.test(normalizedClaim);
   const missing = educationOutcome
     ? ids.length ? ids.filter((id) => !facts.some((fact) => fact.id === id)).map(educationNeedForMetric) : needs
-    : direct.length || explanationMeasuresClaim ? [] : needs;
+    : tourismDependencyClaim ? needs
+      : direct.length || explanationMeasuresClaim ? [] : needs;
   const primaryFacts = (direct.length ? direct : context).slice(0, educationOutcome ? 4 : 2);
   const trendNotes = educationTrendRequested ? primaryFacts.flatMap((fact) => {
     const quality = comparisonQuality(fact.items, { temporal: true, firstPeriod: fact.items[0]?.period || '' });
@@ -1017,7 +1033,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     return `En ${periodLabel(spain.latest.period)}, el precio medio fue ${number(spain.latest.value, 'industrial_electricity_price_europe')} €/kWh en España y ${number(union.latest.value, 'industrial_electricity_price_europe')} €/kWh en la Unión Europea${differenceText}.`;
   })();
   const findingText = industrialComparison || workingPovertyComparison?.finding || primaryFacts.map(factFinding).join(' ');
-  const gap = missing.length ? focus.id === 'working-poverty' && workingPovertyCountRequested
+  const gap = missing.length ? tourismRegionalSectorComparison
+    ? 'La fuente nacional disponible no ofrece recuentos comparables de empleo turístico y agrícola para el territorio solicitado.'
+    : focus.id === 'working-poverty' && workingPovertyCountRequested
     ? 'La serie disponible mide un porcentaje, no el número de personas. Falta un recuento comparable de personas ocupadas bajo el umbral de riesgo de pobreza.'
     : focus.evidenceGap || `Falta una medición directa de ${missing.join('; ')}.` : '';
   const gapForReply = educationOutcome && !ids.length && educationOutcomeLimitForQuestion(educationQuestion) ? ''
@@ -1066,6 +1084,41 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       'Para establecer un efecto causal harían falta datos de espera y urgencias enlazados para las mismas personas y el mismo periodo, y una comparación que separe otros motivos.',
     ].filter(Boolean).join(' ');
   })();
+  const tourismEmploymentReply = (() => {
+    if (focus.id !== 'tourism-employment-contribution') return undefined;
+    if (tourismRegionalSectorComparison) return [
+      gapForReply,
+      'Para compararlos hacen falta recuentos de empleo en turismo y agricultura para el mismo territorio, año y definición estadística.',
+    ].filter(Boolean).join('\n\n');
+    const share = facts.find((fact) => fact.id === 'tourism_characteristic_employment_share');
+    const jobs = facts.find((fact) => fact.id === 'tourism_characteristic_employment_jobs');
+    const sharePeriod = share?.latest.period;
+    const jobsPeriod = jobs?.latest.period;
+    const millions = (fact) => new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 }).format(fact.latest.value / 1000);
+    const findings = [];
+    if (share) {
+      findings.push(`En ${periodLabel(sharePeriod)}, las ramas características del turismo reunieron el ${number(share.latest.value, share.id)} % del empleo total en España.`);
+      if (jobs && jobsPeriod === sharePeriod) findings.push(`Equivalen a unos ${millions(jobs)} millones de puestos de trabajo en esas ramas.`);
+      else if (jobs) findings.push(`El recuento más reciente es de unos ${millions(jobs)} millones de puestos en ${periodLabel(jobsPeriod)}; es otro periodo y no se combina con la cuota anterior.`);
+    } else if (jobs) {
+      findings.push(`En ${periodLabel(jobsPeriod)}, el INE registró unos ${millions(jobs)} millones de puestos de trabajo en ramas características del turismo.`);
+      findings.push('El recuento no indica qué parte representa del empleo total.');
+    }
+    return [
+      findings.join(' '),
+      ...(tourismDependencyClaim && share ? [focus.evidenceGap] : []),
+      scopeNotes.join(' '),
+      focus.limitation,
+      !findings.length ? gapForReply : '',
+    ].filter(Boolean).join('\n\n');
+  })();
+  const tourismEmploymentHeadline = focus.id === 'tourism-employment-contribution'
+    ? (() => {
+      const share = facts.find((fact) => fact.id === 'tourism_characteristic_employment_share');
+      return share ? `Ramas características del turismo: ${number(share.latest.value, share.id)} % del empleo en ${periodLabel(share.latest.period)}`
+        : 'Faltan datos compatibles sobre el empleo en ramas turísticas';
+    })()
+    : undefined;
   const directThresholdComparisonNote = directThresholdAssessment
     ? (() => {
       const fact = direct.find((item) => item.id === directThresholdAssessment.metricId);
@@ -1077,7 +1130,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       return `El dato (${number(directThresholdAssessment.actual, fact.id)}${suffix}) ${position}; ${directThresholdAssessment.verdict === 'supported' ? 'respalda' : 'contradice'} esa parte.`;
     })()
     : '';
-  const reply = primaryCareCausalityReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+  const reply = primaryCareCausalityReply || tourismEmploymentReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
     directThresholdComparisonNote,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length ? 'limited' : 'insufficient';
@@ -1147,7 +1200,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   }
   return {
     id: `measurement-${focus.id}`, schemaVersion: '1', evidenceLevel, coverage: facts.length || explanation ? 'qualified' : 'insufficient',
-    claimType, headline: subjectivePovertyHeadline || specialistOutpatientComparisonHeadline || workingPovertyComparison?.headline || workingPovertyTrends.get(direct[0]?.id)?.headline
+    claimType, headline: subjectivePovertyHeadline || specialistOutpatientComparisonHeadline || workingPovertyComparison?.headline || workingPovertyTrends.get(direct[0]?.id)?.headline || tourismEmploymentHeadline
       || (focus.id === 'working-poverty' && direct.length
         ? fullTime && partTime ? 'Datos de riesgo de pobreza por jornada'
           : fullTime ? 'El empleo a jornada completa no elimina el riesgo de pobreza'
@@ -1164,7 +1217,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         finding: explanationMeasuresClaim ? explanationFacts.join(' ') : workingPovertyComparison?.finding || (direct.length ? direct.slice(0, 2).map(factFinding).join(' ') : undefined) }], propositionIds: ['submitted-claim'] },
       ...explanationBlocks,
       ...facts.map((fact) => ({ type: 'data_finding', evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [factFinding(fact)] })),
-      ...(missing.length ? [{ type: 'evidence_gap', missing, needed: missing, nextAction: `Buscar una fuente primaria que mida ${focus.label} con ese ámbito.` }] : []),
+      ...(missing.length ? [{ type: 'evidence_gap', missing, needed: missing, nextAction: tourismRegionalSectorComparison
+        ? 'Buscar una fuente regional con recuentos comparables de empleo en turismo y agricultura para el mismo año.'
+        : `Buscar una fuente primaria que mida ${focus.label} con ese ámbito.` }] : []),
       { type: 'cannot_conclude', evidenceIds: [], points: [limitation] },
       { type: 'conversation_reply', evidenceIds, text: reply },
     ],

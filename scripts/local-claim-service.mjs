@@ -45,6 +45,7 @@ import { createModelTasks } from './model-tasks.mjs';
 import { detectCurrentEvent, buildNeutralQueries, classifyEventSearchLeads, eventStatusFor, currentEventSourceRole } from './knowledge/current-events.mjs';
 import { latestGovernmentPeriod, scorecardMetrics, makeScorecard, makePopulationScorecard } from './knowledge/scorecard.mjs';
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../src/lib/knowledge/scorecard-snapshot.mjs';
+import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/tourism-employment-snapshot.mjs';
 import { governmentScorecardGapPlan, isBroadGovernmentScorecardClaim } from '../src/lib/knowledge/scorecard-interpretation.mjs';
 import { answerPlanForBroadDomains, broadDomainPacketsFor, broadMetricIdsFor } from '../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { researchFamilyGaps } from './knowledge/research-family-gaps.mjs';
@@ -2173,7 +2174,16 @@ const startUrlResolveJob = (url) => startMediaResolveJob(url, 'url');
 
 const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = [], eventPackets = undefined) => {
   const householdArrangementContrast = hasHouseholdArrangementContrast(text);
-  const focusedPlan = !classified.primary && !householdArrangementContrast ? focusedEvidencePlan(text, { observations, propositions: classified.compiler?.explicitPropositions || [], allowReviewedSnapshotFallback: true }) : undefined;
+  const focus = claimFocusFor(text);
+  const focusedObservations = focus?.id === 'tourism-employment-contribution' && snapshotLifecycle(TOURISM_EMPLOYMENT_SNAPSHOT).usable
+    ? (() => {
+      const observedPeriods = new Set(observations.map((item) => `${item.metricId || ''}|${item.period || ''}`));
+      const missingSnapshotObservations = TOURISM_EMPLOYMENT_SNAPSHOT.observations
+        .filter((item) => !observedPeriods.has(`${item.metricId}|${item.period}`));
+      return [...observations, ...missingSnapshotObservations];
+    })()
+    : observations;
+  const focusedPlan = !classified.primary && !householdArrangementContrast ? focusedEvidencePlan(text, { observations: focusedObservations, propositions: classified.compiler?.explicitPropositions || [], allowReviewedSnapshotFallback: true }) : undefined;
   if (focusedPlan) return { status: 'complete', requestId: resultRequestId, result: focusedPlan, relatedClaims: [] };
   const explicitPropositions = (classified.compiler?.explicitPropositions || []).filter((item) => item?.explicit !== false && item?.text);
   const scorecardLifecycle = snapshotLifecycle(GOVERNMENT_SCORECARD_SNAPSHOT);
