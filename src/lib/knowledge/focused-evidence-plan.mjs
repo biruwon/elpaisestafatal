@@ -230,30 +230,74 @@ const educationOutcomeFinding = (fact) => {
   if (fact.id === 'tertiary_overqualification_rate_age_20_34') return `${source}: en ${place}, el ${value} de las personas ocupadas de 20 a 34 años con educación terciaria (ISCED 5–8) trabajaba en ocupaciones ISCO 4–9, que no requieren ese nivel, en ${period}.`;
   return fact.finding;
 };
-const educationOutcomeThresholdVerdict = (claim, direct) => {
-  if (direct.length !== 1 || direct[0].items.some((item) => item.freshness === 'stale')) return 'insufficient';
-  const text = String(claim || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
+const directMeasurementThresholdAssessment = (claim, direct) => {
+  if (!direct.length || /\b(caus\w*|provoc\w*|porque|debido|por culpa|oblig\w*|empuj\w*)\b/.test(normalize(claim))) return undefined;
+  const thresholdText = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD')
+    .replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9.,%]+/g, ' ').trim()
+    .replace(/\b(?:un|uno|una)\s+(?=dias?\b)/g, '1 ');
   const comparisons = [
-    { relation: 'at-most', expression: /\b(?:no supera|no supero|no sobrepasa|no excede)\s+(?:(?:a|al|de|del)\s+)?(?:(?:el|la)\s+)?(\d+(?:[.,]\d+)?)\s*(?:%|por\s+ciento)/ },
-    { relation: 'below', expression: /\b(?:no alcanza|no lleg\w*)\s+(?:(?:a|al|de|del)\s+)?(?:(?:el|la)\s+)?(\d+(?:[.,]\d+)?)\s*(?:%|por\s+ciento)/ },
-    { relation: 'below', expression: /\b(?:por debajo de|por debajo del|menos de|menos del|inferior a|inferior al|menor de|menor del)\s+(?:(?:el|la)\s+)?(\d+(?:[.,]\d+)?)\s*(?:%|por\s+ciento)/ },
-    { relation: 'above', expression: /\b(?:supera|supero|superaba|sobrepasa|excede|superior a|superior al|mayor de|mayor del|mas de|mas del|por encima de)\s+(?:(?:el|la)\s+)?(\d+(?:[.,]\d+)?)\s*(?:%|por\s+ciento)/ },
-    { relation: 'at-least', expression: /\b(?:al menos|no baja de|no desciende de|no cae por debajo de)\s+(?:(?:el|la)\s+)?(\d+(?:[.,]\d+)?)\s*(?:%|por\s+ciento)/ },
+    { relation: 'at-most', phrase: 'no supera|no supero|no sobrepasa|no excede' },
+    { relation: 'below', phrase: 'no alcanza|no lleg\\w*|por debajo de|por debajo del|menos de|menos del|inferior a|inferior al|menor de|menor del' },
+    { relation: 'above', phrase: 'supera|supero|superaba|sobrepasa|excede|superior a|superior al|mayor de|mayor del|mas de|mas del|por encima de' },
+    { relation: 'at-least', phrase: 'al menos|no baja de|no baja del|no desciende de|no desciende del|no cae por debajo de|no cae por debajo del' },
   ];
-  for (const { relation, expression } of comparisons) {
-    const match = text.match(expression);
-    if (!match) continue;
-    const threshold = Number(match[1].replace(',', '.'));
-    if (!Number.isFinite(threshold)) return 'insufficient';
-    const actual = direct[0].latest.value;
-    if (!Number.isFinite(actual)) return 'insufficient';
-    const claimMatchesMeasurement = relation === 'at-most' ? actual <= threshold
-      : relation === 'below' ? actual < threshold
-        : relation === 'above' ? actual > threshold
-          : actual >= threshold;
-    return claimMatchesMeasurement ? 'supported' : 'contradicted';
+  const units = [
+    { id: 'percentage', expression: '(?:%|por\\s+ciento)', factUnit: /(?:%|percent|percentage)/i, suffix: '%' },
+    { id: 'days', expression: 'dias?', factUnit: /\b(?:days?|d[ií]as?)\b/i, suffix: 'días' },
+  ];
+  const comparisonsIn = (value) => {
+    const text = thresholdText(value);
+    const matches = [];
+    for (const comparison of comparisons) for (const unit of units) {
+      const expression = new RegExp(`\\b(?:${comparison.phrase})\\s+(?:(?:a|al|de|del)\\s+)?(?:(?:el|la|los|las)\\s+)?(\\d+(?:[.,]\\d+)?)\\s*${unit.expression}(?=$|[^a-z])`, 'g');
+      for (const match of text.matchAll(expression)) {
+        const startsWithNegation = /\bno\s*$/.test(text.slice(0, match.index));
+        if (comparison.relation === 'above' && startsWithNegation) continue;
+        matches.push({ relation: comparison.relation, threshold: Number(match[1].replace(',', '.')), unit, start: match.index, end: match.index + match[0].length });
+      }
+    }
+    matches.sort((left, right) => left.start - right.start || right.end - left.end);
+    return matches.filter((match, index) => !matches.slice(0, index).some((earlier) => earlier.end > match.start));
+  };
+  const distinctMatches = comparisonsIn(claim);
+  if (!distinctMatches.length) return undefined;
+  const measurementComparisons = [];
+  const primaryCareMeanRequested = /\b(demora media|tiempo medio|duracion media|media de (?:la )?(?:espera|demora)|promedio(?: de (?:la )?(?:espera|demora|tiempo))?|en promedio|average wait|mean wait|average delay)\b/.test(normalize(claim));
+  for (const comparison of distinctMatches) {
+    const matchingFacts = direct.filter((fact) => comparison.unit.factUnit.test(String(fact.latest.unit || '')));
+    if (matchingFacts.length > 1) return undefined;
+    if (matchingFacts.length === 1) {
+      if (matchingFacts[0].items.some((item) => item.freshness === 'stale')) return undefined;
+      if (matchingFacts[0].id === 'primary_care_wait_days' && !primaryCareMeanRequested) return undefined;
+      measurementComparisons.push({ comparison, fact: matchingFacts[0] });
+      continue;
+    }
+    const definitionFacts = direct.filter((fact) => {
+      const profile = vocabulary.get(fact.id);
+      const description = [profile?.name, ...(profile?.aliases || []), fact.latest.metric, fact.latest.population].filter(Boolean).join(' ');
+      return comparisonsIn(description).some((defined) => defined.relation === comparison.relation
+        && defined.unit.id === comparison.unit.id && defined.threshold === comparison.threshold);
+    });
+    // A second unit can define the measured population (for example, the share
+    // waiting more than one day); ignore it only when the selected metric says
+    // the same thing. A different threshold, such as ten days, remains unverified.
+    if (definitionFacts.length !== 1) return undefined;
   }
-  return 'insufficient';
+  if (measurementComparisons.length !== 1) return undefined;
+  const { comparison, fact } = measurementComparisons[0];
+  const actual = fact.latest.value;
+  if (!Number.isFinite(comparison.threshold) || !Number.isFinite(actual)) return undefined;
+  const claimMatchesMeasurement = comparison.relation === 'at-most' ? actual <= comparison.threshold
+    : comparison.relation === 'below' ? actual < comparison.threshold
+      : comparison.relation === 'above' ? actual > comparison.threshold
+        : actual >= comparison.threshold;
+  return {
+    verdict: claimMatchesMeasurement ? 'supported' : 'contradicted',
+    actual,
+    threshold: comparison.threshold,
+    metricId: fact.id,
+    suffix: comparison.unit.suffix,
+  };
 };
 const workingPovertyFinding = (fact) => {
   const item = fact.latest;
@@ -576,9 +620,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     if (/\b(no impide|no evita|no garantiza|afect\w*|tambi[eé]n hay|existe\w*)\b/.test(normalizedClaim)) return 'supported';
     return 'mixed';
   })();
-  const educationOutcomeVerdict = educationOutcome && claimType === 'descriptive' && propositions.length <= 1
-    ? educationOutcomeThresholdVerdict(claim, direct)
-    : 'insufficient';
+  const directThresholdAssessment = claimType === 'descriptive' && propositions.length <= 1
+    ? directMeasurementThresholdAssessment(claim, direct)
+    : undefined;
   const evidenceIds = [...new Set([...facts.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanation?.sources || []).map((source) => source.id)].filter(Boolean))];
   const explanationSourceIds = (explanation?.sources || []).map((source) => source.id);
   const explanationSupportsClaim = Boolean(explanation?.directClaimEvidence);
@@ -679,7 +723,19 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       'Para establecer un efecto causal harían falta datos de espera y urgencias enlazados para las mismas personas y el mismo periodo, y una comparación que separe otros motivos.',
     ].filter(Boolean).join(' ');
   })();
+  const directThresholdComparisonNote = directThresholdAssessment
+    ? (() => {
+      const fact = direct.find((item) => item.id === directThresholdAssessment.metricId);
+      const suffix = directThresholdAssessment.suffix === '%' ? ' %' : ` ${directThresholdAssessment.suffix}`;
+      const threshold = `${number(directThresholdAssessment.threshold, fact.id)}${suffix}`;
+      const position = directThresholdAssessment.actual < directThresholdAssessment.threshold ? `queda por debajo del umbral de ${threshold}`
+        : directThresholdAssessment.actual > directThresholdAssessment.threshold ? `supera el umbral de ${threshold}`
+          : `iguala el umbral de ${threshold}`;
+      return `El dato (${number(directThresholdAssessment.actual, fact.id)}${suffix}) ${position}; ${directThresholdAssessment.verdict === 'supported' ? 'respalda' : 'contradice'} esa parte.`;
+    })()
+    : '';
   const reply = primaryCareCausalityReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+    directThresholdComparisonNote,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length ? 'limited' : 'insufficient';
   const families = ids.map((id) => {
@@ -760,8 +816,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     blocks: [
       { type: 'claim_breakdown', items: [{ text: claim, type: claimType, explicit: true, evidenceIds: directEvidenceIds, sourceIds: directSourceIds,
         verdict: explanationMeasuresClaim ? explanation.claimVerdict || 'mixed'
-          : educationOutcome ? educationOutcomeVerdict
-            : focus.id === 'working-poverty' ? workingPovertyVerdict : 'insufficient', evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
+          : educationOutcome ? directThresholdAssessment?.verdict || 'insufficient'
+            : directThresholdAssessment?.verdict || (focus.id === 'working-poverty' ? workingPovertyVerdict : 'insufficient'), evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
         finding: explanationMeasuresClaim ? explanation.facts.join(' ') : workingPovertyComparison?.finding || (direct.length ? direct.slice(0, 2).map(factFinding).join(' ') : undefined) }], propositionIds: ['submitted-claim'] },
       ...explanationBlocks,
       ...facts.map((fact) => ({ type: 'data_finding', evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [factFinding(fact)] })),

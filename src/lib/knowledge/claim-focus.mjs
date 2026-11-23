@@ -1271,13 +1271,16 @@ export const focusedMetricIdsFor = (claim) => {
   if (!focus) return undefined;
   const known = new Set(metricVocabulary.map((metric) => metric.id));
   const text = normalize(claim);
+  const primaryCareRateRequested = /\b(porcentaje|proporcion|por ciento)\b/.test(text) || /\d+(?:[.,]\d+)?\s*%/i.test(String(claim));
+  const primaryCareDurationRequested = /\b(cuantos dias|demora media|tiempo medio|duracion media|media de (?:la )?(?:espera|demora)|promedio(?: de (?:la )?(?:espera|demora|tiempo))?|en promedio|average wait|mean wait|average delay)\b/.test(text);
   const direct = focus.id === 'education-employment-outcomes' ? educationOutcomeMetrics(claim)
     : focus.id === 'working-poverty' && /\b(jornada completa|tiempo completo)\b/.test(text) && /\b(jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)\b/.test(text) ? ['in_work_poverty_full_time_rate', 'in_work_poverty_part_time_rate']
     : focus.id === 'working-poverty' && /\b(jornada completa|tiempo completo)\b/.test(text) ? ['in_work_poverty_full_time_rate']
     : focus.id === 'working-poverty' && /\b(jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)\b/.test(text) ? ['in_work_poverty_part_time_rate']
     : focus.id === 'working-poverty' ? ['in_work_poverty_rate']
-    : focus.id === 'primary-care-waits' && /\b(porcentaje|proporcion|por ciento)\b/.test(text) ? ['primary_care_wait_over_one_day_rate']
-      : focus.id === 'primary-care-waits' && /\b(cuantos dias|demora media|tiempo medio)\b/.test(text) ? ['primary_care_wait_days']
+    : focus.id === 'primary-care-waits' && primaryCareRateRequested && primaryCareDurationRequested ? ['primary_care_wait_days', 'primary_care_wait_over_one_day_rate']
+      : focus.id === 'primary-care-waits' && primaryCareRateRequested ? ['primary_care_wait_over_one_day_rate']
+        : focus.id === 'primary-care-waits' && primaryCareDurationRequested ? ['primary_care_wait_days']
       : focus.id === 'housing-construction-pressure' && /\b(alquil\w*|arrendam\w*|rentas?)\b/.test(text) ? ['rental_price_index'] : focus.direct;
   const european = /\b(europa|europe[oa]s?|ue|union europea)\b/.test(text);
   // An all-worker unemployment rate does not describe the availability of

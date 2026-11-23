@@ -64,7 +64,7 @@ export const textAnswerAccuracyCases = [
     expected: {
       state: 'limited', family: 'education-employment-outcomes', verdict: 'supported',
       directSourceIds: ['eurostat-tertiary-employment'],
-      replyIncludes: ['83,2 %', '20 a 64 años', '2025'],
+      replyIncludes: ['83,2 %', '20 a 64 años', '2025', 'supera el umbral de 80 %', 'respalda esa parte'],
       evidence: [{
         familyId: 'employment_rate_tertiary_education',
         sourceIds: ['eurostat-tertiary-employment'],
@@ -81,7 +81,7 @@ export const textAnswerAccuracyCases = [
     expected: {
       state: 'limited', family: 'education-employment-outcomes', verdict: 'contradicted',
       directSourceIds: ['eurostat-tertiary-employment'],
-      replyIncludes: ['83,2 %', '2025'],
+      replyIncludes: ['83,2 %', '2025', 'supera el umbral de 80 %', 'contradice esa parte'],
       evidence: [{
         familyId: 'employment_rate_tertiary_education',
         sourceIds: ['eurostat-tertiary-employment'],
@@ -89,6 +89,38 @@ export const textAnswerAccuracyCases = [
         dimensions: { period: '2025', geography: 'España', population: '20 a 64 años', denominator: 'todas las personas residentes', unit: '%' },
       }],
       maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'working-poverty-part-time-above-threshold',
+    input: 'En 2025 el riesgo de pobreza entre las personas ocupadas a jornada parcial superó el 15 %',
+    expected: {
+      state: 'limited', family: 'working-poverty', verdict: 'supported',
+      directSourceIds: ['eurostat-in-work-poverty-part-time-2026-11'],
+      replyIncludes: ['18,6 %', '15 %', 'supera el umbral de 15 %', 'respalda esa parte', '2025'],
+      evidence: [{
+        familyId: 'in_work_poverty_part_time_rate',
+        sourceIds: ['eurostat-in-work-poverty-part-time-2026-11'],
+        dataIncludes: ['18,6 %', '2025'],
+        dimensions: { period: '2025', geography: 'España', population: 'jornada parcial', denominator: 'personas ocupadas a jornada parcial', unit: '%' },
+      }],
+      maxReplyWords: 140,
+    },
+  },
+  {
+    id: 'working-poverty-part-time-below-threshold-neighbour',
+    input: 'En 2025 el riesgo de pobreza entre las personas ocupadas a jornada parcial no llegó al 15 %',
+    expected: {
+      state: 'limited', family: 'working-poverty', verdict: 'contradicted',
+      directSourceIds: ['eurostat-in-work-poverty-part-time-2026-11'],
+      replyIncludes: ['18,6 %', '15 %', 'supera el umbral de 15 %', 'contradice esa parte', '2025'],
+      evidence: [{
+        familyId: 'in_work_poverty_part_time_rate',
+        sourceIds: ['eurostat-in-work-poverty-part-time-2026-11'],
+        dataIncludes: ['18,6 %', '2025'],
+        dimensions: { period: '2025', geography: 'España', population: 'jornada parcial', denominator: 'personas ocupadas a jornada parcial', unit: '%' },
+      }],
+      maxReplyWords: 140,
     },
   },
   {
@@ -130,6 +162,79 @@ export const textAnswerAccuracyCases = [
     expected: {
       state: 'insufficient', verdict: 'insufficient', directSourceIds: [], evidence: [],
       replyExcludes: ['18,6 %', '9,5 %'], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'primary-care-delay-days-above-threshold',
+    input: 'La demora media para conseguir cita con el médico de familia superó los 7 días en la segunda oleada de 2026',
+    expected: {
+      state: 'limited', family: 'primary-care-waits', verdict: 'supported',
+      directSourceIds: ['sanidad-primary-care-2026-wave2'],
+      replyIncludes: ['9,71 días', '2026', 'oleada 2', 'supera el umbral de 7 días', 'respalda esa parte', 'provisionales'],
+      evidence: [{
+        familyId: 'primary_care_wait_days', sourceIds: ['sanidad-primary-care-2026-wave2'], dataIncludes: ['9,71 días', '2026 · oleada 2'],
+        dimensions: { period: '2026-O2', geography: 'España', population: 'solo quienes esperaron más de un día por falta de cita', denominator: 'pregunta 5c_01 con respuesta válida en días', unit: 'días' },
+      }],
+      maxReplyWords: 160,
+    },
+  },
+  {
+    id: 'primary-care-delay-days-below-threshold-neighbour',
+    input: 'La demora media para conseguir cita con el médico de familia no llegó a los 7 días en la segunda oleada de 2026',
+    expected: {
+      state: 'limited', family: 'primary-care-waits', verdict: 'contradicted',
+      directSourceIds: ['sanidad-primary-care-2026-wave2'],
+      replyIncludes: ['9,71 días', '2026', 'oleada 2', 'supera el umbral de 7 días', 'contradice esa parte'],
+      evidence: [{
+        familyId: 'primary_care_wait_days', sourceIds: ['sanidad-primary-care-2026-wave2'], dataIncludes: ['9,71 días', '2026 · oleada 2'],
+        dimensions: { period: '2026-O2', geography: 'España', population: 'solo quienes esperaron más de un día por falta de cita', denominator: 'pregunta 5c_01 con respuesta válida en días', unit: 'días' },
+      }],
+      maxReplyWords: 160,
+    },
+  },
+  {
+    id: 'primary-care-wait-rate-above-threshold',
+    equivalenceGroup: 'primary-care-rate-2026-threshold',
+    input: 'Más del 70 % de pacientes de atención primaria esperó más de un día por falta de cita en la segunda oleada de 2026',
+    expected: {
+      state: 'limited', family: 'primary-care-waits', verdict: 'supported',
+      directSourceIds: ['sanidad-primary-care-2026-wave2'],
+      replyIncludes: ['72 %', '2026', 'oleada 2', 'supera el umbral de 70 %', 'respalda esa parte'],
+      evidence: [{
+        familyId: 'primary_care_wait_over_one_day_rate', sourceIds: ['sanidad-primary-care-2026-wave2'], dataIncludes: ['72 %', '2026 · oleada 2'],
+        dimensions: { period: '2026-O2', geography: 'España', population: 'consultaron por un problema propio con medicina de familia pública en los últimos 12 meses', denominator: 'pacientes de la base de la pregunta 5c', unit: '%' },
+      }],
+      maxReplyWords: 160,
+    },
+  },
+  {
+    id: 'primary-care-wait-rate-numeric-day-paraphrase',
+    equivalenceGroup: 'primary-care-rate-2026-threshold',
+    input: 'Más del 70 % de pacientes de atención primaria esperó más de 1 día por falta de cita en la segunda oleada de 2026',
+    expected: {
+      state: 'limited', family: 'primary-care-waits', verdict: 'supported',
+      directSourceIds: ['sanidad-primary-care-2026-wave2'],
+      replyIncludes: ['72 %', '2026', 'oleada 2', 'supera el umbral de 70 %', 'respalda esa parte'],
+      evidence: [{
+        familyId: 'primary_care_wait_over_one_day_rate', sourceIds: ['sanidad-primary-care-2026-wave2'], dataIncludes: ['72 %', '2026 · oleada 2'],
+        dimensions: { period: '2026-O2', geography: 'España', population: 'consultaron por un problema propio con medicina de familia pública en los últimos 12 meses', denominator: 'pacientes de la base de la pregunta 5c', unit: '%' },
+      }],
+      maxReplyWords: 160,
+    },
+  },
+  {
+    id: 'primary-care-wait-rate-wrong-day-threshold-neighbour',
+    input: 'Más del 70 % de pacientes de atención primaria esperó más de 10 días por falta de cita en la segunda oleada de 2026',
+    expected: {
+      state: 'limited', family: 'primary-care-waits', verdict: 'insufficient',
+      directSourceIds: ['sanidad-primary-care-2026-wave2'],
+      replyIncludes: ['72 %', '2026', 'oleada 2', 'más de un día'],
+      replyExcludes: ['supera el umbral de 70 %', 'contradice esa parte'],
+      evidence: [{
+        familyId: 'primary_care_wait_over_one_day_rate', sourceIds: ['sanidad-primary-care-2026-wave2'], dataIncludes: ['72 %', '2026 · oleada 2'],
+        dimensions: { period: '2026-O2', geography: 'España', population: 'consultaron por un problema propio con medicina de familia pública en los últimos 12 meses', denominator: 'pacientes de la base de la pregunta 5c', unit: '%' },
+      }],
+      maxReplyWords: 160,
     },
   },
 ];

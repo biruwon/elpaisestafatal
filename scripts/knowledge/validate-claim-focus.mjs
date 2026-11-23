@@ -10,6 +10,8 @@ import { measurementMeaningPlan } from '../../src/lib/knowledge/measurement-mean
 import { shouldRetainReviewedPreview } from '../../src/lib/knowledge/reviewed-answer-stability.mjs';
 import { localPublicCheckResponse } from '../lib/local-public-check-response.mjs';
 import { parsePrimaryCareBarometerWorkbook } from './domain-connectors.mjs';
+import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care-wait-snapshot.mjs';
+import { WORKING_POVERTY_SNAPSHOT } from '../../src/lib/knowledge/working-poverty-snapshot.mjs';
 import { validateAnswerPlan } from './answer-plan-validation.mjs';
 import { alignPropositionOutcomes, comparableObservationGroups, composePropositionFindings, evidenceForProposition } from '../lib/compound-evidence.mjs';
 import { rankWarehouseObservations } from './warehouse-query.mjs';
@@ -687,6 +689,35 @@ const maximumThresholdClaim = focusedEvidencePlan('La tasa de empleo de las pers
 assert.equal(maximumThresholdClaim.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported', 'An inclusive upper bound accepts an exact match');
 const strictMaximumThresholdClaim = focusedEvidencePlan('La tasa de empleo de las personas con estudios universitarios no llegó al 80 % en 2025', { observations: exactThresholdObservations });
 assert.equal(strictMaximumThresholdClaim.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'contradicted', 'Failing to reach a threshold is strict and excludes an exact match');
+const partTimePovertyOver15 = focusedEvidencePlan('En 2025 el riesgo de pobreza entre las personas ocupadas a jornada parcial superó el 15 %', { observations: WORKING_POVERTY_SNAPSHOT.observations, now: Date.parse('2026-11-23') });
+assert.equal(partTimePovertyOver15.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported', 'A directly measured in-work poverty rate above its threshold should be assessed outside the education family too');
+assert.match(partTimePovertyOver15.shareableReply, /El dato \(18,6 %\) supera el umbral de 15 %; respalda esa parte/);
+const partTimePovertyBelow15 = focusedEvidencePlan('En 2025 el riesgo de pobreza entre las personas ocupadas a jornada parcial no llegó al 15 %', { observations: WORKING_POVERTY_SNAPSHOT.observations, now: Date.parse('2026-11-23') });
+assert.equal(partTimePovertyBelow15.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'contradicted');
+assert.match(partTimePovertyBelow15.shareableReply, /El dato \(18,6 %\) supera el umbral de 15 %; contradice esa parte/);
+const causalThresholdNeighbour = focusedEvidencePlan('En 2025 el riesgo de pobreza entre las personas ocupadas a jornada parcial superó el 15 % porque la jornada parcial causa pobreza', { observations: WORKING_POVERTY_SNAPSHOT.observations, now: Date.parse('2026-11-23') });
+assert.equal(causalThresholdNeighbour.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'mixed', 'A measured rate must not verify a causal explanation added to the threshold claim');
+assert.doesNotMatch(causalThresholdNeighbour.shareableReply, /El dato \(18,6 %\).*umbral de 15 %/);
+const primaryCareDelayAbove7 = focusedEvidencePlan('La demora media para conseguir cita con el médico de familia superó los 7 días en la segunda oleada de 2026', { observations: PRIMARY_CARE_WAIT_SNAPSHOT.observations, now: Date.parse('2026-11-23') });
+assert.deepEqual([...focusedMetricIdsFor('Más del 70 % de pacientes de atención primaria esperó más de un día por falta de cita en la segunda oleada de 2026')], ['primary_care_wait_over_one_day_rate'], 'A percent claim should select the respondent rate, not the delay length used to define its threshold');
+assert.equal(primaryCareDelayAbove7.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported', 'A direct day-valued observation should be compared only with a day-valued threshold');
+assert.match(primaryCareDelayAbove7.shareableReply, /9,71 días.*supera el umbral de 7 días; respalda esa parte/s);
+const primaryCareDelayBelow7 = focusedEvidencePlan('La demora media para conseguir cita con el médico de familia no llegó a los 7 días en la segunda oleada de 2026', { observations: PRIMARY_CARE_WAIT_SNAPSHOT.observations, now: Date.parse('2026-11-23') });
+assert.equal(primaryCareDelayBelow7.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'contradicted');
+assert.match(primaryCareDelayBelow7.shareableReply, /9,71 días.*supera el umbral de 7 días; contradice esa parte/s);
+const primaryCareRateAbove70 = focusedEvidencePlan('Más del 70 % de pacientes de atención primaria esperó más de un día por falta de cita en la segunda oleada de 2026', { observations: PRIMARY_CARE_WAIT_SNAPSHOT.observations, now: Date.parse('2026-11-23') });
+assert.equal(primaryCareRateAbove70.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported', 'The percentage threshold must select the percentage observation when the answer also includes a day-valued context measure');
+assert.match(primaryCareRateAbove70.shareableReply, /El dato \(72 %\) supera el umbral de 70 %; respalda esa parte/);
+const primaryCareRateNumericDayParaphrase = 'Más del 70 % de pacientes de atención primaria esperó más de 1 día por falta de cita en la segunda oleada de 2026';
+assert.deepEqual([...focusedMetricIdsFor(primaryCareRateNumericDayParaphrase)], ['primary_care_wait_over_one_day_rate'], 'A numeric spelling of the one-day measure definition should select the same rate as its word-form paraphrase');
+const primaryCareRateAbove70NumericDay = focusedEvidencePlan(primaryCareRateNumericDayParaphrase, { observations: PRIMARY_CARE_WAIT_SNAPSHOT.observations, now: Date.parse('2026-11-23') });
+assert.equal(primaryCareRateAbove70NumericDay.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported');
+assert.match(primaryCareRateAbove70NumericDay.shareableReply, /El dato \(72 %\) supera el umbral de 70 %; respalda esa parte/);
+const primaryCareRateAbove70WrongDayDefinition = focusedEvidencePlan('Más del 70 % de pacientes de atención primaria esperó más de 10 días por falta de cita en la segunda oleada de 2026', { observations: PRIMARY_CARE_WAIT_SNAPSHOT.observations, now: Date.parse('2026-11-23') });
+assert.equal(primaryCareRateAbove70WrongDayDefinition.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient', 'The one-day rate must not verify the share waiting more than ten days');
+assert.doesNotMatch(primaryCareRateAbove70WrongDayDefinition.shareableReply, /supera el umbral de 70 %/);
+const primaryCareWaitDaysWithoutMean = focusedEvidencePlan('La espera en atención primaria superó los 10 días en la segunda oleada de 2026', { observations: PRIMARY_CARE_WAIT_SNAPSHOT.observations, now: Date.parse('2026-11-23') });
+assert.equal(primaryCareWaitDaysWithoutMean.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient', 'An average duration must not verify an unspecific claim about how long patients waited');
 const educationOutcomeGapFamilies = [
   {
     claims: [

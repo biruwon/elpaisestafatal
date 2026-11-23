@@ -61,6 +61,22 @@ assert.match(comparison.body.result.reply, /9,1 puntos porcentuales más en jorn
 assert.ok(comparison.body.result.sources.some((source) => source.id === 'eurostat-in-work-poverty-part-time-2026-11'));
 assert.ok(comparison.body.result.sources.some((source) => source.id === 'eurostat-in-work-poverty-full-time-2026-11'));
 
+const partTimeAboveThreshold = await check('En 2025 el riesgo de pobreza entre las personas ocupadas a jornada parcial superó el 15 %');
+assert.equal(partTimeAboveThreshold.body.state, 'limited');
+assert.equal(partTimeAboveThreshold.body.result.answerScope.family, 'working-poverty');
+assert.equal(partTimeAboveThreshold.body.result.arguments[0].verdict, 'supported');
+assert.match(partTimeAboveThreshold.body.result.reply, /18,6 %.*2025/);
+assert.match(partTimeAboveThreshold.body.result.reply, /supera el umbral de 15 %; respalda esa parte/);
+assert.ok(partTimeAboveThreshold.body.result.sources.some((source) => source.id === 'eurostat-in-work-poverty-part-time-2026-11'));
+
+const partTimeBelowThreshold = await check('En 2025 el riesgo de pobreza entre las personas ocupadas a jornada parcial no llegó al 15 %');
+assert.equal(partTimeBelowThreshold.body.state, 'limited');
+assert.equal(partTimeBelowThreshold.body.result.arguments[0].verdict, 'contradicted');
+assert.match(partTimeBelowThreshold.body.result.reply, /La fuente contradice la afirmación/);
+assert.match(partTimeBelowThreshold.body.result.reply, /18,6 %.*2025/);
+assert.match(partTimeBelowThreshold.body.result.reply, /supera el umbral de 15 %; contradice esa parte/);
+assert.ok(partTimeBelowThreshold.body.result.sources.some((source) => source.id === 'eurostat-in-work-poverty-part-time-2026-11'));
+
 const headcount = await check('¿Cada vez hay más personas ocupadas en riesgo de pobreza?');
 assert.equal(headcount.body.state, 'insufficient');
 assert.equal(headcount.body.result.arguments[0].verdict, 'insufficient');
@@ -183,6 +199,39 @@ assert.match(primaryCareWait.body.result.reply, /quienes esperaron más de un d�
 assert.match(primaryCareWait.body.result.reply, /no define un umbral universal/);
 assert.ok(primaryCareWait.body.result.sources.some((source) => source.id === 'sanidad-primary-care-2026-wave2'));
 assert.ok(primaryCareWait.body.result.reply.trim().split(/\s+/).length <= 150);
+
+const primaryCareDaysAbove = await check('La demora media para conseguir cita con el médico de familia superó los 7 días en la segunda oleada de 2026');
+assert.equal(primaryCareDaysAbove.body.state, 'limited');
+assert.deepEqual(primaryCareDaysAbove.body.result.answerScope.directMetrics, ['primary_care_wait_days']);
+assert.equal(primaryCareDaysAbove.body.result.arguments[0].verdict, 'supported');
+assert.match(primaryCareDaysAbove.body.result.reply, /9,71 días/);
+assert.match(primaryCareDaysAbove.body.result.reply, /supera el umbral de 7 días; respalda esa parte/);
+assert.doesNotMatch(primaryCareDaysAbove.body.result.reply, /72 %/);
+
+const primaryCareDaysBelow = await check('La demora media para conseguir cita con el médico de familia no llegó a los 7 días en la segunda oleada de 2026');
+assert.equal(primaryCareDaysBelow.body.state, 'limited');
+assert.equal(primaryCareDaysBelow.body.result.arguments[0].verdict, 'contradicted');
+assert.match(primaryCareDaysBelow.body.result.reply, /La fuente contradice la afirmación/);
+assert.match(primaryCareDaysBelow.body.result.reply, /9,71 días/);
+assert.match(primaryCareDaysBelow.body.result.reply, /supera el umbral de 7 días; contradice esa parte/);
+
+const primaryCareRateAbove = await check('Más del 70 % de pacientes de atención primaria esperó más de un día por falta de cita en la segunda oleada de 2026');
+assert.equal(primaryCareRateAbove.body.result.arguments[0].verdict, 'supported');
+assert.deepEqual(primaryCareRateAbove.body.result.answerScope.directMetrics, ['primary_care_wait_over_one_day_rate']);
+assert.match(primaryCareRateAbove.body.result.reply, /72 %/);
+assert.match(primaryCareRateAbove.body.result.reply, /supera el umbral de 70 %; respalda esa parte/);
+assert.doesNotMatch(primaryCareRateAbove.body.result.reply, /9,71 días/);
+
+const primaryCareRateNumericDayParaphrase = await check('Más del 70 % de pacientes de atención primaria esperó más de 1 día por falta de cita en la segunda oleada de 2026');
+assert.equal(primaryCareRateNumericDayParaphrase.body.result.arguments[0].verdict, 'supported');
+assert.deepEqual(primaryCareRateNumericDayParaphrase.body.result.answerScope.directMetrics, ['primary_care_wait_over_one_day_rate']);
+assert.match(primaryCareRateNumericDayParaphrase.body.result.reply, /72 %/);
+assert.match(primaryCareRateNumericDayParaphrase.body.result.reply, /supera el umbral de 70 %; respalda esa parte/);
+assert.doesNotMatch(primaryCareRateNumericDayParaphrase.body.result.reply, /9,71 días/);
+
+const primaryCareRateWrongDayThreshold = await check('Más del 70 % de pacientes de atención primaria esperó más de 10 días por falta de cita en la segunda oleada de 2026');
+assert.equal(primaryCareRateWrongDayThreshold.body.result.arguments[0].verdict, 'insufficient');
+assert.doesNotMatch(primaryCareRateWrongDayThreshold.body.result.reply, /supera el umbral de 70 %/);
 
 const stalePrimaryCare = await check('Hay que esperar demasiado para conseguir cita con el médico de familia', stalePrimaryCareDatabase);
 assert.equal(stalePrimaryCare.body.state, 'limited');

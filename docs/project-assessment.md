@@ -816,13 +816,19 @@ answer plans and the public response shape, including per-part verdicts,
 evidence-family data and cited source IDs. A secure URL alone no longer makes a
 claim part traceable when its cited source ID does not match a listed source.
 
-The answer-level benchmark now grades nine held-out text cases against
+The answer-level benchmark now grades sixteen held-out text cases against
 reviewed snapshot-backed evidence. It checks the public answer's evidence
 family, value, verdict, linked source, period, geography, population,
 denominator, scope exclusions, traceability and word limit. It also checks
 that paraphrases share evidence, while nearby claims with the wrong year or
 territory do not inherit that evidence. Cases include housing completions,
-tertiary-education employment and in-work poverty. The current run passes 9/9.
+tertiary-education employment, in-work poverty and primary-care waits. Direct
+percentage and day thresholds are compared with a matching measurement unit;
+the reply states how the observed value relates to the threshold. Metric
+definitions distinguish a rate for waits over one day from a rate for longer
+waits, and an average delay is not used to assess an unspecific wait-length
+claim. The checks also preserve strict versus inclusive bounds and keep causal
+claims from inheriting a descriptive rate verdict. The current run passes 16/16.
 
 This small regression set is a useful guard against known answer failures,
 not a population-wide estimate of factual accuracy. Broader validation still
