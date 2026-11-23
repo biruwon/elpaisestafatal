@@ -822,3 +822,22 @@ text-family regression fixtures and reviewed evidence workflows. The next
 accuracy milestone is a held-out text set with expected evidence and scope
 fields, so end-to-end scores measure the answer users see rather than routing
 alone.
+
+## Expired political scorecard fallback — 23 November 2026
+
+The reviewed government-period scorecard expired on 31 October 2026. Both the
+deterministic Pages fallback and local preview now withhold its figures and
+return a concise evidence gap that names the expired comparison, asks for an
+indicator and period, and explains that timing alone does not establish a
+government's causal effect. Broad performance paraphrases share the same
+scorecard interpretation; specific claims about an indicator remain on their
+focused measurement path. The local preview can show this structured gap while
+optional model enrichment continues, instead of leaving the user with only a
+spinner.
+
+Acceptance checks now test the same sourced scorecard family using a date when
+the snapshot was valid, check that today's expired snapshot reveals no old
+values, and guard nearby employment and public-finance claims against routing
+to the broad scorecard. The acceptance suite is part of classifier validation.
+The six source observations still need editorial refresh before this broad
+scorecard can return numerical values again.

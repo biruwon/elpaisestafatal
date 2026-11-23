@@ -6,6 +6,7 @@ const base = `http://127.0.0.1:${gatewayPort}`;
 const claim = 'Según los datos, el árbol demográfico está completamente invertido y el sistema de pensiones es completamente insostenible.';
 const children = [];
 const failures = [];
+const diagnostics = [];
 
 const start = (script, extraEnv) => {
   const child = spawn(process.execPath, [script], {
@@ -13,8 +14,12 @@ const start = (script, extraEnv) => {
     env: { ...process.env, ...extraEnv },
     stdio: ['ignore', 'pipe', 'pipe'],
   });
-  child.stdout.on('data', () => {});
-  child.stderr.on('data', () => {});
+  const capture = (stream, label) => stream.on('data', (chunk) => {
+    diagnostics.push(`[${label}] ${String(chunk).trim()}`);
+    if (diagnostics.length > 80) diagnostics.shift();
+  });
+  capture(child.stdout, 'stdout');
+  capture(child.stderr, 'stderr');
   children.push(child);
   return child;
 };
@@ -44,6 +49,7 @@ try {
     LOCAL_CLASSIFIER_BIND_HOST: '127.0.0.1',
     LOCAL_ANSWER_PLANNER: '0',
     LOCAL_CLAIM_COMPILER: '0',
+    BROAD_SCORECARD: '1',
   });
   start('scripts/local-dev-gateway.mjs', {
     LOCAL_GATEWAY_PORT: String(gatewayPort),
@@ -79,6 +85,22 @@ try {
   if (warm.state === 'processing') failures.push('warm request missed the completed resolver cache');
   if (Date.now() - warmStart >= 2000) failures.push(`warm request took ${Date.now() - warmStart}ms`);
 
+  const expiredScorecardResponse = await fetch(`${base}/api/check`, {
+    method: 'POST',
+    headers: { 'content-type': 'application/json' },
+    body: JSON.stringify({ text: 'El país va cada vez peor.', inputType: 'text' }),
+    signal: AbortSignal.timeout(5000),
+  });
+  const expiredInitial = await expiredScorecardResponse.json();
+  let expiredFinal = expiredInitial;
+  if (expiredInitial.state === 'processing') {
+    if (!expiredInitial.preview?.result?.nextQuestion) failures.push('expired scorecard gap was not shown as a useful processing preview');
+    expiredFinal = await waitFor(`${base}/api/check/${encodeURIComponent(expiredInitial.id)}`, (payload) => payload.state !== 'processing');
+  }
+  if (expiredFinal.state !== 'insufficient') failures.push(`expired scorecard response: ${JSON.stringify(expiredFinal)}`);
+  if (!/caducó/i.test(expiredFinal.result?.reply || '')) failures.push('expired scorecard answer did not explain why its figures were omitted');
+  if (!expiredFinal.result?.nextQuestion || expiredFinal.result.sources?.length) failures.push('expired scorecard answer must ask for a measure and period without sources or stale values');
+
   const generalResponse = await fetch(`${base}/api/check`, {
     method: 'POST',
     headers: { 'content-type': 'application/json' },
@@ -94,5 +116,5 @@ try {
   cleanup();
 }
 
-if (failures.length) { console.error(failures.join('\n')); process.exit(1); }
+if (failures.length) { console.error([...failures, ...diagnostics].join('\n')); process.exit(1); }
 console.log('Fast response path validation passed: immediate preview, bounded enrichment, and warm cache.');

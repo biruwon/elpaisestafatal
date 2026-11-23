@@ -45,6 +45,7 @@ import { createModelTasks } from './model-tasks.mjs';
 import { detectCurrentEvent, buildNeutralQueries, classifyEventSearchLeads, eventStatusFor, currentEventSourceRole } from './knowledge/current-events.mjs';
 import { latestGovernmentPeriod, scorecardMetrics, makeScorecard, makePopulationScorecard } from './knowledge/scorecard.mjs';
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../src/lib/knowledge/scorecard-snapshot.mjs';
+import { governmentScorecardGapPlan, isBroadGovernmentScorecardClaim } from '../src/lib/knowledge/scorecard-interpretation.mjs';
 import { answerPlanForBroadDomains, broadDomainPacketsFor, broadMetricIdsFor } from '../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { researchFamilyGaps } from './knowledge/research-family-gaps.mjs';
 import { snapshotLifecycle } from '../src/lib/knowledge/snapshot-lifecycle.mjs';
@@ -1717,11 +1718,7 @@ const classify = async (text, { bypassCache = false } = {}) => {
   // the reusable political topic so the user gets an immediate direction,
   // while keeping it explicitly topic guidance rather than a verdict.
   const broadComplaintNormalized = normalise(text);
-  const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|va peor|peor)\b/.test(broadComplaintNormalized)
-    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(broadComplaintNormalized)
-    || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(broadComplaintNormalized)
-    || /\b(?:sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b[\s\w]{0,24}\b(?:destruy|hunde?|arruin|carga|mejor|arregl|levanta|transform)\w*[\s\w]{0,12}\b(?:espana|pais|este pais|el pais)\b/.test(broadComplaintNormalized)
-    || /\b(?:gobernando|gobierno)\b[\s\w]{0,30}\b(?:izquierda|izquierdas|derecha)\b[\s\w]{0,30}\b(?:peor|mal|fatal)\b/.test(broadComplaintNormalized);
+  const broadPoliticalComplaint = isBroadGovernmentScorecardClaim(text);
   const broadEconomicComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:quebrada?|quiebra|bancarrota|impagable)\b/.test(broadComplaintNormalized)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(broadComplaintNormalized)
     || /\bdebe\s+mas\s+de\s+lo\s+que\s+produce\b/.test(broadComplaintNormalized);
@@ -2150,16 +2147,22 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const householdArrangementContrast = hasHouseholdArrangementContrast(text);
   const focusedPlan = !classified.primary && !householdArrangementContrast ? focusedEvidencePlan(text, { observations, propositions: classified.compiler?.explicitPropositions || [] }) : undefined;
   if (focusedPlan) return { status: 'complete', requestId: resultRequestId, result: focusedPlan, relatedClaims: [] };
+  const explicitPropositions = (classified.compiler?.explicitPropositions || []).filter((item) => item?.explicit !== false && item?.text);
+  const scorecardLifecycle = snapshotLifecycle(GOVERNMENT_SCORECARD_SNAPSHOT);
+  if (!classified.primary && explicitPropositions.length <= 1 && metricIdsForInput(text, classified.compiler || {}).size === 0
+    && isBroadGovernmentScorecardClaim(text) && (!scorecardLifecycle.usable || process.env.BROAD_SCORECARD === '0')) {
+    return {
+      status: 'uncovered', requestId: resultRequestId,
+      result: governmentScorecardGapPlan(Date.now(), { disabled: process.env.BROAD_SCORECARD === '0' }),
+      relatedClaims: [],
+    };
+  }
   let evidenceSelection = classified.compiler?.evidenceSelection;
   // Keep broad-domain routing available while rendering the final answer.
   // These flags are intentionally derived here as well as in classify(): the
   // renderer must not depend on variables local to the classifier.
   const broadTopicText = normalise(text);
-  const broadPoliticalComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|va peor|peor|mejorando?|progresa?|avanza?)\b/.test(broadTopicText)
-    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(broadTopicText)
-    || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(broadTopicText)
-    || /\b(?:sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b[\s\w]{0,24}\b(?:destruy|hunde?|arruin|carga|mejor|arregl|levanta|transform)\w*[\s\w]{0,12}\b(?:espana|pais|este pais|el pais)\b/.test(broadTopicText)
-    || /\b(?:gobernando|gobierno)\b[\s\w]{0,30}\b(?:izquierda|derecha)\b[\s\w]{0,30}\b(?:peor|mal|fatal)\b/.test(broadTopicText);
+  const broadPoliticalComplaint = isBroadGovernmentScorecardClaim(text);
   const broadEconomicComplaint = /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,36}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible)\b/.test(broadTopicText)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(broadTopicText);
   const predictionWording = /\b(?:pagaran|pagaremos|acabaran|acabaremos|sera|seran|terminaran|terminaremos)\b/.test(broadTopicText);

@@ -8,6 +8,7 @@ import { PRIMARY_CARE_WAIT_SNAPSHOT } from './primary-care-wait-snapshot.mjs';
 import { spanishInstitutionalScope } from './institutional-scope.mjs';
 import { measurementMeaningPlan } from './measurement-meaning.mjs';
 import { focusedEvidencePlan } from './focused-evidence-plan.mjs';
+import { governmentScorecardGapPlan, isBroadGovernmentScorecardClaim } from './scorecard-interpretation.mjs';
 import { deterministicFallbackCompiler, FALLBACK_CLAIM_MAX_CHARS } from '../../../scripts/knowledge/fallback-compiler.mjs';
 
 const topicQuestion = (text) => {
@@ -30,16 +31,6 @@ const topicReference = (text) => {
     return { kind: 'topic', slug: 'empleo', title: 'Empleo y condiciones de trabajo', href: '/preocupaciones/empleo', confidence: 0.36 };
   }
   return undefined;
-};
-
-const broadScorecard = (text) => {
-  const value = String(text || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '');
-  return /\b(?:gobernando|gobierno)\b[\s\w]{0,32}\b(?:izquierda|izquierdas|derecha)\b[\s\w]{0,32}\b(?:peor|mal|fatal)\b/.test(value)
-    || /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:va peor|peor|fatal|desastre|ruina|mejorando?|progresa?|avanza?)\b/.test(value)
-    || /\b(?:destruy(?:e|endo)|carga)\s+espana\b/.test(value)
-    || /\b(?:sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b[\s\w]{0,24}\b(?:destruy|hunde?|arruin|carga|mejor|arregl|levanta|transform)\w*[\s\w]{0,12}\b(?:espana|pais|este pais|el pais)\b/.test(value)
-    || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(value)
-    || /\b(?:sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b[\s\w]{0,32}\b(?:peor|mejor|mejores|peores)\b/.test(value);
 };
 
 // A reviewed family may add useful context when a focused measurement plan
@@ -152,6 +143,17 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
     }
     return { status: focused.evidenceLevel === 'limited' ? 'partial' : 'uncovered', result: focused, relatedClaims: [], guidance };
   }
+  const scorecardLifecycle = snapshotLifecycle(GOVERNMENT_SCORECARD_SNAPSHOT, now);
+  const scorecardEnabled = typeof process === 'undefined' || process.env?.BROAD_SCORECARD !== '0';
+  if (!analysisWasTruncated && isBroadGovernmentScorecardClaim(original) && (!scorecardLifecycle.usable || !scorecardEnabled)) {
+    const gapPlan = governmentScorecardGapPlan(now, { disabled: !scorecardEnabled });
+    return {
+      status: 'uncovered',
+      relatedClaims: related ? [related] : [],
+      guidance: { limitation: gapPlan.limitation, questions: [gapPlan.clarificationQuestion] },
+      result: gapPlan,
+    };
+  }
   const institutionalLabel = analysisWasTruncated ? undefined : spanishInstitutionalScope(original);
   if (institutionalLabel) {
     const evidenceIds = ['fallback-constitution', 'fallback-congress'];
@@ -172,7 +174,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
       },
     };
   }
-  if (!analysisWasTruncated && broadScorecard(original) && snapshotLifecycle(GOVERNMENT_SCORECARD_SNAPSHOT, now).usable && (typeof process === 'undefined' || process.env?.BROAD_SCORECARD !== '0')) {
+  if (!analysisWasTruncated && isBroadGovernmentScorecardClaim(original) && scorecardLifecycle.usable && scorecardEnabled) {
     return {
       status: 'complete',
       evidenceLevel: 'supported',

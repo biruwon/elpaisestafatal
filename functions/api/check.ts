@@ -103,6 +103,17 @@ const fallbackResponse = (claim: string, inputType: InputType): PublicCheckRespo
 
 const usefulPreview = (response: PublicCheckResponse): Extract<PublicCheckResponse, { state: 'supported' | 'limited' | 'insufficient' }> | undefined => {
   if (response.state === 'supported') return response;
+  if (response.state === 'insufficient') {
+    const result = response.result;
+    const hasSpecificGap = !result.sources.length
+      && !result.criteria?.length
+      && !result.whatWeKnow.length
+      && Boolean(result.nextQuestion?.trim())
+      && Boolean(result.evidenceSummary?.missingDimensions?.length)
+      && /Qué se necesita para comprobarla:/i.test(result.reply)
+      && /Siguiente paso:/i.test(result.reply);
+    return hasSpecificGap ? response : undefined;
+  }
   if (response.state !== 'limited') return undefined;
   return response.result.criteria?.length && response.result.sources?.length ? response : undefined;
 };

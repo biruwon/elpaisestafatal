@@ -1,5 +1,6 @@
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { broadDomainPacketsFor } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
+import { isBroadGovernmentScorecardClaim } from '../../src/lib/knowledge/scorecard-interpretation.mjs';
 import { claimFocusFor } from '../../src/lib/knowledge/claim-focus.mjs';
 import { attachExtraction, extractedClaim, publicExtraction } from '../../src/lib/knowledge/submission.mjs';
 import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
@@ -51,9 +52,15 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   const extraction = publicExtraction(safePayload?.extraction || payload?.extraction);
   claim = extraction ? extractedClaim(extraction) : claim || safePayload?.claim || payload?.claim || '';
   if (safePayload?.status === 'processing' && safePayload.requestId) {
-    const hasReviewedRoute = broadDomainPacketsFor(claim).length > 0 || Boolean(claimFocusFor(claim));
+    const hasReviewedRoute = isBroadGovernmentScorecardClaim(claim) || broadDomainPacketsFor(claim).length > 0 || Boolean(claimFocusFor(claim));
     const fallback = hasReviewedRoute ? deterministicApiFallback({ text: claim, inputType: 'text' }) : undefined;
-    const preview = ['complete', 'partial'].includes(fallback?.status)
+    const structuredEvidenceGap = fallback?.status === 'uncovered'
+      && fallback.result?.evidenceLevel === 'insufficient'
+      && fallback.result.blocks?.some((block) => block.type === 'evidence_gap')
+      && fallback.result.clarificationQuestion
+      && !fallback.result.evidenceIds?.length
+      && !fallback.result.sourceIds?.length;
+    const preview = (['complete', 'partial'].includes(fallback?.status) || structuredEvidenceGap)
       ? localPublicCheckResponse({ ...fallback, requestId: safePayload.requestId }, claim)
       : undefined;
     return { state: 'processing', id: safePayload.requestId, claim, ...(preview ? { preview } : {}) };
