@@ -19,6 +19,8 @@ const cases = [
   ['La deuda del Estado pesa más sobre la economía', 'government_debt_ratio'],
   ['La renta de las familias es menor que en Europa', 'median_equivalised_income_europe'],
   ['El PIB por persona es menor que el europeo', 'gdp_per_capita_europe'],
+  ['¿Cómo cambió el PIB real total anual de España?', 'gdp_real_annual'],
+  ['¿Cuál fue el crecimiento real del PIB por habitante en España?', 'gdp_real_per_capita_annual'],
   ['Cada vez hay menos nacimientos', 'fertility_rate'],
   ['La criminalidad está subiendo', 'recorded_offences'],
   // These are intentionally covered by the registry aliases rather than a

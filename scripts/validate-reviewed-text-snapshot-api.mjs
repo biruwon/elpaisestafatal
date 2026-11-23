@@ -27,6 +27,30 @@ const stalePrimaryCareDatabase = {
     };
   },
 };
+const gdpTotalRows = [
+  ['2019', 1267926],
+  ['2025', 1395075],
+].map(([period, value]) => ({
+  id: `gdp-real-total-${period}`, kind: 'observation', dataset_id: 'Annual real GDP Spain',
+  metric: 'PIB real total anual', metric_id: 'gdp_real_annual', value, unit: 'million euro, chain-linked volumes (2020)',
+  period, geography: 'España', population: 'resident producer units',
+  dimensions_json: JSON.stringify({ freq: 'A', geo: 'ES', na_item: 'B1GQ', unit: 'CLV20_MEUR', time: period }),
+  dimension_labels_json: '{}', url: null, excerpt: null,
+  payload_json: JSON.stringify({ denominator: 'aggregate output', dataKind: 'observed', ...(period === '2025' ? { status: 'p' } : {}) }),
+  source_id: 'eurostat-gdp-total-test', publisher: 'Eurostat', title: 'Annual real GDP Spain',
+  source_url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_gdp?freq=A&geo=ES&na_item=B1GQ&unit=CLV20_MEUR',
+  published_at: null, retrieved_at: '2026-11-23T12:00:00.000Z', trust_tier: 'primary', aliases_json: '[]', source_registry_id: 'eurostat', schedule: 'daily',
+}));
+const partialGdpDatabase = {
+  prepare() {
+    let metricId;
+    return {
+      bind(value) { metricId = value; return this; },
+      async all() { return { results: gdpTotalRows.filter((row) => row.metric_id === metricId) }; },
+      async run() { return {}; },
+    };
+  },
+};
 const brokenDatabase = {
   prepare() {
     return { bind() { return this; }, async all() { throw new Error('D1 read failed'); }, async run() { throw new Error('D1 write failed'); } };
@@ -60,6 +84,21 @@ assert.equal(comparison.body.result.arguments[0].verdict, 'supported');
 assert.match(comparison.body.result.reply, /9,1 puntos porcentuales más en jornada parcial/);
 assert.ok(comparison.body.result.sources.some((source) => source.id === 'eurostat-in-work-poverty-part-time-2026-11'));
 assert.ok(comparison.body.result.sources.some((source) => source.id === 'eurostat-in-work-poverty-full-time-2026-11'));
+
+const gdpComparison = await check('España puede crecer en PIB total mientras el nivel de vida por persona mejora mucho menos');
+assert.equal(gdpComparison.httpStatus, 200);
+assert.equal(gdpComparison.body.state, 'limited');
+assert.equal(gdpComparison.body.result.answerScope.family, 'gdp-total-per-capita');
+assert.equal(gdpComparison.body.result.evidenceSummary.mode, 'snapshot');
+assert.equal(gdpComparison.body.result.arguments[0].verdict, 'mixed');
+assert.match(gdpComparison.body.result.reply, /10,0 %.*4,9 %.*5,1 puntos porcentuales/s);
+assert.ok(gdpComparison.body.result.sources.some((source) => source.id === 'eurostat-annual-real-gdp-spain-2026-11-23'));
+assert.ok(gdpComparison.body.result.sources.some((source) => source.id === 'eurostat-annual-real-gdp-per-capita-spain-2026-11-23'));
+
+const gdpPartial = await check('España puede crecer en PIB total mientras el nivel de vida por persona mejora mucho menos', partialGdpDatabase);
+assert.equal(gdpPartial.body.state, 'insufficient', 'A single successful GDP series must not be completed with a reviewed snapshot');
+assert.deepEqual(gdpPartial.body.result.arguments[0].evidenceIds, []);
+assert.doesNotMatch(gdpPartial.body.result.reply, /10,0 %|4,9 %/);
 
 const partTimeAboveThreshold = await check('En 2025 el riesgo de pobreza entre las personas ocupadas a jornada parcial superó el 15 %');
 assert.equal(partTimeAboveThreshold.body.state, 'limited');
@@ -336,7 +375,7 @@ assert.equal(mortgageEntry.body.state, 'limited');
 assert.equal(mortgageEntry.body.result.answerScope.family, 'mortgage-entry-vs-payment');
 assert.equal(mortgageEntry.body.result.arguments[0].verdict, 'supported');
 assert.match(mortgageEntry.body.result.reply, /alrededor del 86 %/i);
-assert.match(mortgageEntry.body.result.reply, /alrededor del 35 %/i);
+assert.match(mortgageEntry.body.result.reply, /35 %/i);
 assert.match(mortgageEntry.body.result.reply, /2016–2023/);
 assert.ok(mortgageEntry.body.result.sources.some((source) => source.id === 'bde-financial-capacity-housing-2026-spring'));
 

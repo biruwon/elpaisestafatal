@@ -68,6 +68,8 @@ export const metricSearchAliases = Object.freeze({
   life_expectancy_at_birth_europe: ['esperanza de vida frente a europa', 'años de vida frente a europa', 'espana vive mas que europa', 'comparacion europea de esperanza de vida', 'europa', 'union europea', 'comparacion europea'],
   arope_rate: ['arope', 'riesgo de pobreza', 'pobreza o exclusion', 'exclusion social', 'pobreza relativa'],
   gdp_current_prices: ['pib nominal', 'pib a precios corrientes', 'tamano de la economia', 'valor del pib', 'produccion economica nacional'],
+  gdp_real_annual: ['pib real total', 'pib agregado real', 'crecimiento del pib total en volumen', 'produccion agregada real', 'pib total a precios constantes'],
+  gdp_real_per_capita_annual: ['pib real por habitante', 'pib real por persona', 'pib real per capita', 'produccion real por habitante'],
   gdp_real_growth_europe: ['pib real frente a europa', 'crecimiento del pib frente a europa', 'espana crece mas que europa', 'espana crece menos que europa', 'crecimiento economico europeo', 'pib espana union europea'],
   life_expectancy_at_birth: ['esperanza de vida', 'años de vida', 'vida media', 'longevidad'],
   fertility_rate: ['fecundidad', 'natalidad', 'hijos por mujer', 'nacimientos por mujer'],

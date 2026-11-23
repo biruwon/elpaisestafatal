@@ -273,6 +273,8 @@ const metricHints = [
   { ids: ['inflation_rate_europe'], terms: ['inflacion de espana frente a europa', 'inflacion de espana por encima de europa', 'inflacion de espana por encima de la union europea', 'tasa de inflacion espanola es menor que la europea', 'tasa de inflacion espanola menor que la europea', 'inflacion frente a europa', 'inflacion frente a la union europea', 'inflacion espanola mas alta que europa', 'inflacion espanola mas alta que la union europea', 'inflacion espanola menor que europea', 'inflacion mas alta que europa', 'inflacion mas baja que europa', 'precios suben mas que europa', 'comparacion de la inflacion espanola', 'comparacion inflacion espanola union europea', 'inflacion comparable con europa', 'inflacion comparable europa'] },
   { ids: ['gdp_current_prices'], terms: ['pib nominal', 'pib a precios corrientes', 'tamano de la economia', 'valor del pib', 'producto interior bruto en euros', 'produccion economica nacional'] },
   { ids: ['gdp_per_capita_current_prices'], terms: ['pib por habitante', 'pib per capita', 'producto interior bruto por persona', 'economia por habitante', 'pib por persona'] },
+  { ids: ['gdp_real_annual'], terms: ['pib real total', 'pib agregado real', 'crecimiento del pib total en volumen', 'produccion agregada real', 'pib total a precios constantes'] },
+  { ids: ['gdp_real_per_capita_annual'], terms: ['pib real por habitante', 'pib real por persona', 'pib real per capita', 'crecimiento real del pib por habitante', 'produccion real por habitante'] },
   { ids: ['gdp_per_capita_europe'], terms: ['pib por habitante frente a europa', 'pib por habitante frente a la union europea', 'pib per capita frente a europa', 'pib per capita frente a la union europea', 'como queda el pib por habitante', 'pib por habitante espanol comparado', 'comparacion del pib per capita', 'espana tiene mas pib por habitante que europa', 'espana tiene menos pib por habitante que europa', 'espana tiene mas pib por habitante que la union europea', 'espana tiene menos pib por habitante que la union europea', 'tiene espana mas pib por habitante que europa', 'tiene espana menos pib por habitante que europa', 'tiene espana mas pib por habitante que la union europea', 'tiene espana menos pib por habitante que la union europea', 'pib por habitante que la union europea', 'pib por persona frente a europa', 'pib por persona frente a la union europea', 'pib por persona que europa', 'pib por persona que la union europea', 'pib europa por habitante', 'pib europa por persona'] },
   { ids: ['gdp_real_growth_quarterly'], terms: ['actividad economica', 'actividad economica cae', 'actividad economica esta cayendo', 'economia cae', 'crecimiento negativo', 'recesion', 'pib real', 'crecimiento del pib', 'crecimiento interanual pib', 'crece el pib'] },
   { ids: ['gdp_real_growth_europe'], terms: ['pib real frente a europa', 'crecimiento del pib frente a europa', 'pib real espanol crece mas', 'comparacion del crecimiento economico', 'crece espana mas que europa', 'crece espana mas que la union europea', 'espana crece mas que europa', 'espana crece mas que la union europea', 'crece espana menos que europa', 'crece espana menos que la union europea', 'espana crece menos que europa', 'espana crece menos que la union europea', 'crecimiento de espana frente a la union europea', 'crecimiento economico europeo', 'pib espana union europea', 'pib frente a europa', 'crecimiento frente a europa'] },
@@ -602,8 +604,23 @@ export const preferredMetricIdsForQuery = (query) => {
   if (preferred.has('early_school_leaving_rate') || preferred.has('tertiary_education_attainment_rate')) preferred.delete('youth_unemployment_rate');
   if (preferred.has('unmet_healthcare_waiting_list_rate') || preferred.has('unmet_healthcare_waiting_list_rate_europe')) preferred.delete('health_expenditure_per_capita');
   if (preferred.has('unmet_healthcare_waiting_list_rate_europe')) preferred.delete('unmet_healthcare_waiting_list_rate');
+  const asksQuarterlyGdp = /\b(?:trimestre|trimestral|trimestrales|quarter|quarterly|t[1-4])\b/.test(normalized);
+  if (asksQuarterlyGdp) {
+    preferred.delete('gdp_real_annual');
+    preferred.delete('gdp_real_per_capita_annual');
+  }
+  if (preferred.has('gdp_real_annual')) {
+    preferred.delete('gdp_current_prices');
+    if (!asksQuarterlyGdp) preferred.delete('gdp_real_growth_quarterly');
+  }
+  if (preferred.has('gdp_real_per_capita_annual')) {
+    preferred.delete('gdp_per_capita_current_prices');
+    preferred.delete('gdp_current_prices');
+    preferred.delete('gdp_real_growth_quarterly');
+  }
   if (preferred.has('gdp_per_capita_current_prices')) preferred.delete('gdp_current_prices');
   if (preferred.has('gdp_per_capita_europe')) {
+    preferred.delete('gdp_real_per_capita_annual');
     preferred.delete('gdp_per_capita_current_prices');
     preferred.delete('gdp_current_prices');
   }

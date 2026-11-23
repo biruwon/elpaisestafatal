@@ -491,4 +491,72 @@ export const textAnswerAccuracyCases = [
       replyExcludes: ['86 %', '35 %'], evidence: [], maxReplyWords: 100,
     },
   },
+  {
+    id: 'real-gdp-total-vs-living-standards-person-paraphrase',
+    equivalenceGroup: 'real-gdp-total-vs-per-capita-spain-2019-2025',
+    input: 'España puede crecer en PIB total mientras el nivel de vida por persona mejora mucho menos',
+    expected: {
+      state: 'limited', family: 'gdp-total-per-capita', verdict: 'mixed',
+      directSourceIds: ['eurostat-annual-real-gdp-spain-2026-11-23', 'eurostat-annual-real-gdp-per-capita-spain-2026-11-23', 'eurostat-real-gdp-per-capita-definition'],
+      replyIncludes: ['2019 y 2025', '10,0 %', '4,9 %', '5,1 puntos porcentuales', 'provisional', 'no mide la renta mediana ni el bienestar completo'],
+      replyExcludes: ['renta mediana subió', 'el nivel de vida mejoró un 4,9 %'],
+      evidence: [
+        {
+          familyId: 'gdp_real_annual', sourceIds: ['eurostat-annual-real-gdp-spain-2026-11-23'],
+          dataIncludes: ['2019: 1.267.926 millones €', '2025: 1.395.075 millones €', '10,0 %'],
+          dimensions: { period: '2019–2025', geography: 'España', denominator: 'no aplica', unit: 'millones de euros, volúmenes encadenados (2020)' },
+        },
+        {
+          familyId: 'gdp_real_per_capita_annual', sourceIds: ['eurostat-annual-real-gdp-per-capita-spain-2026-11-23', 'eurostat-real-gdp-per-capita-definition'],
+          dataIncludes: ['2019: 26.930 € por habitante', '2025: 28.260 € por habitante', '4,9 %'],
+          dimensions: { period: '2019–2025', geography: 'España', denominator: 'población media residente del año', unit: 'euros por habitante, volúmenes encadenados (2020)' },
+        },
+      ],
+      maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'real-gdp-total-vs-per-capita-explicit-paraphrase',
+    equivalenceGroup: 'real-gdp-total-vs-per-capita-spain-2019-2025',
+    input: 'Entre 2019 y 2025, el PIB real total de España aumentó más que el PIB real por habitante',
+    expected: {
+      state: 'limited', family: 'gdp-total-per-capita', verdict: 'supported',
+      directSourceIds: ['eurostat-annual-real-gdp-spain-2026-11-23', 'eurostat-annual-real-gdp-per-capita-spain-2026-11-23', 'eurostat-real-gdp-per-capita-definition'],
+      replyIncludes: ['2019 y 2025', '10,0 %', '4,9 %', '5,1 puntos porcentuales', 'coincide con la dirección'],
+      replyExcludes: ['renta mediana subió', 'el nivel de vida mejoró un 4,9 %'],
+      evidence: [
+        { familyId: 'gdp_real_annual', sourceIds: ['eurostat-annual-real-gdp-spain-2026-11-23'], dataIncludes: ['10,0 %'], dimensions: { period: '2019–2025', geography: 'España' } },
+        { familyId: 'gdp_real_per_capita_annual', sourceIds: ['eurostat-annual-real-gdp-per-capita-spain-2026-11-23', 'eurostat-real-gdp-per-capita-definition'], dataIncludes: ['4,9 %'], dimensions: { period: '2019–2025', geography: 'España', denominator: 'población media residente del año' } },
+      ],
+      maxReplyWords: 110,
+    },
+  },
+  {
+    id: 'real-gdp-comparison-reversed-direction',
+    input: 'Entre 2019 y 2025, el PIB real por habitante de España creció más que el PIB real total',
+    expected: {
+      state: 'limited', family: 'gdp-total-per-capita', verdict: 'contradicted',
+      directSourceIds: ['eurostat-annual-real-gdp-spain-2026-11-23', 'eurostat-annual-real-gdp-per-capita-spain-2026-11-23', 'eurostat-real-gdp-per-capita-definition'],
+      replyIncludes: ['10,0 %', '4,9 %', 'no coincide con la dirección'],
+      replyExcludes: ['el PIB por habitante creció más'], evidence: [], maxReplyWords: 110,
+    },
+  },
+  {
+    id: 'real-gdp-comparison-unavailable-start-year',
+    input: 'El PIB real total aumentó más que el PIB real por habitante entre 2018 y 2025',
+    expected: {
+      state: 'insufficient', family: 'gdp-total-per-capita', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['no hay observaciones compatibles suficientes', 'no se puede confirmar ni descartar'],
+      replyExcludes: ['10,0 %', '4,9 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'real-gdp-comparison-unavailable-territory',
+    input: 'El PIB real total de Francia aumentó más que el PIB real por habitante entre 2019 y 2025',
+    expected: {
+      state: 'insufficient', family: 'gdp-total-per-capita', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['no hay observaciones compatibles suficientes', 'territorio y periodo'],
+      replyExcludes: ['10,0 %', '4,9 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
 ];

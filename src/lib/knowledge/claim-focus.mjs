@@ -297,6 +297,13 @@ const gdpHouseholdWelfare = (t) => /\b(?:pib|gdp|crecimiento economico|economia 
   && /\b(?:hogar\w*|famili\w*|nivel de vida|condiciones de vida|bienestar|distribucion de la renta|desigualdad)\b/.test(t)
   && /\bno\b[\s\w]{0,36}\b(?:reflej\w*|muestr\w*|represent\w*|mid\w*|traduc\w*|lleg\w*|repart\w*|indic\w*|explic\w*|signific\w*|demostr\w*|cuent\w*|es|sirv\w*)\b/.test(t)
   && !/\b(?:cuant[oa]s?|porcentaje|tasa|indice|comparar|compara|comparacion)\b/.test(t);
+const gdpTotalPerCapitaComparison = (t) => {
+  const aggregateGrowth = /\b(?:pib(?: real)? total|pib agregado|producto interior bruto(?: real)? total|crecimiento del pib(?: real)?|crecimiento economico|economia en su conjunto|total gdp|aggregate gdp|gdp growth)\b/.test(t);
+  const personMeasure = /\b(?:pib(?: real)? (?:por habitante|por persona|per capita)|producto interior bruto(?: real)? (?:por habitante|por persona|per capita)|produccion real por habitante|nivel de vida|condiciones de vida|bienestar por persona|prosperidad por persona)\b/.test(t);
+  const relativeChange = /\b(?:mas|menos|mayor\w*|menor\w*|superior\w*|inferior\w*|mejor\w*|peor\w*|mientras|frente a|compar\w*|diferenc\w*|brecha|ritmo|estanc\w*|traduj\w*|avanz\w*|crec\w*|aument\w*|sub\w*)\b/.test(t);
+  const unrelatedGrowthMechanism = /\b(?:productividad|por trabajador|poblacion|inmigracion|migracion|empleo|horas trabajadas)\b/.test(t);
+  return aggregateGrowth && personMeasure && relativeChange && !unrelatedGrowthMechanism;
+};
 const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios? superiores?|educacion (?:superior|terciaria)|cualific\w*|sobrecualific\w*|formacion profesional|fp)\b/.test(t)
   && !migrationPopulation.test(t) && !healthcareWorkforceCausality(t)
   && !/\b(estigma|estereotip\w*|prestigio|percepcion\w*|reputacion\w*)\b/.test(t)
@@ -593,6 +600,13 @@ const focuses = [
       sources: [{ id: 'fiscal-drag-bde', title: 'Progresividad en frío: impacto de la inflación sobre la recaudación por IRPF', publisher: 'Banco de España', url: 'https://www.bde.es/wbe/es/publicaciones/analisis-economico-investigacion/documentos-ocasionales/progresividad-en-frio--el-impacto-heterogeneo-de-la-inflacion-sobre-la-recaudacion-por-irpf.html', publishedAt: '2024-06-14', retrievedAt: '2026-11-17', role: 'primary' }],
     },
     limitation: 'La estimación describe la progresividad en frío del IRPF bajo supuestos concretos. No mide cuánto paga cada familia ni demuestra que toda inflación, cualquier impuesto o toda deducción produzca el mismo efecto.',
+  },
+  {
+    id: 'gdp-total-per-capita-comparison', label: 'PIB real total y PIB real por habitante',
+    when: gdpTotalPerCapitaComparison,
+    direct: ['gdp_real_annual', 'gdp_real_per_capita_annual'], context: [], claimType: 'comparative',
+    needs: ['variación del PIB real total y por habitante para los mismos años y territorio', 'definición del PIB por habitante y límite como aproximación a condiciones materiales, no a bienestar o renta de cada hogar'],
+    limitation: 'El PIB por habitante es un promedio macroeconómico y no una medición del ingreso, la distribución o el bienestar de cada hogar. La comparación solo describe los años y el territorio indicados.',
   },
   {
     id: 'gdp-household-welfare', label: 'PIB y condiciones de vida de los hogares',

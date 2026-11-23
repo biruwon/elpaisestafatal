@@ -162,6 +162,18 @@
       "metricId": "gdp_per_capita_current_prices"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_gdp?freq=A&geo=ES&na_item=B1GQ&unit=CLV20_MEUR&sinceTimePeriod=2015",
+      "title": "PIB real anual de España · Eurostat, volúmenes encadenados",
+      "aliases": ["PIB real total anual", "PIB agregado real", "crecimiento del PIB total en volumen"],
+      "metricId": "gdp_real_annual"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_pc?freq=A&geo=ES&na_item=B1GQ&unit=CLV20_EUR_HAB&sinceTimePeriod=2015",
+      "title": "PIB real por habitante en España · Eurostat, volúmenes encadenados",
+      "aliases": ["PIB real por habitante", "PIB real per cápita", "PIB real por persona"],
+      "metricId": "gdp_real_per_capita_annual"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_pc?geo=ES&geo=EU27_2020&na_item=B1GQ&unit=CP_PPS_EU27_2020_HAB&sinceTimePeriod=2015",
       "title": "PIB por habitante: España y Unión Europea · Eurostat",
       "aliases": ["PIB por habitante frente a Europa", "PIB per cápita frente a Europa", "España tiene más PIB por habitante que Europa", "España tiene menos PIB por habitante que Europa", "PIB por persona frente a la Unión Europea"],
