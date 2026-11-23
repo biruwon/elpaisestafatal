@@ -459,7 +459,8 @@ assert.ok(workHousing.shareableReply.trim().split(/\s+/).length <= 160, 'The ful
 assert.doesNotMatch(workHousing.shareableReply, /temporalidad laboral|tasa de paro/);
 const workHousingPublic = localPublicCheckResponse({ status: 'complete', requestId: 'work-housing', result: workHousing }, workHousingClaim);
 assert.equal(workHousingPublic.state, 'insufficient', 'Population-level youth context does not establish the missing full-time-worker cross-tab');
-assert.match(workHousingPublic.result.shareableReply, /14,5 %.*16[–-]29 a[nñ]os/);
+assert.equal(workHousingPublic.result.shareableReply, undefined, 'Context-only evidence must not leave a copyable full-claim verdict');
+assert.match(workHousingPublic.result.reply, /La evidencia no basta para confirmar toda la afirmaci[oó]n/i);
 assert.ok(workHousingPublic.result.sources.some((source) => source.id === 'cje-emancipation-2025'));
 assert.ok(workHousingPublic.result.sources.some((source) => source.id === 'youth-family-housing-ine'));
 const workHousingParaphrases = [
@@ -1186,8 +1187,6 @@ const waitCausalityClaim = 'La demora del médico de familia obliga a la gente a
 const waitCausalityPlan = focusedEvidencePlan(waitCausalityClaim, { observations });
 assert.equal(waitCausalityPlan.claimType, 'causal');
 assert.deepEqual(waitCausalityPlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], 'Appointment-delay data must not be attributed as proof of emergency-care effects');
-assert.match(waitCausalityPlan.shareableReply, /Como contexto/);
-assert.match(waitCausalityPlan.shareableReply, /causal|urgencias/i);
 assert.match(waitCausalityPlan.shareableReply, /9,71/);
 assert.notEqual(claimFocusFor('Las esperas para el especialista varían entre comunidades autónomas')?.id, 'primary-care-waits', 'Hospital-specialist delays must remain outside primary care');
 assert.equal(claimFocusFor('Las listas de espera para cirugías se alargan')?.id, undefined, 'Surgical waiting lists must not inherit primary-care data');

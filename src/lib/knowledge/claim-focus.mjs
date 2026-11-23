@@ -1142,7 +1142,7 @@ const focuses = [
     direct: ['primary_care_wait_days', 'primary_care_wait_over_one_day_rate'], context: [],
     needs: ['tiempo hasta la cita en atención primaria', 'base de pacientes encuestados', 'territorio y periodo'],
     explanation: 'La espera para el médico de familia debe medirse en atención primaria. Las listas hospitalarias de cirugía y especialistas son servicios diferentes.',
-    limitation: 'La encuesta describe esperas declaradas, pero no define un umbral universal para decir si son excesivas. Una media nacional no describe cada centro de salud, y la demora entre quienes esperaron más de un día no es la media de todos los pacientes.',
+    limitation: 'La encuesta no define un umbral universal de espera excesiva. La media nacional no representa cada centro, y la demora media solo incluye a quienes esperaron más de un día.',
   },
   {
     id: 'private-healthcare-access', label: 'seguro privado y acceso a la atención',

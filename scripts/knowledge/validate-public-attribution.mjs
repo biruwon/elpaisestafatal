@@ -3,6 +3,8 @@ import { build } from 'esbuild';
 import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
+import { qualifyPublicClaimReply } from '../../src/lib/knowledge/public-arguments.mjs';
+import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care-wait-snapshot.mjs';
 import { WORKING_POVERTY_SNAPSHOT } from '../../src/lib/knowledge/working-poverty-snapshot.mjs';
 import { localPublicCheckResponse } from '../lib/local-public-check-response.mjs';
 
@@ -30,6 +32,35 @@ for (const result of [published.result, local.result]) {
   assert.ok(result.criteria.every((criterion) => criterion.sourceIds.includes('health-source')), 'Observation IDs were not mapped to their document');
   assert.ok(result.criteria.every((criterion) => criterion.sourceIds.every((id) => result.sources.some((item) => item.id === id))), 'A criterion references a missing source');
 }
+
+const causalWaitParaphrases = [
+  'La demora del médico de familia obliga a la gente a ir a urgencias',
+  'La dificultad para obtener cita en atención primaria empuja a pacientes hacia urgencias',
+  '¿La falta de cita con el médico de cabecera hace que la gente acuda a urgencias?',
+];
+for (const [index, text] of causalWaitParaphrases.entries()) {
+  const causalPlan = focusedEvidencePlan(text, { observations: PRIMARY_CARE_WAIT_SNAPSHOT.observations, now: Date.parse('2026-11-23') });
+  assert.equal(causalPlan.answerScope.family, 'primary-care-wait-causes', `A causal paraphrase changed its evidence route: ${text}`);
+  assert.deepEqual(causalPlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], 'Wait observations cannot prove an effect on emergency-care use');
+  assert.ok(causalPlan.shareableReply.trim().split(/\s+/).length <= 160, `A causal wait answer exceeded the digestible length: ${text}`);
+  assert.match(causalPlan.shareableReply, /1\.417 respuestas válidas de 1\.454 elegibles/);
+  const pages = checkFromPlan(text, causalPlan, `causal-wait-${index}`);
+  const preview = localPublicCheckResponse({ status: 'complete', requestId: `causal-wait-${index}`, result: causalPlan }, text);
+  for (const response of [pages, preview]) {
+    assert.equal(response.state, 'insufficient', 'Context on appointment waits cannot establish a causal claim about urgencies');
+    assert.match(response.result.reply, /no mide si las esperas llevan a urgencias/i);
+    assert.doesNotMatch(response.result.reply, /^La evidencia no basta para confirmar toda la afirmación/i, 'The answer should not repeat a limitation already stated in plain language');
+    assert.ok(response.result.sources.some((item) => item.id === 'sanidad-primary-care-2026-wave2'));
+    assert.equal(response.result.shareableReply, causalPlan.shareableReply, 'The copyable reply should preserve the explicitly limited causal answer');
+    assert.ok(response.result.reply.trim().split(/\s+/).length <= 160, 'The mapped public causal answer must remain digestible');
+  }
+  assert.equal(pages.result.reply, preview.result.reply, 'Pages and local causal answers disagree');
+}
+assert.equal(focusedEvidencePlan('¿Cuántos días tarda una cita con el médico de familia?', {
+  observations: PRIMARY_CARE_WAIT_SNAPSHOT.observations, now: Date.parse('2026-11-23'),
+}).answerScope.family, 'primary-care-waits', 'A descriptive wait question must not inherit the urgent-care causal route');
+assert.equal(qualifyPublicClaimReply('No demuestra que el reconocimiento de títulos cause esas diferencias.'), 'No demuestra que el reconocimiento de títulos cause esas diferencias.');
+assert.match(qualifyPublicClaimReply('La falta de pruebas no demuestra que la afirmación sea falsa.'), /^La evidencia no basta para confirmar toda la afirmación/);
 
 const povertySource = { id: 'poverty-source', title: 'Poverty survey', publisher: 'Eurostat', url: 'https://example.test/poverty' };
 const poverty = [{ id: 'poverty-observation', metricId: 'in_work_poverty_full_time_rate', value: 9.5, unit: '%', period: '2025', geography: 'España', source: povertySource }];
@@ -104,7 +135,7 @@ const neighboringLocal = localPublicCheckResponse({ ...neighboringFallback, requ
 assert.deepEqual(neighboringLocal.result.arguments?.map((argument) => argument.claim), [neighboringSingle], 'A single tax claim must not inherit the separate services clause');
 
 const employmentSource = { id: 'employment-source', title: 'Empleo en España', publisher: 'Estadística oficial', url: 'https://example.test/employment' };
-const compoundEvidencePlan = ({ includeCause = true, causeVerdict = 'insufficient', attachCauseEvidence = false } = {}) => {
+const compoundEvidencePlan = ({ includeCause = true, causeVerdict = 'insufficient', attachCauseEvidence = false, evidenceLevel = 'supported' } = {}) => {
   const items = [
     { text: 'El empleo aumentó en 2025', type: 'trend', explicit: true, evidenceIds: ['employment-observation'], sourceIds: ['employment-source'], verdict: 'supported', evidenceLevel: 'strong', finding: 'La tasa de empleo subió en 2025.' },
   ];
@@ -117,7 +148,7 @@ const compoundEvidencePlan = ({ includeCause = true, causeVerdict = 'insufficien
   });
   const propositionIds = includeCause ? ['employment-trend', 'employment-cause'] : ['employment-trend'];
   return {
-    schemaVersion: '1', evidenceLevel: 'supported', headline: 'La relación causal está demostrada',
+    schemaVersion: '1', evidenceLevel, headline: 'La relación causal está demostrada',
     summary: 'La evidencia confirma todas las partes de esta frase.', coverage: 'complete', claimType: includeCause ? 'mixed' : 'trend',
     blocks: [
       { type: 'claim_breakdown', propositionIds, items },
@@ -134,11 +165,12 @@ const compoundEvidencePlan = ({ includeCause = true, causeVerdict = 'insufficien
 const compoundTextParaphrases = [
   'El empleo aumentó en 2025 y redujo el paro juvenil',
   'Crece el empleo y por eso baja el desempleo de los jóvenes',
+  'El empleo subió en 2025, lo que provocó una caída del paro joven',
 ];
 for (const [index, text] of compoundTextParaphrases.entries()) {
   const compoundPlan = compoundEvidencePlan(index === 0
     ? { causeVerdict: 'supported', attachCauseEvidence: true }
-    : { causeVerdict: 'insufficient' });
+    : { causeVerdict: 'insufficient', evidenceLevel: index === 2 ? 'limited' : 'supported' });
   const pages = checkFromPlan(text, compoundPlan, `partially-evidenced-${index}`);
   const preview = localPublicCheckResponse({ status: 'complete', requestId: `partially-evidenced-${index}`, result: compoundPlan }, text);
   for (const response of [pages, preview]) {
@@ -147,8 +179,8 @@ for (const [index, text] of compoundTextParaphrases.entries()) {
     assert.equal(response.result.arguments?.[1]?.verdict, 'insufficient', 'A claim part with no traceable source must lose its positive verdict');
     assert.deepEqual(response.result.arguments?.[1]?.sourceIds, []);
     assert.equal(response.result.arguments?.[1]?.finding, 'No se ha vinculado evidencia directa con una fuente consultable a esta parte.');
-    assert.match(response.result.keyFact, /no permite confirmar todas las partes/i);
-    assert.match(response.result.reply, /no permite confirmar toda la afirmaci[oó]n/i);
+    assert.match(response.result.keyFact, /no basta para confirmar toda la afirmaci[oó]n/i);
+    assert.match(response.result.reply, /no basta para confirmar toda la afirmaci[oó]n/i);
     assert.equal(response.result.shareableReply, undefined, 'A shareable sentence must not repeat the unsupported whole-claim verdict');
   }
 }

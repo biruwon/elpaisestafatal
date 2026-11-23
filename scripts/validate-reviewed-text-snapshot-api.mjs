@@ -213,9 +213,11 @@ assert.equal(primaryCareCause.body.state, 'insufficient');
 assert.equal(primaryCareCause.body.result.arguments[0].verdict, 'insufficient');
 assert.deepEqual(primaryCareCause.body.result.arguments[0].evidenceIds, []);
 assert.deepEqual(primaryCareCause.body.result.arguments[0].sourceIds, []);
-assert.match(primaryCareCause.body.result.reply, /Como contexto/);
-assert.match(primaryCareCause.body.result.reply, /no indica si la demora causó|no miden el uso posterior de urgencias/);
+assert.match(primaryCareCause.body.result.reply, /no mide si las esperas llevan a urgencias/);
 assert.match(primaryCareCause.body.result.reply, /9,71 días/);
+assert.match(primaryCareCause.body.result.reply, /1\.417 respuestas válidas de 1\.454 elegibles/);
+assert.match(primaryCareCause.body.result.reply, /En España.*adultos.*medicina de familia pública.*12 meses previos/);
+assert.ok(primaryCareCause.body.result.reply.trim().split(/\s+/).length <= 150);
 
 const primaryCareTrend = await check('Cada vez se tarda más en conseguir cita con el médico de familia');
 assert.equal(primaryCareTrend.body.state, 'insufficient');

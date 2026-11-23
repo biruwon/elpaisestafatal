@@ -2,7 +2,7 @@ import { sourcesForEvidenceIds } from './evidence-source-ids.mjs';
 
 const stringArray = (value) => Array.isArray(value) && value.every((item) => typeof item === 'string');
 const argumentVerdicts = new Set(['supported', 'contradicted', 'mixed', 'insufficient', 'not_verifiable']);
-export const publicClaimQualification = 'La evidencia disponible no permite confirmar toda la afirmación; cada parte requiere su propio respaldo.';
+export const publicClaimQualification = 'La evidencia no basta para confirmar toda la afirmación.';
 
 export const requiresPublicClaimQualification = (plan, argumentsList) => {
   const breakdown = (Array.isArray(plan?.blocks) ? plan.blocks : []).find((block) => block?.type === 'claim_breakdown');
@@ -25,7 +25,9 @@ export const publicEvidenceLevelForArguments = (level, plan, argumentsList) => l
 export const qualifyPublicClaimReply = (reply) => {
   const text = String(reply || '').trim();
   if (!text) return publicClaimQualification;
-  if (/no permite confirmar toda la afirmaci[oó]n|no demuestra toda la afirmaci[oó]n/i.test(text)) return text;
+  const alreadyStatesSpecificLimit = /\bno (?:demuestra|acredita|prueba|establece) que\b[^.!?]{0,180}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|determin\w*|explique\w*)\b/i.test(text)
+    || /\bno mide\b[^.!?]{0,120}\bsi\b[^.!?]{0,100}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|urgencias?)\b/i.test(text);
+  if (/no (?:permite|basta para) confirmar toda la afirmaci[oó]n|no demuestra toda la afirmaci[oó]n/i.test(text) || alreadyStatesSpecificLimit) return text;
   return `${publicClaimQualification}\n\n${text}`;
 };
 

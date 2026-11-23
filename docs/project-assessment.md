@@ -797,7 +797,8 @@ imply that the whole statement was established. The Pages response and local
 preview now require every explicit part to have its own evidence ID and
 attributable source before labelling the whole claim supported. Unlinked
 positive verdicts become insufficient; an overall supported plan with an
-unevidenced part is shown as limited, receives a clear qualification, and
-cannot retain its copyable whole-claim sentence. Paraphrases of a causal
-employment claim and a nearby single-part employment claim exercise the
-boundary in both paths.
+unevidenced part is shown as limited, while already-limited plans receive the
+same concise qualification. Neither can retain its copyable whole-claim
+sentence. Answers already marked insufficient are left at their existing
+length. Paraphrases of a causal employment claim, a limited-evidence variant,
+and a nearby single-part employment claim exercise the boundary in both paths.

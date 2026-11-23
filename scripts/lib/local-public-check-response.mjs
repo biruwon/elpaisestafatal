@@ -101,7 +101,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   const coverageGapReply = plan.evidenceLevel === 'insufficient' && !sources.length && coverageGap
     ? publicEvidenceGapReply(plan, { attributionUnavailable: true }) || plan.limitation?.trim() || coverageGap.nextAction
     : undefined;
-  const claimNeedsQualification = plan.evidenceLevel === 'supported' && requiresPublicClaimQualification(plan, argumentsList);
+  const claimNeedsQualification = plan.evidenceLevel !== 'insufficient' && requiresPublicClaimQualification(plan, argumentsList);
   const evidenceLevel = missingPublicEvidence ? 'insufficient' : plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
   const claimHasDirectEvidence = argumentsList.some((item) => item.evidenceIds.length > 0);
   const publicEvidenceLevel = evidenceLevel === 'limited' && claimItems.length > 0 && !claimHasDirectEvidence
@@ -142,7 +142,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
       answer: publicReply || plan.summary || plan.headline,
       shareableReply: missingPublicEvidence || claimNeedsQualification ? undefined : plan.shareableReply,
       shareableSourceIds: !missingPublicEvidence && !claimNeedsQualification && shareableSourceIds.length ? shareableSourceIds : undefined,
-      keyFact: missingPublicEvidence ? 'Evidencia verificable no recuperada' : claimNeedsQualification ? 'La evidencia no permite confirmar todas las partes de la afirmación' : plan.headline,
+      keyFact: missingPublicEvidence ? 'Evidencia verificable no recuperada' : claimNeedsQualification ? 'La evidencia no basta para confirmar toda la afirmación' : plan.headline,
       criteria: missingPublicEvidence ? [] : criteria,
       whatWeKnow: missingPublicEvidence ? [] : criteria.map((item) => item.finding),
       limitations: [...new Set([plan.limitation, ...(missingPublicEvidence ? ['La respuesta no contiene hallazgos atribuibles a una fuente que se pueda consultar.'] : [])].filter(Boolean))],

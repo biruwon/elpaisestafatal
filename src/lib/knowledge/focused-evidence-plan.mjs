@@ -622,7 +622,36 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     ? explanationSupportsClaim ? explanation.facts.join('\n\n') : [sectorEmploymentExplanation, `Como contexto: ${explanation.facts.join('\n\n')}`].filter(Boolean).join('\n\n')
     : sectorEmploymentExplanation;
   const findingLead = direct.length ? 'Datos de la fuente: ' : focus.id === 'sector-wage-comparison' ? '' : 'Como contexto: ';
-  const reply = [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+  const primaryCareCausalityReply = (() => {
+    if (focus.id !== 'primary-care-wait-causes') return undefined;
+    const waitDays = facts.find((fact) => fact.id === 'primary_care_wait_days')?.latest;
+    const noNextDayAppointment = facts.find((fact) => fact.id === 'primary_care_wait_over_one_day_rate')?.latest;
+    if (!waitDays && !noNextDayAppointment) {
+      return 'El Barómetro Sanitario mide las esperas, pero no si causan visitas a urgencias. Para evaluar ese vínculo hacen falta datos de las mismas personas y una comparación que separe otros motivos.';
+    }
+    const sampleSize = noNextDayAppointment?.dimensions?.sampleSize;
+    const validResponses = waitDays?.dimensions?.validResponseSampleSize;
+    const eligibleResponses = waitDays?.dimensions?.eligibleSampleSize;
+    const count = (value) => new Intl.NumberFormat('es-ES', { maximumFractionDigits: 0, useGrouping: true, minimumGroupingDigits: 1 }).format(value);
+    const rateFinding = noNextDayAppointment
+      ? `El ${number(noNextDayAppointment.value, noNextDayAppointment.metricId)} % de la base de la pregunta 5c indicó que pasó más de un día porque no había cita antes${sampleSize ? ` (n=${count(sampleSize)})` : ''}.`
+      : '';
+    const waitFinding = waitDays
+      ? `Entre quienes esperaron más de un día por falta de cita, la demora media fue ${number(waitDays.value, waitDays.metricId)} días${validResponses && eligibleResponses ? ` (${count(validResponses)} respuestas válidas de ${count(eligibleResponses)} elegibles; pregunta 5c_01)` : ''}.`
+      : '';
+    const period = (noNextDayAppointment || waitDays)?.period;
+    const waveMatch = String(period || '').match(/^(\d{4})-O([123])$/);
+    const wave = waveMatch ? `${waveMatch[1]}, oleada ${waveMatch[2]}` : period ? periodLabel(period) : '';
+    const provisional = [noNextDayAppointment, waitDays].some((item) => item?.dimensions?.provisional === true);
+    return [
+      `El Barómetro Sanitario${wave ? ` ${wave}` : ''}${provisional ? ' (provisional)' : ''} no mide si las esperas llevan a urgencias.`,
+      rateFinding,
+      waitFinding,
+      'En España, la encuesta cubre adultos que acudieron por un problema propio a medicina de familia pública en los 12 meses previos; excluye mutualidades con asistencia privada.',
+      'Para establecer un efecto causal harían falta datos de espera y urgencias enlazados para las mismas personas y el mismo periodo, y una comparación que separe otros motivos.',
+    ].filter(Boolean).join(' ');
+  })();
+  const reply = primaryCareCausalityReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length ? 'limited' : 'insufficient';
   const families = ids.map((id) => {
