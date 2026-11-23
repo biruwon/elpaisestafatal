@@ -805,6 +805,21 @@ copyable sentences. Paraphrases of a causal employment claim, a
 limited-evidence variant, and a nearby single-part employment claim exercise
 the boundary in both paths.
 
+## Modeled mortgage-capacity comparison — 23 November 2026
+
+Reviewing the Banco de España's [Spring 2026 Financial Stability Report,
+box 4.1](https://www.bde.es/f/webbe/Secciones/Publicaciones/InformesBoletinesRevistas/InformesEstabilidadFinancera/26/IEF_2026_1_Rec4_1.pdf)
+exposed a scope omission in the public explanation: its wealth-based limit is
+not only the cash down payment. The modeled household must have net wealth for
+a 20% down payment, taxes and transaction costs, and one year of consumption,
+assuming financing of up to 80% of the desired home price. The answer now says
+that explicitly alongside the separate 35% debt-service-to-net-income limit.
+It names the annual 2016–2023 sample of renters and first-home mortgage
+buyers, notes that the restrictions can overlap, and preserves the study's
+82%-of-population exclusion and the fact that modeled low capacity is not a
+mortgage denial. Paraphrases share the reviewed source; reversed comparisons
+are contradicted, and a 2026 claim does not inherit the dated values.
+
 ## Text answer evaluation scope — 23 November 2026
 
 The live evaluation corpus measures whether text routes to the expected claim
@@ -816,13 +831,15 @@ answer plans and the public response shape, including per-part verdicts,
 evidence-family data and cited source IDs. A secure URL alone no longer makes a
 claim part traceable when its cited source ID does not match a listed source.
 
-The answer-level benchmark now grades twenty-four held-out text cases against
-reviewed snapshot-backed evidence. It checks the public answer's evidence
+The answer-level benchmark now grades thirty-two held-out text cases across
+seven evidence families and one unmatched case against reviewed
+snapshot-backed evidence. It checks the public answer's evidence
 family, value, verdict, linked source, period, geography, population,
 denominator, scope exclusions, traceability and word limit. It also checks
 that paraphrases share evidence, while nearby claims with the wrong year or
 territory do not inherit that evidence. Cases include housing completions,
-tertiary-education employment, in-work poverty and primary-care waits. Direct
+tertiary-education employment, in-work poverty, primary-care waits, subjective
+financial strain and the modeled mortgage-capacity comparison. Direct
 percentage and day thresholds are compared with a matching measurement unit;
 the reply states how the observed value relates to the threshold. Metric
 definitions distinguish a rate for waits over one day from a rate for longer
@@ -832,7 +849,7 @@ claims from inheriting a descriptive rate verdict. It also checks regional
 outpatient-wait comparisons against the Ministry's 2025 territory table,
 including reversed and negated comparisons, source-update context and scope.
 Unmeasured claims about a gap's size or intensity stay ungraded instead of
-receiving a verdict from direction alone. The current run passes 24/24.
+receiving a verdict from direction alone. The current run passes 32/32.
 
 This small regression set is a useful guard against known answer failures,
 not a population-wide estimate of factual accuracy. Broader validation still

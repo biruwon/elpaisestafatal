@@ -30,7 +30,7 @@ export const MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE = Object.freeze({
     const asksCausality = /\b(?:caus\w*|provoc\w*|gener\w*|impid\w*|evit\w*|responsable|por culpa|reduce\w*|aument\w*)\b/.test(text);
     return years.length === 0 && !asksSubgroup && !asksCurrentPeriod && !asksCausality;
   },
-  evidenceLabel: 'Restricciones de ahorro previo y de capacidad de pago en el acceso hipotecario',
+  evidenceLabel: 'Restricciones de patrimonio y capacidad de pago en el acceso hipotecario',
   dimensions: {
     subject: 'capacidad financiera para adquirir mediante hipoteca la primera vivienda principal deseada',
     population: 'hogares que vivían de alquiler o adquirían su primera vivienda principal con hipoteca; quedan fuera propietarios previos, compras sin hipoteca y hogares no emancipados',
@@ -40,10 +40,10 @@ export const MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE = Object.freeze({
     unit: 'porcentaje con baja capacidad financiera modelada por restricción de riqueza o de renta',
   },
   facts: [
-    'En la muestra del Banco de España, alrededor del 86 % de los hogares analizados presentaba una limitación de capacidad asociada a la riqueza: no dispondría del ahorro previo necesario para la vivienda deseada bajo un préstamo de hasta el 80 % del precio, incluidos impuestos y costes de transacción.',
-    'Alrededor del 35 % presentaba una limitación asociada a la renta para afrontar la cuota hipotecaria prudente, definida como un servicio total de deuda que no supere el 35 % de la renta neta del hogar.',
-    'En esta comparación la restricción de entrada fue más frecuente que la de pago mensual. Son indicadores modelados y sus grupos pueden solaparse: 86 % y 35 % no son partes excluyentes que deban sumar 100 %.',
-    'La muestra no representa a todos los hogares: excluye a quienes ya eran propietarios, compraban sin hipoteca o aún no se habían emancipado. El Banco de España estima que esas exclusiones abarcan el 82 % de la población.',
+    'En la muestra anual española de hogares que alquilaban o compraban su primera vivienda con hipoteca (2016–2023), la limitación patrimonial fue más frecuente que la de renta: alrededor del 86 % frente al 35 %.',
+    'La limitación patrimonial supone no tener patrimonio neto para una entrada del 20 %, impuestos y gastos de compra y un año de consumo, bajo una hipoteca del 80 % del precio deseado.',
+    'La limitación de renta supone que el servicio total de deuda supere el 35 % de la renta neta. Los criterios pueden solaparse; los porcentajes no se suman.',
+    'No se incluyeron propietarios, compras sin hipoteca ni hogares no emancipados; el estudio calcula que estos grupos son el 82 % de la población.',
   ],
   factSourceIds: [
     ['bde-financial-capacity-housing-2026-spring'],
@@ -53,13 +53,13 @@ export const MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE = Object.freeze({
   ],
   factDimensions: [
     {
-      subject: 'baja capacidad financiera asociada a riqueza o ahorro previo',
+      subject: 'baja capacidad financiera asociada al patrimonio neto necesario para la entrada, costes de transacción y un año de consumo',
       population: 'hogares que viven en alquiler o compran por primera vez su vivienda principal con hipoteca',
       period: 'muestra 2016–2023; promedio del periodo', geography: 'España',
       denominator: 'hogares de la muestra', unit: 'porcentaje de hogares',
     },
     {
-      subject: 'baja capacidad financiera asociada a renta y pago de la cuota',
+      subject: 'baja capacidad financiera asociada a renta disponible después de pagar el servicio total de deuda',
       population: 'hogares que viven en alquiler o compran por primera vez su vivienda principal con hipoteca',
       period: 'muestra 2016–2023; promedio del periodo', geography: 'España',
       denominator: 'hogares de la muestra', unit: 'porcentaje de hogares',

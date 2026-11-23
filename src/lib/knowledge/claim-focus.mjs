@@ -1139,10 +1139,10 @@ const focuses = [
     when: mortgageEntryVsPayment,
     direct: [], context: [], claimType: 'comparative',
     needs: ['ahorro previo e ingresos del hogar medidos con criterios hipotecarios comparables', 'hogares que alquilan o compran primera vivienda con hipoteca', 'periodo y alcance territorial de la estimación'],
-    explanationHeadline: 'La restricción de ahorro inicial fue más frecuente que la de cuota en la muestra del Banco de España',
-    explanation: 'El Banco de España separa la capacidad de reunir la entrada y gastos iniciales de la capacidad de asumir una cuota hipotecaria prudente. Su estudio permite comparar la frecuencia de ambos límites en una población definida.',
+    explanationHeadline: 'La limitación de patrimonio fue más frecuente que la de renta en el estudio',
+    explanation: 'El estudio compara el patrimonio necesario para financiar la primera vivienda deseada —incluida una reserva de un año de consumo— con la capacidad de pagar la cuota hipotecaria.',
     explanationEvidence: MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE,
-    limitation: 'La estimación resume una muestra nacional de hogares de 2016–2023 y no describe la situación actual, cada ciudad o la juventud por separado. Sus categorías pueden solaparse y no significan que todos esos hogares no pudieran comprar. Es una comparación modelada, no una prueba causal ni una evaluación de una hipoteca individual.',
+    limitation: 'Es una clasificación modelada, no una tasa de hipotecas denegadas. No describe 2026, cada ciudad o la juventud por separado.',
   },
   {
     id: 'purchase-affordability', label: 'acceso a la compra de vivienda',

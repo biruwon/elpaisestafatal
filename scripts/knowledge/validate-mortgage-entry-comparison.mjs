@@ -21,11 +21,13 @@ for (const claim of supportedParaphrases) {
   assert.equal(plan?.answerScope?.family, 'mortgage-entry-vs-payment');
   assert.deepEqual(plan?.sourceIds, ['bde-financial-capacity-housing-2026-spring']);
   assert.match(plan?.shareableReply || '', /alrededor del 86 %/);
-  assert.match(plan?.shareableReply || '', /alrededor del 35 %/i);
+  assert.match(plan?.shareableReply || '', /frente al 35 %/i);
+  assert.match(plan?.shareableReply || '', /un año de consumo/i);
   assert.match(plan?.shareableReply || '', /2016–2023/);
   assert.match(plan?.shareableReply || '', /pueden solaparse/);
   assert.match(plan?.shareableReply || '', /82 % de la población/);
-  assert.match(plan?.limitation || '', /no describe la situación actual/);
+  assert.match(plan?.shareableReply || '', /no una tasa de hipotecas denegadas/i);
+  assert.match(plan?.limitation || '', /no describe 2026/i);
   assert.equal(plan?.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'supported');
   assert.ok(validateAnswerPlan(plan).ok, JSON.stringify(validateAnswerPlan(plan).errors));
   assert.ok(publicResolveResponse({ status: 'complete', requestId: `mortgage-${claim.length}`, result: plan }));
@@ -45,7 +47,7 @@ const question = '¿Qué supone una barrera mayor para comprar una vivienda con 
 const questionAnswer = check(question);
 assert.equal(claimFocusFor(question)?.id, 'mortgage-entry-vs-payment');
 assert.equal(questionAnswer.result?.evidenceLevel, 'limited');
-assert.match(questionAnswer.result?.shareableReply || '', /la restricción de entrada fue más frecuente que la de pago mensual/);
+assert.match(questionAnswer.result?.shareableReply || '', /la limitación patrimonial fue más frecuente que la de renta/i);
 assert.deepEqual(questionAnswer.result?.sourceIds, sourceIds);
 
 const neutral = 'La entrada y la cuota hipotecaria son dos barreras para comprar una vivienda';

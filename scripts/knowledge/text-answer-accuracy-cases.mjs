@@ -428,4 +428,67 @@ export const textAnswerAccuracyCases = [
       maxReplyWords: 160,
     },
   },
+  {
+    id: 'mortgage-entry-vs-payment-paraphrase',
+    equivalenceGroup: 'mortgage-entry-vs-payment-sample-2016-2023',
+    input: 'La entrada de la hipoteca es una barrera mayor que la cuota mensual para acceder a una vivienda',
+    expected: {
+      state: 'limited', family: 'mortgage-entry-vs-payment', verdict: 'supported',
+      directSourceIds: ['bde-financial-capacity-housing-2026-spring'],
+      replyIncludes: ['alrededor del 86 %', 'frente al 35 %', 'un año de consumo', '2016–2023', 'pueden solaparse', '82 % de la población', 'no una tasa de hipotecas denegadas'],
+      evidence: [{
+        familyId: 'mortgage-entry-vs-payment',
+        sourceIds: ['bde-financial-capacity-housing-2026-spring'],
+        dataIncludes: ['86 %', '35 %', 'un año de consumo'],
+        dimensions: {
+          period: 'muestra 2016–2023', geography: 'España',
+          population: 'hogares que vivían de alquiler o adquirían su primera vivienda principal con hipoteca',
+          denominator: 'hogares de la muestra', unit: 'porcentaje con baja capacidad financiera modelada',
+        },
+      }],
+      maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'mortgage-entry-vs-payment-synonym',
+    equivalenceGroup: 'mortgage-entry-vs-payment-sample-2016-2023',
+    input: 'Reunir el pago inicial suele ser más difícil que asumir la mensualidad para comprar la primera vivienda',
+    expected: {
+      state: 'limited', family: 'mortgage-entry-vs-payment', verdict: 'supported',
+      directSourceIds: ['bde-financial-capacity-housing-2026-spring'],
+      replyIncludes: ['alrededor del 86 %', 'frente al 35 %', 'un año de consumo', '2016–2023', 'pueden solaparse'],
+      evidence: [{
+        familyId: 'mortgage-entry-vs-payment',
+        sourceIds: ['bde-financial-capacity-housing-2026-spring'],
+        dataIncludes: ['86 %', '35 %', 'un año de consumo'],
+        dimensions: { period: 'muestra 2016–2023', geography: 'España', denominator: 'hogares de la muestra' },
+      }],
+      maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'mortgage-payment-vs-entry-reversed',
+    equivalenceGroup: 'mortgage-entry-vs-payment-sample-2016-2023',
+    input: 'Pagar la cuota mensual es una barrera mayor que reunir la entrada para comprar una vivienda',
+    expected: {
+      state: 'limited', family: 'mortgage-entry-vs-payment', verdict: 'contradicted',
+      directSourceIds: ['bde-financial-capacity-housing-2026-spring'],
+      replyIncludes: ['La fuente contradice la afirmación', 'alrededor del 86 %', 'frente al 35 %', 'un año de consumo', '2016–2023'],
+      evidence: [{
+        familyId: 'mortgage-entry-vs-payment',
+        sourceIds: ['bde-financial-capacity-housing-2026-spring'],
+        dataIncludes: ['86 %', '35 %', 'un año de consumo'],
+        dimensions: { period: 'muestra 2016–2023', geography: 'España', denominator: 'hogares de la muestra' },
+      }],
+      maxReplyWords: 160,
+    },
+  },
+  {
+    id: 'mortgage-entry-wrong-year',
+    input: 'En 2026 la entrada es más difícil que la cuota mensual para comprar una vivienda con hipoteca',
+    expected: {
+      state: 'insufficient', family: 'mortgage-entry-vs-payment', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['86 %', '35 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
 ];
