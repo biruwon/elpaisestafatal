@@ -56,16 +56,22 @@ export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
 // explicitly linked observation before it can be shown as a fact-check.
 export const publicArgumentsFromPlan = (plan) => {
   const blocks = Array.isArray(plan?.blocks) ? plan.blocks : [];
+  // A claim-part reference is usable only when its evidence belongs to this
+  // plan and its source can be opened from the public source list.
+  const planEvidenceIds = new Set(stringArray(plan?.evidenceIds) ? plan.evidenceIds : []);
+  const linkedSourceIds = new Set((Array.isArray(plan?.sourceLinks) ? plan.sourceLinks : [])
+    .map((source) => source?.id).filter((id) => typeof id === 'string'));
+  const planSourceIds = new Set((stringArray(plan?.sourceIds) ? plan.sourceIds : []).filter((id) => linkedSourceIds.has(id)));
   const breakdown = blocks.find((block) => block?.type === 'claim_breakdown');
   if (!Array.isArray(breakdown?.items) || !breakdown.items.length
     || !breakdown.items.every((item) => item && typeof item.text === 'string' && item.text.trim())) return [];
   const evidenceBlocks = blocks.filter((block) => block?.type === 'data_finding' || block?.type === 'confirmed');
   const evidenceByItem = breakdown.items.map((item, index) => {
     const propositionId = breakdown.propositionIds?.[index];
-    const explicitEvidenceIds = stringArray(item.evidenceIds) ? item.evidenceIds : [];
+    const explicitEvidenceIds = stringArray(item.evidenceIds) ? item.evidenceIds.filter((id) => planEvidenceIds.has(id)) : [];
     return explicitEvidenceIds.length ? explicitEvidenceIds : evidenceBlocks
       .filter((block) => stringArray(block.propositionIds) && block.propositionIds.includes(propositionId))
-      .flatMap((block) => stringArray(block.evidenceIds) ? block.evidenceIds : []);
+      .flatMap((block) => stringArray(block.evidenceIds) ? block.evidenceIds.filter((id) => planEvidenceIds.has(id)) : []);
   });
   const everyItemHasAssessment = breakdown.items.every((item, index) => Boolean(item.verdict
     || typeof item.finding === 'string' && item.finding.trim()
@@ -78,8 +84,8 @@ export const publicArgumentsFromPlan = (plan) => {
       .filter((family) => stringArray(family.evidenceIds) && family.evidenceIds.some((id) => evidenceIds.includes(id)))
       .flatMap((family) => stringArray(family.sourceIds) ? family.sourceIds : []);
     const evidenceSourceIds = sourcesForEvidenceIds(plan, evidenceIds);
-    const sourceIds = (stringArray(plan.sourceIds) ? plan.sourceIds : []).filter((sourceId) => (stringArray(item.sourceIds) && item.sourceIds.includes(sourceId))
-      || evidenceIds.includes(sourceId) || relatedFamilySourceIds.includes(sourceId) || evidenceSourceIds.includes(sourceId));
+    const sourceIds = evidenceIds.length ? [...planSourceIds].filter((sourceId) => (stringArray(item.sourceIds) && item.sourceIds.includes(sourceId))
+      || evidenceIds.includes(sourceId) || relatedFamilySourceIds.includes(sourceId) || evidenceSourceIds.includes(sourceId)) : [];
     const proposedVerdict = item.verdict === undefined
       ? evidenceIds.length
         ? plan.evidenceLevel === 'supported' ? 'supported' : plan.evidenceLevel === 'limited' ? 'mixed' : 'insufficient'

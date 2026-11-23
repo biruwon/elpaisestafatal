@@ -3,7 +3,7 @@ import { build } from 'esbuild';
 import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { sourcesForEvidenceIds } from '../../src/lib/knowledge/evidence-source-ids.mjs';
-import { qualifyPublicClaimReply } from '../../src/lib/knowledge/public-arguments.mjs';
+import { publicArgumentsFromPlan, qualifyPublicClaimReply } from '../../src/lib/knowledge/public-arguments.mjs';
 import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care-wait-snapshot.mjs';
 import { WORKING_POVERTY_SNAPSHOT } from '../../src/lib/knowledge/working-poverty-snapshot.mjs';
 import { localPublicCheckResponse } from '../lib/local-public-check-response.mjs';
@@ -162,6 +162,21 @@ const compoundEvidencePlan = ({ includeCause = true, causeVerdict = 'insufficien
     knowledgeVersion: 'test',
   };
 };
+const unlistedEvidencePlan = compoundEvidencePlan({ includeCause: false });
+unlistedEvidencePlan.blocks[0].items[0].evidenceIds = ['unlisted-employment-observation'];
+unlistedEvidencePlan.blocks[1].propositionIds = ['unrelated-proposition'];
+assert.deepEqual(publicArgumentsFromPlan(unlistedEvidencePlan)[0].evidenceIds, [], 'A claim part cannot claim evidence that the answer plan does not contain');
+assert.deepEqual(publicArgumentsFromPlan(unlistedEvidencePlan)[0].sourceIds, [], 'A source cannot support a claim part after its evidence reference is rejected');
+const unlistedEvidenceBlockPlan = compoundEvidencePlan({ includeCause: false });
+unlistedEvidenceBlockPlan.blocks[0].items[0].evidenceIds = [];
+unlistedEvidenceBlockPlan.blocks[1].evidenceIds = ['unlisted-employment-observation'];
+assert.deepEqual(publicArgumentsFromPlan(unlistedEvidenceBlockPlan)[0].evidenceIds, [], 'Evidence inherited by proposition ID must also belong to the answer plan');
+const unlinkedSourcePlan = compoundEvidencePlan({ includeCause: false });
+unlinkedSourcePlan.blocks[0].items[0].sourceIds = ['unlisted-employment-source'];
+unlinkedSourcePlan.evidenceSummary.families[0].sourceIds = [];
+assert.equal(publicArgumentsFromPlan(unlinkedSourcePlan)[0].verdict, 'insufficient', 'Evidence without a linked public source cannot support a claim part');
+assert.deepEqual(publicArgumentsFromPlan(unlinkedSourcePlan)[0].sourceIds, []);
+
 const compoundTextParaphrases = [
   'El empleo aumentó en 2025 y redujo el paro juvenil',
   'Crece el empleo y por eso baja el desempleo de los jóvenes',

@@ -25,6 +25,11 @@ if (malformedSource.ok || !malformedSource.errors.some((error) => error.includes
 const missingEvidence = validateAnswerPlan({ ...valid, evidenceIds: [], blocks: [{ type: 'conversation_reply', evidenceIds: ['e1'], text: 'Unsupported' }] }, { provisional: true });
 if (missingEvidence.ok || !missingEvidence.errors.some((error) => error.includes('outside plan'))) throw new Error('Untraceable evidence was accepted');
 
+const unlistedArgumentEvidence = validateAnswerPlan({ ...valid, blocks: [{ type: 'claim_breakdown', propositionIds: ['p1'], items: [{ text: 'A claim part', type: 'descriptive', explicit: true, evidenceIds: ['unlisted-evidence'], sourceIds: ['s1'] }] }] });
+if (unlistedArgumentEvidence.ok || !unlistedArgumentEvidence.errors.some((error) => error.includes('claim breakdown item 0 references evidence outside plan'))) throw new Error('Claim-part evidence outside the plan was accepted');
+const unlinkedArgumentSource = validateAnswerPlan({ ...valid, blocks: [{ type: 'claim_breakdown', propositionIds: ['p1'], items: [{ text: 'A claim part', type: 'descriptive', explicit: true, evidenceIds: ['e1'], sourceIds: ['unlisted-source'] }] }] });
+if (unlinkedArgumentSource.ok || !unlinkedArgumentSource.errors.some((error) => error.includes('claim breakdown item 0 references an unlinked source'))) throw new Error('An unlinked claim-part source was accepted');
+
 const missingSource = validateAnswerPlan({ ...valid, sourceLinks: [] }, { provisional: true });
 if (missingSource.ok || !missingSource.errors.some((error) => error.includes('source link'))) throw new Error('Provisional plan without a source was accepted');
 

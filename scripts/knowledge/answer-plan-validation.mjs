@@ -30,6 +30,8 @@ export const validateAnswerPlan = (plan, { provisional = false } = {}) => {
   if (provisional && (!Array.isArray(plan.sourceLinks) || plan.sourceLinks.length === 0)) errors.push('provisional plan has no attributable source link');
 
   const evidenceIds = new Set(Array.isArray(plan.evidenceIds) ? plan.evidenceIds : []);
+  const sourceIds = new Set(Array.isArray(plan.sourceIds) ? plan.sourceIds : []);
+  const sourceLinkIds = new Set((Array.isArray(plan.sourceLinks) ? plan.sourceLinks : []).map((source) => source?.id).filter((id) => typeof id === 'string'));
   for (const [index, block] of (Array.isArray(plan.blocks) ? plan.blocks : []).entries()) {
     if (!block || typeof block !== 'object' || typeof block.type !== 'string') {
       errors.push(`block ${index} is malformed`);
@@ -47,6 +49,27 @@ export const validateAnswerPlan = (plan, { provisional = false } = {}) => {
     if (block.type === 'key_number' && (!block.evidenceId || !evidenceIds.has(block.evidenceId))) errors.push(`block ${index} key number is untraceable`);
     if ((block.type === 'line_chart' || block.type === 'bar_chart' || block.type === 'comparison_chart') && typeof block.visualId !== 'string') errors.push(`block ${index} chart has no visual ID`);
     if (block.type === 'conversation_reply' && (typeof block.text !== 'string' || !block.text.trim())) errors.push(`block ${index} reply is empty`);
+    if (block.type === 'claim_breakdown' && block.items !== undefined) {
+      if (!Array.isArray(block.items)) errors.push(`block ${index} claim breakdown items are malformed`);
+      for (const [itemIndex, item] of (Array.isArray(block.items) ? block.items : []).entries()) {
+        if (!item || typeof item !== 'object') {
+          errors.push(`block ${index} claim breakdown item ${itemIndex} is malformed`);
+          continue;
+        }
+        if (item.evidenceIds !== undefined) {
+          if (!arrayOfStrings(item.evidenceIds)) errors.push(`block ${index} claim breakdown item ${itemIndex} has invalid evidence IDs`);
+          for (const id of Array.isArray(item.evidenceIds) ? item.evidenceIds : []) {
+            if (!evidenceIds.has(id)) errors.push(`block ${index} claim breakdown item ${itemIndex} references evidence outside plan: ${id}`);
+          }
+        }
+        if (item.sourceIds !== undefined) {
+          if (!arrayOfStrings(item.sourceIds)) errors.push(`block ${index} claim breakdown item ${itemIndex} has invalid source IDs`);
+          for (const id of Array.isArray(item.sourceIds) ? item.sourceIds : []) {
+            if (!sourceIds.has(id) || !sourceLinkIds.has(id)) errors.push(`block ${index} claim breakdown item ${itemIndex} references an unlinked source: ${id}`);
+          }
+        }
+      }
+    }
     if (block.type === 'source_excerpt' && (!nonEmptyString(block.title) || !nonEmptyString(block.excerpt) || block.excerpt.length > 1200)) errors.push(`block ${index} source excerpt is malformed or too long`);
     if (block.type === 'strongest_valid_concern' && !nonEmptyString(block.text)) errors.push(`block ${index} concern is empty`);
     if (block.type === 'evidence_ladder' && !structuredItems(block.steps, new Set(['available', 'context', 'missing']))) errors.push(`block ${index} evidence ladder is malformed`);
