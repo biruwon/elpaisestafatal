@@ -22,16 +22,32 @@ export const publicEvidenceLevelForArguments = (level, plan, argumentsList) => l
   ? 'limited'
   : level;
 
-export const qualifyPublicClaimReply = (reply) => {
+const assertsUnsupportedCausalPart = (text, argumentsList) => {
+  if (!(argumentsList || []).some((argument) => argument.kind === 'causal' && argument.verdict !== 'supported')) return false;
+  const unqualified = text
+    .replace(/\b(?:no (?:se puede|podemos|permite|permiten|mide|miden|demuestra|demuestran|acredita|acreditan|prueba|prueban|establece|establecen)\b|sin (?:datos|evidencia|una medici[oó]n)\b)[^.!?;,:]*(?:[.!?;,:]|$)/gi, ' ')
+    .replace(/\b(?:para (?:comprobar|saber|valorar|establecer)|hace falta|faltan|se necesita|necesitamos|hay que)\b[^.!?]*(?:[.!?]|$)/gi, ' ');
+  return /(?:^|[^\p{L}])(?:causa|causan|causó|causaron|causaba|causaban|causaría|causarían|provoca|provocan|provocó|provocaron|provocaba|provocarían|obliga|obligan|obligó|obligaron|empuja|empujan|empujó|empujaron|lleva|llevan|llevó|llevaron|llevaría|generan?|generó|generaron|determina|determinan|determinó|determinaron|explica|explican|explicó|explicaron|reduce|reducen|redujo|redujeron|aumenta|aumentan|aumentó|aumentaron|disminuye|disminuyen|disminuyó|disminuyeron|demuestra|demuestran|demostró|demostraron|confirma|confirman|confirmó|confirmaron|prueba|prueban|probó|probaron)(?=$|[^\p{L}])/iu.test(unqualified);
+};
+
+export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
   const text = String(reply || '').trim();
   if (!text) return publicClaimQualification;
-  const alreadyStatesNonConclusion = /\bno (?:se puede|permite|podemos|alcanza a)\s+(?:confirmar|descartar|demostrar|sostener|afirmar|concluir)\b/i.test(text);
-  const missingEvidenceAlreadyExplained = /\b(?:no se ha localizado|no hemos localizado|no hemos encontrado)\b[^.!?]{0,120}\b(?:medici[oó]n|evidencia|datos?|fuente|respaldo)\b[^.!?]{0,120}\b(?:no demuestra|no permite|no se puede|no podemos|no alcanza|falta|pendiente)\b/i.test(text);
-  const alreadyStatesSpecificLimit = /\bno (?:demuestra|acredita|prueba|establece) que\b[^.!?]{0,180}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|determin\w*|explique\w*)\b/i.test(text)
+  if (assertsUnsupportedCausalPart(text, argumentsList)) return publicClaimQualification;
+  const alreadyStatesNonConclusion = /\bno (?:se puede|permite|podemos|alcanza a)\s+(?:confirmar|descartar|demostrar|sostener|afirmar|concluir|determinar|medir|calcular|comparar|establecer|atribuir|saber|evaluar)\b/i.test(text);
+  const missingEvidenceAlreadyExplained = /\b(?:no se ha localizado|no hemos localizado|no hemos encontrado)\b[^.!?]{0,120}\b(?:medici[oó]n|evidencia|datos?|fuente|respaldo)\b[^.!?]{0,120}\b(?:no demuestra|no permite|no se puede|no podemos|no alcanza|falta|pendiente)\b/i.test(text)
+    || /\b(?:no se ha localizado|no hemos localizado|no hemos encontrado)\b[^.!?]{0,160}\b(?:medici[oó]n|evidencia|datos?|fuente|respaldo)\b[^.!?]*[.!?]\s*(?:esto\s+)?no demuestra que la afirmaci[oó]n sea falsa\b/i.test(text)
+    || /\bpara comprobar\b[^.!?]{0,100}\b(?:hay que indicar|hace falta|se necesita)\b[^.!?]{0,120}\b(?:periodo|periodos|a[nñ]o|serie|dato|medida)\b/i.test(text);
+  const explicitCausalLimit = /\bno (?:demuestra|acredita|prueba|establece) que\b[^.!?]{0,180}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|determin\w*|explique\w*)\b/i.test(text)
     || /\bno mide\b[^.!?]{0,120}\bsi\b[^.!?]{0,100}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|urgencias?)\b/i.test(text);
-  if (/no (?:permite|basta para) confirmar toda la afirmaci[oó]n|no demuestra toda la afirmaci[oó]n/i.test(text)
-    || alreadyStatesNonConclusion || missingEvidenceAlreadyExplained || alreadyStatesSpecificLimit) return text;
-  return `${publicClaimQualification}\n\n${text}`;
+  const explicitlyBoundsWholeClaim = /\b(?:no (?:permite|basta para) confirmar toda la afirmaci[oó]n|no demuestra toda la afirmaci[oó]n)\b/i.test(text);
+  const contextualLimit = /\bno mide\b|\bno miden?\b|\bno (?:indica|indican|informa|informan|muestra|muestran|publica|publican|compara|comparan|cuenta|identifica|incluye|desglosa|estima|representa|establece|define)\b|\bsolo incluye\b|\bexcluye\b/i.test(text)
+    || /\bno (?:define|fija|establece)\b[^.!?]{0,100}\b(?:umbral|criterio|regla|est[aá]ndar|una tendencia)\b/i.test(text)
+    || /\bsolo (?:es|son|resulta|resultan) comparables? si\b/i.test(text)
+    || /\bno demuestra\b[^.!?]{0,120}\b(?:universal|a todas las personas|para todo el mundo)\b/i.test(text);
+  if (alreadyStatesNonConclusion || missingEvidenceAlreadyExplained || explicitCausalLimit || explicitlyBoundsWholeClaim) return text;
+  if (contextualLimit) return `${publicClaimQualification}\n\n${text}`;
+  return publicClaimQualification;
 };
 
 // Keep proposition evidence and its public source attribution consistent in

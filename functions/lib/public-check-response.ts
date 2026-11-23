@@ -163,7 +163,7 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   const claimNeedsQualification = requiresPublicClaimQualification(plan, argumentsList);
   const answerNeedsQualification = claimNeedsQualification || plan.evidenceLevel === 'insufficient';
   const originalReply = plan.shareableReply?.trim() || replyFromPlan(plan);
-  const reply = answerNeedsQualification ? qualifyPublicClaimReply(originalReply) : originalReply;
+  const reply = answerNeedsQualification ? qualifyPublicClaimReply(originalReply, argumentsList) : originalReply;
   const alreadyQualifiedShareableReply = Boolean(plan.shareableReply?.trim()) && reply === originalReply;
   const suppressShareableReply = answerNeedsQualification && !alreadyQualifiedShareableReply;
   const visuals = visualsFromPlan(plan);

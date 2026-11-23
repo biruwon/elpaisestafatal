@@ -181,6 +181,7 @@ for (const [index, text] of compoundTextParaphrases.entries()) {
     assert.equal(response.result.arguments?.[1]?.finding, 'No se ha vinculado evidencia directa con una fuente consultable a esta parte.');
     assert.match(response.result.keyFact, /no basta para confirmar toda la afirmaci[oó]n/i);
     assert.match(response.result.reply, /no basta para confirmar toda la afirmaci[oó]n/i);
+    assert.doesNotMatch(response.result.reply, /La subida del empleo caus[oó] el descenso del paro juvenil/i, 'A qualifier must not leave the unsupported whole-claim conclusion in the reply');
     assert.equal(response.result.shareableReply, undefined, 'A shareable sentence must not repeat the unsupported whole-claim verdict');
   }
 }
@@ -194,6 +195,18 @@ for (const response of [neighboringEmploymentPages, neighboringEmploymentLocal])
   assert.equal(response.result.shareableReply, neighboringEmploymentPlan.shareableReply);
 }
 
+const qualifiedCausalLeakPlan = {
+  ...compoundEvidencePlan({ causeVerdict: 'insufficient' }),
+  shareableReply: 'No se puede confirmar toda la afirmación. La subida del empleo causó el descenso del paro juvenil.',
+};
+for (const response of [
+  checkFromPlan('El empleo aumentó en 2025 y redujo el paro juvenil', qualifiedCausalLeakPlan, 'qualified-causal-leak'),
+  localPublicCheckResponse({ status: 'complete', requestId: 'qualified-causal-leak', result: qualifiedCausalLeakPlan }, 'El empleo aumentó en 2025 y redujo el paro juvenil'),
+]) {
+  assert.equal(response.result.reply, 'La evidencia no basta para confirmar toda la afirmación.', 'A cautionary clause must not shelter a later unsupported causal assertion');
+  assert.equal(response.result.shareableReply, undefined);
+}
+
 const insufficientPositivePlan = { ...neighboringEmploymentPlan, evidenceLevel: 'insufficient' };
 const insufficientPositivePages = checkFromPlan(neighboringEmployment, insufficientPositivePlan, 'insufficient-positive');
 const insufficientPositiveLocal = localPublicCheckResponse({ status: 'complete', requestId: 'insufficient-positive', result: insufficientPositivePlan }, neighboringEmployment);
@@ -201,6 +214,7 @@ for (const response of [insufficientPositivePages, insufficientPositiveLocal]) {
   assert.equal(response.state, 'insufficient');
   assert.match(response.result.reply, /^La evidencia no basta para confirmar toda la afirmación/i, 'An insufficient plan must not publish a positive whole-claim reply without qualification');
   assert.match(response.result.keyFact, /no basta para confirmar toda la afirmación/i, 'The one-line takeaway must agree with the insufficient state');
+  assert.doesNotMatch(response.result.reply, /La tasa de empleo subió en 2025/i, 'An insufficient whole-claim reply must not repeat its positive headline sentence');
   assert.equal(response.result.shareableReply, undefined, 'An insufficient plan must not expose an unqualified positive sentence as shareable');
 }
 
@@ -299,6 +313,8 @@ const directNonConclusion = 'Sin una medición compatible no se puede confirmar 
 assert.equal(qualifyPublicClaimReply(directNonConclusion), directNonConclusion);
 const sourcedNonConclusion = 'No se ha localizado una medición compatible; esto no demuestra que la afirmación sea falsa.';
 assert.equal(qualifyPublicClaimReply(sourcedNonConclusion), sourcedNonConclusion);
+const sourcedNonConclusionWithGuidance = `${sourcedNonConclusion}\n\nQué se necesita para comprobarla: medidas comparables.\n\nSiguiente paso: Buscar datos compatibles.`;
+assert.equal(qualifyPublicClaimReply(sourcedNonConclusionWithGuidance), sourcedNonConclusionWithGuidance, 'Evidence requirements and next steps can follow a clear limitation without making it a positive verdict');
 
 const causalGapClaims = [
   'Las redes sociales provocan más acoso entre jóvenes',

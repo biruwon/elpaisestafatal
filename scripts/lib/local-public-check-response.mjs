@@ -110,7 +110,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
     : publicEvidenceLevelForArguments(evidenceLevel, plan, argumentsList);
   const publicReply = missingPublicEvidence
     ? coverageGapReply || 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
-    : answerNeedsQualification ? qualifyPublicClaimReply(reply) : reply;
+    : answerNeedsQualification ? qualifyPublicClaimReply(reply, argumentsList) : reply;
   const alreadyQualifiedShareableReply = !missingPublicEvidence && Boolean(plan.shareableReply?.trim()) && publicReply === reply;
   const suppressShareableReply = missingPublicEvidence || answerNeedsQualification && !alreadyQualifiedShareableReply;
   const publishedSlug = !extraction && missingPublicEvidence ? exactPublishedSlugFor(safePayload, claim) : undefined;
