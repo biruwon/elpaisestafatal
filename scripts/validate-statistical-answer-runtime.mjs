@@ -138,6 +138,29 @@ try {
   assert.equal(cityCentreTourismClaim.result.answerScope?.family, 'tourism-urban-housing-cost');
   assert.deepEqual(cityCentreTourismClaim.result.sources, [], 'National tourist-housing data cannot be used to answer a city-centre cost claim');
   assert.doesNotMatch(cityCentreTourismClaim.result.reply, /341\.001|1,28 %/, 'A city-centre answer must not present national figures as if they measured that place');
+  const residentialDisplacementQueries = [
+    'La gentrificación está expulsando a residentes de barrios donde han vivido toda su vida',
+    'El aumento del alquiler obliga a vecinos de toda la vida a abandonar el barrio',
+  ];
+  const atlasUrl = 'https://www.ine.es/experimental/atlas/experimental_atlas.htm/';
+  const atlasMethodologyUrl = 'https://www.ine.es/metodologia/metodologia_adrh.pdf';
+  for (const query of residentialDisplacementQueries) {
+    const result = await check(query);
+    assert.equal(result.state, 'insufficient', JSON.stringify(result));
+    assert.equal(result.result.answerScope?.family, 'residential-gentrification-displacement');
+    assert.deepEqual(result.result.answerScope.directMetrics, []);
+    assert.deepEqual(result.result.answerScope.contextMetrics, []);
+    assert.equal(result.result.arguments?.[0]?.verdict, 'insufficient');
+    assert.match(result.result.reply, /qui[eé]n se mud[oó]|cambios de residencia/i);
+    assert.match(result.result.reply, /por qu[eé]|motivo/i);
+    assert.match(result.result.reply, /barrio|secci[oó]n censal/i);
+    assert.match(result.result.reply, /2024/);
+    assert.doesNotMatch(result.result.reply, /\d+(?:[,.]\d+)?\s*(?:%|euros?|€)/i, 'Area-level context must not become an unsupported displacement or rent figure');
+    assert.deepEqual(result.result.sources.map((source) => source.url).sort(), [atlasUrl, atlasMethodologyUrl].sort());
+    assert.ok(result.result.evidenceSummary.families.every((family) => family.dataKind === 'context'));
+  }
+  const plainRentTrend = await check('El precio del alquiler subió en España durante 2025');
+  assert.notEqual(plainRentTrend.result.answerScope?.family, 'residential-gentrification-displacement', 'A rent trend without resident movement must not be presented as displacement');
   for (const query of ['¿Cómo ha evolucionado el índice de precios del alquiler desde 2015?', '¿Ha subido el índice del alquiler en España desde 2015?']) {
     const result = await check(query);
     assert.match(result.result.reply, /índice \(2015=100\)/, JSON.stringify(result));

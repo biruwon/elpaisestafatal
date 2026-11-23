@@ -68,6 +68,7 @@ const cases = [
   ['tourist-housing-registration', ['¿Cuántos pisos turísticos con licencia están registrados?', '¿Cuántas viviendas de uso turístico tienen número de inscripción válido?']],
   ['tourist-housing-supply', ['Los pisos turísticos están quitando viviendas del alquiler residencial', 'Los apartamentos turísticos reducen la oferta para quienes viven en las ciudades', 'La vivienda turística desplaza alquileres de larga duración']],
   ['tourism-urban-housing-cost', ['El turismo masivo ha hecho que vivir en el centro de algunas ciudades sea un lujo', 'La presión turística convierte la vivienda del centro en un lujo para quienes viven allí', 'Los pisos turísticos encarecen el alquiler para residentes de barrios céntricos', 'Las viviendas turísticas han hecho más caro el alquiler en España']],
+  ['residential-gentrification-displacement', ['La gentrificación está expulsando a residentes de barrios donde han vivido toda su vida', 'El aumento del alquiler obliga a vecinos de toda la vida a abandonar el barrio', 'La renovación de zonas céntricas termina desplazando a quienes ya vivían allí']],
   ['housing-completions', ['¿Cuántas viviendas nuevas se terminaron en España en 2025?', '¿Cuál fue el recuento de viviendas terminadas en España durante 2025?', '¿Se terminaron 92.000 viviendas nuevas en España en 2025?', 'En 2025 se acabaron 92.000 viviendas nuevas en España', '¿Cuántas viviendas nuevas se concluyeron en España en 2025?']],
   ['housing-construction-pressure', ['La falta de vivienda nueva explica buena parte de la subida del alquiler', 'Se construyen pocas viviendas frente al número de hogares que se crean', 'La lentitud de las licencias urbanísticas retrasa la construcción de viviendas nuevas']],
   ['housing-supply', ['¿Cuántas casas vacías hay disponibles en la ciudad?']],
@@ -133,6 +134,45 @@ assert.deepEqual(localSafetyPublic.result.criteria.map((criterion) => criterion.
   ['interior-criminality-balance-2026-q2'],
   ['ine-neighbourhood-crime-perception-ecv-2023'],
 ], 'Each contextual source must be attributed only to the fact it supports');
+const residentialDisplacementParaphrases = [
+  'La gentrificación está expulsando a residentes de barrios donde han vivido toda su vida',
+  'El aumento del alquiler obliga a vecinos de toda la vida a abandonar el barrio',
+  'La renovación de zonas céntricas termina desplazando a quienes ya vivían allí',
+];
+const residentialDisplacementPlan = focusedEvidencePlan(residentialDisplacementParaphrases[0], { now: Date.parse('2026-11-23') });
+assert.equal(residentialDisplacementPlan.answerScope.family, 'residential-gentrification-displacement');
+assert.equal(residentialDisplacementPlan.claimType, 'causal');
+assert.ok(validateAnswerPlan(residentialDisplacementPlan).ok, JSON.stringify(validateAnswerPlan(residentialDisplacementPlan).errors));
+assert.deepEqual(residentialDisplacementPlan.answerScope.directMetrics, []);
+assert.deepEqual(residentialDisplacementPlan.answerScope.contextMetrics, []);
+assert.deepEqual(residentialDisplacementPlan.sourceIds, ['ine-household-income-atlas-2024', 'ine-household-income-atlas-methodology-2025']);
+assert.deepEqual(residentialDisplacementPlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], 'Area-level income context must not be treated as direct proof of resident displacement');
+assert.match(residentialDisplacementPlan.shareableReply, /no identifican qu[eé]n se mud[oó]|qui[eé]n se mud[oó], si fue forzado/i);
+assert.match(residentialDisplacementPlan.shareableReply, /barrio|secci[oó]n censal/i);
+assert.match(residentialDisplacementPlan.shareableReply, /motivo|por qu[eé]/i);
+assert.doesNotMatch(residentialDisplacementPlan.shareableReply, /\d+(?:[,.]\d+)?\s*(?:%|euros?|€)/i, 'The answer must not invent a displacement rate or housing-cost figure');
+assert.ok(residentialDisplacementPlan.shareableReply.split(/\s+/).length < 180, 'The displacement answer must explain the evidence gap concisely');
+for (const paraphrase of residentialDisplacementParaphrases.slice(1)) {
+  const plan = focusedEvidencePlan(paraphrase, { now: Date.parse('2026-11-23') });
+  assert.equal(plan.answerScope.family, residentialDisplacementPlan.answerScope.family, `A displacement paraphrase changed evidence family: ${paraphrase}`);
+  assert.deepEqual(plan.sourceIds, residentialDisplacementPlan.sourceIds, `A displacement paraphrase changed its sources: ${paraphrase}`);
+  assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], `A displacement paraphrase treated context as direct evidence: ${paraphrase}`);
+}
+const residentialDisplacementPublic = localPublicCheckResponse({ status: 'partial', requestId: 'residential-displacement-focus', result: residentialDisplacementPlan }, residentialDisplacementParaphrases[0]);
+assert.equal(residentialDisplacementPublic.state, 'insufficient', 'INE area-level context must not settle a forced-displacement claim');
+assert.deepEqual(residentialDisplacementPublic.result.sources.map((source) => source.id), residentialDisplacementPlan.sourceIds);
+assert.deepEqual(residentialDisplacementPublic.result.criteria.map((criterion) => criterion.sourceIds), [
+  ['ine-household-income-atlas-2024'],
+  ['ine-household-income-atlas-methodology-2025'],
+], 'Atlas and methodology sources must be attributed only to the fact each supports');
+assert.equal(claimFocusFor('Los pisos turísticos están retirando viviendas del alquiler residencial')?.id, 'tourist-housing-supply', 'Tourist-dwelling supply claims must keep their existing measurement contract');
+assert.equal(claimFocusFor('El turismo eleva los alquileres en las ciudades')?.id, 'tourism-urban-housing-cost', 'A tourism and rent claim without resident displacement must remain in the tourism cost family');
+for (const nearby of [
+  'El precio del alquiler subió en España durante 2025',
+  'Los vecinos se marchan de los barrios por nuevos empleos',
+  'Los residentes abandonan sus viviendas después de jubilarse',
+  'La renovación de las viviendas mejora el consumo energético',
+]) assert.notEqual(claimFocusFor(nearby)?.id, 'residential-gentrification-displacement', `A nearby housing claim crossed into resident displacement: ${nearby}`);
 const localSafetyProcessing = localPublicCheckResponse({ status: 'processing', requestId: 'local-safety-processing' }, localSafetyParaphrases[0]);
 assert.equal(localSafetyProcessing.state, 'processing');
 assert.equal(localSafetyProcessing.preview.state, 'insufficient', 'An in-progress resolver should show the same evidence-honest provisional result');

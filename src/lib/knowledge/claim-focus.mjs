@@ -94,6 +94,50 @@ const localSafetyMeasurementEvidence = {
     { id: 'ine-neighbourhood-crime-perception-ecv-2023', title: 'Delincuencia o vandalismo en la zona · Indicadores de calidad de vida', publisher: 'INE', url: 'https://www.ine.es/ss/Satellite?L=es_ES&c=INESeccion_C&cid=1259944569502&p=1254735110672%3B&pagename=ProductosYServicios%2FPYSLayout&param1=PYSDetalleFichaIndicador&param3=1259937499084', retrievedAt: '2026-11-17', role: 'primary' },
   ],
 };
+const residentialDisplacementEvidence = {
+  directClaimEvidence: false,
+  expiresAt: '2027-10-18',
+  territories: ['ES'],
+  evidenceLabel: 'Alcance del Atlas de Distribución de Renta de los Hogares del INE',
+  dimensions: {
+    subject: 'indicadores agregados de renta y características demográficas por zona; no identifican desplazamientos individuales ni su motivo',
+    population: 'población residente en viviendas familiares incluida en el Atlas del INE',
+    period: 'renta de 2024 y población de referencia a 1 de enero de 2025; edición publicada el 19 de octubre de 2026',
+    geography: 'España: municipios, distritos y secciones censales',
+    denominator: 'depende del indicador de renta; no hay un denominador de desplazamiento residencial',
+    unit: 'indicadores de renta y demografía; no mide salidas forzadas ni sus causas',
+  },
+  facts: [
+    'La edición 2024 del Atlas del INE, publicada el 19 de octubre de 2026, ofrece indicadores de renta y demografía por municipio, distrito y sección censal. Describe áreas; no mide la expulsión de residentes.',
+    'Para la renta de 2024, la población de referencia son residentes en viviendas familiares a 1 de enero de 2025. Los resultados no identifican quién se mudó, si fue forzado ni por qué.',
+  ],
+  factSourceIds: [
+    ['ine-household-income-atlas-2024'],
+    ['ine-household-income-atlas-methodology-2025'],
+  ],
+  factDimensions: [
+    {
+      subject: 'indicadores agregados de renta y demografía',
+      population: 'población residente en viviendas familiares',
+      period: 'edición 2024; publicada el 19 de octubre de 2026',
+      geography: 'municipios, distritos y secciones censales de España',
+      denominator: 'varía según el indicador; no es un recuento de residentes desplazados',
+      unit: 'indicadores de renta y demografía',
+    },
+    {
+      subject: 'renta anual vinculada a población residente de referencia',
+      population: 'población residente en viviendas familiares registrada en el Fichero Precensal de Población',
+      period: 'renta de 2024; población a 1 de enero de 2025',
+      geography: 'territorio nacional, con resultados por municipios, distritos y secciones censales',
+      denominator: 'población residente incluida en el Atlas; no identifica flujos individuales de salida',
+      unit: 'indicadores de renta y población',
+    },
+  ],
+  sources: [
+    { id: 'ine-household-income-atlas-2024', title: 'Atlas de Distribución de Renta de los Hogares · Año 2024', publisher: 'INE', url: 'https://www.ine.es/experimental/atlas/experimental_atlas.htm/', retrievedAt: '2026-11-23', role: 'primary' },
+    { id: 'ine-household-income-atlas-methodology-2025', title: 'Metodología del Atlas de Distribución de Renta de los Hogares · Octubre de 2025', publisher: 'INE', url: 'https://www.ine.es/metodologia/metodologia_adrh.pdf', retrievedAt: '2026-11-23', role: 'primary' },
+  ],
+};
 const healthcareWorkforceCausality = (t) => /\b(medic\w*|facultativ\w*|enfermer\w*|personal sanitario|profesional\w* sanitari\w*)\b/.test(t)
   && /\b(falt\w*|escasez|deficit|poc\w*|insuficient\w*)\b/.test(t)
   && /\b(condicion\w*|t[ií]tul\w*|graduad\w*|homolog\w*|plantilla|vacantes?|plazas?|zonas?|puebl\w*|rural\w*|capital\w*|provinci\w*|territorio|distribuci\w*)\b/.test(t);
@@ -261,6 +305,16 @@ const tourismUrbanHousingCostPressure = (text) => {
     && !/\b(viviend\w*|resident\w*|hogar\w*|alquiler residencial|arrendamiento residencial|vivienda habitual)\b/.test(text);
   return mentionsTourism && mentionsResidentHousing && mentionsCostOrAffordability && mentionsCausalPressure
     && !hotelRoomClaim && !touristHousingDisplacementClaim(text);
+};
+const residentialGentrificationDisplacement = (text) => {
+  const mentionsResidents = /\b(resident\w*|vecin\w*|habitantes?|poblacion local|hogares?|quienes (?:ya )?viv\w*|personas que (?:ya )?viv\w*|gente que (?:ya )?viv\w*)\b/.test(text);
+  const mentionsDisplacement = /\b(expuls\w*|desplaz\w*|desaloj\w*|abandon\w*|march\w*|mud\w*|se van|se fueron|se tienen que ir|dejan de vivir|oblig\w*|forz\w*|echan)\b/.test(text);
+  const explicitUrbanChange = /\b(gentrific\w*|turistific\w*|aburgues\w*|renovaci\w*|rehabilitaci\w*|inversion inmobiliaria|presion inmobiliaria)\b/.test(text);
+  const housingMarketPressure = /\b(alquil\w*|arrendam\w*|viviend\w*|inmobiliari\w*|precio\w*|renta\w*)\b/.test(text)
+    && /\b(aument\w*|subid\w*|sub\w*|encarec\w*|cost\w*|car[oa]s?|elevad\w*|lujo|inasequib\w*|inaccesib\w*|especul\w*|presion\w*)\b/.test(text);
+  const mentionsUrbanPressure = explicitUrbanChange || housingMarketPressure;
+  return mentionsResidents && mentionsDisplacement && mentionsUrbanPressure
+    && !touristHousingDisplacementClaim(text);
 };
 const waits = /\b(esper\w*|demor\w*|cita\w*|tard\w*|retras\w*|acceso|acceder)\b/;
 const privateCareMention = /\b(seguro\w*(?: medico\w*)? privad\w*|sanidad privada|medicina privada|asistencia privada|consultas? privad\w*|atencion privada)\b/;
@@ -908,6 +962,22 @@ const focuses = [
     needs: ['viviendas que pasan del alquiler residencial a uso turístico en el mismo territorio y periodo', 'oferta de alquiler residencial antes y después del cambio', 'diseño que permita atribuir el cambio al uso turístico y no a otros factores'],
     explanation: 'El recuento de viviendas turísticas y su peso en el parque describen el uso turístico estimado; no indican cuántas viviendas dejaron el alquiler residencial ni prueban que el turismo causara una reducción de oferta.',
     limitation: 'La estadística experimental del INE usa anuncios deduplicados de tres plataformas y criterios autonómicos. El dato agregado no mide alquileres residenciales perdidos, y una cifra provincial o autonómica no describe barrios o municipios.',
+  },
+  {
+    id: 'residential-gentrification-displacement', label: 'desplazamiento de residentes por cambios en el mercado residencial',
+    when: residentialGentrificationDisplacement,
+    direct: [], context: [], claimType: 'causal',
+    needs: [
+      'barrio o sección censal y periodos comparables',
+      'entradas y salidas de residentes de larga duración o inquilinos en esa zona',
+      'alquileres residenciales e ingresos de los hogares para la misma población, zona y periodo',
+      'datos sobre los motivos de mudanza y una comparación que permita separar el efecto de la presión inmobiliaria de otros cambios',
+    ],
+    explanationHeadline: 'Un cambio en el perfil del barrio no demuestra por sí solo que sus residentes fueran expulsados',
+    explanation: 'Para demostrar expulsión hacen falta datos de quién se mudó, cuándo y por qué; un cambio en la renta o demografía de una zona no basta.',
+    evidenceGap: 'Faltan el barrio y el periodo concretos, los cambios de residencia, alquileres e ingresos comparables y datos sobre los motivos de mudanza.',
+    explanationEvidence: residentialDisplacementEvidence,
+    limitation: 'Un cambio en promedios de renta o población no prueba que los mismos residentes se fueran forzados ni qué causó su mudanza.',
   },
   {
     id: 'housing-completions', label: 'viviendas residenciales nuevas terminadas',
