@@ -261,6 +261,32 @@ const specialistWait = await check('Las demoras para consultas externas de espec
 assert.doesNotMatch(JSON.stringify(specialistWait.body.result.sources), /sanidad-primary-care-2026-wave2/);
 assert.doesNotMatch(specialistWait.body.result.reply, /9,71|72 %/);
 
+const specialistNamedRegion = await check('La espera media de consultas externas fue mayor en Canarias que en Melilla en 2025');
+assert.equal(specialistNamedRegion.body.state, 'limited');
+assert.equal(specialistNamedRegion.body.result.answerScope.family, 'specialist-outpatient-regional-waits');
+assert.equal(specialistNamedRegion.body.result.arguments[0].verdict, 'supported');
+assert.match(specialistNamedRegion.body.result.reply, /162 días en Canarias y 16 días en Melilla/);
+assert.match(specialistNamedRegion.body.result.reply, /31 de diciembre de 2025/);
+assert.ok(specialistNamedRegion.body.result.sources.some((source) => source.id === 'sisle-sns-regional-consultations-dec-2025'));
+assert.equal((specialistNamedRegion.body.result.reply.match(/A 31 de diciembre de 2025/g) || []).length, 1);
+
+const specialistReversedRegion = await check('La espera media de consultas externas fue mayor en Melilla que en Canarias en 2025');
+assert.equal(specialistReversedRegion.body.state, 'limited');
+assert.equal(specialistReversedRegion.body.result.arguments[0].verdict, 'contradicted');
+assert.match(specialistReversedRegion.body.result.reply, /La fuente contradice la afirmación/);
+assert.match(specialistReversedRegion.body.result.reply, /16 días en Melilla y 162 días en Canarias/);
+assert.equal((specialistReversedRegion.body.result.reply.match(/A 31 de diciembre de 2025/g) || []).length, 1);
+
+for (const outOfScopeSpecialistWait of [
+  'La espera media de consultas externas fue mayor en Canarias que en Melilla en 2024',
+  'La espera media de consultas externas fue mayor en Canarias que en Lisboa en 2025',
+  'La espera media de consultas externas fue mayor en Canarias que en Valencia en 2025',
+  'La espera media de cirugía fue mayor en Canarias que en Melilla en 2025',
+]) {
+  const answer = await check(outOfScopeSpecialistWait);
+  assert.doesNotMatch(JSON.stringify(answer.body.result.sources), /sisle-sns-regional-consultations-dec-2025/, outOfScopeSpecialistWait);
+}
+
 const primaryCareCause = await check('La demora del médico de familia obliga a la gente a ir a urgencias');
 assert.equal(primaryCareCause.body.state, 'insufficient');
 assert.equal(primaryCareCause.body.result.arguments[0].verdict, 'insufficient');

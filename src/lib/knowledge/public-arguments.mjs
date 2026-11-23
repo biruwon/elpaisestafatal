@@ -43,7 +43,9 @@ export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
     && argumentsList[0].sourceIds?.length > 0;
   if (directlyContradicted) {
     const finding = String(argumentsList[0].finding || '').trim();
-    const measuredFinding = finding && !text.includes(finding) ? `${finding}\n\n` : '';
+    const replyText = text.replace(/\s+/g, ' ').trim();
+    const findingText = finding.replace(/\s+/g, ' ').trim();
+    const measuredFinding = findingText && !replyText.includes(findingText) ? `${finding}\n\n` : '';
     return `La fuente contradice la afirmación.\n\n${measuredFinding}${text}`;
   }
   const alreadyStatesNonConclusion = /\bno (?:se puede|permite|podemos|alcanza a)\s+(?:confirmar|descartar|demostrar|sostener|afirmar|concluir|determinar|medir|calcular|comparar|establecer|atribuir|saber|evaluar)\b/i.test(text);

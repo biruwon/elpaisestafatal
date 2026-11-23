@@ -82,21 +82,59 @@ const localSafetyMeasurementEvidence = {
 const healthcareWorkforceCausality = (t) => /\b(medic\w*|facultativ\w*|enfermer\w*|personal sanitario|profesional\w* sanitari\w*)\b/.test(t)
   && /\b(falt\w*|escasez|deficit|poc\w*|insuficient\w*)\b/.test(t)
   && /\b(condicion\w*|t[ií]tul\w*|graduad\w*|homolog\w*|plantilla|vacantes?|plazas?|zonas?|puebl\w*|rural\w*|capital\w*|provinci\w*|territorio|distribuci\w*)\b/.test(t);
+const specialistOutpatientComparisonRows = [
+  { geography: 'Andalucía', aliases: [], value: 136 },
+  { geography: 'Aragón', aliases: [], value: 138 },
+  { geography: 'Asturias', aliases: ['Principado de Asturias'], value: 103 },
+  { geography: 'Baleares', aliases: ['Islas Baleares', 'Illes Balears'], value: 71 },
+  { geography: 'Canarias', aliases: ['Islas Canarias'], value: 162 },
+  { geography: 'Cantabria', aliases: [], value: 61 },
+  { geography: 'Castilla y León', aliases: ['Castilla León'], value: 102 },
+  { geography: 'Castilla-La Mancha', aliases: ['Castilla La Mancha'], value: 64 },
+  { geography: 'Cataluña', aliases: ['Catalunya'], value: 120 },
+  { geography: 'Comunidad Valenciana', aliases: ['Comunitat Valenciana'], value: 95 },
+  { geography: 'Extremadura', aliases: [], value: 112 },
+  { geography: 'Galicia', aliases: [], value: 63 },
+  { geography: 'la Comunidad de Madrid', aliases: ['Madrid', 'Comunidad de Madrid'], value: 68 },
+  { geography: 'la Región de Murcia', aliases: ['Murcia', 'Región de Murcia'], value: 89 },
+  { geography: 'Navarra', aliases: ['Comunidad Foral de Navarra'], value: 152 },
+  { geography: 'País Vasco', aliases: ['Euskadi'], value: 49 },
+  { geography: 'La Rioja', aliases: [], value: 32 },
+  { geography: 'Ceuta', aliases: ['Ciudad Autónoma de Ceuta'], value: 72 },
+  { geography: 'Melilla', aliases: ['Ciudad Autónoma de Melilla'], value: 16 },
+];
 const specialistOutpatientRegionalWaits = (t) => {
+  const namedRegionalPairComparison = (() => {
+    const aliases = specialistOutpatientComparisonRows.flatMap((row) => [row.geography, ...row.aliases]
+      .map((alias) => ({ row, alias: normalize(alias) })))
+      .sort((left, right) => right.alias.length - left.alias.length);
+    const rowByAlias = new Map(aliases.map((item) => [item.alias, item.row]));
+    const pattern = aliases.map(({ alias }) => alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+    const mentions = [...t.matchAll(new RegExp(`\\b(${pattern})\\b`, 'g'))];
+    if (mentions.length !== 2) return false;
+    const first = mentions[0];
+    const second = mentions[1];
+    if (rowByAlias.get(first[1]) === rowByAlias.get(second[1])) return false;
+    const comparatorContext = t.slice(Math.max(0, first.index - 45), second.index + second[0].length);
+    const hasDirection = /\b(mas|mayor|superior|menos|menor|inferior|larg\w*|cort\w*)\b/.test(comparatorContext);
+    const linksEntities = /\b(que|frente|contra|versus|vs)\b/.test(t.slice(first.index + first[0].length, second.index));
+    return hasDirection && linksEntities;
+  })();
   const wait = /\blistas? de espera\b/.test(t)
     || /\b(espera\w*|demora\w*)\b/.test(t) && /\b(consultas? externas?|atencion especializada|especialistas?|sanidad|salud|medic\w*|hospital\w*)\b/.test(t);
-  const regionalComparison = /\b(comunidades? autonomas?|ccaa|region(?:es)?|regional\w*|territorios?)\b/.test(t)
-    && /\b(vari\w*|cambi\w*|diferenc\w*|desigual\w*|compar\w*|mayor\w*|menor\w*|mas|menos|brecha\w*)\b/.test(t);
+  const regionalComparison = namedRegionalPairComparison || (/\b(comunidades? autonomas?|ccaa|region(?:es)?|regional\w*|territorios?)\b/.test(t)
+    && /\b(vari\w*|cambi\w*|diferenc\w*|desigual\w*|compar\w*|mayor\w*|menor\w*|mas|menos|brecha\w*)\b/.test(t));
   const incompatibleService = /\b(atencion primaria|medic\w* de (?:familia|cabecera)|cirug\w*|quirurg\w*|operacion\w*|urgencias?|pruebas? diagnosticas?|codigo postal|municipio\w*|barrio\w*|hospital\w* concret\w*|privad\w*|trenes?|ferroviar\w*|autobuses?|transporte|licencias?|administrativ\w*)\b/.test(t);
   const causalOrTrend = /\b(caus\w*|provoc\w*|empuj\w*|oblig\w*|porque|debido|por culpa|se debe|responsab\w*|consecuencia|falta de (?:medic\w*|personal sanitario|profesional\w* sanitari\w*)|desde (?:19|20)\d{2}|desde la pandemia|desde hace|cada vez|cada a[nñ]o|a lo largo|ultim\w* a[nñ]os|serie temporal|tendencia|aument\w*|crec\w*|baj\w*|disminu\w*|evoluci\w*)\b/.test(t);
   const specificSpecialty = /\b(dermatolog\w*|traumatolog\w*|oftalmolog\w*|neurolog\w*|cardiolog\w*|ginecolog\w*|urolog\w*|digestiv\w*|otorrinolaringolog\w*|especialidades?)\b/.test(t);
   const specificTerritory = /\b(andalucia|aragon|asturias|baleares|canarias|cantabria|castilla(?: y leon| la mancha)?|cataluna|extremadura|galicia|madrid|murcia|navarra|pais vasco|rioja|ceuta|melilla|valencia)\b/.test(t);
   const years = [...t.matchAll(/\b20\d{2}\b/g)].map(([year]) => year);
-  return wait && regionalComparison && !incompatibleService && !causalOrTrend && !specificSpecialty && !specificTerritory
+  return wait && regionalComparison && !incompatibleService && !causalOrTrend && !specificSpecialty && (!specificTerritory || namedRegionalPairComparison)
     && (!years.length || years.every((year) => year === '2025'));
 };
 const specialistOutpatientWaitEvidence = {
-  expiresAt: '2027-03-24', territories: ['ES'],
+  expiresAt: '2027-03-24', territories: ['ES', ...specialistOutpatientComparisonRows.flatMap((row) => [row.geography, ...row.aliases].map(normalize))],
+  comparisonRows: specialistOutpatientComparisonRows,
   evidenceLabel: 'Demoras registradas en consultas externas del SNS',
   dimensions: {
     subject: 'espera media de pacientes en listas estructurales de consultas externas del SNS, agregada en diez especialidades',
@@ -106,11 +144,11 @@ const specialistOutpatientWaitEvidence = {
   },
   facts: [
     'A 31 de diciembre de 2025, la espera media total de consultas externas registrada por el SNS iba de 16 días en Melilla a 162 días en Canarias. El informe presenta el total de diez especialidades para cada territorio.',
-    'El Ministerio indicó el 24 de septiembre de 2026 que esos datos de diciembre de 2025 eran los últimos disponibles y que el informe se había actualizado tras corregir los datos aportados por Castilla-La Mancha. También advierte que las cifras dependen de la información remitida por cada comunidad autónoma y que cada administración responde de su exactitud y del cumplimiento de los criterios comunes.',
+    'El Ministerio indicó el 24 de septiembre de 2026 que los datos de diciembre de 2025 eran los últimos disponibles y publicó el informe rectificado tras revisar la información de Castilla-La Mancha.',
   ],
   sources: [
-    { id: 'sisle-sns-regional-consultations-dec-2025', title: 'Listas de espera del SNS: datos por comunidades autónomas, diciembre de 2025 (rectificado)', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/docs/Datos_ccaa_dic2025_rectificado.pdf', publishedAt: '2026-09-24', retrievedAt: '2026-11-17' },
-    { id: 'sisle-sns-latest-data', title: 'Sistema de Información de Listas de Espera del SNS: últimos datos disponibles', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/listaEspera.htm', retrievedAt: '2026-11-17' },
+    { id: 'sisle-sns-regional-consultations-dec-2025', title: 'Listas de espera del SNS: datos por comunidades autónomas, diciembre de 2025 (rectificado)', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/ca/estadEstudios/estadisticas/inforRecopilaciones/docs/LISTAS_PUBLICACION_Dic_2025_rectificado.pdf', publishedAt: '2026-09-24', retrievedAt: '2026-11-23' },
+    { id: 'sisle-sns-latest-data', title: 'Sistema de Información de Listas de Espera del SNS: últimos datos disponibles', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/listaEspera.htm', retrievedAt: '2026-11-23' },
   ],
 };
 const bankSpainRentEffortSource = {
@@ -687,7 +725,7 @@ const focuses = [
     explanationHeadline: 'Las demoras registradas en consultas externas variaron entre territorios en 2025',
     explanation: 'El informe del Ministerio de Sanidad compara las listas de espera de consultas externas del Sistema Nacional de Salud por comunidad autónoma y ciudad autónoma.',
     explanationEvidence: { ...specialistOutpatientWaitEvidence, directClaimEvidence: true },
-    limitation: 'La comparación muestra diferencias en el tiempo medio registrado para consultas externas del SNS; no establece si son excesivas ni por qué existen. No mide atención primaria, cirugía, pruebas diagnósticas, hospitales concretos ni tiempos individuales. El Ministerio advierte que los datos proceden de las comunidades autónomas.',
+    limitation: 'Cada cifra es la espera media agregada de diez especialidades; no representa cada especialidad ni los tiempos de pacientes individuales. El informe no mide atención primaria, cirugía, pruebas diagnósticas ni hospitales concretos, y no establece un umbral de espera excesiva ni sus causas. El Ministerio advierte que los datos dependen de la información remitida por cada comunidad autónoma.',
   },
   {
     id: 'entrepreneurial-risk-perception', label: 'riesgo percibido al emprender y empleo público',

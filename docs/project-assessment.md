@@ -816,7 +816,7 @@ answer plans and the public response shape, including per-part verdicts,
 evidence-family data and cited source IDs. A secure URL alone no longer makes a
 claim part traceable when its cited source ID does not match a listed source.
 
-The answer-level benchmark now grades sixteen held-out text cases against
+The answer-level benchmark now grades twenty-four held-out text cases against
 reviewed snapshot-backed evidence. It checks the public answer's evidence
 family, value, verdict, linked source, period, geography, population,
 denominator, scope exclusions, traceability and word limit. It also checks
@@ -828,13 +828,39 @@ the reply states how the observed value relates to the threshold. Metric
 definitions distinguish a rate for waits over one day from a rate for longer
 waits, and an average delay is not used to assess an unspecific wait-length
 claim. The checks also preserve strict versus inclusive bounds and keep causal
-claims from inheriting a descriptive rate verdict. The current run passes 16/16.
+claims from inheriting a descriptive rate verdict. It also checks regional
+outpatient-wait comparisons against the Ministry's 2025 territory table,
+including reversed and negated comparisons, source-update context and scope.
+Unmeasured claims about a gap's size or intensity stay ungraded instead of
+receiving a verdict from direction alone. The current run passes 24/24.
 
 This small regression set is a useful guard against known answer failures,
 not a population-wide estimate of factual accuracy. Broader validation still
 needs a larger independently reviewed set spanning more claim families,
 paraphrases, dates, places and unsupported claims; all answers also remain
 bounded by the available reviewed sources and their definitions.
+
+## Regional outpatient waiting-time comparisons — 23 November 2026
+
+Named comparisons now use the Ministry of Health's corrected table for
+31 December 2025. It reports the mean wait in days for patients on the
+structural outpatient consultation lists, aggregated across ten specialties,
+for Spain's autonomous communities and the cities of Ceuta and Melilla. The
+Ministry identifies this as the latest available period in its
+[waiting-list update](https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/listaEspera.htm);
+its [corrected regional report](https://www.sanidad.gob.es/ca/estadEstudios/estadisticas/inforRecopilaciones/docs/LISTAS_PUBLICACION_Dic_2025_rectificado.pdf)
+notes that regional administrations provide the underlying figures and are
+responsible for their accuracy and counting criteria. The correction followed
+revised data from Castilla-La Mancha.
+
+The text resolver can compare any two named, source-covered territories when a
+claim clearly says which had the longer or shorter wait. It reports both means,
+the measurement date and the result of that comparison. Claims about another
+year, a different service, an ambiguous territory, a specific specialty or a
+cause remain outside this snapshot. The result does not establish an excessive
+wait threshold or explain why regions differ. The benchmark checks positive,
+reversed and negated phrasings, along with wrong-period, wrong-service and
+unsupported-territory neighbours.
 
 ## Expired political scorecard fallback — 23 November 2026
 

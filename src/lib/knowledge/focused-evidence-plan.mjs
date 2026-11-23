@@ -230,6 +230,48 @@ const educationOutcomeFinding = (fact) => {
   if (fact.id === 'tertiary_overqualification_rate_age_20_34') return `${source}: en ${place}, el ${value} de las personas ocupadas de 20 a 34 años con educación terciaria (ISCED 5–8) trabajaba en ocupaciones ISCO 4–9, que no requieren ese nivel, en ${period}.`;
   return fact.finding;
 };
+const specialistOutpatientMagnitudeNotAssessed = (claim) => {
+  const text = normalize(claim);
+  const nonPeriodNumbers = [...text.matchAll(/\b\d+(?:[.,]\d+)?\b/g)]
+    .some(([value]) => value !== '2025');
+  return nonPeriodNumbers
+    || /\b(much\w*|bastant\w*|considerable\w*|sustancial\w*|notable\w*|significativ\w*|dramatic\w*|liger\w*|lev\w*|demasiad\w*|dobl\w*|tripl\w*|mitad|veces?)\b/.test(text);
+};
+const namedEvidenceComparison = (claim, rows = []) => {
+  const text = normalize(claim);
+  const aliases = rows.flatMap((row) => [row.geography, ...(row.aliases || [])]
+    .map((alias) => ({ row, alias: normalize(alias) })))
+    .sort((left, right) => right.alias.length - left.alias.length);
+  const rowByAlias = new Map(aliases.map((item) => [item.alias, item.row]));
+  const pattern = aliases.map(({ alias }) => alias.replace(/[.*+?^${}()|[\]\\]/g, '\\$&')).join('|');
+  const mentions = [...text.matchAll(new RegExp(`\\b(${pattern})\\b`, 'g'))].map((match) => ({
+    row: rowByAlias.get(match[1]), name: match[1], index: match.index, end: match.index + match[0].length,
+  })).sort((left, right) => left.index - right.index);
+  if (mentions.length !== 2 || mentions[0].name === mentions[1].name) return undefined;
+  if (specialistOutpatientMagnitudeNotAssessed(claim)) return undefined;
+  const [first, second] = mentions;
+  const context = text.slice(Math.max(0, first.index - 45), second.end);
+  const negatedComparisons = [...context.matchAll(/\bno\b.{0,40}\b(mas|mayor|superior|larg\w*|menos|menor|inferior|cort\w*)\b/g)];
+  if (negatedComparisons.length > 1 || /\bno (?:solo|solamente)\b/.test(context)) return undefined;
+  const claimsFirstHigher = /\b(mas|mayor|superior|larg\w*)\b/.test(context);
+  const claimsFirstLower = /\b(menos|menor|inferior|cort\w*)\b/.test(context);
+  const linkedEntities = /\b(que|frente|contra|versus|vs)\b/.test(text.slice(first.end, second.index));
+  if (claimsFirstHigher === claimsFirstLower || !linkedEntities
+    || !Number.isFinite(first.row.value) || !Number.isFinite(second.row.value)) return undefined;
+  const firstIsClaimedHigher = negatedComparisons.length ? claimsFirstLower : claimsFirstHigher;
+  const claimedHigher = firstIsClaimedHigher ? first.row : second.row;
+  const actualHigher = first.row.value > second.row.value ? first.row
+    : second.row.value > first.row.value ? second.row : undefined;
+  if (!actualHigher) return undefined;
+  return {
+    first: first.row,
+    second: second.row,
+    actualHigher,
+    actualLower: actualHigher === first.row ? second.row : first.row,
+    claimedHigher: claimedHigher.geography,
+    verdict: claimedHigher.geography === actualHigher.geography ? 'supported' : 'contradicted',
+  };
+};
 const directMeasurementThresholdAssessment = (claim, direct) => {
   if (!direct.length || /\b(caus\w*|provoc\w*|porque|debido|por culpa|oblig\w*|empuj\w*)\b/.test(normalize(claim))) return undefined;
   const thresholdText = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD')
@@ -538,6 +580,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     return order(left) - order(right);
   });
   const educationQuestion = educationOutcome ? educationOutcomeQuestion(claim) : undefined;
+  const specialistMagnitudeNotAssessed = focus.id === 'specialist-outpatient-regional-waits'
+    && specialistOutpatientMagnitudeNotAssessed(claim);
   const limitation = educationOutcome ? educationOutcomeLimitation(ids, focus.limitation, educationQuestion)
     : focus.id === 'working-poverty' ? 'El umbral relativo no mide la dificultad subjetiva para llegar a fin de mes. El desglose por jornada no incluye la edad; el dato no demuestra que el tipo de jornada cause el riesgo. El periodo es el año de la encuesta EU-SILC y los ingresos pueden referirse a un año anterior.'
     : focus.id === 'sector-wage-comparison' ? [
@@ -548,11 +592,26 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         : comparesSectorAverageWageImpact
           ? 'La encuesta describe salarios brutos, pero no establece la contribución de cada actividad al promedio nacional ni mide productividad.'
           : focus.limitation,
-    ].filter(Boolean).join(' ') : focus.limitation;
+    ].filter(Boolean).join(' ')
+    : specialistMagnitudeNotAssessed
+      ? `${focus.limitation} La tabla no evalúa la magnitud adicional de la afirmación, como un número de días o «mucho mayor».`
+      : focus.limitation;
   const territories = requestedGeographyScopes(claim);
   const explanation = focus.explanationEvidence && now < Date.parse(focus.explanationEvidence.expiresAt)
     && territories.every(({ id }) => focus.explanationEvidence.territories?.includes(id))
     && (!focus.explanationEvidence.when || focus.explanationEvidence.when(normalize(claim))) ? focus.explanationEvidence : undefined;
+  const specialistOutpatientComparison = focus.id === 'specialist-outpatient-regional-waits'
+    ? namedEvidenceComparison(claim, explanation?.comparisonRows)
+    : undefined;
+  const specialistOutpatientComparisonFinding = specialistOutpatientComparison
+    ? `A 31 de diciembre de 2025, la espera media registrada entre los pacientes de las listas estructurales de consultas externas del SNS fue de ${number(specialistOutpatientComparison.first.value, 'primary_care_wait_days')} días en ${specialistOutpatientComparison.first.geography} y ${number(specialistOutpatientComparison.second.value, 'primary_care_wait_days')} días en ${specialistOutpatientComparison.second.geography}. La afirmación de que ${specialistOutpatientComparison.claimedHigher} tuvo más días de espera media ${specialistOutpatientComparison.verdict === 'supported' ? 'coincide' : 'no coincide'} con esos valores.`
+    : undefined;
+  const specialistOutpatientComparisonHeadline = specialistOutpatientComparison
+    ? `En 2025, la espera media fue de ${number(specialistOutpatientComparison.actualHigher.value, 'primary_care_wait_days')} días en ${specialistOutpatientComparison.actualHigher.geography} frente a ${number(specialistOutpatientComparison.actualLower.value, 'primary_care_wait_days')} días en ${specialistOutpatientComparison.actualLower.geography}`
+    : undefined;
+  const explanationFacts = specialistOutpatientComparisonFinding && explanation
+    ? [specialistOutpatientComparisonFinding, ...explanation.facts.slice(1)]
+    : explanation?.facts || [];
   const workHousingTrendRequested = focus.id === 'work-housing-independence'
     && /\b(ya no|cada vez|se ha vuelto|antes|ahora|desde (?:19|20)\d{2}|en (?:19|20)\d{2}|entre (?:19|20)\d{2} y (?:19|20)\d{2}|ultimos a[nñ]os)\b/.test(normalizedClaim);
   const claimType = typeof focus.claimTypeFor === 'function' ? focus.claimTypeFor(normalizedClaim)
@@ -627,20 +686,20 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const explanationSourceIds = (explanation?.sources || []).map((source) => source.id);
   const explanationSupportsClaim = Boolean(explanation?.directClaimEvidence);
   const explanationBlocks = !explanation ? [] : Array.isArray(explanation.factSourceIds)
-    && explanation.factSourceIds.length === explanation.facts?.length
-    ? explanation.facts.map((point, index) => ({
+    && explanation.factSourceIds.length === explanationFacts.length
+    ? explanationFacts.map((point, index) => ({
       type: explanationSupportsClaim ? 'confirmed' : 'data_finding',
       ...(explanationSupportsClaim ? {} : { dataKind: 'context' }),
       evidenceIds: explanation.factSourceIds[index],
       points: [point],
     }))
     : [explanationSupportsClaim
-      ? { type: 'confirmed', evidenceIds: explanationSourceIds, points: explanation.facts }
-      : { type: 'data_finding', dataKind: 'context', evidenceIds: explanationSourceIds, points: explanation.facts }];
+      ? { type: 'confirmed', evidenceIds: explanationSourceIds, points: explanationFacts }
+      : { type: 'data_finding', dataKind: 'context', evidenceIds: explanationSourceIds, points: explanationFacts }];
   const directEvidenceIds = [...new Set([...direct.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanationSupportsClaim ? explanationSourceIds : [])].filter(Boolean))];
   const directSourceIds = [...new Set([...direct.flatMap((fact) => fact.sourceIds), ...(explanationSupportsClaim ? explanationSourceIds : [])])];
   const contextualExplanationSourceIds = explanationSupportsClaim ? [] : explanationSourceIds;
-  const explanationMeasuresClaim = Boolean(explanationSupportsClaim && explanation.facts?.length && explanation.sources?.length);
+  const explanationMeasuresClaim = Boolean(explanationSupportsClaim && explanationFacts.length && explanation.sources?.length);
   const missing = educationOutcome
     ? ids.length ? ids.filter((id) => !facts.some((fact) => fact.id === id)).map(educationNeedForMetric) : needs
     : direct.length || explanationMeasuresClaim ? [] : needs;
@@ -690,9 +749,11 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       ? 'El crecimiento del empleo debe compararse con series por actividad y periodos iguales. Salarios y productividad requieren medidas aparte.'
       : 'El empleo debe compararse por actividad, población y periodo. Salarios y productividad requieren medidas aparte.'
     : focus.explanation;
-  const explanationReply = educationOutcome ? '' : explanation
-    ? explanationSupportsClaim ? explanation.facts.join('\n\n') : [sectorEmploymentExplanation, `Como contexto: ${explanation.facts.join('\n\n')}`].filter(Boolean).join('\n\n')
-    : sectorEmploymentExplanation;
+  const explanationReply = educationOutcome ? '' : specialistOutpatientComparison && explanation
+    ? explanationFacts.join('\n\n')
+    : explanation
+      ? explanationSupportsClaim ? explanationFacts.join('\n\n') : [sectorEmploymentExplanation, `Como contexto: ${explanationFacts.join('\n\n')}`].filter(Boolean).join('\n\n')
+      : sectorEmploymentExplanation;
   const findingLead = direct.length ? 'Datos de la fuente: ' : focus.id === 'sector-wage-comparison' ? '' : 'Como contexto: ';
   const primaryCareCausalityReply = (() => {
     if (focus.id !== 'primary-care-wait-causes') return undefined;
@@ -760,16 +821,16 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     direction: 'qualifies',
     status: 'available',
     dataKind: 'snapshot',
-    finding: explanation.facts.join(' '),
-    data: explanation.facts,
+    finding: explanationFacts.join(' '),
+    data: explanationFacts,
     evidenceIds: explanation.sources.map((source) => source.id),
     sourceIds: explanation.sources.map((source) => source.id),
     dimensions: explanation.dimensions,
   });
   else if (explanation && ids.length === 0) {
     const hasFactSources = Array.isArray(explanation.factSourceIds)
-      && explanation.factSourceIds.length === explanation.facts?.length;
-    if (hasFactSources) explanation.facts.forEach((finding, index) => {
+      && explanation.factSourceIds.length === explanationFacts.length;
+    if (hasFactSources) explanationFacts.forEach((finding, index) => {
       const sourceIds = explanation.factSourceIds[index] || [];
       const sourceTitles = explanation.sources.filter((source) => sourceIds.includes(source.id)).map((source) => source.title);
       families.push({
@@ -794,8 +855,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       direction: 'qualifies',
       status: 'partial',
       dataKind: 'context',
-      finding: explanation.facts.join(' '),
-      data: explanation.facts,
+      finding: explanationFacts.join(' '),
+      data: explanationFacts,
       evidenceIds: explanation.sources.map((source) => source.id),
       sourceIds: explanation.sources.map((source) => source.id),
       dimensions: explanation.dimensions,
@@ -804,7 +865,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   }
   return {
     id: `measurement-${focus.id}`, schemaVersion: '1', evidenceLevel, coverage: facts.length || explanation ? 'qualified' : 'insufficient',
-    claimType, headline: workingPovertyComparison?.headline || workingPovertyTrends.get(direct[0]?.id)?.headline
+    claimType, headline: specialistOutpatientComparisonHeadline || workingPovertyComparison?.headline || workingPovertyTrends.get(direct[0]?.id)?.headline
       || (focus.id === 'working-poverty' && direct.length
         ? fullTime && partTime ? 'Datos de riesgo de pobreza por jornada'
           : fullTime ? 'El empleo a jornada completa no elimina el riesgo de pobreza'
@@ -815,10 +876,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     interpretation: { kind: claimType === 'causal' ? 'causal' : claimType === 'comparative' ? 'comparative' : 'quantitative', subject: focus.label, predicate: claimType === 'causal' ? 'requires_causal_design' : 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
     blocks: [
       { type: 'claim_breakdown', items: [{ text: claim, type: claimType, explicit: true, evidenceIds: directEvidenceIds, sourceIds: directSourceIds,
-        verdict: explanationMeasuresClaim ? explanation.claimVerdict || 'mixed'
+        verdict: explanationMeasuresClaim ? explanation.claimVerdict || specialistOutpatientComparison?.verdict || 'mixed'
           : educationOutcome ? directThresholdAssessment?.verdict || 'insufficient'
             : directThresholdAssessment?.verdict || (focus.id === 'working-poverty' ? workingPovertyVerdict : 'insufficient'), evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
-        finding: explanationMeasuresClaim ? explanation.facts.join(' ') : workingPovertyComparison?.finding || (direct.length ? direct.slice(0, 2).map(factFinding).join(' ') : undefined) }], propositionIds: ['submitted-claim'] },
+        finding: explanationMeasuresClaim ? explanationFacts.join(' ') : workingPovertyComparison?.finding || (direct.length ? direct.slice(0, 2).map(factFinding).join(' ') : undefined) }], propositionIds: ['submitted-claim'] },
       ...explanationBlocks,
       ...facts.map((fact) => ({ type: 'data_finding', evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [factFinding(fact)] })),
       ...(missing.length ? [{ type: 'evidence_gap', missing, needed: missing, nextAction: `Buscar una fuente primaria que mida ${focus.label} con ese ámbito.` }] : []),

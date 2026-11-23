@@ -860,7 +860,7 @@ for (const claim of specialistWaitParaphrases) {
   assert.equal(answer.interpretation.kind, 'comparative', 'A regional wait comparison must retain comparative interpretation');
   assert.match(answer.headline, /variaron entre territorios en 2025/);
   assert.match(answer.shareableReply, /16 d[ií]as en Melilla a 162 d[ií]as en Canarias/);
-  assert.match(answer.limitation, /no establece si son excesivas ni por qu[eé]/);
+  assert.match(answer.limitation, /no establece un umbral de espera excesiva ni sus causas/);
   assert.ok(answer.sourceLinks.some((source) => source.id === 'sisle-sns-regional-consultations-dec-2025'));
   const family = answer.evidenceSummary.families.find((item) => item.familyId === 'specialist-outpatient-regional-waits');
   assert.equal(family.dataKind, 'snapshot');
@@ -873,6 +873,38 @@ for (const claim of specialistWaitParaphrases) {
   assert.equal(publicAnswer.state, 'limited', 'A scoped regional comparison should appear as a limited public answer');
   assert.match(publicAnswer.result.reply, /16 d[ií]as en Melilla a 162 d[ií]as en Canarias/);
   assert.ok(publicAnswer.result.sources.some((source) => source.id === 'sisle-sns-regional-consultations-dec-2025'));
+}
+const specialistNamedRegionComparisons = [
+  { claim: 'La espera media de consultas externas fue mayor en Canarias que en Melilla en 2025', verdict: 'supported', values: ['162 días en Canarias', '16 días en Melilla'] },
+  { claim: 'En consultas externas se espera más en Canarias que en Melilla', verdict: 'supported', values: ['162 días en Canarias', '16 días en Melilla'] },
+  { claim: 'La espera media de consultas externas fue mayor en Melilla que en Canarias en 2025', verdict: 'contradicted', values: ['16 días en Melilla', '162 días en Canarias'] },
+  { claim: 'La espera media de consultas externas en Melilla no fue mayor que en Canarias en 2025', verdict: 'supported', values: ['16 días en Melilla', '162 días en Canarias'] },
+  { claim: 'La espera media de consultas externas en Canarias no fue mayor que en Melilla en 2025', verdict: 'contradicted', values: ['162 días en Canarias', '16 días en Melilla'] },
+  { claim: 'La espera de especialistas fue más larga en Islas Canarias que en Comunidad de Madrid', verdict: 'supported', values: ['162 días en Canarias', '68 días en la Comunidad de Madrid'] },
+];
+for (const { claim, verdict, values } of specialistNamedRegionComparisons) {
+  const answer = focusedEvidencePlan(claim);
+  assert.equal(answer.answerScope.family, 'specialist-outpatient-regional-waits', `A named-region comparison lost its evidence family: ${claim}`);
+  assert.equal(answer.evidenceLevel, 'limited');
+  assert.equal(answer.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, verdict, `A named-region comparison has the wrong verdict: ${claim}`);
+  assert.match(answer.headline, /162 d[ií]as en (?:Canarias|Madrid)/);
+  for (const value of values) assert.ok(answer.shareableReply.includes(value), `A named-region answer omitted ${value}: ${claim}`);
+  assert.match(answer.shareableReply, /31 de diciembre de 2025/);
+  assert.match(answer.shareableReply, /diez especialidades/);
+  assert.match(answer.shareableReply, /informaci[oó]n remitida por cada comunidad aut[oó]noma/);
+  assert.ok(answer.sourceLinks.some((source) => source.id === 'sisle-sns-regional-consultations-dec-2025'));
+  assert.equal((answer.shareableReply.match(/A 31 de diciembre de 2025/g) || []).length, 1, 'A contradiction must not repeat the measured comparison');
+}
+const specialistOutpatientMeansByRegion = [
+  ['Andalucía', 136], ['Aragón', 138], ['Asturias', 103], ['Baleares', 71],
+  ['Cantabria', 61], ['Castilla y León', 102], ['Castilla-La Mancha', 64], ['Cataluña', 120],
+  ['Comunidad Valenciana', 95], ['Extremadura', 112], ['Galicia', 63], ['la Comunidad de Madrid', 68],
+  ['la Región de Murcia', 89], ['Navarra', 152], ['País Vasco', 49], ['La Rioja', 32], ['Ceuta', 72], ['Melilla', 16],
+];
+for (const [region, days] of specialistOutpatientMeansByRegion) {
+  const answer = focusedEvidencePlan(`La espera media de consultas externas fue mayor en Canarias que en ${region} en 2025`);
+  assert.equal(answer.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported', `The Canary Islands comparison did not use a lower regional mean for ${region}`);
+  assert.ok(answer.shareableReply.includes(`162 días en Canarias y ${days} días en ${region}`), `The source value for ${region} was missing or changed`);
 }
 const privateSpecialistWaitParaphrases = [
   { claim: 'Se contrata un seguro privado para evitar esperas de especialistas', type: 'causal' },
@@ -933,6 +965,11 @@ for (const claim of [
   'Las demoras de una especialidad concreta varían entre CCAA',
   'Las listas de espera varían entre comunidades autónomas en 2024',
   'Las listas de espera de especialistas varían entre comunidades autónomas en 2026',
+  'La espera de consultas externas fue mayor en Canarias que en Melilla en 2024',
+  'La espera media de consultas externas fue mayor en Canarias que en Melilla en 2026',
+  'La espera de cirugía fue mayor en Canarias que en Melilla en 2025',
+  'La espera de consultas externas fue mayor en Canarias que en Lisboa en 2025',
+  'La espera de consultas externas fue mayor en Canarias que en Valencia en 2025',
 ]) assert.notEqual(claimFocusFor(claim)?.id, 'specialist-outpatient-regional-waits', `An incompatible wait-list claim crossed into the 2025 regional consultation snapshot: ${claim}`);
 const portugalWaits = focusedEvidencePlan('Las listas de espera varían entre regiones de Portugal');
 assert.equal(portugalWaits.answerScope.family, 'specialist-outpatient-regional-waits');
