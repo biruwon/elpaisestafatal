@@ -987,6 +987,18 @@
         "riesgo de pobreza con jornada parcial"
       ],
       "metricId": "in_work_poverty_part_time_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes09?geo=ES&unit=PC&hhcomp=TOTAL&rskpovth=TOTAL&lev_diff=DIF&sinceTimePeriod=2015",
+      "title": "Respuesta de EU-SILC: dificultad para llegar a fin de mes · Eurostat",
+      "aliases": ["pobreza subjetiva", "dificultad declarada para llegar a fin de mes"],
+      "metricId": "subjective_poverty_difficulty_rate"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes09?geo=ES&unit=PC&hhcomp=TOTAL&rskpovth=TOTAL&lev_diff=GRT&sinceTimePeriod=2015",
+      "title": "Respuesta de EU-SILC: gran dificultad para llegar a fin de mes · Eurostat",
+      "aliases": ["pobreza subjetiva", "gran dificultad declarada para llegar a fin de mes"],
+      "metricId": "subjective_poverty_great_difficulty_rate"
     }
   ]
 }

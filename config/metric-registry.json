@@ -1902,6 +1902,80 @@
       "Renta equivalente disponible del hogar inferior al 60 % de la mediana nacional tras transferencias. No ofrece un desglose de edad, no mide si cada salario individual cubre los gastos ni coincide con la percepción de llegar a fin de mes."
     ]
   },
+  "subjective_poverty_rate": {
+    "name": "Subjective poverty rate",
+    "displayName": "Población en hogares que declaran dificultad para llegar a fin de mes",
+    "aliases": [
+      "pobreza subjetiva",
+      "dificultad declarada para llegar a fin de mes",
+      "llegar a fin de mes con dificultad",
+      "hogares con dificultad para llegar a fin de mes",
+      "personas que no llegan a fin de mes"
+    ],
+    "unit": "percent of population",
+    "population": "personas residentes en hogares privados, clasificadas según la respuesta del hogar sobre su capacidad para cubrir los gastos habituales",
+    "notEquivalentTo": [
+      "in_work_poverty_rate",
+      "in_work_poverty_full_time_rate",
+      "in_work_poverty_part_time_rate",
+      "arope_rate"
+    ],
+    "dimensions": ["period", "geography", "household_composition", "difficulty_level"],
+    "denominator": "población residente en hogares privados",
+    "limitations": [
+      "Indicador subjetivo contestado a nivel del hogar: incluye dificultad o gran dificultad declarada por una persona encuestada sobre los ingresos totales del hogar. No cuenta hogares, no identifica la situación laboral o jornada de sus integrantes y no equivale al umbral de riesgo de pobreza monetaria."
+    ],
+    "definition": {
+      "label": "Indicador de pobreza subjetiva de Eurostat",
+      "explanation": "EU-SILC pregunta a una persona del hogar con qué facilidad puede cubrir sus gastos habituales con los ingresos netos totales del hogar. Eurostat considera pobreza subjetiva responder «con dificultad» o «con gran dificultad». Es una percepción del hogar, no una comprobación del salario individual.",
+      "numerator": "personas que viven en hogares cuya persona encuestada respondió «con dificultad» o «con gran dificultad»",
+      "denominator": "población residente en hogares privados",
+      "sources": [
+        {
+          "id": "definition-eurostat-subjective-poverty",
+          "title": "Eurostat · Glossary: Subjective poverty",
+          "publisher": "Eurostat",
+          "url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Glossary:Subjective_poverty",
+          "retrievedAt": "2026-11-23"
+        },
+        {
+          "id": "definition-eurostat-ability-to-make-ends-meet",
+          "title": "Eurostat · Glossary: Ability to make ends meet",
+          "publisher": "Eurostat",
+          "url": "https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Glossary:Ability_to_make_ends_meet",
+          "retrievedAt": "2026-11-23"
+        }
+      ]
+    }
+  },
+  "subjective_poverty_difficulty_rate": {
+    "name": "Population reporting difficulty making ends meet",
+    "displayName": "Respuesta «con dificultad» para cubrir gastos habituales",
+    "aliases": [
+      "población que declara dificultad para llegar a fin de mes",
+      "respuesta con dificultad para cubrir gastos habituales"
+    ],
+    "unit": "percent of population",
+    "population": "personas residentes en hogares privados, clasificadas según la respuesta del hogar sobre su capacidad para cubrir los gastos habituales",
+    "notEquivalentTo": ["subjective_poverty_rate", "in_work_poverty_rate"],
+    "dimensions": ["period", "geography", "household_composition", "difficulty_level"],
+    "denominator": "población residente en hogares privados",
+    "limitations": ["Categoría de respuesta de EU-SILC; por sí sola no equivale al indicador de pobreza subjetiva, que suma esta categoría y «con gran dificultad»."]
+  },
+  "subjective_poverty_great_difficulty_rate": {
+    "name": "Population reporting great difficulty making ends meet",
+    "displayName": "Respuesta «con gran dificultad» para cubrir gastos habituales",
+    "aliases": [
+      "población que declara gran dificultad para llegar a fin de mes",
+      "respuesta con gran dificultad para cubrir gastos habituales"
+    ],
+    "unit": "percent of population",
+    "population": "personas residentes en hogares privados, clasificadas según la respuesta del hogar sobre su capacidad para cubrir los gastos habituales",
+    "notEquivalentTo": ["subjective_poverty_rate", "in_work_poverty_rate"],
+    "dimensions": ["period", "geography", "household_composition", "difficulty_level"],
+    "denominator": "población residente en hogares privados",
+    "limitations": ["Categoría de respuesta de EU-SILC; por sí sola no equivale al indicador de pobreza subjetiva, que suma esta categoría y «con dificultad»."]
+  },
   "primary_care_wait_days": {
     "name": "Self-reported primary-care appointment delay among patients waiting more than one day",
     "displayName": "Demora en atención primaria entre quienes esperaron más de un día",

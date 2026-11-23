@@ -13,6 +13,10 @@ const mortgageEntryVsPayment = (t) => /\b(entrada|ahorro previo|ahorro inicial|p
   && /\b(viviend\w*|hipotec\w*|compr\w*|adquir\w*)\b/.test(t)
   && /\b(mas|mayor\w*|menor\w*|principal|superior\w*|inferior\w*|igual\w*|compar\w*|frente a|no es|sino)\b/.test(t)
   && !/\b(caus\w*|provoc\w*|gener\w*|impid\w*|evit\w*|responsable|por culpa|reduce\w*|aument\w*)\b/.test(t);
+const subjectiveFinancialStrain = (t) => /\b(fin(?:al)? de mes|gastos? habituales?|cubrir (?:los )?gastos?|llegar a fin|no llega para vivir|no alcanza para vivir|pobrez\w* subjetiv\w*)\b/.test(t)
+  && !/\b(trabaj\w*|emple\w*|ocupad\w*|jornada|umbral|salari\w*|sueld\w*)\b/.test(t)
+  && (!/\bpobrez\w*/.test(t) || /\bpobrez\w* subjetiv\w*/.test(t))
+  && !/\b(cada vez|desde (?:19|20)\d{2}|entre (?:19|20)\d{2}|empeor\w*|aument\w*|sub(?:e|i)\w*|encarec\w*|inflaci\w*|precios)\b/.test(t);
 const migrationPopulation = /\b(inmigr\w*|migr\w*|extranjer\w*|nacid\w* fuera|nacid\w* en el extranjero|personas de origen extranjero|ciudadania extranjera|nacionalidad extranjera|ciudadan\w* europea|nacionalidad europea|ciudadan\w* de (?:otro pais|otros paises) (?:de )?(?:la )?(?:ue|union europea)|nacionalidad de otro pais (?:de )?(?:la )?(?:ue|union europea))\b/;
 const migrationCredentialRecognition = (t) => migrationPopulation.test(t)
   && /\b(titul\w*|estudios? (?:superiores?|universitarios?)|cualific\w*|formacion|sobrecualific\w*)\b/.test(t)
@@ -881,12 +885,20 @@ const focuses = [
     limitation: 'Un índice de precios de compraventa o alquiler no cuenta las viviendas retiradas del mercado residencial. Las pernoctaciones turísticas tampoco equivalen a viviendas desplazadas.',
   },
   {
+    id: 'subjective-financial-strain', label: 'dificultad declarada para cubrir los gastos habituales',
+    when: subjectiveFinancialStrain,
+    direct: ['subjective_poverty_rate'], context: ['subjective_poverty_difficulty_rate', 'subjective_poverty_great_difficulty_rate'], claimType: 'descriptive',
+    needs: ['respuesta del hogar sobre su capacidad para cubrir gastos habituales', 'población y año de la encuesta'],
+    explanation: 'EU-SILC pregunta a una persona del hogar si sus ingresos totales le permiten cubrir los gastos habituales. Eurostat define la pobreza subjetiva con las respuestas «con dificultad» o «con gran dificultad».',
+    limitation: 'Es una percepción del hogar y el porcentaje se expresa sobre la población residente en hogares privados. No es un recuento de hogares, no identifica el empleo o la jornada de sus integrantes y no equivale al umbral monetario de pobreza.',
+  },
+  {
     id: 'working-poverty', label: 'trabajar y no poder cubrir los gastos',
     when: (t) => /\b(trabaj\w*|emple\w*|ocupad\w*|jornada completa)\b/.test(t) && /\b(pobrez\w*|pobres?|fin de mes|alcanza para vivir|llega para vivir|cubrir (?:los )?gastos)\b/.test(t),
     direct: ['in_work_poverty_rate', 'in_work_poverty_full_time_rate', 'in_work_poverty_part_time_rate'], context: [],
     needs: ['renta disponible del hogar y umbral de pobreza', 'tipo de jornada', 'periodo y población'],
     explanation: 'Tener empleo no garantiza quedar fuera del riesgo de pobreza: Eurostat mide si la renta disponible equivalente del hogar queda por debajo del 60 % de la mediana nacional, después de transferencias.',
-    limitation: 'El umbral de pobreza no equivale a declarar dificultades para llegar a fin de mes. Una tasa general de ocupación o de contratos temporales no mide ninguna de esas dos situaciones.',
+    limitation: 'El umbral relativo de pobreza no mide la dificultad declarada para llegar a fin de mes. La respuesta subjetiva de EU-SILC es del hogar y no identifica el empleo ni la jornada de sus integrantes. El periodo es el año de la encuesta EU-SILC y los ingresos del umbral de pobreza pueden referirse a un año anterior.',
   },
   {
     id: 'local-safety-trend', label: 'evolución local de los delitos registrados o de la percepción de inseguridad',
@@ -1341,7 +1353,13 @@ export const focusedMetricIdsFor = (claim) => {
   const text = normalize(claim);
   const primaryCareRateRequested = /\b(porcentaje|proporcion|por ciento)\b/.test(text) || /\d+(?:[.,]\d+)?\s*%/i.test(String(claim));
   const primaryCareDurationRequested = /\b(cuantos dias|demora media|tiempo medio|duracion media|media de (?:la )?(?:espera|demora)|promedio(?: de (?:la )?(?:espera|demora|tiempo))?|en promedio|average wait|mean wait|average delay)\b/.test(text);
-  const direct = focus.id === 'education-employment-outcomes' ? educationOutcomeMetrics(claim)
+  const subjectiveDifficultyAndGreatDifficulty = /\b(?:dificultad\s+(?:o|y)\s+gran dificultad|con dificultad\s+(?:o|y)\s+con gran dificultad|pobreza subjetiva)\b/.test(text);
+  const subjectiveResponseMetric = focus.id === 'subjective-financial-strain' && !subjectiveDifficultyAndGreatDifficulty
+    ? /\bcon dificultad\b/.test(text) && !/\bgran dificultad\b/.test(text) ? 'subjective_poverty_difficulty_rate'
+      : /\bgran dificultad\b/.test(text) && !/\bcon dificultad\b/.test(text) ? 'subjective_poverty_great_difficulty_rate' : undefined
+    : undefined;
+  const direct = focus.id === 'subjective-financial-strain' && subjectiveResponseMetric ? [subjectiveResponseMetric]
+    : focus.id === 'education-employment-outcomes' ? educationOutcomeMetrics(claim)
     : focus.id === 'working-poverty' && /\b(jornada completa|tiempo completo)\b/.test(text) && /\b(jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)\b/.test(text) ? ['in_work_poverty_full_time_rate', 'in_work_poverty_part_time_rate']
     : focus.id === 'working-poverty' && /\b(jornada completa|tiempo completo)\b/.test(text) ? ['in_work_poverty_full_time_rate']
     : focus.id === 'working-poverty' && /\b(jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)\b/.test(text) ? ['in_work_poverty_part_time_rate']
@@ -1350,10 +1368,14 @@ export const focusedMetricIdsFor = (claim) => {
       : focus.id === 'primary-care-waits' && primaryCareRateRequested ? ['primary_care_wait_over_one_day_rate']
         : focus.id === 'primary-care-waits' && primaryCareDurationRequested ? ['primary_care_wait_days']
       : focus.id === 'housing-construction-pressure' && /\b(alquil\w*|arrendam\w*|rentas?)\b/.test(text) ? ['rental_price_index'] : focus.direct;
+  const subjectivePovertyContext = focus.id === 'working-poverty'
+    && /\b(fin de mes|alcanza para vivir|llega para vivir|cubrir (?:los )?gastos)\b/.test(text)
+    ? ['subjective_poverty_rate', 'subjective_poverty_difficulty_rate', 'subjective_poverty_great_difficulty_rate'] : [];
+  const selectedContext = focus.id === 'subjective-financial-strain' && subjectiveResponseMetric ? [] : focus.context;
   const european = /\b(europa|europe[oa]s?|ue|union europea)\b/.test(text);
   // An all-worker unemployment rate does not describe the availability of
   // vacancies with a particular contract, wage, schedule or employer.
   const specificJobConditions = focus.id === 'job-opportunities'
     && /\b(?:temporal\w*|indefinid\w*|precar\w*|dign\w*|salari\w*|sueld\w*|paga\w*|pagad\w*|jornada\w*|public\w*|funcionari\w*)\b/.test(text);
-  return new Set([...direct, ...(specificJobConditions ? [] : focus.context)].map((id) => european && known.has(`${id}_europe`) ? `${id}_europe` : id).filter((id) => known.has(id)));
+  return new Set([...direct, ...(specificJobConditions ? [] : selectedContext), ...subjectivePovertyContext].map((id) => european && known.has(`${id}_europe`) ? `${id}_europe` : id).filter((id) => known.has(id)));
 };

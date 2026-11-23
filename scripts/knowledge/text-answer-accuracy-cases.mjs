@@ -378,4 +378,54 @@ export const textAnswerAccuracyCases = [
       maxReplyWords: 200,
     },
   },
+  {
+    id: 'subjective-poverty-2025-above-threshold',
+    equivalenceGroup: 'subjective-poverty-spain-2025',
+    input: 'En España, en 2025, más del 20 % de la población declaró pobreza subjetiva.',
+    expected: {
+      state: 'limited', family: 'subjective-financial-strain', verdict: 'supported',
+      directSourceIds: ['eurostat-subjective-poverty-2026-11'],
+      replyIncludes: ['20,6 % de la población', '12,1 % respondió', '8,5 %', 'umbral de 20 %', 'hogares privados'],
+      replyExcludes: ['20,6 % de los hogares', 'jornada completa'],
+      evidence: [{
+        familyId: 'subjective_poverty_rate', sourceIds: ['eurostat-subjective-poverty-2026-11'],
+        dataIncludes: ['20,6 %', '12,1 %', '8,5 %', 'dificultad o gran dificultad'],
+        dimensions: { period: '2025', geography: 'España', population: 'hogares privados', denominator: 'población residente en hogares privados', unit: '%' },
+      }],
+      maxReplyWords: 160,
+    },
+  },
+  {
+    id: 'subjective-poverty-unsupported-age-neighbour',
+    input: 'En 2025, más del 20 % de los jóvenes declaró pobreza subjetiva en España.',
+    expected: {
+      state: 'insufficient', family: 'subjective-financial-strain', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['20,6 %'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'subjective-poverty-household-denominator-mismatch',
+    input: 'En España, en 2025, más del 20 % de los hogares declaró dificultad para llegar a fin de mes.',
+    expected: {
+      state: 'insufficient', family: 'subjective-financial-strain', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['20,6 % de la población', 'porcentaje de hogares'],
+      replyExcludes: ['20,6 % de los hogares'], evidence: [], maxReplyWords: 160,
+    },
+  },
+  {
+    id: 'subjective-poverty-single-response-category',
+    input: 'En España, en 2025, más del 10 % de la población respondió con dificultad para cubrir gastos habituales.',
+    expected: {
+      state: 'limited', family: 'subjective-financial-strain', verdict: 'supported',
+      directSourceIds: ['eurostat-subjective-poverty-2026-11'],
+      replyIncludes: ['12,1 %', 'con dificultad', 'solo a la categoría solicitada'],
+      replyExcludes: ['20,6 %', '8,5 %'],
+      evidence: [{
+        familyId: 'subjective_poverty_difficulty_rate', sourceIds: ['eurostat-subjective-poverty-2026-11'],
+        dataIncludes: ['12,1 %', 'Respuesta «con dificultad»'],
+        dimensions: { period: '2025', geography: 'España', population: 'hogares privados', denominator: 'población residente en hogares privados', unit: '%' },
+      }],
+      maxReplyWords: 160,
+    },
+  },
 ];
