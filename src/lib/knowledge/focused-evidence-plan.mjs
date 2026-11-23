@@ -594,6 +594,11 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         return /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(text)
           && !/\b(empres\w*|negocio\w*|sector\w*|productividad total de los factores|salario\w*|sueldo\w*)\b/.test(text);
       });
+    const sameRealWageComparison = focus.id === 'real-wages'
+      && propositions.length <= 3 && propositions.length >= 2
+      && propositions.some((proposition) => /\b(?:salari\w*|sueld\w*|nomina\w*|remuner\w*)\b/.test(normalize(proposition.text)))
+      && propositions.some((proposition) => /\b(?:poder adquisitivo|poder de compra|inflacion|precios|coste de la vida)\b/.test(normalize(proposition.text)))
+      && propositions.every((proposition) => /\b(?:salari\w*|sueld\w*|nomina\w*|remuner\w*|poder adquisitivo|poder de compra|inflacion|precios|coste de la vida)\b/.test(normalize(proposition.text)));
     const sameLandlordMotive = focus.id === 'rental-landlord-motives'
       && (/^(?:les|le|esa modalidad|esa forma)\b/.test(clauseText)
         && /\b(flexibil\w*|seguridad|riesg\w*|rentabil\w*)\b/.test(clauseText)
@@ -619,6 +624,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       && propositions.length === 2 && /\b(porque|ya que|debido a que|por tener|al haber)\b/.test(normalizedClaim)
       && /\b(paro|desemple\w*|candidat\w*|demandantes? de empleo|oferta de trabajadores|mano de obra|aspirantes?|vacantes?)\b/.test(clauseText);
     if (sameSectorOutput || sameGdpComparison && (gdpAggregateClause || gdpPerPersonClause)
+      || sameRealWageComparison
       || sameProductivityComparison && /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(clauseText)) return true;
     if (sameLandlordMotive) return true;
     if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism || unemploymentSupplyExplanation) return true;

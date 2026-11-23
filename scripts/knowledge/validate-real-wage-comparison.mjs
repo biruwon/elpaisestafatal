@@ -26,9 +26,9 @@ for (const claim of ['Los salarios pierden poder adquisitivo frente al coste de 
   assert.match(plan.shareableReply, /índice armonizado de precios de consumo subió aproximadamente un 21,9 %/);
   assert.match(plan.shareableReply, /índice salarial bajó aproximadamente un 4,6 %/);
   assert.match(plan.shareableReply, /2022 y 2025.*subió aproximadamente un 3 %/);
-  assert.match(plan.shareableReply, /No es el sueldo neto o mediano/);
-  assert.match(plan.shareableReply, /no mide el coste de vida de cada hogar/);
-  assert.match(plan.shareableReply, /no demuestra que haya ocurrido lo mismo cada año/);
+  assert.match(plan.shareableReply, /no es neto, mediano ni individual/);
+  assert.match(plan.shareableReply, /no mide el coste de cada hogar/);
+  assert.match(plan.shareableReply, /no prueba que ocurriera lo mismo cada año/);
   assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'mixed', 'A direct aggregate comparison with clear scope limits should be reported as partial');
   assert.deepEqual(new Set(plan.sourceIds), new Set(['wages', 'prices']));
   assert.ok(validateAnswerPlan(plan).ok, JSON.stringify(validateAnswerPlan(plan).errors));

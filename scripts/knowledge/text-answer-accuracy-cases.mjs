@@ -650,6 +650,41 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'nominal-wages-and-purchasing-power-claim',
+    equivalenceGroup: 'nominal-wages-and-purchasing-power-spain-2020-2025',
+    input: 'Los salarios nominales han subido pero no lo suficiente para recuperar todo el poder adquisitivo perdido',
+    expected: {
+      state: 'limited', family: 'real-wages', verdict: 'mixed',
+      directSourceIds: ['eurostat-annual-hourly-wages-spain-2026-11-23', 'eurostat-annual-hicp-spain-2026-11-23'],
+      replyIncludes: ['2020 y 2025', 'salarios brutos por hora trabajada subió aproximadamente un 16,3 %', 'precios de consumo subió aproximadamente un 21,9 %', 'índice salarial bajó aproximadamente un 4,6 %', 'índice salarial ajustado por precios subió aproximadamente un 3 %'],
+      replyExcludes: ['todo trabajador perdió exactamente un 4,6 %', 'el coste de vida de cada hogar subió un 21,9 %'],
+      evidence: [
+        {
+          familyId: 'annual_hourly_wage_index', sourceIds: ['eurostat-annual-hourly-wages-spain-2026-11-23'],
+          dataIncludes: ['2020: 100', '2025: 116,3'],
+          dimensions: { geography: 'España', period: '2020–2025', population: 'Personas asalariadas en industria, construcción y servicios; costes salariales por hora', denominator: 'Horas trabajadas', unit: 'Índice, 2020 = 100' },
+        },
+        {
+          familyId: 'annual_hicp_index', sourceIds: ['eurostat-annual-hicp-spain-2026-11-23'],
+          dataIncludes: ['2020: 82,05', '2025: 100'],
+          dimensions: { geography: 'España', period: '2020–2025', population: 'Cesta armonizada de consumo, todos los productos', unit: 'Índice medio anual' },
+        },
+      ],
+      maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'nominal-wages-and-purchasing-power-paraphrase',
+    equivalenceGroup: 'nominal-wages-and-purchasing-power-spain-2020-2025',
+    input: 'Las nóminas han crecido, pero siguen por debajo de la inflación acumulada',
+    expected: {
+      state: 'limited', family: 'real-wages', verdict: 'mixed',
+      directSourceIds: ['eurostat-annual-hourly-wages-spain-2026-11-23', 'eurostat-annual-hicp-spain-2026-11-23'],
+      replyIncludes: ['2020 y 2025', 'subió aproximadamente un 16,3 %', 'subió aproximadamente un 21,9 %', 'bajó aproximadamente un 4,6 %'],
+      replyExcludes: ['todo trabajador perdió exactamente un 4,6 %'], evidence: [], maxReplyWords: 150,
+    },
+  },
+  {
     id: 'productivity-per-person-explicit-downward-direction',
     input: 'La productividad real por persona ocupada bajó entre 2019 y 2025',
     expected: {

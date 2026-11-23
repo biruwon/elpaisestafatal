@@ -20,7 +20,7 @@ for (const claim of realWageParaphrases) {
   assert.deepEqual(plan.sourceIds, ['eurostat-annual-hourly-wages-spain-2026-11-23', 'eurostat-annual-hicp-spain-2026-11-23']);
   assert.match(plan.shareableReply, /entre 2020 y 2025/);
   assert.match(plan.shareableReply, /índice salarial bajó aproximadamente un 4,6 %/);
-  assert.match(plan.limitation, /No es el sueldo neto o mediano/);
+  assert.match(plan.limitation, /no es neto, mediano ni individual/);
   realWageSources ||= plan.sourceIds;
   assert.deepEqual(plan.sourceIds, realWageSources, 'Real-wage paraphrases should use the same aligned series');
   assert.ok(validateAnswerPlan(plan).ok, JSON.stringify(validateAnswerPlan(plan).errors));

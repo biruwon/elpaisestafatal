@@ -900,7 +900,7 @@ to the broad scorecard. The acceptance suite is part of classifier validation.
 The six source observations still need editorial refresh before this broad
 scorecard can return numerical values again.
 
-## Text-first GDP and productivity claims — 23 November 2026
+## Text-first economic claims — 23 November 2026
 
 The reusable text-analysis family now distinguishes real GDP growth,
 real GDP per capita, labour productivity per employed person, labour
@@ -915,13 +915,25 @@ survey employment rate. [Eurostat productivity metadata](https://ec.europa.eu/eu
 and the [annual national-accounts series](https://ec.europa.eu/eurostat/databrowser/view/nama_10_lp_ulc/default/table?lang=en)
 define the measures and provide the underlying data.
 
+The text path also handles compound claims about nominal pay and purchasing
+power when both clauses describe the same wage/price comparison. In the
+reviewed 2020–2025 Eurostat series, the gross hourly wage index rose 16.3%,
+the harmonised consumer-price index rose 21.9%, and their ratio fell 4.6%;
+from 2022 to 2025 the ratio rose about 3%. The wage index covers industry,
+construction and services, not individual net or median pay, and the HICP is
+not a household-specific cost-of-living measure. [Eurostat hourly wages](https://ec.europa.eu/eurostat/databrowser/view/lc_lci_r2_a/default/table?lang=en)
+and [harmonised consumer prices](https://ec.europa.eu/eurostat/databrowser/view/prc_hicp_ainr/default/table?lang=en)
+are the source series. Answers identify this as a scoped index comparison,
+not a statement that every worker gained or lost the same amount.
+
 Answers compare the two productivity denominators and add GDP or employment
 context only when the submitted text calls for it. They say when a comparison
 does not measure a claimed cause; the indicators do not assign GDP growth to
 employment or productivity. Tests cover paraphrases with matching sources,
-claims that request population context, period and territory mismatches, and
-nearby employment claims that must not cross-route. The held-out text-answer
-benchmark passes 43/43; this regression set is not a population-wide estimate
-of factual accuracy. The 300-item unverified discovery set has 3 complete,
-30 limited and 267 uncovered deterministic responses; those are routing and
+claims that request population context, compound wage-price clauses, period
+and territory mismatches, and nearby employment claims that must not
+cross-route. The held-out text-answer benchmark passes 45/45 across ten
+paraphrase groups; this regression set is not a population-wide estimate of
+factual accuracy. The 300-item unverified discovery set has 3 complete,
+31 limited and 266 uncovered deterministic responses; those are routing and
 retrieval outcomes, not a factual-accuracy score.
