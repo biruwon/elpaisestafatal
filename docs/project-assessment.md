@@ -754,3 +754,36 @@ Regression checks cover the old and new workbook layouts, sample bases,
 paraphrases, latest-wave selection, local and service neighbours, causal and
 trend boundaries, the empty-D1 fallback, and the unavailable-D1 path. The
 reviewed fallback expires on 28 February 2027 pending a refresh.
+
+## Housing-supply text evidence — 23 November 2026
+
+The deterministic audit of 300 unverified, web-observed claims surfaced a
+recurring housing question that lacked a focused runtime answer: how new
+housing completions compare with household growth, and whether that gap caused
+rent increases. The text resolver now has a reusable construction-and-housing
+family, based on the Banco de España's [Annual Report 2025](https://www.bde.es/f/webbe/SES/Secciones/Publicaciones/PublicacionesAnuales/InformesAnuales/25/InfAnual_2025.pdf).
+
+For a direct national count, the report records 92,000 new homes completed in
+2025, 9% fewer than in 2024. For shortage and causal claims, the answer keeps
+that figure contextual and adds the report's estimate of 240,000 net new
+households in 2025 and a cumulative 2021–2025 difference of 750,000 homes,
+calculated by summing annual completions minus net household creation. The
+report expresses that difference as 3.7% of the 2025 resident-household stock
+and says 52.5% was concentrated in Madrid, Barcelona, Alicante, València,
+Murcia and Málaga. It also discusses planning processes, construction capacity,
+costs and specialised labour as several constraints; it does not quantify a
+municipality's permitting delay or the separate contribution of each factor.
+
+The answer does not treat the estimated national difference as a count of
+homeless households or available, affordable rental homes. It does not use
+these numbers to prove that construction or permits caused a rent increase.
+City-specific claims, other periods and plain rent-price trends receive no
+national construction figures. Tourist-housing displacement remains on its
+separate evidence path.
+
+Regression coverage checks direct-count paraphrases, causal paraphrases,
+nearby rent-price and tourism claims, and mismatched city and period requests.
+The deterministic audit moved from 3 complete, 22 limited and 275 uncovered
+responses to 3 complete, 23 limited and 274 uncovered. These are routing
+counts for an unverified discovery corpus, not an accuracy score or a result
+for the optional live resolver.

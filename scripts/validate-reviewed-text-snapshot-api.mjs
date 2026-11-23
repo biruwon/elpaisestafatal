@@ -110,6 +110,62 @@ assert.match(degreeRequirementTrend.body.result.reply, /no muestran qu[eé] titu
 assert.match(degreeRequirementTrend.body.result.evidenceSummary.missingDimensions.join(' '), /anuncios de las mismas ocupaciones en periodos comparables/);
 assert.deepEqual(degreeRequirementTrend.body.result.sources, []);
 
+for (const paraphrase of [
+  '¿Cuántas viviendas nuevas se terminaron en España en 2025?',
+  '¿Cuál fue el recuento de viviendas terminadas en España durante 2025?',
+]) {
+  const housingCompletion = await check(paraphrase);
+  assert.equal(housingCompletion.body.state, 'limited', paraphrase);
+  assert.equal(housingCompletion.body.result.answerScope.family, 'housing-completions', paraphrase);
+  assert.match(housingCompletion.body.result.reply, /92\.000.*2025/, paraphrase);
+  assert.ok(housingCompletion.body.result.sources.some((source) => source.id === 'bde-housing-supply-2025'), paraphrase);
+  assert.ok(housingCompletion.body.result.reply.trim().split(/\s+/).length <= 160, paraphrase);
+}
+
+for (const paraphrase of [
+  'La falta de vivienda nueva explica buena parte de la subida del alquiler',
+  'La escasez de nuevas viviendas presiona los alquileres porque la oferta no sigue el crecimiento de los hogares',
+]) {
+  const housingPressure = await check(paraphrase);
+  assert.equal(housingPressure.body.state, 'insufficient', paraphrase);
+  assert.equal(housingPressure.body.result.answerScope.family, 'housing-construction-pressure', paraphrase);
+  assert.equal(housingPressure.body.result.evidenceSummary.mode, 'snapshot', paraphrase);
+  assert.match(housingPressure.body.result.reply, /240\.000 hogares netos nuevos.*92\.000 viviendas nuevas terminadas/, paraphrase);
+  assert.match(housingPressure.body.result.reply, /750\.000 viviendas.*3,7 % del stock de hogares de 2025/, paraphrase);
+  assert.match(housingPressure.body.result.reply, /no demuestra|no cuantifica/, paraphrase);
+  assert.ok(housingPressure.body.result.sources.some((source) => source.id === 'bde-housing-supply-2025'), paraphrase);
+  assert.ok(housingPressure.body.result.reply.trim().split(/\s+/).length <= 160, paraphrase);
+}
+
+const housingCompletionWrongYear = await check('¿Cuántas viviendas nuevas se terminaron en España en 2024?');
+assert.equal(housingCompletionWrongYear.body.state, 'insufficient');
+assert.deepEqual(housingCompletionWrongYear.body.result.sources, []);
+assert.doesNotMatch(housingCompletionWrongYear.body.result.reply, /92\.000|750\.000/);
+
+const housingCompletionWrongTerritory = await check('¿Cuántas viviendas nuevas se terminaron en Madrid en 2025?');
+assert.equal(housingCompletionWrongTerritory.body.state, 'insufficient');
+assert.deepEqual(housingCompletionWrongTerritory.body.result.sources, []);
+assert.doesNotMatch(housingCompletionWrongTerritory.body.result.reply, /92\.000|750\.000/);
+
+const housingPressureWrongTerritory = await check('La falta de vivienda nueva en Madrid explica la subida del alquiler');
+assert.equal(housingPressureWrongTerritory.body.state, 'insufficient');
+assert.deepEqual(housingPressureWrongTerritory.body.result.sources, []);
+assert.doesNotMatch(housingPressureWrongTerritory.body.result.reply, /240\.000|92\.000|750\.000/);
+
+const housingPressureWrongPeriod = await check('La falta de vivienda nueva explica la subida del alquiler entre 2022 y 2024');
+assert.equal(housingPressureWrongPeriod.body.state, 'insufficient');
+assert.deepEqual(housingPressureWrongPeriod.body.result.sources, []);
+assert.doesNotMatch(housingPressureWrongPeriod.body.result.reply, /240\.000|92\.000|750\.000/);
+
+const rentPriceNeighbour = await check('El precio del alquiler subió en España durante 2025');
+assert.notEqual(rentPriceNeighbour.body.result?.answerScope?.family, 'housing-construction-pressure');
+assert.doesNotMatch(JSON.stringify(rentPriceNeighbour.body.result?.sources || []), /bde-housing-supply-2025/);
+assert.doesNotMatch(rentPriceNeighbour.body.result?.reply || '', /240\.000|92\.000|750\.000/);
+
+const touristHousingNeighbour = await check('Los pisos turísticos reducen la oferta de alquiler residencial');
+assert.notEqual(touristHousingNeighbour.body.result?.answerScope?.family, 'housing-construction-pressure');
+assert.doesNotMatch(JSON.stringify(touristHousingNeighbour.body.result?.sources || []), /bde-housing-supply-2025/);
+
 const primaryCareWait = await check('Hay que esperar demasiado para conseguir cita con el médico de familia');
 assert.equal(primaryCareWait.httpStatus, 200);
 assert.equal(primaryCareWait.body.state, 'limited');
@@ -181,4 +237,4 @@ assert.equal(primaryCareUnavailable.body.state, 'unavailable');
 assert.doesNotMatch(primaryCareUnavailable.body.result?.reply || '', /9,71|72 %/);
 
 await Promise.all(pending);
-console.log('Reviewed text snapshot Pages fallback passed: empty D1 uses scoped education, working-poverty, and primary-care data; failed D1 reads remain unavailable.');
+console.log('Reviewed text snapshot Pages fallback passed: empty D1 uses scoped education, working-poverty, primary-care, and housing-supply data; failed D1 reads remain unavailable.');

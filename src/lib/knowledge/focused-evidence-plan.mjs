@@ -486,7 +486,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && (!focus.explanationEvidence.when || focus.explanationEvidence.when(normalize(claim))) ? focus.explanationEvidence : undefined;
   const workHousingTrendRequested = focus.id === 'work-housing-independence'
     && /\b(ya no|cada vez|se ha vuelto|antes|ahora|desde (?:19|20)\d{2}|en (?:19|20)\d{2}|entre (?:19|20)\d{2} y (?:19|20)\d{2}|ultimos a[nñ]os)\b/.test(normalizedClaim);
-  const claimType = focus.id === 'working-poverty' && workingPovertyWorktimeComparisonRequested ? 'comparative'
+  const claimType = typeof focus.claimTypeFor === 'function' ? focus.claimTypeFor(normalizedClaim)
+    : focus.id === 'working-poverty' && workingPovertyWorktimeComparisonRequested ? 'comparative'
     : focus.id === 'working-poverty' && workingPovertyTrendRequested ? 'trend'
     : focus.id === 'private-healthcare-access'
     ? privateHealthcareAccessClaimType(claim)

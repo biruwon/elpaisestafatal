@@ -64,6 +64,8 @@ const cases = [
   ['tourist-housing-share', ['¿Qué porcentaje del parque de viviendas corresponde a viviendas turísticas?', '¿Qué parte del parque de viviendas son viviendas de uso turístico?']],
   ['tourist-housing-registration', ['¿Cuántos pisos turísticos con licencia están registrados?', '¿Cuántas viviendas de uso turístico tienen número de inscripción válido?']],
   ['tourist-housing-supply', ['Los pisos turísticos están quitando viviendas del alquiler residencial', 'Los apartamentos turísticos reducen la oferta para quienes viven en las ciudades', 'La vivienda turística desplaza alquileres de larga duración']],
+  ['housing-completions', ['¿Cuántas viviendas nuevas se terminaron en España en 2025?', '¿Cuál fue el recuento de viviendas terminadas en España durante 2025?', '¿Se terminaron 92.000 viviendas nuevas en España en 2025?']],
+  ['housing-construction-pressure', ['La falta de vivienda nueva explica buena parte de la subida del alquiler', 'Se construyen pocas viviendas frente al número de hogares que se crean', 'La lentitud de las licencias urbanísticas retrasa la construcción de viviendas nuevas']],
   ['housing-supply', ['¿Cuántas casas vacías hay disponibles en la ciudad?']],
   ['foreign-housing-price-causality', ['Las compras de vivienda por extranjeros no residentes están encareciendo el mercado en zonas costeras', 'Las adquisiciones de compradores extranjeros elevan los precios de las casas en la costa']],
   ['migration-housing-demand-causality', ['La inmigración está haciendo que suban los alquileres en algunas ciudades', 'El aumento de población migrante eleva los precios de la vivienda local', 'Los extranjeros encarecen los alquileres en las ciudades']],
@@ -189,6 +191,45 @@ assert.equal(claimFocusFor('El alquiler se lleva más de la mitad del salario jo
 assert.equal(claimFocusFor('Un seguro de impago cubre al propietario si el inquilino deja de pagar')?.id, undefined, 'Insurance coverage alone must not be interpreted as tenant exclusion');
 assert.equal(claimFocusFor('Los precios del alquiler subieron después de aprobarse la ley')?.id, undefined, 'A rent-price trend must not be mistaken for a contract-supply shift caused by regulation');
 assert.equal(claimFocusFor('Los pisos turísticos reducen la oferta de alquiler residencial')?.id, 'tourist-housing-supply', 'Tourist conversion claims must remain separate from landlord-reason claims');
+assert.notEqual(claimFocusFor('El precio del alquiler subió en España durante 2025')?.id, 'housing-construction-pressure', 'A rent-price trend must not inherit the new-home supply context');
+assert.notEqual(claimFocusFor('El turismo eleva los alquileres en las ciudades')?.id, 'housing-construction-pressure', 'A general tourism and rent claim must not inherit the new-home supply context');
+assert.equal(claimFocusFor('Se construye demasiado poco por la lentitud de las licencias urbanísticas')?.id, undefined, 'An unspecified construction claim must not be assumed to concern residential homes');
+assert.equal(claimFocusFor('La falta de vivienda nueva en Madrid explica la subida del alquiler')?.id, 'housing-construction-pressure', 'A local supply claim must retain its family while national evidence is withheld by scope');
+const housingCompletionPlan = focusedEvidencePlan('¿Cuántas viviendas nuevas se terminaron en España en 2025?', { now: Date.parse('2026-11-23') });
+assert.equal(housingCompletionPlan.answerScope.family, 'housing-completions');
+assert.equal(housingCompletionPlan.claimType, 'descriptive');
+assert.equal(housingCompletionPlan.evidenceLevel, 'limited');
+assert.match(housingCompletionPlan.shareableReply, /92\.000.*2025/);
+assert.ok(housingCompletionPlan.sourceIds.includes('bde-housing-supply-2025'));
+const housingCompletionOldPeriod = focusedEvidencePlan('¿Cuántas viviendas nuevas se terminaron en España en 2024?', { now: Date.parse('2026-11-23') });
+assert.equal(housingCompletionOldPeriod.evidenceLevel, 'insufficient', 'The 2025 snapshot must not answer a different year');
+assert.deepEqual(housingCompletionOldPeriod.sourceIds, []);
+const housingCompletionLocal = focusedEvidencePlan('¿Cuántas viviendas nuevas se terminaron en Madrid en 2025?', { now: Date.parse('2026-11-23') });
+assert.equal(housingCompletionLocal.evidenceLevel, 'insufficient', 'A national completion count must not answer a city-level question');
+assert.deepEqual(housingCompletionLocal.sourceIds, []);
+const housingPressurePlan = focusedEvidencePlan('La falta de vivienda nueva explica buena parte de la subida del alquiler', { now: Date.parse('2026-11-23') });
+assert.equal(housingPressurePlan.answerScope.family, 'housing-construction-pressure');
+assert.equal(housingPressurePlan.claimType, 'causal');
+assert.equal(housingPressurePlan.evidenceLevel, 'limited');
+assert.deepEqual([...focusedMetricIdsFor('La falta de vivienda nueva explica buena parte de la subida del alquiler')], ['rental_price_index']);
+assert.deepEqual(housingPressurePlan.answerScope.directMetrics, [], 'The rent index is context and cannot establish construction-caused price changes');
+assert.deepEqual(housingPressurePlan.answerScope.contextMetrics, ['rental_price_index']);
+assert.ok(housingPressurePlan.shareableReply.includes('240.000 hogares netos nuevos'));
+assert.ok(housingPressurePlan.shareableReply.includes('750.000 viviendas'));
+assert.ok(housingPressurePlan.shareableReply.includes('no demuestra'));
+assert.ok(housingPressurePlan.evidenceSummary.families.every((family) => family.dataKind === 'context'));
+assert.ok(housingPressurePlan.sourceIds.includes('bde-housing-supply-2025'));
+assert.deepEqual([...focusedMetricIdsFor('La lentitud de las licencias urbanísticas retrasa la construcción de viviendas nuevas')], [], 'A construction delay without an explicit rent claim must not inherit a rent metric');
+const housingPressureParaphrasePlan = focusedEvidencePlan('La escasez de nuevas viviendas presiona los alquileres porque la oferta no sigue el crecimiento de los hogares', { now: Date.parse('2026-11-23') });
+assert.equal(housingPressureParaphrasePlan.answerScope.family, 'housing-construction-pressure');
+assert.equal(housingPressureParaphrasePlan.claimType, 'causal');
+assert.deepEqual(housingPressureParaphrasePlan.sourceIds, housingPressurePlan.sourceIds);
+const housingPressureLocal = focusedEvidencePlan('La falta de vivienda nueva en Madrid explica la subida del alquiler', { now: Date.parse('2026-11-23') });
+assert.equal(housingPressureLocal.evidenceLevel, 'insufficient', 'National context must not be shown as a Madrid measurement');
+assert.deepEqual(housingPressureLocal.sourceIds, []);
+const housingPressureOldPeriod = focusedEvidencePlan('La falta de vivienda nueva explica la subida del alquiler entre 2022 y 2024', { now: Date.parse('2026-11-23') });
+assert.equal(housingPressureOldPeriod.evidenceLevel, 'insufficient', 'The current snapshot must not be attached to an unsupported period');
+assert.deepEqual(housingPressureOldPeriod.sourceIds, []);
 assert.equal(claimFocusFor('¿Cuántas viviendas turísticas hay en España?')?.id, 'tourist-housing-count', 'A direct count question must use the count family');
 assert.equal(claimFocusFor('¿Qué proporción del parque de viviendas es de uso turístico?')?.id, 'tourist-housing-share', 'A direct share question must use the housing-stock denominator family');
 assert.equal(claimFocusFor('¿Cuántos apartamentos turísticos con licencia hay en España?')?.id, 'tourist-housing-registration', 'Platform estimates must not answer a licensing-register count');

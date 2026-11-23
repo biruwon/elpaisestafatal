@@ -1,4 +1,5 @@
 import { metricVocabulary } from './measurement-definitions.generated.mjs';
+import { HOUSING_COMPLETION_EVIDENCE, HOUSING_SUPPLY_PRESSURE_EVIDENCE } from './housing-supply-snapshot.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 const has = (text, expression) => expression.test(text);
@@ -472,6 +473,30 @@ const futurePensionOutlook = (t) => {
     && (/\b(futur\w*|generaci\w*|cuando (?:me |se )?jubil\w*|dentro de \d+ a[nñ]os|(?:pagar|cobrar|recibir|tener|haber)an)\b/.test(t) || namesFutureYear)
     && /\b(pag\w*|cobr\w*|recib\w*|tendr\w*|garantiz\w*|menor\w*|inferior\w*|reemplaz\w*|sustituci[oó]n|cu[aá]nt[oa])\b/.test(t);
 };
+const housingCompletionReference = (t) => !touristHousingMention(t)
+  && /\b(viviend\w*|casas?|pisos?)\b/.test(t)
+  && /\b(termin\w*|complet\w*|finaliz\w*)\b/.test(t);
+const housingCompletionCountQuestion = (t) => housingCompletionReference(t)
+  && (/\b(cuant\w*|numero|recuento|cantidad)\b/.test(t)
+    || /\b92\s*000\b/.test(t) && /\b2025\b/.test(t));
+const housingConstructionPressure = (t) => {
+  const residentialSubject = /\b(viviend\w*|casas?|pisos?|alquil\w*|arrendam\w*|residencial)\b/.test(t);
+  const constructionOrPlanning = /\b(constru\w*|edific\w*|obra nueva|viviendas? nuevas?|nuevas? viviendas?|viviendas? terminad\w*|licenci\w*|permis\w* urban\w*|planeamiento|urban[ií]stic\w*|suelo urbaniz\w*)\b/.test(t);
+  const mismatchOrDelay = /\b(falta|escasez|escas\w*|insuficien\w*|poc\w*|demasiad\w*|deficit|brecha|desfase|desajuste|lento\w*|lentitud|tard\w*|retras\w*|atasc\w*)\b/.test(t);
+  const causeOrPressure = /\b(explic\w*|caus\w*|provoc\w*|encarec\w*|presion\w*|subid\w*|aument\w*|sub\w*)\b/.test(t);
+  const householdComparison = /\b(hogares?|demanda)\b/.test(t)
+    && /\b(mas|menos|mayor\w*|menor\w*|crec\w*|aument\w*|por debajo|no alcanza|ritmo)\b/.test(t);
+  return residentialSubject && constructionOrPlanning
+    && (mismatchOrDelay || causeOrPressure || householdComparison)
+    && !touristHousingDisplacementClaim(t)
+    && !foreignHousingPriceCause(t);
+};
+const housingConstructionClaimType = (t) => {
+  if (/\b(caus\w*|explic\w*|provoc\w*|debido|porque|por culpa|hace que|oblig\w*|retras\w*|presion\w*)\b/.test(t)) return 'causal';
+  if (/\b(mas que|menos que|mayor\w* que|menor\w* que|compar\w*|frente a(?:l)?|por debajo|no alcanza)\b/.test(t)) return 'comparative';
+  if (/\b(cada vez|desde \d{4}|sub\w*|aument\w*|crec\w*|baj\w*|disminu\w*|reduc\w*)\b/.test(t)) return 'trend';
+  return 'descriptive';
+};
 const pensionWageComparison = (t) => /\b(pension\w*|jubilad\w*|jubilacion\w*)\b/.test(t)
   && (/\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w*)\b/.test(t)
     || /\b(cobr\w*|pagan?)\b/.test(t) && /\b(trabajador\w*|emplead\w*|ocupad\w*)\b/.test(t))
@@ -776,6 +801,25 @@ const focuses = [
     needs: ['viviendas que pasan del alquiler residencial a uso turístico en el mismo territorio y periodo', 'oferta de alquiler residencial antes y después del cambio', 'diseño que permita atribuir el cambio al uso turístico y no a otros factores'],
     explanation: 'El recuento de viviendas turísticas y su peso en el parque describen el uso turístico estimado; no indican cuántas viviendas dejaron el alquiler residencial ni prueban que el turismo causara una reducción de oferta.',
     limitation: 'La estadística experimental del INE usa anuncios deduplicados de tres plataformas y criterios autonómicos. El dato agregado no mide alquileres residenciales perdidos, y una cifra provincial o autonómica no describe barrios o municipios.',
+  },
+  {
+    id: 'housing-completions', label: 'viviendas residenciales nuevas terminadas',
+    when: housingCompletionCountQuestion,
+    direct: [], context: [], claimType: 'descriptive',
+    needs: ['recuento de viviendas residenciales terminadas en el periodo y territorio solicitados'],
+    explanation: 'La cifra del Banco de España es un recuento anual nacional de viviendas nuevas terminadas.',
+    explanationEvidence: HOUSING_COMPLETION_EVIDENCE,
+    limitation: 'El recuento nacional no mide cuántas viviendas son asequibles, están disponibles para alquilar o se terminaron en una ciudad concreta.',
+  },
+  {
+    id: 'housing-construction-pressure', label: 'producción de vivienda y crecimiento neto de hogares',
+    when: housingConstructionPressure,
+    direct: [], context: [], claimTypeFor: housingConstructionClaimType,
+    needs: ['viviendas terminadas o disponibles y creación neta de hogares del mismo territorio y periodo', 'rentas o precios residenciales medidos en ese mismo ámbito', 'si se afirma causalidad, una comparación que separe planificación, capacidad constructora, financiación, costes y demanda'],
+    explanation: 'Las cifras nacionales orientan sobre la oferta, pero no prueban qué causó un cambio en los alquileres.',
+    evidenceGap: 'Faltan datos comparables de oferta y alquiler por municipio; la brecha nacional no demuestra por sí sola una causa.',
+    explanationEvidence: HOUSING_SUPPLY_PRESSURE_EVIDENCE,
+    limitation: 'Este cálculo nacional no cuenta hogares sin vivienda ni identifica unidades disponibles, asequibles o situadas donde creció la demanda.',
   },
   {
     id: 'housing-supply', label: 'viviendas disponibles para uso residencial',
@@ -1226,7 +1270,8 @@ export const focusedMetricIdsFor = (claim) => {
     : focus.id === 'working-poverty' && /\b(jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)\b/.test(text) ? ['in_work_poverty_part_time_rate']
     : focus.id === 'working-poverty' ? ['in_work_poverty_rate']
     : focus.id === 'primary-care-waits' && /\b(porcentaje|proporcion|por ciento)\b/.test(text) ? ['primary_care_wait_over_one_day_rate']
-      : focus.id === 'primary-care-waits' && /\b(cuantos dias|demora media|tiempo medio)\b/.test(text) ? ['primary_care_wait_days'] : focus.direct;
+      : focus.id === 'primary-care-waits' && /\b(cuantos dias|demora media|tiempo medio)\b/.test(text) ? ['primary_care_wait_days']
+      : focus.id === 'housing-construction-pressure' && /\b(alquil\w*|arrendam\w*|rentas?)\b/.test(text) ? ['rental_price_index'] : focus.direct;
   const european = /\b(europa|europe[oa]s?|ue|union europea)\b/.test(text);
   // An all-worker unemployment rate does not describe the availability of
   // vacancies with a particular contract, wage, schedule or employer.
