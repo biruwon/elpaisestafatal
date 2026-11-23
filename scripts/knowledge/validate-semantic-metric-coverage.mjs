@@ -1,3 +1,4 @@
+import assert from 'node:assert/strict';
 import { excludedMetricIdsForQuery, metricQueryTextForIds, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
 
 // These are deliberately new conversational formulations rather than
@@ -35,7 +36,11 @@ const cases = [
   ['¿Cuántas adjudicaciones de vivienda pública hay?', 'public_housing_allocations_by_group'],
   ['Los sueldos españoles son de los peores de Europa', 'median_hourly_earnings_europe'],
   ['La industria española está produciendo menos', 'industrial_production_index'],
-  ['Hay muchos puestos de trabajo sin cubrir', 'job_vacancy_rate'],
+  ['Hay muchos puestos de trabajo sin cubrir', 'job_vacancy_count'],
+  ['¿Qué porcentaje de puestos vacantes hay?', 'job_vacancy_rate'],
+  ['¿Cuántos puestos de trabajo están ocupados?', 'occupied_job_post_count'],
+  ['¿Cómo cambió la tasa de vacantes frente al trimestre anterior?', 'job_vacancy_rate_quarterly_change'],
+  ['¿Cuántos puntos porcentuales cambió la tasa de vacantes frente al trimestre anterior?', 'job_vacancy_rate_quarterly_change'],
   ['Cada vez más hogares se retrasan con el alquiler o la hipoteca', 'housing_payment_arrears_rate'],
   ['La gente no va al médico porque no puede pagarlo', 'unmet_healthcare_cost_rate'],
   ['Hay menos profesores por alumno', 'education_personnel'],
@@ -150,6 +155,10 @@ if (preferredMetricIdsForQuery(sexSpecificUnemployment).size
   || !excludedMetricIdsForQuery(sexSpecificUnemployment).has('employment_rate_by_sex')) {
   throw new Error('An employment-by-sex rate must not answer an unemployment-by-sex request');
 }
+const unemploymentRateAndCount = '¿Cuál es la tasa de desempleo y cuántas personas no tienen empleo?';
+if (!preferredMetricIdsForQuery(unemploymentRateAndCount).has('unemployment_rate')) {
+  throw new Error('Vacancy-specific rate/count ambiguity must not suppress unemployment routing');
+}
 const pensionNearNeighbors = [
   ['¿Qué déficit proyecta AIReF para el sistema público de pensiones?', 'pension_system_balance_projected', 'pension_system_expenditure_projected'],
   ['¿Qué transferencias implícitas necesitará el sistema para equilibrar las pensiones?', 'pension_implicit_transfers_projected', 'pension_public_transfers_projected'],
@@ -170,6 +179,25 @@ for (const [query, expected] of cases) {
   if (!ids.has(expected)) failures.push(`${query}: missing ${expected}`);
   if (ids.size > 2) failures.push(`${query}: ambiguous metric set ${[...ids].join(', ')}`);
 }
+
+for (const [query, expected] of [
+  ['¿Cuál fue la tasa de vacantes de empleo en España?', 'job_vacancy_rate'],
+  ['¿Qué porcentaje de puestos vacantes hubo en España?', 'job_vacancy_rate'],
+  ['¿Cuántos puestos sin cubrir había en España?', 'job_vacancy_count'],
+  ['¿Cuál fue el número de vacantes laborales?', 'job_vacancy_count'],
+  ['¿Cuántos puestos de trabajo están ocupados?', 'occupied_job_post_count'],
+  ['¿Cómo cambió la tasa de vacantes frente al trimestre anterior?', 'job_vacancy_rate_quarterly_change'],
+  ['What was Spain’s job vacancy rate?', 'job_vacancy_rate'],
+  ['How many job vacancies were there?', 'job_vacancy_count'],
+  ['How many occupied posts were there?', 'occupied_job_post_count'],
+  ['What was the quarterly change in the vacancy rate?', 'job_vacancy_rate_quarterly_change'],
+]) {
+  assert.deepEqual([...preferredMetricIdsForQuery(query)], [expected], `Vacancy measurement wording crossed indicator families: ${query}`);
+}
+assert(![...preferredMetricIdsForQuery('¿Cuál es la tasa de paro en España?')].some((id) => id.startsWith('job_vacancy_') || id === 'occupied_job_post_count'), 'An unemployment-rate question must not route to vacancy indicators');
+assert.deepEqual([...preferredMetricIdsForQuery('¿Cuál fue la tasa de puestos ocupados?')], [], 'A rate of occupied posts is not the occupied-post count');
+assert.deepEqual([...preferredMetricIdsForQuery('¿Cuál fue la tasa de vacantes y el número de puestos vacantes?')], [], 'A mixed vacancy count/rate request must ask which measure is intended');
+assert.deepEqual([...preferredMetricIdsForQuery('¿Cuántos puntos porcentuales cambió la tasa de vacantes frente al trimestre anterior?')], ['job_vacancy_rate_quarterly_change'], 'A point-change question must not be mistaken for a request for post counts');
 
 if (failures.length) {
   console.error(failures.join('\n'));

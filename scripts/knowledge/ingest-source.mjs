@@ -18,8 +18,10 @@ const urlValue = args.get('url');
 const publisher = args.get('publisher') || 'unclassified';
 const title = args.get('title') || publisher;
 const metricId = args.get('metric-id');
+let metricIdByDimension;
 let aliases = [];
 try { aliases = args.has('aliases') ? JSON.parse(args.get('aliases')) : []; } catch { aliases = []; }
+try { metricIdByDimension = args.has('metric-id-by-dimension') ? JSON.parse(args.get('metric-id-by-dimension')) : undefined; } catch { metricIdByDimension = undefined; }
 if (!Array.isArray(aliases)) aliases = [];
 const allowUnlisted = args.get('allow-unlisted') === 'true';
 if (!urlValue) {
@@ -29,6 +31,25 @@ if (!urlValue) {
 if (metricId && !(await hasMetric(metricId))) {
   console.error(`Unknown metric id: ${metricId}`);
   process.exit(1);
+}
+if (metricIdByDimension !== undefined) {
+  if (!metricIdByDimension || typeof metricIdByDimension !== 'object' || Array.isArray(metricIdByDimension)
+    || Object.keys(metricIdByDimension).length !== 1) {
+    console.error('Metric mapping must contain exactly one source dimension');
+    process.exit(1);
+  }
+  const [dimensionId, values] = Object.entries(metricIdByDimension)[0];
+  if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(dimensionId) || !values || typeof values !== 'object' || Array.isArray(values)
+    || !Object.keys(values).length) {
+    console.error('Metric mapping must map dimension codes to metric IDs');
+    process.exit(1);
+  }
+  for (const [code, mappedMetricId] of Object.entries(values)) {
+    if (!code.trim() || typeof mappedMetricId !== 'string' || !(await hasMetric(mappedMetricId))) {
+      console.error(`Invalid metric mapping for ${dimensionId}=${code}`);
+      process.exit(1);
+    }
+  }
 }
 
 const sourceUrl = new URL(urlValue);
@@ -59,16 +80,20 @@ try { await readFile(objectPath); } catch { await writeFile(objectPath, bytes); 
 const resolvedPublisher = publisher === 'unclassified' ? sourceDefinition?.publisher || publisher : publisher;
 const connectorDefinition = connectorForId(connector);
 const schedule = isBoeLegalDiscoveryUrl(sourceUrl) ? 'weekly' : sourceDefinition?.schedule;
+const baseParserVersion = connectorDefinition?.parserVersion || 'discovery-v1';
+const parserVersion = metricIdByDimension
+  ? `${baseParserVersion}+metric-map-${createHash('sha256').update(JSON.stringify(metricIdByDimension)).digest('hex').slice(0, 12)}`
+  : baseParserVersion;
 // The same payload can legitimately back multiple metric views (for example,
 // two Eurostat datasets with identical current observations). Include the
 // metric and URL in the manifest identity so one refresh cannot overwrite the
 // other metric's record while still deduplicating the raw object by content hash.
 const manifestId = createHash('sha256').update(`${metricId || ''}|${sourceUrl.toString()}|${hash}`).digest('hex');
-const manifest = { id: `source-${manifestId.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, schedule, metricId, url: sourceUrl.toString(), publisher: resolvedPublisher, title, aliases, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector, parserVersion: connectorDefinition?.parserVersion || 'discovery-v1' };
+const manifest = { id: `source-${manifestId.slice(0, 16)}`, sourceRegistryId: sourceDefinition?.id, schedule, metricId, ...(metricIdByDimension ? { metricIdByDimension } : {}), url: sourceUrl.toString(), publisher: resolvedPublisher, title, aliases, contentType, retrievedAt: new Date().toISOString(), sha256: hash, objectPath, trust: approved ? sourceDefinition.trustTier : 'discovery-only', connector, parserVersion };
 await writeFile(join(root, 'manifests', `${manifest.id}.json`), JSON.stringify(manifest, null, 2));
 let records = [];
 if (contentType.includes('json')) {
-  try { records = normalizeJsonPayload(JSON.parse(bytes.toString('utf8')), { id: manifest.id, title: manifest.title }); } catch { /* Keep the raw source when it is not a supported JSON shape. */ }
+  try { records = normalizeJsonPayload(JSON.parse(bytes.toString('utf8')), { id: manifest.id, title: manifest.title, metricId, metricIdByDimension }); } catch { /* Keep the raw source when it is not a supported JSON shape. */ }
 }
 if (contentType.includes('csv') || contentType.includes('tab-separated')) records = parseDelimitedRows(bytes.toString('utf8'), { rowId: (index) => `${manifest.id}-row-${index + 1}`, sourceId: manifest.id, metricId, retrievedAt: manifest.retrievedAt });
 if (contentType.includes('xml')) {

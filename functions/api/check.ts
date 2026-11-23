@@ -20,11 +20,12 @@ import { reviewedContextualAnswer } from '../lib/reviewed-contextual-answer.mjs'
 import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 import { captureClaimDemand, type ClaimDemandDatabase } from '../lib/claim-demand';
 import { searchD1Warehouse, searchD1WarehouseByMetricIds } from '../lib/d1-warehouse';
+import { vacancyMeasurementClarificationMetricIdsForQuery, vacancyMeasurementMetricIdsForQuery } from '../../src/lib/knowledge/vacancy-measurement-route.mjs';
 
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-44-2026-11';
+const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-46-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -36,6 +37,30 @@ const circuitBreakAfter = 2;
 const circuitCooldownMs = 30_000;
 
 const semanticFingerprint = (text: string): string => text.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
+const vacancyMetricIds = new Set(['job_vacancy_count', 'occupied_job_post_count', 'job_vacancy_rate', 'job_vacancy_rate_quarterly_change']);
+const vacancyMetricIdsFor = (text: string): string[] => [...(vacancyMeasurementMetricIdsForQuery(text) || [])].filter((id) => vacancyMetricIds.has(id));
+const vacancyClarificationFor = (claim: string): PublicCheckResponse => {
+  const labels: Record<string, string> = {
+    job_vacancy_count: 'Número de puestos de trabajo vacantes',
+    occupied_job_post_count: 'Número de puestos de trabajo ocupados',
+    job_vacancy_rate: 'Tasa de vacantes de empleo',
+  };
+  return {
+    state: 'clarification',
+    id: `clarify-vacancy-${Date.now().toString(36)}`,
+    claim,
+    question: '¿Qué medida quieres comprobar?',
+    options: vacancyMeasurementClarificationMetricIdsForQuery(claim).map((metricId) => ({
+      id: metricId,
+      label: labels[metricId] || metricId,
+      interpretation: {
+        kind: 'quantitative',
+        predicate: labels[metricId] || metricId,
+        normalizedClaim: `${claim} Quiero comprobar: ${labels[metricId] || metricId}.`,
+      },
+    })),
+  };
+};
 const responseCacheBypassed = (request: Request): boolean => {
   const url = new URL(request.url);
   return ['1', 'true'].includes((url.searchParams.get('fresh') || '').toLocaleLowerCase())
@@ -128,6 +153,19 @@ const rhetoricalClaim = (claim: string): boolean => {
 // explicitly carry qualification; otherwise use the domain packet, which
 // preserves the distinction between measurable facts and the slogan.
 export const chooseResponse = (claim: string, model: PublicCheckResponse | undefined, contextual: PublicCheckResponse): PublicCheckResponse => {
+  const requestedVacancyMetrics = vacancyMetricIdsFor(claim);
+  const modelResult = model && 'result' in model ? model.result : undefined;
+  const modelEvidenceMetrics = [
+    ...(modelResult?.evidenceSummary?.families || []).map((family) => family.metricId).filter((id): id is string => Boolean(id)),
+    ...(modelResult?.answerScope?.directMetrics || []),
+  ];
+  if (requestedVacancyMetrics.length > 0
+    && requestedVacancyMetrics.some((id) => modelEvidenceMetrics.includes(id))
+    && model
+    && modelResult
+    && ['supported', 'limited', 'insufficient'].includes(model.state)
+    && modelResult.sources.length > 0
+    && modelResult.evidenceSummary?.families.some((family) => family.evidenceIds.length > 0)) return model;
   if ((model?.state === 'supported' || model?.state === 'limited' || model?.state === 'insufficient')
     && model.result.answerScope?.kind === 'measurement' && claimFocusFor(claim)?.id === model.result.answerScope.family) return model;
   const reviewed = reviewedContextualAnswer(model, contextual);
@@ -223,6 +261,9 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
   if (!validation.ok) return json(unavailableCheck(body.text, inputErrorMessage(validation.code)), validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : 400);
   const effectiveClaim = body.clarification?.interpretation?.normalizedClaim || body.clarification?.prompt || body.text;
   if (effectiveClaim.length > INPUT_LIMITS.maxTextCharacters || (body.clarification?.prompt.length || 0) > INPUT_LIMITS.maxTextCharacters) return json(unavailableCheck('', inputErrorMessage('text_too_large')), 413);
+  const vacancyRoute = body.inputType === 'text' ? vacancyMeasurementMetricIdsForQuery(effectiveClaim) : undefined;
+  if (vacancyRoute && vacancyRoute.size === 0) return json(vacancyClarificationFor(effectiveClaim));
+  const vacancyMetrics = [...(vacancyRoute || [])].filter((id) => vacancyMetricIds.has(id));
   const submissionFallback = (): PublicCheckResponse => body.inputType === 'text'
     ? fallbackResponse(effectiveClaim, 'text')
     : unavailableCheck(body.text, 'No hemos podido leer el contenido ahora. Pega el texto de la afirmación para comprobarlo.');
@@ -257,9 +298,30 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       if (!bypassResponseCache) storeResponse(cacheKey, { expiresAt: Date.now() + 15 * 60_000, response });
       return json(response);
     }
-    const focus = claimFocusFor(effectiveClaim);
+    const focus = vacancyMetrics.length ? undefined : claimFocusFor(effectiveClaim);
+    const localResolverAvailable = Boolean(env.LOCAL_CLASSIFIER_ENDPOINT && env.LOCAL_CLASSIFIER_TOKEN && localCircuitOpenUntil <= Date.now());
+    const warehouseUnavailableMessage = 'No hemos podido consultar las series estadísticas ahora. Inténtalo de nuevo; todavía no sabemos si hay una medición compatible.';
+    if (vacancyMetrics.length) {
+      warehouseUnavailableResponse = unavailableCheck(effectiveClaim, 'No podemos verificar la serie que corresponde a esta medida ahora. No presentamos una cifra hasta comprobar que pertenece al indicador solicitado.');
+      if (!localResolverAvailable) {
+        return json(warehouseUnavailableResponse);
+      }
+      if (!env.DB) {
+        warehouseUnavailableResponse = unavailableCheck(effectiveClaim, warehouseUnavailableMessage);
+      } else {
+        let lookupFailed = false;
+        focusedObservations = await searchD1WarehouseByMetricIds(env.DB, vacancyMetrics).catch(() => {
+          lookupFailed = true;
+          return [];
+        });
+        if (lookupFailed) {
+          warehouseUnavailableResponse = unavailableCheck(effectiveClaim, warehouseUnavailableMessage);
+          focusedObservations = undefined;
+        }
+      }
+    }
     if (focus) {
-      const metricIds = [...(focusedMetricIdsFor(effectiveClaim) || [])];
+      const metricIds = vacancyMetrics.length ? vacancyMetrics : [...(focusedMetricIdsFor(effectiveClaim) || [])];
       const warehouseUnavailableMessage = 'No hemos podido consultar las series estadísticas ahora. Inténtalo de nuevo; todavía no sabemos si hay una medición compatible.';
       const localResolverAvailable = Boolean(env.LOCAL_CLASSIFIER_ENDPOINT && env.LOCAL_CLASSIFIER_TOKEN && localCircuitOpenUntil <= Date.now());
       if (focus.id === 'rental-price-amount' && (!env.DB || !metricIds.length)) return json(unavailableCheck(effectiveClaim, 'No podemos consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'));
@@ -350,8 +412,8 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     // from the mirror populated by the daily refresh workflow.
     let warehouseRecords: Record<string, unknown>[] | undefined;
     if (env.DB && body.inputType === 'text') {
-      const focus = claimFocusFor(effectiveClaim);
-      const comparisonMetrics = focus ? [...(focusedMetricIdsFor(effectiveClaim) || [])] : [];
+      const focus = vacancyMetrics.length ? undefined : claimFocusFor(effectiveClaim);
+      const comparisonMetrics = vacancyMetrics.length ? vacancyMetrics : focus ? [...(focusedMetricIdsFor(effectiveClaim) || [])] : [];
       const [contractRows, searchRows] = await Promise.all([
         focusedObservations ? Promise.resolve(focusedObservations) : comparisonMetrics.length ? searchD1WarehouseByMetricIds(env.DB, comparisonMetrics).catch(() => []) : Promise.resolve([]),
         searchD1Warehouse(env.DB, effectiveClaim).catch(() => []),

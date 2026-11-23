@@ -49,7 +49,14 @@ const jobs = Object.entries(config).flatMap(([sourceId, urls]) => {
   return urls.map((resource) => {
     const definition = typeof resource === 'string' ? { url: resource } : resource;
     if (!definition || typeof definition.url !== 'string') throw new Error(`Refresh resource for ${sourceId} must contain a URL`);
-    return { sourceId, url: expandUrl(definition.url), title: definition.title, aliases: Array.isArray(definition.aliases) ? definition.aliases : [], metricId: metricForResource(sourceId, definition) };
+    return {
+      sourceId,
+      url: expandUrl(definition.url),
+      title: definition.title,
+      aliases: Array.isArray(definition.aliases) ? definition.aliases : [],
+      metricId: metricForResource(sourceId, definition),
+      metricIdByDimension: definition.metricIdByDimension,
+    };
   });
 });
 if (!jobs.length) { console.log('Refresh configuration contains no URLs.'); process.exit(0); }
@@ -59,6 +66,7 @@ const runIngest = (job, url) => new Promise((resolve, reject) => {
   if (job.title) childArgs.push('--title', job.title);
   if (job.aliases.length) childArgs.push('--aliases', JSON.stringify(job.aliases));
   if (job.metricId) childArgs.push('--metric-id', job.metricId);
+  if (job.metricIdByDimension) childArgs.push('--metric-id-by-dimension', JSON.stringify(job.metricIdByDimension));
   const child = spawn(process.execPath, childArgs, { stdio: ['ignore', 'pipe', 'pipe'], timeout: 45000 });
   let output = '';
   child.stdout.on('data', (chunk) => { output += chunk; });

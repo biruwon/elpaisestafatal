@@ -739,9 +739,17 @@
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/jvs_q_nace2?geo=ES&sinceTimePeriod=2015",
-      "title": "Tasa de vacantes de empleo en España · Eurostat",
-      "aliases": ["vacantes de empleo", "puestos sin cubrir", "ofertas de trabajo sin cubrir", "tasa de vacantes"],
-      "metricId": "job_vacancy_rate"
+      "title": "Vacantes, puestos ocupados y tasa de vacantes en España · Eurostat",
+      "aliases": ["estadística de vacantes de empleo", "puestos ocupados y tasa de vacantes"],
+      "metricId": "job_vacancy_rate",
+      "metricIdByDimension": {
+        "indic_em": {
+          "JOBVAC": "job_vacancy_count",
+          "JOBOCC": "occupied_job_post_count",
+          "JVR": "job_vacancy_rate",
+          "JVRCH_Q": "job_vacancy_rate_quarterly_change"
+        }
+      }
     },
     {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes03?geo=ES&sinceTimePeriod=2015",

@@ -19,6 +19,7 @@ export const metricPolicyFor = (metricId) => {
     metricId,
     family: definition.family || familyFor(metricId),
     requiredDimensions: Array.isArray(definition.dimensions) && definition.dimensions.length ? definition.dimensions : ['period', 'geography'],
+    dimensionConstraints: definition.dimensionConstraints || {},
     supportedGeographies: ['ES', 'Spain'],
     periodGranularity: definition.dimensions?.includes('quarter') ? 'quarterly' : definition.dimensions?.includes('month') ? 'monthly' : 'annual-or-source-defined',
     freshnessPolicy: { maxAgeDays: definition.freshness?.maxAgeDays || 14, staleAction: definition.freshness?.staleAction || 'label-limited', expectedSchedule: definition.freshness?.expectedSchedule || 'daily' },

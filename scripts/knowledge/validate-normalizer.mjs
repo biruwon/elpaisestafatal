@@ -27,6 +27,30 @@ if (seriesRecords.length !== 2 || seriesRecords[0].metric !== records[0].metric 
 const flagged = normalizeJsonPayload({ id: ['time'], size: [2], dimension: { time: { category: { index: { '2024': 0, '2025': 1 }, label: { '2024': '2024', '2025': '2025' } } } }, value: { '0': 100, '1': 103 }, status: { '0': 'b', '1': 'p' } }, { id: 'source-jsonstat', title: 'Flagged statistical series' });
 if (flagged[0].status !== 'b' || flagged[1].status !== 'p') throw new Error('JSON-stat observation status flags were lost');
 
+const vacancyMetricMap = { indic_em: {
+  JOBVAC: 'job_vacancy_count',
+  JOBOCC: 'occupied_job_post_count',
+  JVR: 'job_vacancy_rate',
+  JVRCH_Q: 'job_vacancy_rate_quarterly_change',
+} };
+const vacancyRows = normalizeJsonPayload({
+  id: ['indic_em', 'time'],
+  size: [5, 1],
+  dimension: {
+    indic_em: { category: { index: { JOBVAC: 0, JOBOCC: 1, JVR: 2, JVRCH_Q: 3, FUTURE: 4 }, label: { JOBVAC: 'Job vacancies', JOBOCC: 'Occupied jobs', JVR: 'Job vacancy rate', JVRCH_Q: 'Quarterly rate change', FUTURE: 'New indicator' } } },
+    time: { category: { index: { '2025-Q4': 0 }, label: { '2025-Q4': '2025-Q4' } } },
+  },
+  value: { '0': 154247, '1': 17106029, '2': 0.9, '3': 0, '4': 99 },
+}, { id: 'source-eurostat-jvs-fixture', title: 'Eurostat job vacancy indicators', metricId: 'job_vacancy_rate', metricIdByDimension: vacancyMetricMap });
+const vacancyMetricIds = vacancyRows.map((row) => row.metricId);
+if (vacancyMetricIds.join(',') !== 'job_vacancy_count,occupied_job_post_count,job_vacancy_rate,job_vacancy_rate_quarterly_change,') {
+  throw new Error(`Eurostat vacancy indicators were not kept in separate metric families: ${vacancyMetricIds.join(',')}`);
+}
+if (vacancyRows[2].value !== 0.9 || vacancyRows[2].dimensions.indic_em !== 'JVR'
+  || vacancyRows[0].value !== 154247 || vacancyRows[0].dimensions.indic_em !== 'JOBVAC') {
+  throw new Error('Eurostat vacancy count and rate values lost their measurement dimension');
+}
+
 const boeRecords = normalizeJsonPayload({
   data: { sumario: { metadatos: { fecha_publicacion: '20260718' }, diario: [{ seccion: [{ nombre: 'I. Disposiciones generales', departamento: [{ nombre: 'MINISTERIO DE PRUEBA', epigrafe: [{ nombre: 'Normas', item: { identificador: 'BOE-A-1', titulo: 'Una disposición de prueba', url_html: 'https://www.boe.es/diario_boe/txt.php?id=BOE-A-1' } }] }] }] }] } },
 }, { id: 'source-boe-fixture', title: 'BOE fixture' });

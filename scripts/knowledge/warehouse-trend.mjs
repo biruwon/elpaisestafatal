@@ -15,6 +15,10 @@ const formatNumber = (value, metricId = '') => Number(value).toLocaleString('es-
   maximumFractionDigits: metricPrecision[metricId] || 2,
 });
 const metricLabels = {
+  job_vacancy_count: 'Número de puestos de trabajo vacantes en España',
+  occupied_job_post_count: 'Número de puestos de trabajo ocupados en España',
+  job_vacancy_rate: 'Tasa de vacantes de empleo en España',
+  job_vacancy_rate_quarterly_change: 'Variación trimestral de la tasa de vacantes en España',
   inflation_rate: 'Inflación anual en España',
   inflation_rate_europe: 'Inflación armonizada: España y la Unión Europea',
   gdp_current_prices: 'Tamaño nominal de la economía española',
@@ -119,6 +123,9 @@ export const displayMetric = (item) => {
 const displayUnit = (item) => {
   const metricId = String(item.metricId || '');
   const unit = normalise(item.unit);
+  if (metricId === 'job_vacancy_count' || metricId === 'occupied_job_post_count') return 'puestos';
+  if (metricId === 'job_vacancy_rate') return '%';
+  if (metricId === 'job_vacancy_rate_quarterly_change') return 'puntos porcentuales';
   if (metricId === 'gdp_current_prices') return 'millones de euros';
   if (metricId === 'gdp_per_capita_europe') return 'PPS por habitante';
   if (metricId === 'minimum_wage_monthly') return '€ al mes';

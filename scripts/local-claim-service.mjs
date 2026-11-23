@@ -49,6 +49,7 @@ import { governmentScorecardGapPlan, isBroadGovernmentScorecardClaim } from '../
 import { answerPlanForBroadDomains, broadDomainPacketsFor, broadMetricIdsFor } from '../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { researchFamilyGaps } from './knowledge/research-family-gaps.mjs';
 import { snapshotLifecycle } from '../src/lib/knowledge/snapshot-lifecycle.mjs';
+import { metricDimensionContractFits } from '../src/lib/knowledge/metric-contract.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const builtCatalogPath = new URL('../dist/claim-catalog.json', import.meta.url).pathname;
@@ -141,6 +142,8 @@ const broadComplaintText = (value) => {
   return /\b(?:espana|pais|este pais|el pais)\b[\s\w]{0,48}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|quebrada?|quiebra|bancarrota|impagable|insostenible|va peor|peor|mejorando?|progresa?|avanza?)\b/.test(normalized)
     || /\b(?:este pais|el pais|espana)\s+es\s+(?:un\s+)?desastre\b/.test(normalized);
 };
+const vacancyMetricIds = new Set(['job_vacancy_count', 'occupied_job_post_count', 'job_vacancy_rate', 'job_vacancy_rate_quarterly_change']);
+const hasSpecificVacancyMeasurement = (value) => [...preferredMetricIdsForQuery(value)].some((id) => vacancyMetricIds.has(id));
 
 // Metric routing is proposition-aware. A compound sentence must preserve the
 // union of registry families found in each explicit clause; checking only the
@@ -158,13 +161,25 @@ const compoundMetricIdsForInput = (text) => {
   }
   return ids;
 };
-const metricIdsForInput = (text, compiler = {}) => (compiler.explicitPropositions?.length > 1 ? undefined : focusedMetricIdsFor(text)) || new Set([
-  ...(Array.isArray(compiler.metricIds) ? compiler.metricIds : []),
-  ...preferredMetricIdsForQuery(text),
-  ...compoundMetricIdsForInput(text),
-  ...(Array.isArray(compiler.explicitPropositions) ? compiler.explicitPropositions : [])
-    .flatMap((item) => [...preferredMetricIdsForQuery(item?.text || '')]),
-]);
+const metricIdsForInput = (text, compiler = {}) => {
+  const ids = (compiler.explicitPropositions?.length > 1 ? undefined : focusedMetricIdsFor(text)) || new Set([
+    ...(Array.isArray(compiler.metricIds) ? compiler.metricIds : []),
+    ...preferredMetricIdsForQuery(text),
+    ...compoundMetricIdsForInput(text),
+    ...(Array.isArray(compiler.explicitPropositions) ? compiler.explicitPropositions : [])
+      .flatMap((item) => [...preferredMetricIdsForQuery(item?.text || '')]),
+  ]);
+  if (compiler.explicitPropositions?.length > 1) return ids;
+  const preferred = preferredMetricIdsForQuery(text);
+  const vacancyMeasurementIds = new Set(['job_vacancy_count', 'job_vacancy_rate', 'job_vacancy_rate_quarterly_change', 'occupied_job_post_count']);
+  const selectedVacancyMeasurement = [...preferred].filter((id) => vacancyMeasurementIds.has(id));
+  if (selectedVacancyMeasurement.length !== 1) return ids;
+  const vacancyFamilyMentioned = [...ids].some((id) => vacancyMeasurementIds.has(id));
+  if (!vacancyFamilyMentioned) return ids;
+  const result = new Set([...ids].filter((id) => !vacancyMeasurementIds.has(id) && id !== 'unemployment_rate'));
+  result.add(selectedVacancyMeasurement[0]);
+  return result;
+};
 const metricIdsForBroadInput = (text, compiler = {}) => focusedMetricIdsFor(text) || metricCandidatesForQuery(text, [
   ...(Array.isArray(compiler.concepts) ? compiler.concepts : []),
   ...(Array.isArray(compiler.propositions) ? compiler.propositions.flatMap((item) => item?.concepts || []) : []),
@@ -185,6 +200,9 @@ const displayUnit = (value, metricId = '', observation = {}) => {
   if (metricId === 'projected_population_65_plus' || metricId === 'projected_population_20_64') return 'personas proyectadas';
   if (metricId === 'old_age_survivors_benefits_total' || metricId === 'social_protection_contributions_total' || metricId === 'social_protection_government_contributions_total') return 'millones de euros';
   if (metricId === 'older_population_share' || metricId === 'young_population_share') return '% de la población';
+  if (metricId === 'job_vacancy_count' || metricId === 'occupied_job_post_count') return 'puestos';
+  if (metricId === 'job_vacancy_rate') return '%';
+  if (metricId === 'job_vacancy_rate_quarterly_change') return 'puntos porcentuales';
   if (metricId === 'population_change_rate') return 'por cada 1.000 habitantes';
   if (metricId === 'wildfire_incidents') return 'siniestros';
   if (metricId === 'wildfire_surface_affected') return 'hectáreas';
@@ -807,6 +825,7 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding, warehouseR
   const candidateLimit = requestsLatestObservation(query) ? 1000 : comparisonMetricRoute ? 500 : hintedMetricIds.size ? 250 : 100;
   const rawCandidates = await findWarehouseObservations(query, candidateLimit, { queryEmbedding, metricIds: hintedMetricIds, records: warehouseRecords, useProvidedRecords: Array.isArray(warehouseRecords) });
   const candidates = rawCandidates.filter((item) => {
+    if (!metricDimensionContractFits(item)) return false;
     const explicitMetricCandidate = hintedMetricIds.has(item.metricId);
     if (item.evidenceFit === 'weak' && !explicitMetricCandidate && !(['legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length >= 3)) return false;
     // Stale observations remain available as explicitly limited context; an
@@ -1305,7 +1324,7 @@ const classify = async (text, { bypassCache = false } = {}) => {
   const key = bypassCache ? `${identity}|fresh:${Date.now()}` : identity;
   const broadComplaintInput = broadComplaintText(text)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(normalise(text));
-  const broadPacketInput = broadDomainPacketsFor(text).length > 0;
+  const broadPacketInput = broadDomainPacketsFor(text).length > 0 && !hasSpecificVacancyMeasurement(text);
   if (isLowSignalInput(text) && !broadComplaintInput) {
     const result = { status: 'uncovered', input: { original: text, canonical: normalise(text) }, alternatives: [], guidance: { questions: ['¿Qué afirmación, hecho o experiencia quieres comprobar?'], limitation: 'No hemos identificado una afirmación comprobable en este texto.' } };
     answerCache.set(key, { value: result, expiresAt: answerCacheExpiry(text) });
@@ -3026,7 +3045,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
   // different measurement from its editorial page, so focused measurement
   // claims must not inherit an answer merely because an alias matches.
   const enrichmentIndex = await getIndex();
-  const broadPacketAvailable = broadDomainPacketsFor(text).length > 0;
+  const broadPacketAvailable = broadDomainPacketsFor(text).length > 0 && !hasSpecificVacancyMeasurement(text);
   if (!classified.primary && answerPlannerEnabled && !broadPacketAvailable) {
     const candidates = (classified.alternatives || []).filter((item) => item.kind === 'claim' && item.validated === true).slice(0, 4);
     if (candidates.length > 1) {
@@ -3171,7 +3190,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
   // metric inferred from its paraphrase.
   const authoritativeMetricIds = metricIdsForInput(text, retrievalClassified.compiler || {});
   if (authoritativeMetricIds.size) {
-    retrievalClassified.compiler = { ...retrievalClassified.compiler, metricIds: [...authoritativeMetricIds] };
+    retrievalClassified.compiler = { ...retrievalClassified.compiler, metricIds: [...authoritativeMetricIds], retrievalMetricIds: [...authoritativeMetricIds] };
   } else if (broadMetricIds.size) {
     // Keep ontology-derived families separate from explicit user metric IDs.
     // They constrain warehouse retrieval but must not upgrade a broad
@@ -3431,7 +3450,8 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
   // value in a generic compound answer.
   const hasConcreteMetricEvidence = observations.some((item) => typeof item.value === 'number' && Number.isFinite(item.value));
   const broadPlanHasData = broadContextPlan?.evidenceSummary?.families?.some((family) => family.data?.length) === true;
-  if (broadContextPlan && (broadPlanHasData || (!hasConcreteMetricEvidence && !evidenceSelection.selected.length))) {
+  if (broadContextPlan && !hasSpecificVacancyMeasurement(text)
+    && (broadPlanHasData || (!hasConcreteMetricEvidence && !evidenceSelection.selected.length))) {
     deterministic.result = broadContextPlan;
     deterministic.status = 'complete';
   }

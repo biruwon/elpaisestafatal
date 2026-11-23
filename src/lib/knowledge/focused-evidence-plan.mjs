@@ -17,6 +17,7 @@ import { ageScopeMatcherFor } from './age-scope.mjs';
 import { periodScopeMatcherFor } from './period-scope.mjs';
 import { geographyScopeMatcherFor, requestedGeographyScopes } from './geography-scope.mjs';
 import { sexScopeMatcherFor } from './sex-scope.mjs';
+import { metricDimensionContractFits } from './metric-contract.mjs';
 
 const vocabulary = new Map(metricVocabulary.map((metric) => [metric.id, metric]));
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -128,7 +129,7 @@ const sourceValid = (source) => {
 };
 const factsForMetric = (id, observations, fitsClaim) => {
   const series = new Map();
-  const metricRows = observations.filter((row) => row.metricId === id);
+  const metricRows = observations.filter((row) => row.metricId === id && metricDimensionContractFits(row));
   const validYouthOverqualificationScope = (item) => id !== 'tertiary_overqualification_rate_age_20_34'
     || item.dimensions?.age === 'Y20-34' && item.dimensions?.geo === 'ES'
       && item.dimensions?.citizen === 'TOTAL' && item.dimensions?.sex === 'T' && item.dimensions?.unit === 'PC';

@@ -3,7 +3,7 @@ import { join } from 'node:path';
 import { searchAliasesForMetric } from './metric-search-aliases.mjs';
 import { sourceRegistry } from './source-registry.mjs';
 import { warehouseUpsert } from './warehouse-upsert.mjs';
-import { warehouseSourceMarker } from './warehouse-import.mjs';
+import { warehouseSourceMarker, warehouseSnapshotHash } from './warehouse-import.mjs';
 
 const root = process.env.SOURCE_WAREHOUSE_ROOT || new URL('../../.local/source-warehouse/', import.meta.url).pathname;
 const outputPath = join(root, 'warehouse-load.sql');
@@ -54,19 +54,21 @@ for (const manifest of latestManifests.values()) {
   if (!retrievedAt || !Number.isFinite(Date.parse(retrievedAt)) || Date.parse(retrievedAt) > Date.now() + 300_000) continue;
   const trust = manifest.trust || source.trust;
   const sourceSha256 = manifest.sha256 || source.sha256 || '';
+  const parserVersion = manifest.parserVersion || source.parserVersion || manifest.connector || source.connector || 'generic';
+  const importSha256 = warehouseSnapshotHash(sourceSha256, parserVersion);
   await appendStatement(warehouseUpsert({
     table: 'source_documents',
     columns: ['id', 'publisher', 'title', 'aliases_json', 'source_registry_id', 'schedule', 'url', 'content_type', 'published_at', 'retrieved_at', 'sha256', 'trust_tier', 'parser_version'],
-    values: [sql(manifest.id), sql(publisher), sql(title), sql(JSON.stringify(aliases)), sql(sourceRegistryId), sql(schedule), sql(manifest.url), sql(manifest.contentType || 'application/octet-stream'), sql(manifest.publishedAt || source.publishedAt || null), sql(retrievedAt), sql(manifest.sha256 || source.sha256 || ''), sql(trust === 'primary' || trust === 'approved-domain' ? 'primary' : 'discovery'), sql(manifest.connector || source.connector || 'generic')],
+    values: [sql(manifest.id), sql(publisher), sql(title), sql(JSON.stringify(aliases)), sql(sourceRegistryId), sql(schedule), sql(manifest.url), sql(manifest.contentType || 'application/octet-stream'), sql(manifest.publishedAt || source.publishedAt || null), sql(retrievedAt), sql(manifest.sha256 || source.sha256 || ''), sql(trust === 'primary' || trust === 'approved-domain' ? 'primary' : 'discovery'), sql(parserVersion)],
     updateColumns: ['publisher', 'title', 'aliases_json', 'source_registry_id', 'schedule', 'url', 'content_type', 'published_at', 'retrieved_at', 'sha256', 'trust_tier', 'parser_version'],
   }));
   sourceCount += 1;
-  await appendStatement(warehouseSourceMarker('data', manifest.id, sourceSha256));
+  await appendStatement(warehouseSourceMarker('data', manifest.id, importSha256));
   await appendStatement(warehouseUpsert({
     table: 'warehouse_source_imports',
     conflictColumn: 'source_id',
     columns: ['source_id', 'sha256', 'status', 'updated_at'],
-    values: [sql(manifest.id), sql(sourceSha256), sql('in_progress'), sql(retrievedAt)],
+    values: [sql(manifest.id), sql(importSha256), sql('in_progress'), sql(retrievedAt)],
     updateColumns: ['sha256', 'status', 'updated_at'],
   }));
   const emittedDatasets = new Set();
@@ -77,7 +79,7 @@ for (const manifest of latestManifests.values()) {
     const datasetId = `${manifest.id}:${record.datasetId || 'observations'}`.slice(0, 240);
     const dimensions = JSON.stringify(record.dimensions || {});
     const dimensionLabels = JSON.stringify(record.dimensionLabels || {});
-    const metricId = record.metricId || manifest.metricId || source.metricId;
+    const metricId = record.metricId || (manifest.metricIdByDimension ? null : manifest.metricId || source.metricId);
     const url = record.url || source.url || manifest.url;
     const excerpt = String(record.excerpt || '').replace(/\s+/g, ' ').slice(0, 1500) || null;
     const finding = compact(record.finding);
@@ -132,10 +134,10 @@ for (const manifest of latestManifests.values()) {
     table: 'warehouse_source_imports',
     conflictColumn: 'source_id',
     columns: ['source_id', 'sha256', 'status', 'updated_at'],
-    values: [sql(manifest.id), sql(sourceSha256), sql('complete'), sql(retrievedAt)],
+    values: [sql(manifest.id), sql(importSha256), sql('complete'), sql(retrievedAt)],
     updateColumns: ['sha256', 'status', 'updated_at'],
   }));
-  await appendStatement(warehouseSourceMarker('end', manifest.id, sourceSha256));
+  await appendStatement(warehouseSourceMarker('end', manifest.id, importSha256));
 }
 await flush();
 } finally { await output.close(); }

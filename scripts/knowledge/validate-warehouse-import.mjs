@@ -4,7 +4,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { mkdtemp, mkdir, readFile, rm, writeFile } from 'node:fs/promises';
 import { tmpdir } from 'node:os';
 import { join } from 'node:path';
-import { coalesceObservationInserts, parseD1CompletedSourceSnapshots, skipUnchangedSourceData, warehouseImportBatches, warehouseSourceMarker } from './warehouse-import.mjs';
+import { coalesceObservationInserts, parseD1CompletedSourceSnapshots, skipUnchangedSourceData, warehouseImportBatches, warehouseSnapshotHash, warehouseSourceMarker } from './warehouse-import.mjs';
 import { warehouseUpsert } from './warehouse-upsert.mjs';
 
 const database = new DatabaseSync(':memory:');
@@ -45,6 +45,14 @@ const d1SourceState = parseD1CompletedSourceSnapshots(JSON.stringify([{ results:
   { id: 'source-changed', source_sha256: 'new-hash', imported_sha256: 'old-hash', import_status: 'complete' },
 ] }]));
 assert.deepEqual([...d1SourceState], [JSON.stringify(['source-legacy', 'legacy-hash']), JSON.stringify(['source-ready', 'ready-hash'])], 'Only legacy or explicitly completed matching snapshots should be skipped');
+const mappedParserVersion = 'json-stat-v1+metric-map-abcdef012345';
+const mappedImportHash = warehouseSnapshotHash('mapping-source-hash', mappedParserVersion);
+assert.notEqual(mappedImportHash, 'mapping-source-hash', 'A changed dimension-to-metric contract must change the warehouse import version');
+const mappedSourceState = parseD1CompletedSourceSnapshots(JSON.stringify([{ results: [
+  { id: 'source-needs-remap', source_sha256: 'mapping-source-hash', parser_version: mappedParserVersion, imported_sha256: 'mapping-source-hash', import_status: 'complete' },
+  { id: 'source-remapped', source_sha256: 'mapping-source-hash', parser_version: mappedParserVersion, imported_sha256: mappedImportHash, import_status: 'complete' },
+] }]));
+assert.deepEqual([...mappedSourceState], [JSON.stringify(['source-remapped', mappedImportHash])], 'A completed raw import with stale indicator mapping must be reprocessed');
 await assert.rejects(async () => parseD1CompletedSourceSnapshots('not json'));
 await assert.rejects(async () => parseD1CompletedSourceSnapshots('[]'));
 await assert.rejects(async () => parseD1CompletedSourceSnapshots('[{"success":true}]'));
@@ -92,11 +100,11 @@ try {
   const fixtureManifest = {
     id: 'fixture-source', url: 'https://data.example/fixture', sha256: 'fixture-hash-v1', retrievedAt: fixtureDate,
     publisher: 'Fixture office', title: 'Fixture data', contentType: 'application/json', metricId: 'fixture_metric',
-    sourceRegistryId: 'fixture', connector: 'fixture-v1', trust: 'primary', recordPath: fixtureRecordPath,
+    sourceRegistryId: 'fixture', connector: 'fixture-v1', parserVersion: 'fixture-v1', trust: 'primary', recordPath: fixtureRecordPath,
   };
-  const writeFixtureRecord = async (value) => writeFile(fixtureRecordPath, JSON.stringify({
+  const writeFixtureRecord = async (value, metricId = 'fixture_metric') => writeFile(fixtureRecordPath, JSON.stringify({
     source: { publisher: 'Fixture office', sourceRegistryId: 'fixture' },
-    records: [{ id: 'fixture-row', value, metric: 'Fixture metric', metricId: 'fixture_metric', period: '2025', unit: 'people', datasetId: 'fixture-series' }],
+    records: [{ id: 'fixture-row', value, metric: 'Fixture metric', metricId, period: '2025', unit: 'people', datasetId: 'fixture-series', dimensions: { indic_em: metricId === 'fixture_rate' ? 'JVR' : 'JOBVAC' } }],
   }));
   await writeFixtureRecord(2);
   await writeFile(fixtureManifestPath, JSON.stringify(fixtureManifest));
@@ -119,7 +127,7 @@ try {
   `);
   exportDatabase.exec(await readFile(new URL('../../migrations/0011_warehouse_source_imports.sql', import.meta.url), 'utf8'));
   const applyThroughLoader = async (sql) => {
-    const stateRows = exportDatabase.prepare('SELECT sd.id, sd.sha256 AS source_sha256, wsi.sha256 AS imported_sha256, wsi.status AS import_status FROM source_documents sd LEFT JOIN warehouse_source_imports wsi ON wsi.source_id = sd.id').all();
+    const stateRows = exportDatabase.prepare('SELECT sd.id, sd.sha256 AS source_sha256, sd.parser_version, wsi.sha256 AS imported_sha256, wsi.status AS import_status FROM source_documents sd LEFT JOIN warehouse_source_imports wsi ON wsi.source_id = sd.id').all();
     const completed = parseD1CompletedSourceSnapshots(JSON.stringify([{ results: stateRows }]));
     const filtered = skipUnchangedSourceData(sql.split(/\r?\n/), completed);
     const statements = [];
@@ -137,8 +145,18 @@ try {
   await applyThroughLoader(firstSql);
   assert.equal(exportDatabase.prepare('SELECT total_changes() AS n').get().n, changesBeforeRepeat, 'The production filter must skip completed unchanged snapshots');
 
+  fixtureManifest.metricIdByDimension = { indic_em: { JVR: 'fixture_rate' } };
+  fixtureManifest.parserVersion = 'json-stat-v1+metric-map-abcdef012345';
+  await writeFixtureRecord(0.9, 'fixture_rate');
+  await writeFile(fixtureManifestPath, JSON.stringify(fixtureManifest));
+  await applyThroughLoader(await exportFixture());
+  assert.equal(exportDatabase.prepare("SELECT metric_id FROM observations WHERE id = 'fixture-row'").get().metric_id, 'fixture_rate', 'A dimension mapping change with an unchanged source hash must reclassify existing observations');
+  const changesAfterRemap = exportDatabase.prepare('SELECT total_changes() AS n').get().n;
+  await applyThroughLoader(await exportFixture());
+  assert.equal(exportDatabase.prepare('SELECT total_changes() AS n').get().n, changesAfterRemap, 'The remapped source should skip no-op writes on subsequent imports');
+
   fixtureManifest.sha256 = 'fixture-hash-v2';
-  await writeFixtureRecord(3);
+  await writeFixtureRecord(3, 'fixture_rate');
   await writeFile(fixtureManifestPath, JSON.stringify(fixtureManifest));
   await applyThroughLoader(await exportFixture());
   assert.equal(exportDatabase.prepare("SELECT value FROM observations WHERE id = 'fixture-row'").get().value, 3, 'A changed snapshot with a stable ID must update its observation');

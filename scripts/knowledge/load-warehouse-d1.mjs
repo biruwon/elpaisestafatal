@@ -36,7 +36,7 @@ try {
   await rm(tempPath, { recursive: true, force: true });
   await mkdir(tempPath, { recursive: true });
   const existingOutput = await capture('./node_modules/.bin/wrangler', [
-    'd1', 'execute', database, '--remote', '--command', 'SELECT sd.id, sd.sha256 AS source_sha256, wsi.sha256 AS imported_sha256, wsi.status AS import_status FROM source_documents sd LEFT JOIN warehouse_source_imports wsi ON wsi.source_id = sd.id;', '--json',
+    'd1', 'execute', database, '--remote', '--command', 'SELECT sd.id, sd.sha256 AS source_sha256, sd.parser_version, wsi.sha256 AS imported_sha256, wsi.status AS import_status FROM source_documents sd LEFT JOIN warehouse_source_imports wsi ON wsi.source_id = sd.id;', '--json',
   ]);
   const completedSnapshots = parseD1CompletedSourceSnapshots(existingOutput);
   const lines = createInterface({ input: createReadStream(inputPath, { encoding: 'utf8' }), crlfDelay: Infinity });

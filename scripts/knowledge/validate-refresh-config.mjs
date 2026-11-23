@@ -35,6 +35,21 @@ for (const file of files) {
       if (value.title !== undefined && typeof value.title !== 'string') errors.push(`${file}: ${sourceId}[${index}] title must be a string`);
       if (value.aliases !== undefined && (!Array.isArray(value.aliases) || value.aliases.some((alias) => typeof alias !== 'string'))) errors.push(`${file}: ${sourceId}[${index}] aliases must be strings`);
       if (value.metricId !== undefined && (typeof value.metricId !== 'string' || !(await hasMetric(value.metricId)))) errors.push(`${file}: ${sourceId}[${index}] references unknown metricId ${value.metricId}`);
+      if (value.metricIdByDimension !== undefined) {
+        const mappings = value.metricIdByDimension;
+        if (!mappings || typeof mappings !== 'object' || Array.isArray(mappings) || Object.keys(mappings).length !== 1) {
+          errors.push(`${file}: ${sourceId}[${index}] metricIdByDimension must map exactly one source dimension`);
+        } else {
+          const [dimension, values] = Object.entries(mappings)[0];
+          if (!/^[A-Za-z][A-Za-z0-9_]*$/.test(dimension) || !values || typeof values !== 'object' || Array.isArray(values) || !Object.keys(values).length) {
+            errors.push(`${file}: ${sourceId}[${index}] metricIdByDimension must map source codes to metric IDs`);
+          } else {
+            for (const [code, metricId] of Object.entries(values)) {
+              if (!code.trim() || typeof metricId !== 'string' || !(await hasMetric(metricId))) errors.push(`${file}: ${sourceId}[${index}] metricIdByDimension references unknown metricId ${metricId}`);
+            }
+          }
+        }
+      }
     }
   }
 }

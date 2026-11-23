@@ -1,3 +1,5 @@
+import { createHash } from 'node:crypto';
+
 // Each observation is already escaped SQL emitted by our exporter. Coalesce
 // consecutive compatible inserts below D1's 100 KB statement limit. This
 // avoids a network import per handful of rows without buffering the warehouse.
@@ -19,6 +21,10 @@ export async function* coalesceObservationInserts(lines) {
 }
 
 const snapshotKey = (sourceId, sha256) => JSON.stringify([sourceId, sha256]);
+
+export const warehouseSnapshotHash = (sourceSha256, parserVersion = '') => String(parserVersion).includes('+metric-map-')
+  ? createHash('sha256').update(`${sourceSha256}|${parserVersion}`).digest('hex')
+  : sourceSha256;
 
 export const warehouseSourceMarker = (boundary, sourceId, sha256) => {
   if (!['data', 'end'].includes(boundary)) throw new Error(`Unknown warehouse source boundary: ${boundary}`);
@@ -71,14 +77,15 @@ export const parseD1CompletedSourceSnapshots = (output) => {
   if (parsed.some((result) => result?.success === false)) throw new Error('Wrangler source manifest query reported a D1 error');
   const rows = parsed.flatMap((result) => result.results);
   if (rows.some((row) => !row || typeof row.id !== 'string' || typeof row.source_sha256 !== 'string'
+    || (row.parser_version !== undefined && row.parser_version !== null && typeof row.parser_version !== 'string')
     || (row.imported_sha256 !== null && typeof row.imported_sha256 !== 'string')
     || (row.import_status !== null && !['in_progress', 'complete'].includes(row.import_status))
     || (row.imported_sha256 === null) !== (row.import_status === null))) {
     throw new Error('Wrangler source manifest query returned invalid source state');
   }
   return new Set(rows.filter((row) => row.imported_sha256 === null
-    || row.imported_sha256 === row.source_sha256 && row.import_status === 'complete')
-    .map((row) => snapshotKey(row.id, row.source_sha256)));
+    || row.imported_sha256 === warehouseSnapshotHash(row.source_sha256, row.parser_version || '') && row.import_status === 'complete')
+    .map((row) => snapshotKey(row.id, warehouseSnapshotHash(row.source_sha256, row.parser_version || ''))));
 };
 
 export async function* warehouseImportBatches(statements, { maxStatements = 1000, maxBytes = 64 * 1024 * 1024 } = {}) {

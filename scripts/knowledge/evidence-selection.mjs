@@ -18,6 +18,18 @@ const displayNumber = (value) => {
   const maximumFractionDigits = Number.isInteger(number) ? 0 : Math.abs(number) < 1 ? 4 : 2;
   return new Intl.NumberFormat('es-ES', { maximumFractionDigits }).format(number);
 };
+const metricLabels = {
+  job_vacancy_count: 'Número de puestos de trabajo vacantes en España',
+  occupied_job_post_count: 'Número de puestos de trabajo ocupados en España',
+  job_vacancy_rate: 'Tasa de vacantes de empleo en España',
+  job_vacancy_rate_quarterly_change: 'Variación trimestral de la tasa de vacantes en España',
+};
+const displayUnit = (metricId, unit) => ({
+  job_vacancy_count: 'puestos',
+  occupied_job_post_count: 'puestos',
+  job_vacancy_rate: '%',
+  job_vacancy_rate_quarterly_change: 'puntos porcentuales',
+})[metricId] || unit;
 
 const sourceTypeScore = (source = {}) => source.sourceType === 'official' || source.role === 'primary' ? 0.2 : source.sourceType === 'academic' ? 0.15 : 0;
 const freshnessScore = (status) => status === 'fresh' ? 0.2 : status === 'stale' ? 0.04 : 0;
@@ -59,12 +71,12 @@ const seriesKey = (item) => JSON.stringify({ scope: scopeOf(item), dataKind: ite
 const findingFor = (items, candidate, query, requestedYears = []) => {
   const latestItems = items.slice().sort((a, b) => String(a.period || a.id).localeCompare(String(b.period || b.id)));
   const latest = latestItems.at(-1);
-  const title = latest?.source?.title || latest?.metric || candidate.title || candidate.metricId;
+  const title = metricLabels[candidate.metricId] || latest?.source?.title || latest?.metric || candidate.title || candidate.metricId;
   const series = new Map();
   for (const item of latestItems) series.set(seriesKey(item), item);
   if (series.size > 1 && candidate.metricId !== 'public_housing_actions') {
     const rows = [...series.values()].slice(0, 6);
-    const values = rows.map((item) => `${Object.values(scopeOf(item)).join(' · ')}: ${displayNumber(item.value)}${item.unit ? ` ${item.unit}` : ''}${item.period ? ` (${item.period})` : ''}`).join('; ');
+    const values = rows.map((item) => `${Object.values(scopeOf(item)).join(' · ')}: ${displayNumber(item.value)}${displayUnit(candidate.metricId, item.unit) ? ` ${displayUnit(candidate.metricId, item.unit)}` : ''}${item.period ? ` (${item.period})` : ''}`).join('; ');
     return { title, finding: `${title}: ${values}.`, direction: 'qualifies',
       limitation: 'Son series con ámbitos distintos. No se calcula una media, una tasa común ni una comparación causal entre ellas.' };
   }
@@ -96,7 +108,7 @@ const findingFor = (items, candidate, query, requestedYears = []) => {
     };
   }
   if (requestedYears.length > 1 && latestItems.length > 1) {
-    const values = latestItems.map((item) => `${item.period}: ${item.value}${item.unit ? ` ${item.unit}` : ''}`).join('; ');
+    const values = latestItems.map((item) => `${item.period}: ${item.value}${displayUnit(candidate.metricId, item.unit) ? ` ${displayUnit(candidate.metricId, item.unit)}` : ''}`).join('; ');
     return { title, finding: `${title}: ${values}.`, direction: 'neutral',
       limitation: 'Se muestran los periodos solicitados; no se extrapola a otros años.' };
   }
@@ -119,7 +131,8 @@ const findingFor = (items, candidate, query, requestedYears = []) => {
     const limitation = candidate.limitations?.[0] || 'La comparación usa solo los grupos y el denominador publicados por la fuente.';
     return { title, finding: `${title}: ${values}${latest.period ? ` (${latest.period})` : ''}.`, direction: 'qualifies', limitation };
   }
-  const unit = candidate.metricId === 'resident_population' && /^(?:number|nr)$/i.test(String(latest?.unit || '')) ? 'personas' : latest?.unit;
+  const unit = candidate.metricId === 'resident_population' && /^(?:number|nr)$/i.test(String(latest?.unit || ''))
+    ? 'personas' : displayUnit(candidate.metricId, latest?.unit);
   const value = latest && numericValue(latest.value) ? `${displayNumber(latest.value)}${unit ? ` ${unit}` : ''}` : 'documento localizado, sin medición numérica';
   const period = latest?.period ? ` (${latest.period})` : '';
   const limitation = candidate.limitations?.[0] || (candidate.metricId.endsWith('_europe') ? 'La comparación se refiere a la definición europea de este indicador.' : 'El indicador mide solo esta dimensión y no resume por sí solo el estado general del país.');
@@ -236,6 +249,7 @@ export const selectEvidence = ({ query = '', observations = [], candidateIds = [
 export const evidenceSummaryForPublic = (selection, { mode = 'dynamic', fallbackReason } = {}) => ({
   mode,
   families: (selection?.selected || []).map((item) => ({
+    metricId: item.metricId,
     label: item.title,
     direction: item.direction,
     evidenceIds: item.evidenceIds,

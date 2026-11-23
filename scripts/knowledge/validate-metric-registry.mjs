@@ -9,6 +9,10 @@ for (const [id, metric] of Object.entries(registry)) {
   if (typeof metric.unit !== 'string' || !metric.unit.trim()) errors.push(`${id}: missing unit`);
   if (typeof metric.population !== 'string' || !metric.population.trim()) errors.push(`${id}: missing population definition`);
   if (!Array.isArray(metric.dimensions) || !metric.dimensions.length || metric.dimensions.some((item) => typeof item !== 'string' || !item.trim())) errors.push(`${id}: dimensions must be non-empty strings`);
+  if (metric.dimensionConstraints !== undefined && (!metric.dimensionConstraints || typeof metric.dimensionConstraints !== 'object' || Array.isArray(metric.dimensionConstraints)
+    || Object.entries(metric.dimensionConstraints).some(([key, value]) => !metric.dimensions?.includes(key) || typeof value !== 'string' || !value.trim()))) {
+    errors.push(`${id}: dimensionConstraints must map declared dimensions to exact non-empty values`);
+  }
   if (!Array.isArray(metric.notEquivalentTo) || metric.notEquivalentTo.some((item) => typeof item !== 'string' || item === id)) errors.push(`${id}: invalid notEquivalentTo list`);
   for (const other of metric.notEquivalentTo || []) if (!registry[other]) errors.push(`${id}: notEquivalentTo references missing metric ${other}`);
   if (metric.definition) {

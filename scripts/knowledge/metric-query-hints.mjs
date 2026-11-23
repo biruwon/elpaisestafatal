@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { metricPolicyFor } from './metric-evidence-policy.mjs';
 import { claimFocusFor, focusedMetricIdsFor } from '../../src/lib/knowledge/claim-focus.mjs';
+import { vacancyMeasurementMetricIdsForQuery } from '../../src/lib/knowledge/vacancy-measurement-route.mjs';
 
 const normalise = (value) => String(value || '')
   .toLocaleLowerCase('es')
@@ -259,7 +260,10 @@ const metricHints = [
   { ids: ['material_consumption'], terms: ['consumo de materiales', 'materiales usados', 'extraccion de materiales', 'consume demasiados materiales'] },
   { ids: ['water_resources'], terms: ['recursos de agua dulce', 'agua disponible', 'recursos hidricos', 'agua renovable'] },
   { ids: ['water_consumption'], terms: ['consumo de agua', 'uso del agua', 'extraccion de agua', 'agua utilizada'] },
-  { ids: ['job_vacancy_rate'], terms: ['vacantes de empleo', 'puestos de trabajo sin cubrir', 'puestos sin cubrir', 'ofertas de trabajo sin cubrir', 'tasa de vacantes'] },
+  { ids: ['job_vacancy_count'], terms: ['vacantes de empleo', 'vacantes laborales', 'plazas vacantes', 'puestos de trabajo sin cubrir', 'puestos sin cubrir', 'numero de vacantes de empleo', 'cantidad de puestos vacantes', 'cuantos puestos de trabajo sin cubrir', 'puestos vacantes en total', 'hay muchos puestos de trabajo sin cubrir'] },
+  { ids: ['job_vacancy_rate'], terms: ['tasa de vacantes', 'porcentaje de puestos vacantes', 'proporcion de puestos de trabajo sin cubrir'] },
+  { ids: ['job_vacancy_rate_quarterly_change'], terms: ['variacion trimestral de la tasa de vacantes', 'cambio trimestral de la tasa de puestos vacantes', 'cambio de la tasa de vacantes respecto al trimestre anterior', 'como cambio la tasa de vacantes frente al trimestre anterior', 'tasa de vacantes trimestre anterior', 'puntos porcentuales de cambio de la tasa de vacantes'] },
+  { ids: ['occupied_job_post_count'], terms: ['numero de puestos de trabajo ocupados', 'cuantos puestos de trabajo ocupados', 'puestos de trabajo ocupados', 'puestos ocupados', 'empleos ocupados'] },
   { ids: ['housing_payment_arrears_rate'], terms: ['atrasos en pagos de vivienda', 'impagos de vivienda', 'retrasos en alquiler', 'retrasos en hipoteca', 'se retrasan con el alquiler', 'se retrasan con la hipoteca', 'pagos atrasados de vivienda'] },
   { ids: ['unmet_healthcare_cost_rate'], terms: ['no puede pagar atencion medica', 'no puede pagar atención médica', 'no va al medico porque no puede pagarlo', 'atencion sanitaria por dinero', 'barrera economica sanitaria', 'necesidades medicas no atendidas por coste'] },
   { ids: ['industrial_production_index'], terms: ['produccion industrial', 'índice de producción industrial', 'actividad industrial', 'industria española'] },
@@ -360,6 +364,8 @@ const metricHints = [
 ];
 
 export const preferredMetricIdsForQuery = (query) => {
+  const vacancyMeasurements = vacancyMeasurementMetricIdsForQuery(query);
+  if (vacancyMeasurements !== undefined) return vacancyMeasurements;
   const focused = focusedMetricIdsFor(query);
   const normalized = normalise(query);
   if (focused) {

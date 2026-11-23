@@ -21,6 +21,16 @@ const unitLabel = (payload, coordinate, dimensions) => {
   return unitDimension?.category?.label?.[code] || code || payload.unit;
 };
 
+const metricIdFor = (dimensions, source) => {
+  const dimensionMap = source.metricIdByDimension;
+  if (!dimensionMap || typeof dimensionMap !== 'object' || Array.isArray(dimensionMap)) return source.metricId;
+  const [dimensionId, values] = Object.entries(dimensionMap)[0] || [];
+  if (!dimensionId || !values || typeof values !== 'object' || Array.isArray(values)) return undefined;
+  return Object.hasOwn(dimensions || {}, dimensionId)
+    ? values[String(dimensions[dimensionId])]
+    : undefined;
+};
+
 const dimensionLabels = (payload, coordinate, dimensions) => Object.fromEntries(coordinate.map((value, index) => {
   const dimension = payload.dimension?.[dimensions[index].id];
   return [dimensions[index].id, dimension?.category?.label?.[value] || value];
@@ -30,38 +40,44 @@ const flattenJsonStat = (payload, source) => {
   if (!payload || typeof payload !== 'object' || !Array.isArray(payload.id) || !Array.isArray(payload.size) || !payload.dimension || !('value' in payload)) return [];
   const dimensions = payload.id.map((id) => ({ id, values: dimensionValues(payload.dimension[id]) }));
   const coordinates = product(dimensions.map((dimension) => dimension.values));
-  return coordinates.map((coordinate, position) => ({
-    id: `${source.id}-observation-${position}`,
-    kind: 'observation',
-    sourceId: source.id,
-    metricId: source.metricId,
-    datasetId: payload.label || payload.id.join('_'),
-    period: coordinate[dimensions.findIndex(({ id }) => ['time', 'period', 'year'].includes(id.toLowerCase()))] || undefined,
-    dimensions: Object.fromEntries(coordinate.map((value, index) => [dimensions[index].id, value])),
-    dimensionLabels: dimensionLabels(payload, coordinate, dimensions),
-    value: valueAt(payload.value, position),
-    // JSON-stat status flags qualify individual observations (for example a
-    // provisional estimate or a break in a time series). Keep them with the
-    // numeric cell instead of silently dropping the source's warning.
-    ...(typeof valueAt(payload.status, position) === 'string' ? { status: valueAt(payload.status, position) } : {}),
-    unit: unitLabel(payload, coordinate, dimensions),
-  }));
+  return coordinates.map((coordinate, position) => {
+    const observationDimensions = Object.fromEntries(coordinate.map((value, index) => [dimensions[index].id, value]));
+    return {
+      id: `${source.id}-observation-${position}`,
+      kind: 'observation',
+      sourceId: source.id,
+      metricId: metricIdFor(observationDimensions, source),
+      datasetId: payload.label || payload.id.join('_'),
+      period: coordinate[dimensions.findIndex(({ id }) => ['time', 'period', 'year'].includes(id.toLowerCase()))] || undefined,
+      dimensions: observationDimensions,
+      dimensionLabels: dimensionLabels(payload, coordinate, dimensions),
+      value: valueAt(payload.value, position),
+      // JSON-stat status flags qualify individual observations (for example a
+      // provisional estimate or a break in a time series). Keep them with the
+      // numeric cell instead of silently dropping the source's warning.
+      ...(typeof valueAt(payload.status, position) === 'string' ? { status: valueAt(payload.status, position) } : {}),
+      unit: unitLabel(payload, coordinate, dimensions),
+    };
+  });
 };
 
 const flattenRows = (payload, source) => {
   if (!Array.isArray(payload) || !payload.every((row) => row && typeof row === 'object' && !Array.isArray(row))) return [];
   return payload.flatMap((row, rowIndex) => Array.isArray(row.Data) ? [] : Object.entries(row)
     .filter(([, value]) => typeof value === 'number' || value === null)
-    .map(([metric, value]) => ({
-      id: `${source.id}-row-${rowIndex}-${metric}`,
-      kind: 'observation',
-      sourceId: source.id,
-      metricId: source.metricId,
-      datasetId: source.title,
-      metric,
-      value,
-      dimensions: Object.fromEntries(Object.entries(row).filter(([key, item]) => key !== metric && typeof item !== 'number' && item !== null)),
-    })));
+    .map(([metric, value]) => {
+      const dimensions = Object.fromEntries(Object.entries(row).filter(([key, item]) => key !== metric && typeof item !== 'number' && item !== null));
+      return {
+        id: `${source.id}-row-${rowIndex}-${metric}`,
+        kind: 'observation',
+        sourceId: source.id,
+        metricId: metricIdFor(dimensions, source),
+        datasetId: source.title,
+        metric,
+        value,
+        dimensions,
+      };
+    }));
 };
 
 const periodLabel = (point) => {

@@ -7,6 +7,7 @@ export const compileMeasurementDefinitions = async () => {
   const vocabulary = Object.entries(registry).map(([id, metric]) => ({
     id, name: metric.displayName || metric.name, aliases: metric.aliases || [],
     unit: metric.unit, population: metric.population, dimensions: metric.dimensions || [],
+    dimensionConstraints: metric.dimensionConstraints || {},
   }));
   const output = new URL('../../src/lib/knowledge/measurement-definitions.generated.mjs', import.meta.url);
   const source = `// Generated from config/metric-registry.json by catalogue:compile.\n// Edit the registry; this module also supports older Pages build parsers.\nexport const metricVocabulary = ${JSON.stringify(vocabulary)};\nexport default ${JSON.stringify(definitions, null, 2)};\n`;

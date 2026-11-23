@@ -1,8 +1,11 @@
+import { metricDimensionContractFits } from './metric-contract.mjs';
+
 const normalize = (value) => String(value || '').normalize('NFD').replace(/[\u0300-\u036f]/g, '').toLowerCase();
 // Reject explicit contradictions before any broad-context composition. An
 // unknown dimension stays unknown; it is never repaired with a nearby row.
 export const broadObservationFits = (observation, criterion) => {
-  if (!criterion.metricIds?.includes(observation.metricId) || !Number.isFinite(observation.value) || typeof observation.value !== 'number') return false;
+  if (!criterion.metricIds?.includes(observation.metricId) || !metricDimensionContractFits(observation)
+    || !Number.isFinite(observation.value) || typeof observation.value !== 'number') return false;
   if (!observation.period) return false;
   const geography = normalize(observation.dimensions?.geo || observation.geography);
   if (geography && !['es', 'espana', 'spain'].includes(geography)) return false;
