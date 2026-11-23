@@ -194,6 +194,16 @@ for (const response of [neighboringEmploymentPages, neighboringEmploymentLocal])
   assert.equal(response.result.shareableReply, neighboringEmploymentPlan.shareableReply);
 }
 
+const insufficientPositivePlan = { ...neighboringEmploymentPlan, evidenceLevel: 'insufficient' };
+const insufficientPositivePages = checkFromPlan(neighboringEmployment, insufficientPositivePlan, 'insufficient-positive');
+const insufficientPositiveLocal = localPublicCheckResponse({ status: 'complete', requestId: 'insufficient-positive', result: insufficientPositivePlan }, neighboringEmployment);
+for (const response of [insufficientPositivePages, insufficientPositiveLocal]) {
+  assert.equal(response.state, 'insufficient');
+  assert.match(response.result.reply, /^La evidencia no basta para confirmar toda la afirmación/i, 'An insufficient plan must not publish a positive whole-claim reply without qualification');
+  assert.match(response.result.keyFact, /no basta para confirmar toda la afirmación/i, 'The one-line takeaway must agree with the insufficient state');
+  assert.equal(response.result.shareableReply, undefined, 'An insufficient plan must not expose an unqualified positive sentence as shareable');
+}
+
 const unassessedCompoundPlan = {
   schemaVersion: '1', evidenceLevel: 'insufficient', headline: 'Faltan medidas compatibles',
   summary: 'No se ha localizado evidencia compatible para estas partes.', coverage: 'insufficient', claimType: 'mixed',
@@ -278,11 +288,17 @@ const uncoveredPlan = {
 const uncoveredLocal = localPublicCheckResponse({ status: 'uncovered', requestId: 'uncovered-gap', result: uncoveredPlan }, '¿Esta afirmación está respaldada por los datos?');
 assert.equal(uncoveredLocal.state, 'insufficient', 'A deliberate evidence gap should be explained, not reported as a service outage');
 assert.match(uncoveredLocal.result.reply, /esto no demuestra que la afirmación sea falsa/i);
+assert.doesNotMatch(uncoveredLocal.result.reply, /^La evidencia no basta para confirmar toda la afirmación/i, 'An explicit no-evidence limitation must not receive a redundant qualifier');
 assert.equal(uncoveredLocal.result.evidenceSummary?.families[0]?.status, 'missing');
 const uncoveredPages = checkFromPlan('¿Esta afirmación está respaldada por los datos?', uncoveredPlan, 'uncovered-gap');
 assert.equal(uncoveredPages.state, 'insufficient');
 assert.match(uncoveredPages.result.reply, /esto no demuestra que la afirmación sea falsa/i);
+assert.doesNotMatch(uncoveredPages.result.reply, /^La evidencia no basta para confirmar toda la afirmación/i, 'The Pages reply must not repeat an existing no-evidence limitation');
 assert.equal(uncoveredPages.result.evidenceSummary?.families[0]?.status, 'missing');
+const directNonConclusion = 'Sin una medición compatible no se puede confirmar ni descartar la afirmación.';
+assert.equal(qualifyPublicClaimReply(directNonConclusion), directNonConclusion);
+const sourcedNonConclusion = 'No se ha localizado una medición compatible; esto no demuestra que la afirmación sea falsa.';
+assert.equal(qualifyPublicClaimReply(sourcedNonConclusion), sourcedNonConclusion);
 
 const causalGapClaims = [
   'Las redes sociales provocan más acoso entre jóvenes',

@@ -101,7 +101,8 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   const coverageGapReply = plan.evidenceLevel === 'insufficient' && !sources.length && coverageGap
     ? publicEvidenceGapReply(plan, { attributionUnavailable: true }) || plan.limitation?.trim() || coverageGap.nextAction
     : undefined;
-  const claimNeedsQualification = plan.evidenceLevel !== 'insufficient' && requiresPublicClaimQualification(plan, argumentsList);
+  const claimNeedsQualification = requiresPublicClaimQualification(plan, argumentsList);
+  const answerNeedsQualification = claimNeedsQualification || plan.evidenceLevel === 'insufficient';
   const evidenceLevel = missingPublicEvidence ? 'insufficient' : plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
   const claimHasDirectEvidence = argumentsList.some((item) => item.evidenceIds.length > 0);
   const publicEvidenceLevel = evidenceLevel === 'limited' && claimItems.length > 0 && !claimHasDirectEvidence
@@ -109,7 +110,9 @@ export const localPublicCheckResponse = (payload, claim = '') => {
     : publicEvidenceLevelForArguments(evidenceLevel, plan, argumentsList);
   const publicReply = missingPublicEvidence
     ? coverageGapReply || 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
-    : claimNeedsQualification ? qualifyPublicClaimReply(reply) : reply;
+    : answerNeedsQualification ? qualifyPublicClaimReply(reply) : reply;
+  const alreadyQualifiedShareableReply = !missingPublicEvidence && Boolean(plan.shareableReply?.trim()) && publicReply === reply;
+  const suppressShareableReply = missingPublicEvidence || answerNeedsQualification && !alreadyQualifiedShareableReply;
   const publishedSlug = !extraction && missingPublicEvidence ? exactPublishedSlugFor(safePayload, claim) : undefined;
   if (publishedSlug) {
     const message = 'Esta afirmación tiene una ficha revisada con datos, fuentes y límites. Abrimos esa comprobación.';
@@ -140,9 +143,9 @@ export const localPublicCheckResponse = (payload, claim = '') => {
       ...(nextQuestion ? { nextQuestion } : {}),
       reply: publicReply,
       answer: publicReply || plan.summary || plan.headline,
-      shareableReply: missingPublicEvidence || claimNeedsQualification ? undefined : plan.shareableReply,
-      shareableSourceIds: !missingPublicEvidence && !claimNeedsQualification && shareableSourceIds.length ? shareableSourceIds : undefined,
-      keyFact: missingPublicEvidence ? 'Evidencia verificable no recuperada' : claimNeedsQualification ? 'La evidencia no basta para confirmar toda la afirmación' : plan.headline,
+      shareableReply: suppressShareableReply ? undefined : plan.shareableReply,
+      shareableSourceIds: !suppressShareableReply && shareableSourceIds.length ? shareableSourceIds : undefined,
+      keyFact: missingPublicEvidence ? 'Evidencia verificable no recuperada' : answerNeedsQualification ? 'La evidencia no basta para confirmar toda la afirmación' : plan.headline,
       criteria: missingPublicEvidence ? [] : criteria,
       whatWeKnow: missingPublicEvidence ? [] : criteria.map((item) => item.finding),
       limitations: [...new Set([plan.limitation, ...(missingPublicEvidence ? ['La respuesta no contiene hallazgos atribuibles a una fuente que se pueda consultar.'] : [])].filter(Boolean))],

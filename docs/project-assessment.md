@@ -798,7 +798,9 @@ preview now require every explicit part to have its own evidence ID and
 attributable source before labelling the whole claim supported. Unlinked
 positive verdicts become insufficient; an overall supported plan with an
 unevidenced part is shown as limited, while already-limited plans receive the
-same concise qualification. Neither can retain its copyable whole-claim
-sentence. Answers already marked insufficient are left at their existing
-length. Paraphrases of a causal employment claim, a limited-evidence variant,
-and a nearby single-part employment claim exercise the boundary in both paths.
+same concise qualification. An insufficient plan with an unqualified positive
+reply is also corrected; replies that already explain the evidence gap do not
+get a repeated prefix. Unsupported whole-claim replies are not kept as
+copyable sentences. Paraphrases of a causal employment claim, a
+limited-evidence variant, and a nearby single-part employment claim exercise
+the boundary in both paths.

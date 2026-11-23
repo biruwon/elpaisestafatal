@@ -25,9 +25,12 @@ export const publicEvidenceLevelForArguments = (level, plan, argumentsList) => l
 export const qualifyPublicClaimReply = (reply) => {
   const text = String(reply || '').trim();
   if (!text) return publicClaimQualification;
+  const alreadyStatesNonConclusion = /\bno (?:se puede|permite|podemos|alcanza a)\s+(?:confirmar|descartar|demostrar|sostener|afirmar|concluir)\b/i.test(text);
+  const missingEvidenceAlreadyExplained = /\b(?:no se ha localizado|no hemos localizado|no hemos encontrado)\b[^.!?]{0,120}\b(?:medici[oó]n|evidencia|datos?|fuente|respaldo)\b[^.!?]{0,120}\b(?:no demuestra|no permite|no se puede|no podemos|no alcanza|falta|pendiente)\b/i.test(text);
   const alreadyStatesSpecificLimit = /\bno (?:demuestra|acredita|prueba|establece) que\b[^.!?]{0,180}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|determin\w*|explique\w*)\b/i.test(text)
     || /\bno mide\b[^.!?]{0,120}\bsi\b[^.!?]{0,100}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|urgencias?)\b/i.test(text);
-  if (/no (?:permite|basta para) confirmar toda la afirmaci[oó]n|no demuestra toda la afirmaci[oó]n/i.test(text) || alreadyStatesSpecificLimit) return text;
+  if (/no (?:permite|basta para) confirmar toda la afirmaci[oó]n|no demuestra toda la afirmaci[oó]n/i.test(text)
+    || alreadyStatesNonConclusion || missingEvidenceAlreadyExplained || alreadyStatesSpecificLimit) return text;
   return `${publicClaimQualification}\n\n${text}`;
 };
 
