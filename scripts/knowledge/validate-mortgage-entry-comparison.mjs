@@ -1,0 +1,71 @@
+import assert from 'node:assert/strict';
+import { claimFocusFor } from '../../src/lib/knowledge/claim-focus.mjs';
+import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
+import { validateAnswerPlan } from './answer-plan-validation.mjs';
+import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
+
+const now = Date.parse('2026-11-23T20:00:00Z');
+const check = (text) => deterministicApiFallback({ text, inputType: 'text', now });
+const supportedParaphrases = [
+  'La entrada de una hipoteca es una barrera mayor que la cuota mensual para acceder a una vivienda',
+  'La falta de ahorro previo pesa más que poder pagar la mensualidad al comprar una casa con hipoteca',
+  'Reunir el pago inicial es un obstáculo más frecuente que afrontar las cuotas de la hipoteca',
+];
+let sourceIds;
+for (const claim of supportedParaphrases) {
+  assert.equal(claimFocusFor(claim)?.id, 'mortgage-entry-vs-payment', claim);
+  const result = check(claim);
+  const plan = result.result;
+  assert.equal(result.status, 'partial');
+  assert.equal(plan?.evidenceLevel, 'limited');
+  assert.equal(plan?.answerScope?.family, 'mortgage-entry-vs-payment');
+  assert.deepEqual(plan?.sourceIds, ['bde-financial-capacity-housing-2026-spring']);
+  assert.match(plan?.shareableReply || '', /alrededor del 86 %/);
+  assert.match(plan?.shareableReply || '', /alrededor del 35 %/i);
+  assert.match(plan?.shareableReply || '', /2016–2023/);
+  assert.match(plan?.shareableReply || '', /pueden solaparse/);
+  assert.match(plan?.shareableReply || '', /82 % de la población/);
+  assert.match(plan?.limitation || '', /no describe la situación actual/);
+  assert.equal(plan?.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'supported');
+  assert.ok(validateAnswerPlan(plan).ok, JSON.stringify(validateAnswerPlan(plan).errors));
+  assert.ok(publicResolveResponse({ status: 'complete', requestId: `mortgage-${claim.length}`, result: plan }));
+  sourceIds ||= plan.sourceIds;
+  assert.deepEqual(plan.sourceIds, sourceIds, 'Equivalent entry/payment paraphrases should use the same source');
+}
+
+const reversed = check('La cuota mensual de la hipoteca es una barrera mayor que reunir la entrada para comprar vivienda');
+assert.equal(reversed.result?.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'contradicted');
+assert.deepEqual(reversed.result?.sourceIds, sourceIds);
+
+const negatedEntryComparison = check('La entrada no es una barrera mayor que la cuota mensual para acceder a una vivienda');
+assert.equal(negatedEntryComparison.result?.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'contradicted');
+assert.deepEqual(negatedEntryComparison.result?.sourceIds, sourceIds);
+
+const question = '¿Qué supone una barrera mayor para comprar una vivienda con hipoteca: reunir la entrada o pagar la cuota?';
+const questionAnswer = check(question);
+assert.equal(claimFocusFor(question)?.id, 'mortgage-entry-vs-payment');
+assert.equal(questionAnswer.result?.evidenceLevel, 'limited');
+assert.match(questionAnswer.result?.shareableReply || '', /la restricción de entrada fue más frecuente que la de pago mensual/);
+assert.deepEqual(questionAnswer.result?.sourceIds, sourceIds);
+
+const neutral = 'La entrada y la cuota hipotecaria son dos barreras para comprar una vivienda';
+assert.notEqual(claimFocusFor(neutral)?.id, 'mortgage-entry-vs-payment', 'A claim that names both costs without comparing them must not inherit a direction');
+
+for (const claim of [
+  'En Madrid la entrada de una hipoteca es una barrera mayor que la cuota mensual para comprar una vivienda',
+  'Entre los jóvenes, la entrada hipotecaria pesa más que la cuota mensual',
+  'En 2026 la entrada de una hipoteca es una barrera mayor que la cuota mensual',
+  'Actualmente la entrada de una hipoteca es una barrera mayor que la cuota mensual',
+]) {
+  const result = check(claim);
+  assert.equal(result.result?.answerScope?.family, 'mortgage-entry-vs-payment', claim);
+  assert.equal(result.result?.evidenceLevel, 'insufficient', claim);
+  assert.deepEqual(result.result?.sourceIds, [], claim);
+  assert.doesNotMatch(result.result?.shareableReply || '', /86 %|35 %/);
+}
+
+const causalNeighbour = check('La entrada de la hipoteca causa más dificultades que la cuota mensual para comprar una vivienda');
+assert.notEqual(causalNeighbour.result?.answerScope?.family, 'mortgage-entry-vs-payment');
+assert.doesNotMatch(causalNeighbour.result?.shareableReply || '', /86 %|35 %/);
+
+console.log('Mortgage entry comparison passed: paraphrase reuse, reversed direction, model scope and dated-source limits.');

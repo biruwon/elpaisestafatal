@@ -1,5 +1,6 @@
 import { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { HOUSING_COMPLETION_EVIDENCE, HOUSING_SUPPLY_PRESSURE_EVIDENCE } from './housing-supply-snapshot.mjs';
+import { MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE } from './mortgage-entry-snapshot.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 const has = (text, expression) => expression.test(text);
@@ -7,6 +8,11 @@ const wages = /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|cobr\w*|pagan?)\b/;
 const rents = /\b(alquil\w*|arrendam\w*|inquilin\w*|renta mensual)\b/;
 const rentalBurden = /\b(ingres\w*|salari\w*|sueld\w*|nomina\w*|mitad|por ciento|porcentaje|esfuerzo|asequib\w*|poder alquilar|puede alquilar|puede pagar|alquilar[^.]{0,35}sol[oa]|emancip\w*|independiz\w*)\b/;
 const absoluteRentAmount = /\b(cuant\w*|importe\w*|cantid\w*|cuant[ií]a\w*|euros?|eur|mensual\w*|al mes|por mes|€)\b/;
+const mortgageEntryVsPayment = (t) => /\b(entrada|ahorro previo|ahorro inicial|pago inicial|aportacion inicial|recursos iniciales|riqueza disponible)\b/.test(t)
+  && /\b(cuota\w*|mensualidad\w*|pago mensual|capacidad de pago|pagos regulares)\b/.test(t)
+  && /\b(viviend\w*|hipotec\w*|compr\w*|adquir\w*)\b/.test(t)
+  && /\b(mas|mayor\w*|menor\w*|principal|superior\w*|inferior\w*|igual\w*|compar\w*|frente a|no es|sino)\b/.test(t)
+  && !/\b(caus\w*|provoc\w*|gener\w*|impid\w*|evit\w*|responsable|por culpa|reduce\w*|aument\w*)\b/.test(t);
 const migrationPopulation = /\b(inmigr\w*|migr\w*|extranjer\w*|nacid\w* fuera|nacid\w* en el extranjero|personas de origen extranjero|ciudadania extranjera|nacionalidad extranjera|ciudadan\w* europea|nacionalidad europea|ciudadan\w* de (?:otro pais|otros paises) (?:de )?(?:la )?(?:ue|union europea)|nacionalidad de otro pais (?:de )?(?:la )?(?:ue|union europea))\b/;
 const migrationCredentialRecognition = (t) => migrationPopulation.test(t)
   && /\b(titul\w*|estudios? (?:superiores?|universitarios?)|cualific\w*|formacion|sobrecualific\w*)\b/.test(t)
@@ -1115,6 +1121,16 @@ const focuses = [
     explanation: 'El alquiler medio de los hogares no indica si un sueldo individual alcanza para alquilar una vivienda completa.',
     explanationEvidence: bankSpainRentEffortEvidence,
     limitation: 'El promedio solo representa hogares que ya alquilaban; no incluye a quienes quedaron fuera. El índice de precios muestra cambios, no el alquiler mensual.',
+  },
+  {
+    id: 'mortgage-entry-vs-payment', label: 'ahorro inicial y capacidad de pagar la hipoteca',
+    when: mortgageEntryVsPayment,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['ahorro previo e ingresos del hogar medidos con criterios hipotecarios comparables', 'hogares que alquilan o compran primera vivienda con hipoteca', 'periodo y alcance territorial de la estimación'],
+    explanationHeadline: 'La restricción de ahorro inicial fue más frecuente que la de cuota en la muestra del Banco de España',
+    explanation: 'El Banco de España separa la capacidad de reunir la entrada y gastos iniciales de la capacidad de asumir una cuota hipotecaria prudente. Su estudio permite comparar la frecuencia de ambos límites en una población definida.',
+    explanationEvidence: MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE,
+    limitation: 'La estimación resume una muestra nacional de hogares de 2016–2023 y no describe la situación actual, cada ciudad o la juventud por separado. Sus categorías pueden solaparse y no significan que todos esos hogares no pudieran comprar. Es una comparación modelada, no una prueba causal ni una evaluación de una hipoteca individual.',
   },
   {
     id: 'purchase-affordability', label: 'acceso a la compra de vivienda',

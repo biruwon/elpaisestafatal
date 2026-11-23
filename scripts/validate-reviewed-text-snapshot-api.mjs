@@ -331,5 +331,24 @@ assert.deepEqual(regionalPayHousing.body.result.sources, []);
 assert.match(regionalPayHousing.body.result.reply, /promedios nacionales no permiten medir ese balance entre ciudades/);
 assert.doesNotMatch(regionalPayHousing.body.result.reply, /17 € por hora|índice de precios de vivienda.*\d/);
 
+const mortgageEntry = await check('La entrada de una hipoteca es una barrera mayor que la cuota mensual para acceder a una vivienda');
+assert.equal(mortgageEntry.body.state, 'limited');
+assert.equal(mortgageEntry.body.result.answerScope.family, 'mortgage-entry-vs-payment');
+assert.equal(mortgageEntry.body.result.arguments[0].verdict, 'supported');
+assert.match(mortgageEntry.body.result.reply, /alrededor del 86 %/i);
+assert.match(mortgageEntry.body.result.reply, /alrededor del 35 %/i);
+assert.match(mortgageEntry.body.result.reply, /2016–2023/);
+assert.ok(mortgageEntry.body.result.sources.some((source) => source.id === 'bde-financial-capacity-housing-2026-spring'));
+
+const mortgageQuotaReversed = await check('La cuota mensual es una barrera mayor que reunir la entrada para comprar una vivienda con hipoteca');
+assert.equal(mortgageQuotaReversed.body.state, 'limited');
+assert.equal(mortgageQuotaReversed.body.result.arguments[0].verdict, 'contradicted');
+assert.ok(mortgageQuotaReversed.body.result.sources.some((source) => source.id === 'bde-financial-capacity-housing-2026-spring'));
+
+const mortgageMadrid = await check('En Madrid la entrada de una hipoteca es una barrera mayor que la cuota mensual para comprar una vivienda');
+assert.equal(mortgageMadrid.body.state, 'insufficient');
+assert.deepEqual(mortgageMadrid.body.result.sources, []);
+assert.doesNotMatch(mortgageMadrid.body.result.reply, /86 %|35 %/);
+
 await Promise.all(pending);
-console.log('Reviewed text snapshot Pages fallback passed: empty D1 uses scoped answers, unsupported pay comparisons exclude mismatched statistics, and failed D1 reads remain unavailable.');
+console.log('Reviewed text snapshot Pages fallback passed: empty D1 uses scoped answers, unsupported comparisons exclude mismatched statistics, and failed D1 reads remain unavailable.');
