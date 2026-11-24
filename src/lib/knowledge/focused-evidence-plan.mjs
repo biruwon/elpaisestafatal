@@ -701,12 +701,22 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     const unemploymentSupplyExplanation = focus.id === 'unemployment-wage-pressure'
       && propositions.length === 2 && /\b(porque|ya que|debido a que|por tener|al haber)\b/.test(normalizedClaim)
       && /\b(paro|desemple\w*|candidat\w*|demandantes? de empleo|oferta de trabajadores|mano de obra|aspirantes?|vacantes?)\b/.test(clauseText);
+    const sameEmployerContributionVisibility = focus.id === 'employer-contributions-labour-cost'
+      && propositions.length === 2 && /\b(porque|ya que|debido a que)\b/.test(normalizedClaim)
+      && propositions.some((proposition) => {
+        const text = normalize(proposition.text);
+        return /\b(cotiz\w*|cuot\w*|aportaci\w*)\b/.test(text) && /\b(salari\w* bruto|sueldo\w* bruto|nomina\w*)\b/.test(text);
+      })
+      && propositions.some((proposition) => {
+        const text = normalize(proposition.text);
+        return /\b(trabajador\w*|empleado\w*)\b/.test(text) && /\b(perci\w*|conoc\w*|saben?|ven|cost\w*)\b/.test(text);
+      });
     if (sameSectorOutput || sameGdpComparison && (gdpAggregateClause || gdpPerPersonClause)
       || sameRealWageComparison
       || sameHicpBasketComparison
       || sameProductivityComparison && /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(clauseText)) return true;
     if (sameLandlordMotive) return true;
-    if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism || unemploymentSupplyExplanation) return true;
+    if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism || unemploymentSupplyExplanation || sameEmployerContributionVisibility) return true;
     if (educationOutcomeCauseClause) return true;
     if (clauseFocus) return false;
     // A clause such as “una parte se produce más barata” can refer back to

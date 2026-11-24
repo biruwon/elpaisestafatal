@@ -131,6 +131,16 @@ const fallbackGuidance = (text, inputType, analysisWasTruncated = false) => {
   };
 };
 
+const focusedFollowUp = (plan, fallback) => {
+  const family = plan?.answerScope?.family;
+  if (family === 'matched-pay') return { limitation: plan.limitation, questions: ['¿Qué profesión, país y perfil (edad, estudios, experiencia y jornada) quieres comparar?'] };
+  if (family === 'employer-contributions-labour-cost') return {
+    limitation: plan.limitation,
+    questions: ['¿Quieres cuantificar la diferencia para un empleo y año concretos, o comprobar qué saben los trabajadores sobre ella?'],
+  };
+  return fallback;
+};
+
 export const deterministicApiFallback = ({ text = '', inputType = 'text', now = Date.now() } = {}) => {
   const original = String(text || '').trim().slice(0, 1200);
   const analysisWasTruncated = original.length > FALLBACK_CLAIM_MAX_CHARS;
@@ -165,11 +175,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
         status: 'complete',
         evidenceLevel: reviewedContext.evidenceLevel,
         relatedClaims: related ? [related] : [],
-        guidance: { limitation: reviewedContext.limitation, questions: [
-          reviewedContext.answerScope?.family === 'matched-pay'
-            ? '¿Qué profesión, país y perfil (edad, estudios, experiencia y jornada) quieres comparar?'
-            : '¿Quieres concretar el periodo, territorio o indicador?',
-        ] },
+        guidance: focusedFollowUp(reviewedContext, { limitation: reviewedContext.limitation, questions: ['¿Quieres concretar el periodo, territorio o indicador?'] }),
         result: reviewedContext,
       };
     }
@@ -177,9 +183,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
       status: focused.evidenceLevel === 'limited' || focused.sourceIds?.length ? 'partial' : 'uncovered',
       result: focused,
       relatedClaims: [],
-      guidance: focused.answerScope?.family === 'matched-pay'
-        ? { limitation: focused.limitation, questions: ['¿Qué profesión, país y perfil (edad, estudios, experiencia y jornada) quieres comparar?'] }
-        : guidance,
+      guidance: focusedFollowUp(focused, guidance),
     };
   }
   const scorecardLifecycle = snapshotLifecycle(GOVERNMENT_SCORECARD_SNAPSHOT, now);

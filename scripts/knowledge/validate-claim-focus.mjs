@@ -55,6 +55,7 @@ const cases = [
   ['pension-worker-beneficiary-ratio', ['El sistema de reparto depende de que haya suficientes trabajadores por cada pensionista', 'Cada vez hay menos cotizantes por jubilado y eso condiciona la financiación de las pensiones', 'La relación entre afiliados y pensionistas determina los recursos disponibles para prestaciones']],
   ['intergenerational-housing-pension-comparison', ['Los boomers tuvieron acceso a vivienda y jubilación en condiciones que las generaciones posteriores no tendrán', 'Las generaciones futuras se enfrentan a peores condiciones de vivienda y pensión', 'El acceso a la vivienda y a una jubilación suficiente ha cambiado entre generaciones']],
   ['matched-pay', ['Las empresas españolas pagan mucho menos que las de otros países europeos por el mismo perfil profesional', 'Los salarios difieren entre países aun desempeñando el mismo puesto', 'Mismo trabajo y sueldo distinto según el país']],
+  ['employer-contributions-labour-cost', ['Las cotizaciones empresariales ocultan parte del coste laboral real que soporta cada empleo', 'El trabajador no percibe cuánto cuesta realmente su empleo porque parte de las cotizaciones no aparece como salario bruto', 'Las cotizaciones patronales no aparecen en el sueldo bruto y los trabajadores no ven el coste real del puesto']],
   ['unemployment-wage-pressure', ['El paro estructural permite a las empresas ofrecer salarios bajos porque siempre hay candidatos', 'El desempleo elevado debilita la negociación salarial y presiona los sueldos a la baja', 'Cuando abundan los candidatos, las empresas pueden contener los salarios', 'Con mucho paro, los empleadores pueden frenar las subidas de sueldo']],
   ['local-safety-trend', ['En mi barrio ha subido la inseguridad este mes', 'La delincuencia ha empeorado en mi calle estas semanas', 'En la zona hay cada vez más robos', 'En mi municipio han aumentado los hurtos este trimestre']],
   ['primary-care-waits', ['Hay que esperar demasiado para conseguir cita con el médico de familia', '¿Cuántos días tarda una cita en atención primaria?', 'La cita con el médico de cabecera llega con mucha demora']],
@@ -899,6 +900,47 @@ for (const query of [
   assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'self-employment-paraphrase', result: plan }, query).state, 'insufficient');
 }
 assert.notEqual(claimFocusFor('Las cuotas empresariales elevadas hacen inviable que una empresa mantenga su plantilla')?.id, 'self-employment-cost-viability', 'Employer payroll costs must not inherit the individual RETA schedule');
+const employerContributionClaims = cases.find(([family]) => family === 'employer-contributions-labour-cost')[1];
+let employerContributionSources;
+let employerContributionFindings;
+for (const [index, query] of employerContributionClaims.entries()) {
+  const plan = focusedEvidencePlan(query, { now: Date.parse('2026-11-24') });
+  validateAnswerPlan(plan);
+  assert.equal(plan.answerScope.family, 'employer-contributions-labour-cost');
+  assert.equal(plan.claimType, 'causal');
+  assert.deepEqual(plan.answerScope.directMetrics, [], 'The OECD case does not measure employee awareness or deliberate concealment');
+  assert.deepEqual(plan.answerScope.contextMetrics, [], 'Unrelated national wage or tax totals must not substitute for employer contributions');
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['oecd-taxing-wages-spain-2026']);
+  assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.evidenceIds, [], 'A model household is contextual evidence, not direct evidence for a concealment claim');
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
+  assert.match(plan.shareableReply, /salario bruto m[aá]s cotizaciones empresariales/);
+  assert.match(plan.shareableReply, /23,4 % del coste laboral total/);
+  assert.match(plan.shareableReply, /persona soltera, sin hijos y con salario medio/);
+  assert.match(plan.shareableReply, /no mide si los trabajadores conocen esa diferencia ni si alguien la oculta/);
+  assert.doesNotMatch(plan.shareableReply, /41,4 %/, 'The overall tax wedge must not be substituted for employer contributions alone');
+  assert.ok(plan.shareableReply.trim().split(/\s+/).length <= 110, 'The contextual reply must stay concise while preserving its scope and limits');
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: `employer-contribution-${index}`, result: plan }, query).state, 'insufficient');
+  const fallback = deterministicApiFallback({ text: query, inputType: 'text', now: Date.parse('2026-11-24') });
+  assert.equal(fallback.status, 'partial');
+  assert.deepEqual(fallback.result.sourceLinks.map((source) => source.id), ['oecd-taxing-wages-spain-2026']);
+  assert.match(fallback.guidance.questions[0], /cuantificar.*empleo y a[nñ]o.*qu[eé] saben/);
+  const findings = plan.evidenceSummary.families.flatMap((family) => family.data || []);
+  assert.deepEqual(findings, employerContributionFindings || findings, `An equivalent employer-cost paraphrase changed the sourced findings: ${query}`);
+  const sourceIds = plan.evidenceSummary.families.flatMap((family) => family.sourceIds || []);
+  assert.deepEqual(sourceIds, employerContributionSources || sourceIds, `An equivalent employer-cost paraphrase changed sources: ${query}`);
+  employerContributionFindings = findings;
+  employerContributionSources = sourceIds;
+}
+for (const query of [
+  'Las cotizaciones del trabajador se descuentan de su salario bruto',
+  'Las cotizaciones empresariales aumentan el coste del empleo',
+  'La cuota del autónomo reduce sus ingresos netos',
+]) {
+  assert.notEqual(claimFocusFor(query)?.id, 'employer-contributions-labour-cost', `A nearby claim crossed into employer-cost awareness: ${query}`);
+}
+assert.deepEqual(focusedEvidencePlan(`${employerContributionClaims[0]} en 2024`, { now: Date.parse('2026-11-24') }).sourceLinks, [], 'The 2025 household model must not answer an explicitly different year');
+assert.deepEqual(focusedEvidencePlan('Las cotizaciones empresariales ocultan parte del coste laboral en Estados Unidos', { now: Date.parse('2026-11-24') }).sourceLinks, [], 'The Spain-only example must not be attached to a US claim');
 const unpaidOvertimeClaim = 'En hostelería se hacen horas extra sin cobrar de manera habitual';
 const unpaidOvertimePlan = focusedEvidencePlan(unpaidOvertimeClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
 validateAnswerPlan(unpaidOvertimePlan);

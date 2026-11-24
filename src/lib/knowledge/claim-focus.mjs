@@ -903,6 +903,18 @@ const selfEmploymentCostViability = (t) =>
   /\b(autonom\w*|trabajador\w* por cuenta propia|cuenta propia|freelance)\b/.test(t)
   && /\b(cuot\w*|cotiz\w*|cost\w* fijo\w*|gasto\w* (?:fijo\w*|obligatori\w*)|gestor\w*|carga administrat\w*|impuesto\w*)\b/.test(t)
   && /\b(ingres\w*|factur\w*|rentab\w*|viable|inviable|compens\w*|irregular\w*|estable)\b/.test(t);
+const employerContributionVisibility = (t) => {
+  const contribution = /\b(cotiz\w*|cuot\w*|aportaci\w*)\b/.test(t);
+  const employerNamed = /\b(empresari\w*|empresa|empleador\w*|patron\w*)\b.{0,45}\b(cotiz\w*|cuot\w*|aportaci\w*)\b/.test(t)
+    || /\b(cotiz\w*|cuot\w*|aportaci\w*)\b.{0,45}\b(empresari\w*|empresa|empleador\w*|patron\w*)\b/.test(t);
+  const labourCost = /\b(cost\w* laboral|cost\w* (?:real )?(?:del? )?(?:empleo|puesto|trabajo)|cu[aá]nto cuesta (?:realmente )?(?:(?:el|su|cada) )?(?:empleo|puesto|trabajo))\b/.test(t);
+  const grossPay = /\b(salari\w* bruto|sueldo\w* bruto|n[oó]mina)\b/.test(t);
+  const visibilityClaim = /\b(ocult\w*|no percib\w*|no v\w*|no aparec\w*|no figur\w*|no se reflej\w*|invisib\w*)\b/.test(t);
+  const employeeContributionOnly = /\b(cotiz\w*|cuot\w*|aportaci\w*)\b.{0,24}\b(?:del|de la|que paga el)\s+(?:propio )?(?:trabajador|empleado)\b/.test(t)
+    && !employerNamed;
+  return contribution && visibilityClaim && (employerNamed && labourCost || !employerNamed && labourCost && grossPay)
+    && !employeeContributionOnly;
+};
 const futurePensionOutlook = (t) => {
   const currentYear = new Date().getFullYear();
   const namesFutureYear = [...t.matchAll(/\b(?:20|21)\d{2}\b/g)].some(([year]) => Number(year) > currentYear);
@@ -1758,6 +1770,65 @@ const focuses = [
       sources: [{ id: 'boe-reta-contributions-2026', title: 'Orden PJC/297/2026, de cotización a la Seguridad Social para 2026', publisher: 'Boletín Oficial del Estado', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2026-7296', publishedAt: '2026-03-31', retrievedAt: '2026-11-24', role: 'primary' }],
     },
     limitation: 'El cálculo usa la base mínima de un tramo concreto y los tipos generales de 2026 antes de reducciones; no es la cuota de cada autónomo ni calcula la rentabilidad de un negocio. Los totales de cotizaciones, la renta mediana y los salarios medios tampoco muestran ese balance ni prueban por qué cerró una actividad.',
+  },
+  {
+    id: 'employer-contributions-labour-cost', label: 'cotizaciones empresariales y coste laboral total',
+    when: employerContributionVisibility,
+    direct: [], context: [], claimType: 'causal',
+    needs: [
+      'salario bruto y cotizaciones a cargo del empleador en la misma nómina, población, territorio y periodo',
+      'una encuesta representativa que mida si los trabajadores conocen ese coste y qué entienden por salario bruto',
+      'si se afirma ocultación deliberada, pruebas sobre la información disponible y la conducta del empleador',
+    ],
+    explanation: 'La OCDE separa el salario bruto de las cotizaciones empresariales al calcular el coste laboral total. Esa definición permite explicar la diferencia, pero no mide si las personas trabajadoras la perciben ni si alguien la oculta.',
+    explanationHeadline: 'Las cotizaciones empresariales forman parte del coste laboral, pero falta medir si los trabajadores las conocen',
+    explanationEvidence: {
+      directClaimEvidence: false,
+      expiresAt: '2027-04-30', territories: ['ES'],
+      when: (t) => {
+        const years = [...t.matchAll(/\b(?:19|20)\d{2}\b/g)].map(([year]) => year);
+        return years.length === 0 || years.length === 1 && years[0] === '2025';
+      },
+      evidenceLabel: 'Coste laboral y cotizaciones empresariales en el caso tipo de la OCDE',
+      dimensions: {
+        subject: 'cotizaciones de seguridad social a cargo del empleador como parte del coste laboral total',
+        population: 'caso modelo de una persona soltera, sin hijos, con salario medio',
+        geography: 'España',
+        period: '2025',
+        denominator: 'coste laboral total: salario bruto más cotizaciones empresariales',
+        unit: 'porcentaje del coste laboral total',
+      },
+      facts: [
+        'La OCDE define el coste laboral total como salario bruto más cotizaciones empresariales.',
+        'En el caso modelo de España para 2025 —una persona soltera, sin hijos y con salario medio— las cotizaciones empresariales equivalían al 23,4 % del coste laboral total. Es un caso tipo, no una cifra observada para cada nómina.',
+      ],
+      factSourceIds: [['oecd-taxing-wages-spain-2026'], ['oecd-taxing-wages-spain-2026']],
+      factDimensions: [
+        {
+          subject: 'coste laboral total del empleador',
+          population: 'definición de la OCDE para el coste laboral de trabajadores por cuenta ajena',
+          period: 'marco metodológico de Taxing Wages 2026',
+          geography: 'OCDE',
+          denominator: 'salario bruto más cotizaciones empresariales',
+          unit: 'definición; sin valor numérico',
+        },
+        {
+          subject: 'cotizaciones empresariales de seguridad social',
+          population: 'caso modelo de una persona soltera, sin hijos, con salario medio',
+          period: '2025',
+          geography: 'España',
+          denominator: 'coste laboral total',
+          unit: 'porcentaje del coste laboral total',
+        },
+      ],
+      sources: [{ id: 'oecd-taxing-wages-spain-2026', title: 'Taxing Wages 2026 · España y definición del coste laboral', publisher: 'OCDE', url: 'https://www.oecd.org/en/publications/taxing-wages-2026_3a5169ef-en/full-report/overview_d93131c3.html', publishedAt: '2026-04', retrievedAt: '2026-11-24', role: 'primary' }],
+    },
+    shareableReplyForContext: ({ facts }) => [
+      facts.join(' '),
+      'Esto muestra por qué el coste total para la empresa puede superar el salario bruto. Pero la OCDE no mide si los trabajadores conocen esa diferencia ni si alguien la oculta; para comprobarlo haría falta una encuesta sobre lo que entienden por salario bruto y coste laboral.',
+    ].join('\n\n'),
+    evidenceGap: 'La OCDE mide los componentes del coste laboral para un caso tipo; no mide la percepción de los trabajadores ni una posible ocultación deliberada.',
+    limitation: 'El 23,4 % usa como denominador el coste laboral total y describe en 2025 a una persona soltera sin hijos con salario medio en España. No es un porcentaje del salario bruto, no representa a todos los empleos ni mide qué información conoce un trabajador. La cuña fiscal total incluye IRPF y cotizaciones del empleado y del empleador, netas de prestaciones familiares; no equivale solo a la aportación empresarial.',
   },
   {
     id: 'matched-pay', label: 'salarios de perfiles profesionales comparables',
