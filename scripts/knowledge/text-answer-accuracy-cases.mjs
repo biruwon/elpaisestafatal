@@ -208,6 +208,95 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'housing-cost-delays-emancipation-stable-employment',
+    equivalenceGroup: 'youth-housing-employment-context-2025',
+    input: 'Los precios de la vivienda están retrasando la emancipación incluso de jóvenes con empleo estable',
+    expected: {
+      state: 'insufficient', family: 'work-housing-independence', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['25,2 %', 'población ocupada de 16–29 años', '98,7 %', '1.176 euros al mes', '67,0 %', 'contrato indefinido', 'no permite confirmar la afirmación para jóvenes con empleo estable', 'ni permiten atribuirlo a los precios'],
+      replyExcludes: ['la población ocupada con contrato indefinido estaba emancipada', 'los precios causaron el retraso'],
+      evidence: [
+        {
+          familyId: 'work-housing-independence',
+          sourceIds: ['cje-emancipation-2025', 'cje-emancipation-methodology'],
+          dataIncludes: ['14,5 %', '16–29 años'],
+          dimensions: { period: '2025', geography: 'España', population: '16–29 años', denominator: 'no se desglosa por empleo', unit: 'porcentaje' },
+        },
+        {
+          familyId: 'work-housing-independence',
+          sourceIds: ['youth-family-housing-ine'],
+          dataIncludes: ['29,4 %', '30,0 %', '24.000 euros netos anuales'],
+          dimensions: { period: 'ECV 2025', geography: 'España', population: '26–34 años', denominator: 'renta personal neta anual superior a 24.000 euros para convivencia; motivos solo entre quienes convivían con sus padres', unit: 'porcentaje' },
+        },
+        {
+          familyId: 'work-housing-independence',
+          sourceIds: ['cje-emancipation-2025', 'cje-emancipation-methodology'],
+          dataIncludes: ['25,2 %', 'población ocupada'],
+          dimensions: { period: '2025', geography: 'España', population: 'personas ocupadas, en paro o inactivas de 16–29 años', denominator: 'personas de 16–29 años de cada grupo de actividad; no se desglosa por tipo de contrato', unit: 'porcentaje' },
+        },
+        {
+          familyId: 'work-housing-independence',
+          sourceIds: ['cje-emancipation-2025'],
+          dataIncludes: ['67,0 %', 'contrato indefinido'],
+          dimensions: { period: '2025', geography: 'España', population: 'personas asalariadas de 16–29 años', denominator: 'población asalariada de 16–29 años; no cruzada con emancipación', unit: 'porcentaje' },
+        },
+        {
+          familyId: 'work-housing-independence',
+          sourceIds: ['cje-emancipation-2025'],
+          dataIncludes: ['98,7 %', '1.176 euros'],
+          dimensions: { period: 'finales de 2025', geography: 'España', population: 'persona joven asalariada de 16–29 años que alquilaría sola', denominator: 'salario neto mensual mediano de una persona joven asalariada de 16–29 años', unit: 'euros al mes; porcentaje del salario' },
+        },
+      ],
+      maxReplyWords: 160,
+    },
+  },
+  {
+    id: 'housing-cost-delays-emancipation-paraphrase',
+    equivalenceGroup: 'youth-housing-employment-context-2025',
+    input: 'Un empleo fijo no evita que los precios retrasen la emancipación de jóvenes',
+    expected: {
+      state: 'insufficient', family: 'work-housing-independence', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['25,2 %', '98,7 %', '67,0 %', 'no permite confirmar la afirmación para jóvenes con empleo estable', 'ni permiten atribuirlo a los precios'],
+      replyExcludes: ['el 29,4 % de los trabajadores estables', 'los precios causaron el retraso'],
+      evidence: [], maxReplyWords: 160,
+    },
+  },
+  {
+    id: 'housing-cost-emancipation-causality-synonym',
+    equivalenceGroup: 'youth-housing-employment-context-2025',
+    input: 'El encarecimiento de la vivienda impide emanciparse a jóvenes con contrato indefinido',
+    expected: {
+      state: 'insufficient', family: 'work-housing-independence', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['25,2 %', '98,7 %', '67,0 %', 'contrato indefinido', 'no permite confirmar la afirmación para jóvenes con empleo estable', 'ni permiten atribuirlo a los precios'],
+      replyExcludes: ['el 25,2 % de quienes tienen contrato indefinido', 'el encarecimiento causó el retraso'],
+      evidence: [], maxReplyWords: 160,
+    },
+  },
+  {
+    id: 'housing-cost-emancipation-wrong-year',
+    input: 'En 2024 los precios de la vivienda retrasaron la emancipación de jóvenes con empleo estable',
+    expected: {
+      state: 'insufficient', family: 'work-housing-independence', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['14,5 %', '29,4 %', '30,0 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'housing-cost-emancipation-wrong-territory',
+    input: 'Los precios de la vivienda retrasan la emancipación de jóvenes con empleo estable en Madrid',
+    expected: {
+      state: 'insufficient', family: 'work-housing-independence', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['14,5 %', '29,4 %', '30,0 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'housing-cost-emancipation-without-employment-neighbour',
+    input: 'Los precios altos retrasan la emancipación de jóvenes',
+    expected: {
+      state: 'insufficient', directSourceIds: [],
+      replyExcludes: ['14,5 %', '29,4 %', '30,0 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
     id: 'working-poverty-part-time-below-threshold-neighbour',
     input: 'En 2025 el riesgo de pobreza entre las personas ocupadas a jornada parcial no llegó al 15 %',
     expected: {

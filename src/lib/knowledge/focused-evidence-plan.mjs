@@ -963,8 +963,6 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const explanationFacts = specialistOutpatientComparisonFinding && explanation
     ? [specialistOutpatientComparisonFinding, ...explanation.facts.slice(1)]
     : explanation?.facts || [];
-  const workHousingTrendRequested = focus.id === 'work-housing-independence'
-    && /\b(ya no|cada vez|se ha vuelto|antes|ahora|desde (?:19|20)\d{2}|en (?:19|20)\d{2}|entre (?:19|20)\d{2} y (?:19|20)\d{2}|ultimos a[nñ]os)\b/.test(normalizedClaim);
   const claimType = tourismRegionalSectorComparison ? 'comparative'
     : typeof focus.claimTypeFor === 'function' ? focus.claimTypeFor(normalizedClaim)
     : educationOutcomeCausalClaim ? 'causal'
@@ -972,7 +970,6 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     : focus.id === 'working-poverty' && workingPovertyTrendRequested ? 'trend'
     : focus.id === 'private-healthcare-access'
     ? privateHealthcareAccessClaimType(claim)
-    : focus.id === 'work-housing-independence' ? (workHousingTrendRequested ? 'trend' : 'descriptive')
     : focus.claimType || (explanation ? 'definition' : 'descriptive');
   const subjectiveDefinitionSources = focus.id === 'subjective-financial-strain'
     || focus.id === 'working-poverty' && asksAboutMakingEndsMeet

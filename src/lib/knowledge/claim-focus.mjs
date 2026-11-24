@@ -20,6 +20,7 @@ import { FIXED_DISCONTINUOUS_STATUS_EVIDENCE } from './fixed-discontinuous-snaps
 import { EUROPEAN_PRICE_WAGE_CONVERGENCE_EVIDENCE } from './european-price-wage-convergence-snapshot.mjs';
 import { PUBLIC_PRIVATE_PAY_SNAPSHOT } from './public-private-pay-snapshot.mjs';
 import { PUBLIC_SOCIAL_HOUSING_SNAPSHOT, asksForPublicSocialStockCount } from './public-social-housing-snapshot.mjs';
+import { YOUTH_HOUSING_INDEPENDENCE_SNAPSHOT } from './youth-housing-independence-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -271,9 +272,6 @@ const bankSpainRentEffortSource = {
   retrievedAt: '2026-11-16',
   role: 'primary',
 };
-const cjeEmancipation2025Source = { id: 'cje-emancipation-2025', title: 'Observatorio de Emancipación 2025 · balance publicado en mayo de 2026', publisher: 'Consejo de la Juventud de España', url: 'https://www.cje.org/ca/observatorio_2025/', publishedAt: '2026-05-26', retrievedAt: '2026-11-17', role: 'primary' };
-const cjeEmancipationMethodologySource = { id: 'cje-emancipation-methodology', title: 'Observatorio de Emancipación · población joven y alcance', publisher: 'Consejo de la Juventud de España', url: 'https://www.cje.org/observatorio-de-emancipacion/', retrievedAt: '2026-11-17', role: 'primary' };
-const ineHousingBarrierSource = { id: 'youth-family-housing-ine', title: 'Encuesta de Condiciones de Vida 2025 · dificultades de acceso a la vivienda', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/m3ECV2025.htm', publishedAt: '2026-04-27', retrievedAt: '2026-11-17', role: 'primary' };
 const foreignHousingRegistrySource = { id: 'registradores-eri-2026-q3-foreign-purchases', title: 'Estadística Registral Inmobiliaria · tercer trimestre de 2026', publisher: 'Colegio de Registradores de España', url: 'https://www.registradores.org/documents/d/guest/eri_3t_2026', retrievedAt: '2026-11-17', role: 'primary' };
 const foreignNewBuildRegistrySource = { id: 'registradores-eri-anuario-2025', title: 'Estadística Registral Inmobiliaria · Anuario 2025', publisher: 'Colegio de Registradores de la Propiedad, Bienes Muebles y Mercantiles de España', url: 'https://www.registradores.org/documents/d/guest/eri-anuario-2025', publishedAt: '2026', retrievedAt: '2026-11-24', role: 'primary' };
 const foreignNewBuildEvidence = {
@@ -600,9 +598,18 @@ export const tertiaryOverqualificationCitizenshipFitsClaim = (claim, item) => {
   const citizen = String(item.dimensions?.citizen || '').toUpperCase();
   return tertiaryOverqualificationCitizenshipGroupsForClaim(claim).includes(citizen);
 };
-const workHousingIndependence = (t) => /\b(jornada completa|tiempo completo|jornada entera)\b/.test(t)
-  && /\b(emple\w*|trabaj\w*|salari\w*|sueld\w*|ingres\w*)\b/.test(t)
-  && /\b(independiz\w*|emancip\w*|vivir por su cuenta|vivir por cuenta propia|vivir de forma independiente|vivir solo|mudarse solo)\b/.test(t);
+const workHousingIndependence = (t) => {
+  const employment = /\b(emple\w*|trabaj\w*|asalariad\w*|ocupad\w*|contrat\w*|laboral\w*|salari\w*|sueld\w*|ingres\w*)\b/.test(t);
+  const fullTime = /\b(jornada completa|tiempo completo|jornada entera)\b/.test(t);
+  const stableEmployment = employment && /\b(establ\w*|indefinid\w*|fij\w*|permanent\w*)\b/.test(t);
+  const independentLiving = /\b(independ\w*|emancip\w*|vivir por su cuenta|vivir por cuenta propia|vivir de forma independiente|vivir solo|mudarse solo|salir del hogar)\b/.test(t)
+    || /\b(viv\w*|conviv\w*)\b[\w\s]{0,20}\b(padres?|familia|casa)\b/.test(t)
+    || /\b(padres?|familia)\b[\w\s]{0,20}\b(viv\w*|conviv\w*)\b/.test(t);
+  return employment && (fullTime || stableEmployment) && independentLiving;
+};
+const workHousingCostCausality = (t) => /\b(viviend\w*|alquil\w*|precio\w*|coste\w*|costo\w*|renta\w*)\b/.test(t)
+  && /\b(retras\w*|fren\w*|dificult\w*|impid\w*|oblig\w*|alej\w*|reduc\w*|condicion\w*|imposib\w*|encarec\w*|expuls\w*|presion\w*)\b/.test(t);
+const workHousingTrend = (t) => /\b(ya no|cada vez|se ha vuelto|antes|ahora|desde (?:19|20)\d{2}|entre (?:19|20)\d{2} y (?:19|20)\d{2}|ultimos a[nñ]os)\b/.test(t);
 const rentalSubject = (t) => /\b(viviend\w*|alquil\w*|arrendam\w*|inquilin\w*|piso\w*|casas?|apartament\w*)\b/.test(t);
 const rentalTenantScreeningExclusion = (t) => rentalSubject(t)
   && /\b(fianz\w*|garanti\w*|aval\w*|seguro\w* de impago|solvenci\w*|ingresos? irregulares?|n[oó]min\w*)\b/.test(t)
@@ -1862,21 +1869,41 @@ const focuses = [
     limitation: 'Las cifras nacionales de población inmigrante y los índices nacionales de vivienda no muestran la presión local sobre alquileres ni su efecto causal. Hacen falta medidas locales y una comparación para el mismo periodo.',
   },
   {
-    id: 'work-housing-independence', label: 'acceso a vivienda independiente con empleo a jornada completa',
+    id: 'work-housing-independence', label: 'empleo y acceso a vivienda independiente',
     when: workHousingIndependence,
-    direct: [], context: [],
-    needs: ['tasa de emancipación o vivienda independiente entre personas empleadas a jornada completa', 'ingresos netos y coste de alquiler o compra para la misma población, territorio y periodo', 'serie comparable de esa misma población para comprobar «ya no»'],
-    explanationHeadline: 'Los datos juveniles disponibles no aíslan a quienes trabajan a jornada completa',
-    explanation: 'Trabajar a jornada completa indica las horas trabajadas, no si el sueldo alcanza para vivir de forma independiente.',
-    explanationEvidence: {
-      expiresAt: '2027-04-27', territories: ['ES'],
-      facts: [
-        'El CJE sitúa en 14,5 % la población joven emancipada en España en 2025 (16–29 años, según el Observatorio); no desglosa el dato por jornada laboral.',
-        'La ECV 2025 del INE indica que en España vivía con sus padres el 44,3 % de las personas de 26–34 años. Entre quienes convivían con sus padres, el 47,3 % señaló no poder permitirse alquilar o comprar como motivo principal.',
-      ],
-      sources: [cjeEmancipation2025Source, cjeEmancipationMethodologySource, ineHousingBarrierSource],
+    claimType: 'causal', direct: [], context: [],
+    claimTypeFor: (claim) => {
+      const text = normalize(claim);
+      return workHousingTrend(text) ? 'trend' : workHousingCostCausality(text) ? 'causal' : 'descriptive';
     },
-    limitation: 'Estas cifras describen grupos de distintas edades; no indican si quienes trabajan a jornada completa viven por su cuenta.',
+    needsForClaim: (claim) => [
+      'tasa de emancipación o convivencia con los padres desglosada por edad, jornada y estabilidad del empleo',
+      'renta personal neta y coste de alquiler o compra para el mismo grupo y periodo',
+      ...(workHousingCostCausality(normalize(claim)) ? ['seguimiento temporal o comparación que permita comprobar si los costes de vivienda retrasaron la emancipación'] : ['serie comparable de esa misma población para comprobar «ya no»']),
+    ],
+    explanationHeadline: 'El CJE mide emancipación entre jóvenes ocupados, pero no por estabilidad del contrato',
+    explanation: 'El CJE cruza la emancipación con la situación de actividad, no con el tipo de contrato. La ECV cruza convivencia y motivos declarados con renta personal, no con la estabilidad laboral.',
+    evidenceGap: 'El CJE no publica la tasa de emancipación desglosada por tipo de contrato; la ECV no cruza convivencia con empleo estable. Ninguna de estas cifras sigue a las mismas personas para medir cuánto retrasan los precios la emancipación.',
+    explanationEvidence: YOUTH_HOUSING_INDEPENDENCE_SNAPSHOT,
+    shareableReplyForContext: ({ claim }) => {
+      const normalizedClaim = normalize(claim);
+      const fullTimeRequested = /\b(jornada completa|tiempo completo|jornada entera)\b/.test(normalizedClaim);
+      const stableEmploymentRequested = /\b(establ\w*|indefinid\w*|fij\w*|permanent\w*)\b/.test(normalizedClaim);
+      const requestedGroup = stableEmploymentRequested ? 'jóvenes con empleo estable' : fullTimeRequested ? 'jóvenes a jornada completa' : 'el grupo de empleo señalado';
+      const trendRequested = workHousingTrend(normalizedClaim);
+      const costCausalityRequested = workHousingCostCausality(normalizedClaim);
+      const limitation = costCausalityRequested
+        ? 'La tasa de emancipación por ocupación y el esfuerzo de alquiler son medidas separadas: no siguen a las mismas personas para medir un retraso ni permiten atribuirlo a los precios.'
+        : trendRequested
+          ? `El corte de 2025 no permite saber si la emancipación de ${requestedGroup} ha cambiado con los años; falta una serie comparable para ese subgrupo.`
+          : `El CJE no publica una tasa de emancipación específica para ${requestedGroup}; la tasa de todas las personas ocupadas no permite saber el resultado de ese subgrupo.`;
+      return [
+        `El CJE aporta contexto, pero no permite confirmar la afirmación para ${requestedGroup}. En 2025, estaba emancipada el 25,2 % de la población ocupada de 16–29 años; el CJE calculó que alquilar una vivienda completa en solitario equivalía al 98,7 % del salario neto mensual mediano de una persona joven asalariada (1.176 euros al mes a finales de año).`,
+        'El informe registra que el 67,0 % de las personas asalariadas de 16–29 años tenía contrato indefinido, pero no cruza esa categoría con la tasa de emancipación.',
+        limitation,
+      ].join('\n\n');
+    },
+    limitation: 'La ECV 2025 pregunta por convivencia y motivos entre personas de 26–34 años y desglosa por renta personal, no por estabilidad contractual o jornada. El CJE desglosa la emancipación de jóvenes de 16–29 años por situación de actividad, pero no por tipo de contrato; su esfuerzo de alquiler es una comparación de promedios. Las cifras son transversales y no miden duración ni causa del retraso. Los grupos de edad y denominadores no son intercambiables.',
   },
   {
     id: 'rental-tenant-screening-exclusion', label: 'requisitos de acceso y rechazo de inquilinos',
