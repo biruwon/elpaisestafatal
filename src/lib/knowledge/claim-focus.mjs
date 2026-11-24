@@ -19,6 +19,7 @@ import { ENERGY_PRICE_PASS_THROUGH_EVIDENCE } from './energy-price-pass-through-
 import { FIXED_DISCONTINUOUS_STATUS_EVIDENCE } from './fixed-discontinuous-snapshot.mjs';
 import { EUROPEAN_PRICE_WAGE_CONVERGENCE_EVIDENCE } from './european-price-wage-convergence-snapshot.mjs';
 import { PUBLIC_PRIVATE_PAY_SNAPSHOT } from './public-private-pay-snapshot.mjs';
+import { PUBLIC_SOCIAL_HOUSING_SNAPSHOT, asksForPublicSocialStockCount } from './public-social-housing-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -1408,6 +1409,22 @@ const housingConstructionClaimType = (t) => {
   if (/\b(cada vez|desde \d{4}|sub\w*|aument\w*|crec\w*|baj\w*|disminu\w*|reduc\w*)\b/.test(t)) return 'trend';
   return 'descriptive';
 };
+const publicSocialHousingReference = (t) => /\b(viviend\w*|parque|alquiler\w*)\b[\w\s]{0,34}\b(social\w*|public\w*|protegid\w*|proteccion oficial|vpo)\b/.test(t)
+  || /\b(social\w*|public\w*|protegid\w*|vpo)\b[\w\s]{0,34}\b(viviend\w*|parque|alquiler\w*)\b/.test(t);
+const publicSocialHousingStockOrImpact = (t) => {
+  const countOrCoverage = /\b(cuant\w*|numero|cantidad|recuento|cobertura|porcentaje|proporcion|parque|stock|escas\w*|insuficien\w*|poc\w*|falta|deficit|demasiad\w*)\b/.test(t);
+  const marketOrPriceEffect = /\b(precio\w*|renta\w*|mercado|influi\w*|influy\w*|incid\w*|impact\w*|efect\w*|pes\w*|reduc\w*|aument\w*|encarec\w*|modific\w*|alter\w*|repercut\w*)\b/.test(t);
+  return publicSocialHousingReference(t) && (countOrCoverage || marketOrPriceEffect)
+    && !touristHousingMention(t);
+};
+const publicSocialHousingClaimType = (t) => asksForPublicSocialStockCount(t) ? 'descriptive'
+  : /\b(caus\w*|provoc\w*|influi\w*|influy\w*|incid\w*|afect\w*|impact\w*|efect\w*|reduc\w*|aument\w*|encarec\w*|cambi\w*|modific\w*|alter\w*|repercut\w*)\b/.test(t) ? 'causal'
+    : /\b(escas\w*|insuficien\w*|poc\w*|falta|deficit|demasiad\w*)\b/.test(t) ? 'comparative' : 'descriptive';
+const asksForBroadProtectedHousingTotal = (claim) => {
+  const t = normalize(claim);
+  return /\b(viviend\w*|parque)\b[\w\s]{0,34}\b(protegid\w*|vpo|proteccion oficial|precio limitado)\b/.test(t)
+    && /\b(cuant\w*|numero|cantidad|recuento|total|stock)\b/.test(t);
+};
 const pensionWageComparison = (t) => /\b(pension\w*|jubilad\w*|jubilacion\w*)\b/.test(t)
   && (/\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w*)\b/.test(t)
     || /\b(cobr\w*|pagan?)\b/.test(t) && /\b(trabajador\w*|emplead\w*|ocupad\w*)\b/.test(t))
@@ -1962,6 +1979,34 @@ const focuses = [
     needs: ['viviendas que pasan del alquiler residencial a uso turístico en el mismo territorio y periodo', 'oferta de alquiler residencial antes y después del cambio', 'diseño que permita atribuir el cambio al uso turístico y no a otros factores'],
     explanation: 'El recuento de viviendas turísticas y su peso en el parque describen el uso turístico estimado; no indican cuántas viviendas dejaron el alquiler residencial ni prueban que el turismo causara una reducción de oferta.',
     limitation: 'El porcentaje usa como denominador las viviendas del Censo de 2021, no las viviendas disponibles para alquilar. La estadística experimental del INE usa anuncios deduplicados de tres plataformas y criterios autonómicos; el dato agregado no mide alquileres residenciales perdidos, y una cifra provincial o autonómica no describe barrios o municipios.',
+  },
+  {
+    id: 'public-social-housing-stock-and-price-impact', label: 'parque de vivienda social pública y su relación con los precios',
+    when: publicSocialHousingStockOrImpact,
+    direct: [], context: [], claimTypeFor: publicSocialHousingClaimType,
+    needsForClaim: (claim) => asksForPublicSocialStockCount(claim)
+      ? ['recuento del parque público de vivienda social para España y periodo solicitado']
+      : /\b(precio\w*|renta\w*|mercado|influi\w*|influy\w*|incid\w*|impact\w*|efect\w*)\b/.test(normalize(claim))
+        ? ['precios o alquileres y parque de vivienda comparables en el mismo territorio y periodo', 'un análisis que permita estimar el efecto del parque y separar otros factores']
+        : ['un criterio de comparación para determinar si el parque es escaso respecto a la necesidad o la demanda de vivienda'],
+    explanation: 'La cifra nacional de vivienda social pública describe el tamaño del parque, pero no mide su efecto sobre los precios. Además, no equivale al conjunto de vivienda protegida.',
+    evidenceGap: 'El recuento del parque no estima cuánto cambia los precios ni establece qué tamaño sería suficiente para influir en ellos.',
+    explanationEvidence: PUBLIC_SOCIAL_HOUSING_SNAPSHOT,
+    shareableReplyForContext: ({ claim }) => asksForPublicSocialStockCount(claim)
+      ? [
+        'MIVAU estimó unas 318.000 viviendas sociales de titularidad pública en España a partir de una encuesta remitida en noviembre de 2023: unas 197.000 de comunidades autónomas y 121.000 de ayuntamientos y sus entidades.',
+        'El cálculo equivale al 1,72 % de los 18,5 millones de hogares del Censo de 2021. «Vivienda social» aquí es solo el parque público de alquiler, cesión u otra tenencia temporal para hogares con dificultades de acceso; no es el total de vivienda protegida.',
+      ].join('\n\n')
+      : asksForBroadProtectedHousingTotal(claim)
+        ? [
+          'MIVAU estimó unas 318.000 viviendas sociales de titularidad pública en España a partir de una encuesta remitida en noviembre de 2023; equivalían al 1,72 % de los hogares del Censo de 2021.',
+          'Ese recuento no es el total de vivienda protegida: el boletín también incluye viviendas de precio limitado, públicas o privadas, y otros regímenes. Por tanto, no permite calcular cuántas viviendas protegidas hay en conjunto.',
+        ].join('\n\n')
+      : [
+        'MIVAU estimó unas 318.000 viviendas sociales de titularidad pública en España con una encuesta remitida en noviembre de 2023. Ese parque equivalía al 1,72 % de los 18,5 millones de hogares del Censo de 2021.',
+        'Es una referencia de escala, pero con este inventario no se puede determinar si el parque es demasiado pequeño para influir en los precios: mide el tamaño del stock, no su efecto. Además, la cifra cubre solo vivienda social pública; «vivienda protegida» también incluye vivienda de precio limitado, pública o privada. Harían falta precios y oferta comparables para el mismo territorio y periodo, y un análisis que permita atribuir el efecto.',
+      ].join('\n\n'),
+    limitation: 'La estimación es nacional y procede de una encuesta, no de un censo exhaustivo. La cifra de vivienda social pública no representa todo el parque protegido ni permite inferir un efecto causal o local sobre precios y alquileres.',
   },
   {
     id: 'residential-gentrification-displacement', label: 'desplazamiento de residentes por cambios en el mercado residencial',

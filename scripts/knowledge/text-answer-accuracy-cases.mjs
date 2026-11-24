@@ -58,6 +58,106 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'protected-housing-price-effect-context',
+    equivalenceGroup: 'public-social-housing-context-for-price-effect',
+    input: 'La vivienda protegida es demasiado escasa para influir de forma apreciable en los precios',
+    expected: {
+      state: 'insufficient', family: 'public-social-housing-stock-and-price-impact', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['318.000 viviendas sociales de titularidad pública', 'encuesta remitida en noviembre de 2023', '1,72 % de los 18,5 millones de hogares', 'no se puede determinar', 'mide el tamaño del stock, no su efecto', 'vivienda de precio limitado'],
+      replyExcludes: ['1,72 % del parque de viviendas', '318.000 viviendas protegidas'],
+      evidence: [
+        {
+          familyId: 'public-social-housing-stock-and-price-impact',
+          sourceIds: ['mivau-social-housing-bulletin-2024'],
+          dataIncludes: ['318.000 viviendas sociales de titularidad pública', 'noviembre de 2023'],
+          dimensions: { period: 'encuesta remitida en noviembre de 2023', geography: 'España', population: 'viviendas de titularidad pública', unit: 'viviendas' },
+        },
+        {
+          familyId: 'public-social-housing-stock-and-price-impact',
+          sourceIds: ['mivau-social-housing-bulletin-2024'],
+          dataIncludes: ['1,72 %', '18,5 millones de hogares'],
+          dimensions: { period: 'hogares del Censo de 2021', geography: 'España', denominator: '18,5 millones de hogares del Censo de 2021', unit: 'porcentaje de hogares' },
+        },
+      ],
+      maxReplyWords: 140,
+    },
+  },
+  {
+    id: 'public-social-housing-price-effect-paraphrase',
+    equivalenceGroup: 'public-social-housing-context-for-price-effect',
+    input: 'El parque de vivienda social pública es tan reducido que apenas modifica los precios',
+    expected: {
+      state: 'insufficient', family: 'public-social-housing-stock-and-price-impact', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['318.000 viviendas sociales de titularidad pública', '1,72 % de los 18,5 millones de hogares', 'no se puede determinar'],
+      replyExcludes: ['318.000 viviendas protegidas'],
+      evidence: [],
+      maxReplyWords: 140,
+    },
+  },
+  {
+    id: 'public-social-housing-count-question',
+    equivalenceGroup: 'public-social-housing-count-spain',
+    input: '¿Cuántas viviendas sociales públicas estima MIVAU en España?',
+    expected: {
+      state: 'limited', family: 'public-social-housing-stock-and-price-impact', verdict: 'supported',
+      directSourceIds: ['mivau-social-housing-bulletin-2024'],
+      replyIncludes: ['318.000 viviendas sociales de titularidad pública', '197.000', '121.000', '1,72 %', '18,5 millones de hogares'],
+      replyExcludes: ['318.000 viviendas protegidas'],
+      evidence: [{
+        familyId: 'public-social-housing-stock-and-price-impact',
+        sourceIds: ['mivau-social-housing-bulletin-2024'],
+        dataIncludes: ['318.000 viviendas sociales de titularidad pública'],
+        dimensions: { period: 'encuesta MIVAU remitida en noviembre de 2023', geography: 'España', denominator: 'no es una proporción del total de viviendas', unit: 'viviendas; porcentaje de hogares' },
+      }],
+      maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'public-social-housing-rental-count-paraphrase',
+    equivalenceGroup: 'public-social-housing-count-spain',
+    input: '¿Cuál es el número de viviendas públicas de alquiler social en España?',
+    expected: {
+      state: 'limited', family: 'public-social-housing-stock-and-price-impact', verdict: 'supported',
+      directSourceIds: ['mivau-social-housing-bulletin-2024'],
+      replyIncludes: ['318.000 viviendas sociales de titularidad pública', '197.000', '121.000', '1,72 %', '18,5 millones de hogares'],
+      replyExcludes: ['318.000 viviendas protegidas'],
+      evidence: [],
+      maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'protected-housing-total-not-social-stock',
+    input: '¿Cuántas viviendas protegidas hay en España?',
+    expected: {
+      state: 'insufficient', family: 'public-social-housing-stock-and-price-impact', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['318.000 viviendas sociales de titularidad pública', 'no es el total de vivienda protegida', 'viviendas de precio limitado', 'no permite calcular cuántas viviendas protegidas'],
+      replyExcludes: ['318.000 viviendas protegidas'],
+      evidence: [{
+        familyId: 'public-social-housing-stock-and-price-impact',
+        sourceIds: ['mivau-social-housing-bulletin-2024'],
+        dataIncludes: ['318.000 viviendas sociales de titularidad pública'],
+        dimensions: { geography: 'España', population: 'viviendas de titularidad pública', unit: 'viviendas' },
+      }],
+      maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'protected-housing-price-effect-wrong-year',
+    input: 'En 2024 la vivienda protegida era demasiado escasa para influir en los precios',
+    expected: {
+      state: 'insufficient', family: 'public-social-housing-stock-and-price-impact', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['318.000', '1,72 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'public-social-housing-price-effect-wrong-territory',
+    input: 'La vivienda social pública en Madrid es demasiado escasa para influir en los precios',
+    expected: {
+      state: 'insufficient', family: 'public-social-housing-stock-and-price-impact', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['318.000', '1,72 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
     id: 'tertiary-employment-above-threshold',
     equivalenceGroup: 'tertiary-employment-2025-threshold',
     input: 'La tasa de empleo de las personas con estudios universitarios superó el 80 % en 2025',
@@ -1741,6 +1841,7 @@ export const textAnswerAccuracyCases = [
     expected: {
       state: 'insufficient', family: 'tourist-housing-supply', verdict: 'insufficient', directSourceIds: [],
       replyIncludes: ['341.001 viviendas turísticas estimadas', '1,28 % del parque total', 'Censo de 2021', 'no mide viviendas que dejaron el alquiler residencial', 'demuestra un efecto causal', 'demasiada'],
+      replyExcludes: ['318.000', 'viviendas sociales de titularidad pública'],
       evidence: [
         { familyId: 'tourist_housing_count', sourceIds: ['ine-tourist-count'], dataIncludes: ['341.001 viviendas (mayo de 2026)'], dimensions: { geography: 'España', period: '2026M05', population: 'viviendas turísticas estimadas', unit: 'viviendas' } },
         { familyId: 'tourist_housing_share', sourceIds: ['ine-tourist-share'], dataIncludes: ['1,28 % (mayo de 2026)'], dimensions: { geography: 'España', period: '2026M05', denominator: 'Censo de Población y Viviendas 2021', unit: '%' } },
