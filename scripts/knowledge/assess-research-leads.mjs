@@ -45,12 +45,37 @@ const assess = async (item, lead) => {
   const findings = Array.isArray(result?.findings) ? result.findings : [];
   const useful = findings.filter((finding) => ['supports', 'contradicts', 'context'].includes(finding.support));
   const insufficient = findings.length === 0 || findings.every((finding) => finding.support === 'insufficient');
-  return { source: lead, findings, status: insufficient ? 'unsupported_after_llm_review' : useful.length && useful.length < findings.length ? 'partially_covered_by_llm' : 'covered_by_llm', reviewedAt: new Date().toISOString(), model };
+  // A model's reading of a source is a lead for a human reviewer. It is never
+  // a coverage decision: the source text, dimensions, and factual extraction
+  // still need independent verification before becoming warehouse evidence.
+  return {
+    source: lead,
+    findings,
+    status: 'review_required',
+    modelAssessment: insufficient ? 'no_candidate_found' : useful.length && useful.length < findings.length ? 'possible_partial_match' : 'possible_match',
+    reviewStatus: 'pending',
+    reviewedAt: new Date().toISOString(),
+    model,
+  };
 };
 const candidates = (report.results || []).flatMap((item) => (item.leads || []).slice(0, 2).map((lead) => ({ item, lead }))).slice(0, limit);
 const checkpointPath = `${outputPath}.partial`;
 let results = [];
-try { const checkpoint = JSON.parse(await readFile(checkpointPath, 'utf8')); if (Array.isArray(checkpoint.results)) results = checkpoint.results; } catch {}
+try {
+  const checkpoint = JSON.parse(await readFile(checkpointPath, 'utf8'));
+  if (Array.isArray(checkpoint.results)) results = checkpoint.results.map((item) => {
+    if (item.status === 'llm_error' || item.status === 'review_required') return item;
+    if (['covered_by_llm', 'partially_covered_by_llm', 'unsupported_after_llm_review'].includes(item.status)) {
+      return {
+        ...item,
+        status: 'review_required',
+        reviewStatus: 'pending',
+        modelAssessment: item.status === 'covered_by_llm' ? 'possible_match' : item.status === 'partially_covered_by_llm' ? 'possible_partial_match' : 'no_candidate_found',
+      };
+    }
+    return item;
+  });
+} catch {}
 // Errors are deliberately retried on the next run; only substantive LLM
 // outcomes are checkpoints that can be safely skipped.
 const completedKeys = new Set(results.filter((item) => item.status !== 'llm_error').map((item) => `${item.id}|${item.source?.url || ''}`));
@@ -62,7 +87,7 @@ await Promise.all(Array.from({ length: Math.min(concurrency, candidates.length) 
 const latest = new Map();
 for (const item of results) latest.set(`${item.id}|${item.source?.url || ''}`, item);
 results = [...latest.values()];
-const counts = Object.fromEntries(['covered_by_llm', 'partially_covered_by_llm', 'unsupported_after_llm_review', 'llm_error'].map((status) => [status, results.filter((item) => item.status === status).length]));
+const counts = Object.fromEntries(['review_required', 'llm_error'].map((status) => [status, results.filter((item) => item.status === status).length]));
 await writeFile(outputPath, JSON.stringify({ schemaVersion: '1', generatedAt: new Date().toISOString(), model, input: inputPath, counts, results }, null, 2));
 await writeFile(checkpointPath, JSON.stringify({ schemaVersion: '1', completed: results.length, total: candidates.length, finishedAt: new Date().toISOString(), results }, null, 2));
-console.log(`LLM research assessment complete: ${counts.covered_by_llm || 0} covered, ${counts.partially_covered_by_llm || 0} partial, ${counts.unsupported_after_llm_review || 0} unsupported, ${counts.llm_error || 0} errors. Output: ${outputPath}`);
+console.log(`LLM research assessment complete: ${counts.review_required || 0} candidate(s) require source review; ${counts.llm_error || 0} errors. No model assessment is treated as verified evidence. Output: ${outputPath}`);

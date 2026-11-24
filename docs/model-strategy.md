@@ -42,6 +42,9 @@ Hard boundaries:
 - The model may normalize wording, split compound claims, select among already
   compatible candidates, and synthesize an evidence packet.
 - The model may not create measurements, sources, URLs, dates or verdicts.
+- A model's assessment of an official source is only a private research hint.
+  It cannot mark a claim covered, receive primary-source trust, or enter the
+  public evidence warehouse without independent review and versioned ingestion.
 - A factual sentence in the answer must be traceable to an evidence ID.
 - Rhetorical and causal claims must expose the narrower measurable dimensions
   used to discuss them.

@@ -37,7 +37,16 @@ const clustersDoc = await readJson(clustersPath, { clusters: [] });
 const gapContracts = await readJson(pathArg('gap-contracts', 'config/domain-source-gaps.json'), { gaps: [] });
 const refreshReport = await readJson(pathArg('refresh-report', '.local/domain-refresh-report.json'), { attempted: 0, succeeded: 0, failed: 0, failures: [] });
 const llmResearch = await readJson(pathArg('llm-research', '.local/research-evidence.json'), { results: [] });
-const llmByCluster = new Map((llmResearch.results || []).map((item) => [item.id, item]).filter(([, item]) => ['covered_by_llm', 'partially_covered_by_llm', 'unsupported_after_llm_review'].includes(item.status)));
+const assessmentHintFor = (item) => item.modelAssessment || (item.status === 'covered_by_llm' ? 'possible_match' : item.status === 'partially_covered_by_llm' ? 'possible_partial_match' : item.status === 'unsupported_after_llm_review' ? 'no_candidate_found' : 'unclassified');
+const llmByCluster = new Map();
+for (const item of llmResearch.results || []) {
+  if (item.status === 'llm_error') continue;
+  const previous = llmByCluster.get(item.id);
+  const sourceCandidate = { source: item.source || null, modelAssessment: assessmentHintFor(item) };
+  const sourceCandidates = [...(previous?.sourceCandidates || []), sourceCandidate];
+  const uniqueSources = new Map(sourceCandidates.map((candidate, index) => [candidate.source?.url || `missing:${index}`, candidate]));
+  llmByCluster.set(item.id, { ...previous, ...item, sourceCandidates: [...uniqueSources.values()] });
+}
 const recordsDir = pathArg('records', '.local/source-warehouse/records');
 let recordFiles = [];
 try { recordFiles = (await readdir(recordsDir)).filter((file) => file.endsWith('.json')); } catch { /* first refresh may not have run */ }
@@ -97,7 +106,21 @@ const metricById = new Map(metricAudit.map((item) => [item.id, item]));
 const classifyCluster = (cluster) => {
   const text = textOf(cluster);
   const llm = llmByCluster.get(`cluster:${cluster.id}`) || llmByCluster.get(cluster.id);
-  if (llm) return { auditClass: llm.status === 'partially_covered_by_llm' ? 'partial_llm_evidence' : 'covered_by_llm_evidence', action: 'auto_route', metricIds: [], domain: llm.domain || '', sourceIds: [llm.source?.id || llm.source?.url].filter(Boolean), llmEvidenceStatus: llm.status };
+  if (llm) return {
+    auditClass: 'source_assessment_review_required',
+    action: 'review_source_candidate',
+    metricIds: [],
+    domain: llm.domain || '',
+    sourceIds: [...new Set((llm.sourceCandidates || [{ source: llm.source }]).map(({ source }) => source?.id || source?.url).filter(Boolean))],
+    reviewSources: (llm.sourceCandidates || [{ source: llm.source, modelAssessment: assessmentHintFor(llm) }]).filter(({ source }) => source?.url).map(({ source, modelAssessment }) => ({
+      title: source.title || '',
+      publisher: source.publisher || '',
+      url: source.url,
+      modelAssessment,
+    })),
+    modelAssessment: llm.sourceCandidates?.some((candidate) => candidate.modelAssessment === 'possible_match') ? 'possible_match' : llm.sourceCandidates?.some((candidate) => candidate.modelAssessment === 'possible_partial_match') ? 'possible_partial_match' : assessmentHintFor(llm),
+    reviewStatus: llm.reviewStatus || 'pending',
+  };
   if (nonFactualPattern.test(normalise(text))) return { auditClass: 'unsupported_claim', action: 'answer_with_limits', metricIds: [], domain: '' };
   const ids = [...preferredMetricIdsForQuery(text)].filter((id) => metricById.has(id));
   const domain = domainPattern(text);
@@ -127,7 +150,7 @@ const clusterAudit = (clustersDoc.clusters || []).map((cluster) => ({
   clusterId: String(cluster.id || ''), canonicalText: String(cluster.text || cluster.canonicalText || '').slice(0, 400), count: Number(cluster.count || 0), count7d: Number(cluster.count7d || 0), priorityScore: Number(cluster.priorityScore || 0), coverageStatus: cluster.coverageStatus || 'uncovered', newlyCovered: Boolean(cluster.newlyCovered), linkedClaimSlug: cluster.linkedClaimSlug || null, sourceIds: cluster.sourceIds || [], ...classifyCluster(cluster),
 }));
 const counts = (items, field) => Object.fromEntries([...new Set(items.map((item) => item[field]))].map((key) => [key, items.filter((item) => item[field] === key).length]));
-const sourceWork = [...clusterAudit.filter((item) => !['covered_existing_evidence', 'covered_by_llm_evidence', 'partial_llm_evidence', 'unsupported_claim', 'operational_failure'].includes(item.auditClass)).reduce((map, item) => {
+const sourceWork = [...clusterAudit.filter((item) => !['covered_existing_evidence', 'unsupported_claim', 'operational_failure'].includes(item.auditClass)).reduce((map, item) => {
   const key = `${item.auditClass}:${item.domain || 'general'}`;
   const current = map.get(key) || { id: key, auditClass: item.auditClass, domain: item.domain || null, action: item.action, recurrence: 0, recentVelocity: 0, priorityScore: 0, examples: [] };
   current.recurrence += item.count; current.recentVelocity += item.count7d; current.priorityScore = Math.max(current.priorityScore, item.priorityScore); if (current.examples.length < 5) current.examples.push(item.canonicalText); map.set(key, current); return map;
@@ -144,7 +167,7 @@ const requiredDimensionsFor = (item) => {
   return [...dimensions];
 };
 const clusterSourceWorkItems = clusterAudit
-  .filter((item) => !['covered_existing_evidence', 'covered_by_llm_evidence', 'partial_llm_evidence', 'unsupported_claim', 'operational_failure'].includes(item.auditClass))
+  .filter((item) => !['covered_existing_evidence', 'unsupported_claim', 'operational_failure'].includes(item.auditClass))
   .map((item) => ({
     id: `cluster:${item.clusterId}`,
     clusterId: item.clusterId,
@@ -157,8 +180,9 @@ const clusterSourceWorkItems = clusterAudit
     priorityScore: item.priorityScore,
     metricIds: item.metricIds,
     sourceIds: item.sourceIds,
+    reviewSources: item.reviewSources || [],
     requiredDimensions: requiredDimensionsFor(item),
-    reason: item.auditClass === 'unsupported_scope' ? 'The claim requires territory-specific evidence and must not be generalized nationally.' : item.auditClass === 'partial_domain_evidence' ? 'The domain has only partial evidence; collect the missing definitions, denominators, and legal or programme stages.' : item.auditClass === 'covered_but_not_materialized' || item.auditClass === 'source_configured_not_refreshed' ? 'A compatible metric or feed exists, but the warehouse is not ready or is stale.' : 'No compatible reviewed evidence was found; identify a primary source before considering publication.',
+    reason: item.auditClass === 'source_assessment_review_required' ? item.modelAssessment === 'no_candidate_found' ? 'The model did not identify a supporting finding. Inspect the source directly and confirm its scope before deciding what evidence is missing.' : 'A model suggested a possible source match. Open the source and verify its evidence, population, period, denominator, and scope before treating this claim as covered.' : item.auditClass === 'unsupported_scope' ? 'The claim requires territory-specific evidence and must not be generalized nationally.' : item.auditClass === 'partial_domain_evidence' ? 'The domain has only partial evidence; collect the missing definitions, denominators, and legal or programme stages.' : item.auditClass === 'covered_but_not_materialized' || item.auditClass === 'source_configured_not_refreshed' ? 'A compatible metric or feed exists, but the warehouse is not ready or is stale.' : 'No compatible reviewed evidence was found; identify a primary source before considering publication.',
   }))
   .sort((a, b) => b.priorityScore - a.priorityScore || b.recentVelocity - a.recentVelocity || b.recurrence - a.recurrence);
 const contractSourceWorkItems = (gapContracts.gaps || []).map((gap) => ({

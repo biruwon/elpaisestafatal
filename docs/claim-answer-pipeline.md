@@ -16,7 +16,8 @@ The system has five product-level stages. Internal modules remain separate where
    dynamic evidence or reviewed snapshot -> public response, labels, sources, missing dimensions
 
 5. Learn and refresh (asynchronous)
-   unresolved claim -> cluster -> official research -> LLM assessment -> warehouse -> audit
+   unresolved claim -> cluster -> official-source lead -> LLM research hint -> private review queue
+   -> human verification -> versioned source ingestion -> audit
 ```
 
 ## What belongs to each stage
@@ -27,7 +28,7 @@ The system has five product-level stages. Internal modules remain separate where
 | Retrieve and select evidence | warehouse query, semantic search, evidence selection, freshness policy | Only compatible observations and sources are retained. |
 | Synthesize and qualify | structured evidence, reviewed composers, domain/causal/legal handlers | Evidence is summarized without turning correlation, totals, or rhetoric into proof. |
 | Fallback and present | snapshots, public response contract, UX labels, provenance | The answer clearly says whether it is dynamic, snapshot-based, mixed, limited, or unsupported. |
-| Learn and refresh | triage, research loop, LLM assessment, materialization, coverage audit | New claims improve the warehouse and future routing automatically. |
+| Learn and refresh | triage, source discovery, LLM research hints, private review queue, verified source ingestion, coverage audit | New claims prioritize research; only independently checked, versioned evidence changes public answers. |
 
 The five stages are the public architecture. The individual modules should not be merged when doing so would remove a boundary—for example, interpretation must remain separate from evidence selection, and evidence selection must remain separate from synthesis.
 
@@ -37,6 +38,10 @@ and research planning. The visible answer comes from the structured evidence
 and reviewed composers: matching a source ID or number is insufficient to
 prove that a generated rewrite preserves meaning, scope and uncertainty.
 Search-result titles and URLs are leads until their contents are verified.
+LLM source assessments remain private research candidates. They do not count as
+coverage, receive primary-source trust, or enter the answer warehouse; a
+reviewer must check the source and scope before facts are added through the
+versioned source workflow.
 
 ## User-submitted claims and demand export
 

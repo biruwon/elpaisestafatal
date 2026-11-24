@@ -86,7 +86,7 @@ export const searchD1WarehouseByMetricIds = async (database: D1Database, metricI
   const results = await Promise.all(ids.map((id) => database.prepare(`
     SELECT ${warehouseColumns}
     FROM observations o JOIN source_documents s ON s.id = o.source_document_id
-    WHERE o.metric_id = ?
+    WHERE o.metric_id = ? AND COALESCE(s.source_registry_id, '') <> 'llm-research'
     ORDER BY s.retrieved_at DESC, o.period DESC
     LIMIT 40
   `).bind(id).all<WarehouseRow>()));
@@ -102,7 +102,7 @@ export const searchD1Warehouse = async (database: D1Database, query: string): Pr
     FROM observations_fts
     JOIN observations o ON o.rowid = observations_fts.rowid
     JOIN source_documents s ON s.id = o.source_document_id
-    WHERE observations_fts MATCH ? ${year ? 'AND o.period LIKE ?' : ''}
+    WHERE observations_fts MATCH ? AND COALESCE(s.source_registry_id, '') <> 'llm-research' ${year ? 'AND o.period LIKE ?' : ''}
       ${qualityFlags ? "AND CASE WHEN json_valid(o.payload_json) THEN lower(COALESCE(json_extract(o.payload_json, '$.status'), '')) NOT IN ('', 'p', 'e', 'pe', 'ep') ELSE 0 END" : ''}
     ORDER BY bm25(observations_fts), o.period DESC
     LIMIT ${year || qualityFlags ? 100 : 500}

@@ -11,6 +11,9 @@ const inputPath = args.get('input') || join(root, '.local/review-queue.json');
 const outputPath = args.get('output') || join(root, '.local/review-dashboard.html');
 const escapeHtml = (value) => String(value ?? '').replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#039;');
 const asArray = (value) => Array.isArray(value) ? value : [];
+const safeHttpsUrl = (value) => {
+  try { const url = new URL(String(value || '')); return url.protocol === 'https:' ? url.href : null; } catch { return null; }
+};
 const commandFor = (candidate) => candidate?.suggestedSlug
   ? `npm run knowledge:promote-auto -- --input .local/candidates/${candidate.clusterId}.json --slug ${candidate.suggestedSlug}`
   : '';
@@ -33,6 +36,7 @@ const card = (candidate, kind) => {
   const evidenceSummary = candidate.availableEvidence?.length || candidate.missingFields?.length || candidate.resolvedFields?.length || candidate.irreducibleFields?.length || candidate.nextEvidence || candidate.sourceTargets?.length || candidate.acceptanceCriteria?.length
     ? `<details><summary>Evidence contract</summary>${candidate.availableEvidence?.length ? `<p><strong>Already known:</strong> ${escapeHtml(candidate.availableEvidence.join(' · '))}</p>` : ''}${candidate.resolvedFields?.length ? `<p><strong>Resolved dimensions:</strong> ${escapeHtml(candidate.resolvedFields.join(' · '))}</p>` : ''}${candidate.missingFields?.length ? `<p><strong>Missing:</strong> ${escapeHtml(candidate.missingFields.join(' · '))}</p>` : ''}${candidate.irreducibleFields?.length ? `<p><strong>Source limitation:</strong> ${escapeHtml(candidate.irreducibleFields.join(' · '))}</p>` : ''}${candidate.sourceTargets?.length ? `<p><strong>Source targets:</strong> ${escapeHtml(candidate.sourceTargets.join(' · '))}</p>` : ''}${candidate.acceptanceCriteria?.length ? `<p><strong>Acceptance criteria:</strong> ${escapeHtml(candidate.acceptanceCriteria.join(' · '))}</p>` : ''}${candidate.nextEvidence ? `<p><strong>Next source work:</strong> ${escapeHtml(candidate.nextEvidence)}</p>` : ''}${candidate.permittedConclusion ? `<p><strong>Safe conclusion:</strong> ${escapeHtml(candidate.permittedConclusion)}</p>` : ''}</details>`
     : '';
+  const reviewSources = asArray(candidate.reviewSources).filter((source) => source && typeof source === 'object');
   return `<article class="card" data-kind="${kind}" data-search="${escapeHtml([candidate.canonicalText, candidate.nextAction, candidate.reason, evidenceLabel(candidate)].join(' '))}">
     <div class="card-top"><span class="rank">#${escapeHtml(candidate.rank)}</span><span class="status ${ready ? 'ready' : ''}">${escapeHtml(evidenceLabel(candidate))}</span></div>
     <h2>${escapeHtml(candidate.canonicalText)}</h2>
@@ -43,6 +47,7 @@ const card = (candidate, kind) => {
     ${candidate.rankScore != null ? `<p class="muted">Priority: ${escapeHtml(candidate.rankScore)} · harm ${escapeHtml(candidate.harmScore)} · urgency ${escapeHtml(candidate.urgencyScore)} · evidence readiness ${escapeHtml(candidate.evidenceReadiness)}</p>` : ''}
     ${candidate.matchedMetricIds?.length ? `<p class="muted">Matched metric: ${escapeHtml(candidate.matchedMetricIds.join(' · '))}</p>` : ''}
     ${candidate.sourceIds?.length ? `<details><summary>Source references (${candidate.sourceIds.length})</summary><code>${escapeHtml(candidate.sourceIds.join(' · '))}</code></details>` : '<p class="muted">No source references attached.</p>'}
+    ${reviewSources.length ? `<details><summary>Unverified model source leads (${reviewSources.length})</summary><p class="muted">These are discovery suggestions, not evidence of the claim.</p>${reviewSources.map((source) => safeHttpsUrl(source.url) ? `<p><a href="${escapeHtml(safeHttpsUrl(source.url))}" target="_blank" rel="noopener noreferrer">${escapeHtml(source.title || source.publisher || source.url)}</a> · ${escapeHtml(source.modelAssessment || 'unclassified model hint')}</p>` : '<p class="muted">No safe HTTPS source link is available.</p>').join('')}</details>` : ''}
     ${candidate.requiredDimensions?.length ? `<details><summary>Required evidence dimensions</summary><p class="muted">${escapeHtml(candidate.requiredDimensions.join(' · '))}</p></details>` : ''}
     ${evidenceSummary}
     ${ready ? `<details class="promotion"><summary>Autonomous promotion command</summary><pre>${escapeHtml(command)}</pre><button type="button" data-copy="${escapeHtml(command)}">Copy command</button><p class="muted">The command runs deterministic evidence gates and publishes only when they pass.</p></details>` : ''}

@@ -11,6 +11,8 @@ const result = rankWarehouseObservations('employment rate Spain', records);
 if (result.length !== 2 || result[0].id !== 'obs-1') throw new Error('Warehouse query did not rank matching observations');
 if (result.some((item) => item.evidenceFit !== 'direct' || !item.matchedTerms?.length)) throw new Error('Warehouse query did not preserve evidence-fit metadata');
 if (rankWarehouseObservations('unknown metric', records).length) throw new Error('Warehouse query returned unrelated observations');
+const modelResearchRecord = { id: 'llm-candidate', kind: 'llm-research-evidence', datasetId: 'Tasa de empleo', metric: 'employment rate', value: 99, unit: '%', period: '2026', finding: 'The model says employment is 99%.', source: { id: 'llm-source', publisher: 'INE', url: 'https://www.ine.es/' } };
+if (rankWarehouseObservations('employment rate Spain', [modelResearchRecord]).length) throw new Error('Warehouse query exposed a model-generated research lead as source evidence');
 if (warehouseEvidenceFit(0.34) !== 'weak' || warehouseEvidenceFit(0.5) !== 'qualified' || warehouseEvidenceFit(0.8) !== 'direct') throw new Error('Warehouse evidence-fit thresholds are invalid');
 
 const ageSource = { id: 'source-age-rates', title: 'Unemployment by age', url: 'https://example.org/unemployment-by-age' };

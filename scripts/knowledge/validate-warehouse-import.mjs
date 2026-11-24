@@ -97,6 +97,8 @@ try {
   const fixtureDate = '2026-11-16T00:00:00.000Z';
   const fixtureManifestPath = join(fixtureRoot, 'manifests', 'fixture.json');
   const fixtureRecordPath = join(fixtureRoot, 'records', 'fixture.json');
+  const llmManifestPath = join(fixtureRoot, 'manifests', 'llm-fixture.json');
+  const llmRecordPath = join(fixtureRoot, 'records', 'llm-fixture.json');
   const fixtureManifest = {
     id: 'fixture-source', url: 'https://data.example/fixture', sha256: 'fixture-hash-v1', retrievedAt: fixtureDate,
     publisher: 'Fixture office', title: 'Fixture data', contentType: 'application/json', metricId: 'fixture_metric',
@@ -108,6 +110,14 @@ try {
   }));
   await writeFixtureRecord(2);
   await writeFile(fixtureManifestPath, JSON.stringify(fixtureManifest));
+  await writeFile(llmManifestPath, JSON.stringify({
+    id: 'llm-fixture-source', url: 'https://data.example/llm-fixture', sha256: 'llm-fixture-hash', retrievedAt: fixtureDate,
+    publisher: 'Fixture office', title: 'Model-assessed source lead', contentType: 'text/html', sourceRegistryId: 'llm-research',
+    connector: 'llm-source-assessment', trust: 'primary', recordPath: llmRecordPath,
+  }));
+  await writeFile(llmRecordPath, JSON.stringify({ source: { publisher: 'Fixture office' }, records: [{
+    id: 'llm-fixture-finding', kind: 'llm-research-evidence', finding: 'The model says a claim is covered.', support: 'supports',
+  }] }));
 
   const exporterPath = new URL('./export-warehouse-sql.mjs', import.meta.url).pathname;
   const fixtureRepoRoot = new URL('../../', import.meta.url).pathname;
@@ -136,6 +146,7 @@ try {
   };
 
   const firstSql = await exportFixture();
+  assert.doesNotMatch(firstSql, /llm-fixture-source|llm-fixture-finding/, 'Model-assessed leads must never be exported as source or observation evidence');
   assert.match(firstSql, /'in_progress'/);
   assert.match(firstSql, /'complete'/);
   exportDatabase.exec(firstSql);

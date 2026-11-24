@@ -16,4 +16,4 @@ await run('scripts/knowledge/assess-research-leads.mjs', ['--limit', limit, '--c
 await run('scripts/knowledge/validate-research-evidence.mjs');
 await run('scripts/knowledge/materialize-research-evidence.mjs');
 await run('scripts/knowledge/audit-coverage.mjs');
-console.log('Research loop complete. New gaps are automatically clustered, researched, assessed by the LLM, and written to a post-hoc review artifact.');
+console.log('Research loop complete. New gaps were clustered and researched; model assessments remain private review candidates and are not published or added to the source warehouse.');
