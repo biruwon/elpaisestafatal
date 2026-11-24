@@ -397,6 +397,10 @@ const sourcedNonConclusion = 'No se ha localizado una medición compatible; esto
 assert.equal(qualifyPublicClaimReply(sourcedNonConclusion), sourcedNonConclusion);
 const sourcedNonConclusionWithGuidance = `${sourcedNonConclusion}\n\nQué se necesita para comprobarla: medidas comparables.\n\nSiguiente paso: Buscar datos compatibles.`;
 assert.equal(qualifyPublicClaimReply(sourcedNonConclusionWithGuidance), sourcedNonConclusionWithGuidance, 'Evidence requirements and next steps can follow a clear limitation without making it a positive verdict');
+const familyNonConclusion = 'La afirmación no queda demostrada. Los datos describen un promedio nacional, no una predicción para una cohorte.';
+assert.equal(qualifyPublicClaimReply(familyNonConclusion), familyNonConclusion, 'A clear family-level conclusion should preserve its scoped evidence instead of hiding it behind a generic warning');
+const scopedLegalQualification = 'La edad ordinaria es 67 años con menos de 38 años y 6 meses cotizados. No significa que todas las personas trabajen hasta esa edad.';
+assert.equal(qualifyPublicClaimReply(scopedLegalQualification), scopedLegalQualification, 'A sourced legal rule with its explicit eligibility limit is already qualified');
 
 const causalGapClaims = [
   'Las redes sociales provocan más acoso entre jóvenes',

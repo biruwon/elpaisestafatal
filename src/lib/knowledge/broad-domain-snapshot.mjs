@@ -775,6 +775,7 @@ export const broadDomainPacketsFor = (text) => {
   const value = normalise(text);
   const packetById = (id) => packets.find((packet) => packet.id === id && !packet.methodologyOnly);
   const focusedFamily = claimFocusFor(text)?.id;
+  if (focusedFamily === 'statutory-retirement-age' && !/\b(inmigr\w*|migrant\w*|extranj\w*)\b/i.test(value)) return [];
   if (['foreign-housing-price-causality', 'migration-housing-demand-causality', 'work-housing-independence', 'youth-housing-family-formation-costs', 'inflation-tax-bracket-creep'].includes(focusedFamily)) return [];
   const compiledClaim = deterministicFallbackCompiler(text);
   const domainProfile = domainProfileFor(text, compiledClaim);
@@ -850,9 +851,9 @@ export const broadDomainPacketsFor = (text) => {
   // packets such as generic taxes, pensions, employment or economy context.
   const broadYouthProfile = ['youth_housing_access', 'youth_housing_family_counterfactual'].includes(domainProfile?.id);
   if (dedicatedProfile && (!broadYouthProfile || domainProfile.id === 'youth_housing_family_counterfactual' || !needsScopedMeasurement(text) || (domainProfile.id === 'youth_housing_access' && (broadYouthAccess || reviewedYouthPurchaseContext)))) return [packetById(domainProfile.packetId)].filter(Boolean);
+  if (retirementAgeSignal) return [packetById('broad-pension-retirement-age-immigration')].filter(Boolean);
   if (immigrantFiscalSignal) return [packetById('broad-immigrant-net-fiscal-contribution')].filter(Boolean);
   if (regionalMinoritySignal) return [packetById('broad-immigration-regional-minority-forecast')].filter(Boolean);
-  if (retirementAgeSignal) return [packetById('broad-pension-retirement-age-immigration')].filter(Boolean);
   if (natoExpulsionSignal) return [packetById('broad-nato-expulsion')].filter(Boolean);
   if (agricultureTransitionSignal) return [packetById('broad-agriculture-green-transition')].filter(Boolean);
   if (replacementSignal) return [packetById('broad-population-replacement')].filter(Boolean);

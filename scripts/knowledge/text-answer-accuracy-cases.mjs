@@ -750,6 +750,46 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'retirement-age-for-todays-young',
+    equivalenceGroup: 'future-retirement-age-today-young',
+    input: 'Trabajar hasta cerca de los setenta años será normal para quienes hoy son jóvenes',
+    expected: {
+      state: 'insufficient', family: 'future-retirement-age', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['65,4 años hasta septiembre de 2026, frente a 64,4 en 2019', 'AIReF proyecta una edad media efectiva de 66,2 años en 2035', 'no predicen la edad de la juventud actual ni cuántas personas llegarían a 70'],
+      replyExcludes: ['AIReF demuestra que la juventud se jubilará a los 70', 'la ley obliga a trabajar hasta esa edad'],
+      evidence: [
+        { familyId: 'future-retirement-age', sourceIds: ['boe-social-security-retirement-age', 'social-security-retirement-age-rules-2026'], dataIncludes: ['66 años y 10 meses', '67 años', '38 años y 6 meses'], dimensions: { period: '2026 y desde 2027', geography: 'España' } },
+        { familyId: 'future-retirement-age', sourceIds: ['social-security-effective-retirement-age-2026'], dataIncludes: ['65,4 años', '64,4 años en 2019'], dimensions: { period: '2019 y hasta septiembre de 2026', geography: 'España' } },
+        { familyId: 'future-retirement-age', sourceIds: ['airef-effective-retirement-age-projection-2025'], dataIncludes: ['65,2 años en 2024', '66,0 en 2030', '66,2 en 2035'], dimensions: { period: '2024, 2030 y 2035', geography: 'España' } },
+      ],
+      maxReplyWords: 130,
+    },
+  },
+  {
+    id: 'retirement-age-for-todays-young-paraphrase',
+    equivalenceGroup: 'future-retirement-age-today-young',
+    input: 'La edad efectiva de jubilación seguirá subiendo para las generaciones jóvenes',
+    expected: {
+      state: 'insufficient', family: 'future-retirement-age', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['65,4 años hasta septiembre de 2026, frente a 64,4 en 2019', 'AIReF proyecta una edad media efectiva de 66,2 años en 2035', 'no identifica la edad a la que se jubilarán las generaciones jóvenes'],
+      replyExcludes: ['las generaciones jóvenes se jubilarán a los 70'], evidence: [], maxReplyWords: 130,
+    },
+  },
+  {
+    id: 'statutory-retirement-age-2027',
+    input: 'La edad ordinaria de jubilación será de 67 años desde 2027',
+    expected: {
+      state: 'limited', family: 'statutory-retirement-age', verdict: 'mixed',
+      directSourceIds: ['boe-social-security-retirement-age', 'social-security-retirement-age-rules-2026'],
+      replyIncludes: ['67 años con menos de 38 años y 6 meses', '65 años con 38 años y 6 meses o más', 'no significa que todas las personas trabajen hasta esa edad'],
+      replyExcludes: ['la edad ordinaria será 67 para todas las personas'],
+      evidence: [
+        { familyId: 'statutory-retirement-age', sourceIds: ['boe-social-security-retirement-age', 'social-security-retirement-age-rules-2026'], dataIncludes: ['67 años con menos de 38 años y 6 meses', '65 años con 38 años y 6 meses o más'], dimensions: { period: '2026 y desde 2027', geography: 'España' } },
+      ],
+      maxReplyWords: 80,
+    },
+  },
+  {
     id: 'nominal-wages-and-purchasing-power-claim',
     equivalenceGroup: 'nominal-wages-and-purchasing-power-spain-2020-2025',
     input: 'Los salarios nominales han subido pero no lo suficiente para recuperar todo el poder adquisitivo perdido',

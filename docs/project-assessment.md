@@ -1258,17 +1258,17 @@ threshold and comparison years are vague, the fallback asks for those details
 and for gross or net pay and a comparable population; it does not substitute
 household median income or invent a trend.
 
-The held-out benchmark now passes 110/110 cases across 34 paraphrase groups,
+The held-out benchmark now passes 113/113 cases across 35 paraphrase groups,
 checking verdict, source links, evidence values, scope, concise answers and
-public traceability. The full claim-focus suite covers 292 paraphrase and
+public traceability. The full claim-focus suite covers 298 paraphrase and
 boundary checks. These are reviewed regressions, not a guarantee about every
 possible submission or a population-wide accuracy estimate.
 
 On the 300-item web-observed discovery corpus, the deterministic fallback
-returns 7 complete, 72 limited and 221 uncovered responses. A metric or family
-route exists for 162 claims (71 metric matches and 138 family matches, with 47
-overlapping); 138 have neither. Public results are 268 insufficient and 32
-limited; 79 attach a consultable source, and none contains an untraceable
+returns 7 complete, 74 limited and 219 uncovered responses. A metric or family
+route exists for 164 claims (71 metric matches and 140 family matches, with 47
+overlapping); 136 have neither. Public results are 268 insufficient and 32
+limited; 81 attach a consultable source, and none contains an untraceable
 non-insufficient argument. No copyable answer in this run exceeds 160 words.
 The inputs remain explicitly unverified, so these counts measure routing,
 source attachment and reply length—not truth or factual accuracy. Unsupported
@@ -1295,3 +1295,19 @@ asks for provider availability or access time by rural and urban population,
 with a shared territorial definition and period. The requested fields adjust
 to the service in the claim; a health-only claim no longer asks for housing,
 employment, education or transport data.
+
+Retirement-age claims now separate the statutory access age from observed
+retirement ages and projections. The [Social Security rules](https://prestaciones.seg-social.es/servicio/pension-jubilacion.html?categoria=jubilacion)
+say that in 2026 the ordinary age is 66 years and 10 months with fewer than
+38 years and 3 months of contributions, or 65 with that contribution period;
+from 2027 the thresholds become 67 with fewer than 38 years and 6 months, or
+65 with at least that period ([Social Security Act](https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724&p=20250430&tn=0)).
+The [Social Security's 2026 report](https://revista.seg-social.es/-/la-pension-media-del-sistema-de-la-seguridad-social-alcanza-los-1.376-1-euros-en-octubre-un-4-6-mas-alta-que-hace-un-ano?redirect=/)
+reports a 65.4-year mean age of access for new retirement pensions through
+September 2026, versus 64.4 in 2019. AIReF's [2025 pension-model methodology](https://www.airef.es/wp-content/uploads/2025/04/Documentos-tecnicos-segunda-opinion-sostenibilidad-a-largo-plazo-AAPP/250225_DT_metodologia_pensiones.pdf)
+projects an aggregate effective retirement-age average of 65.2 in 2024, 66.0
+in 2030 and 66.2 in 2035. Those observed and projected averages do not identify
+the retirement age of today's young cohorts or the share who would work until
+near 70. Future-cohort answers show these figures as context, keep the verdict
+insufficient, and ask for cohort-specific projections and age distributions.
+Observed-average claims and migration-causality claims stay on separate routes.

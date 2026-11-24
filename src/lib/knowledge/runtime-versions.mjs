@@ -5,7 +5,7 @@ export const RUNTIME_VERSIONS = Object.freeze({
   evidencePacketSchema: '1',
   compilerContract: '2',
   knowledge: '2026-08-04.2',
-  fallbackKnowledge: 'deterministic-fallback-68-price-wage-hours-rural-access-and-living-standard-2026-11',
-  warehouseKnowledge: 'warehouse-2026-11-24.32-price-wage-hours-rural-access-and-living-standard',
+  fallbackKnowledge: 'deterministic-fallback-69-wage-hours-rural-access-retirement-age-2026-11',
+  warehouseKnowledge: 'warehouse-2026-11-24.33-wage-hours-rural-access-retirement-age',
   indexKnowledge: 'index-only-2026-08-05.9',
 });

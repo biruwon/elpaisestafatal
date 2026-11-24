@@ -3,6 +3,7 @@ import { HOUSING_COMPLETION_EVIDENCE, HOUSING_SUPPLY_PRESSURE_EVIDENCE } from '.
 import { MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE } from './mortgage-entry-snapshot.mjs';
 import { UNPAID_OVERTIME_SNAPSHOT } from './unpaid-overtime-snapshot.mjs';
 import { PENSION_CONTRIBUTOR_RATIO_SNAPSHOT } from './pension-contributor-ratio-snapshot.mjs';
+import { RETIREMENT_AGE_SNAPSHOT } from './retirement-age-snapshot.mjs';
 import { EDUCATION_SOCIOECONOMIC_SNAPSHOT } from './education-socioeconomic-snapshot.mjs';
 import { UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT } from './university-graduate-outcomes-snapshot.mjs';
 import { RAIL_PUNCTUALITY_EVIDENCE, railPunctualityShareableReply } from './rail-punctuality-snapshot.mjs';
@@ -72,7 +73,8 @@ const migrationOverqualification = (t) => migrationPopulation.test(t)
   && !/\b(homolog\w*|reconoc\w*|convalid\w*|revalid\w*|equivalen\w*)\b/.test(t);
 const migrationFiscalContribution = (t) => migrationPopulation.test(t)
   && /\b(fiscal\w*|impuest\w*|hacienda|recaud\w*|tribut\w*|cotiz\w*|contribucion\w*|arcas? publicas|cuentas? publicas|presupuest\w*|gasto publico)\b/.test(t)
-  && /\b(aport\w*|contribu\w*|net\w*|balance\w*|pag\w*|recib\w*|cost\w*|benefici\w*|mas|menos|cualific\w*|salari\w*|sueld\w*|ingres\w*|cotiz\w*)\b/.test(t);
+  && /\b(aport\w*|contribu\w*|net\w*|balance\w*|pag\w*|recib\w*|cost\w*|benefici\w*|mas|menos|cualific\w*|salari\w*|sueld\w*|ingres\w*|cotiz\w*)\b/.test(t)
+  && !/\b(?:edad (?:legal )?de jubilacion|edad ordinaria de jubilacion|jubilarse a los 67|trabajar hasta los 67)\b/.test(t);
 const migrationWageEffects = (t) => migrationPopulation.test(t)
   && /\b(inmigracion|llegad\w*.{0,35}\b(?:mano de obra|trabajador\w*|personas?)\b|entrad\w*.{0,35}\b(?:mano de obra|trabajador\w*|personas?)\b|oferta de mano de obra extranjera)\b/.test(t)
   && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w*|cobr\w*|gan\w*)\b/.test(t)
@@ -1043,6 +1045,25 @@ const futurePensionOutlook = (t) => {
     && (/\b(futur\w*|generaci\w*|cuando (?:me |se )?jubil\w*|dentro de \d+ a[nñ]os|(?:pagar|cobrar|recibir|tener|haber)an)\b/.test(t) || namesFutureYear)
     && /\b(pag\w*|cobr\w*|recib\w*|tendr\w*|garantiz\w*|menor\w*|inferior\w*|reemplaz\w*|sustituci[oó]n|cu[aá]nt[oa])\b/.test(t);
 };
+const futureRetirementAge = (t) => {
+  const namesFutureYear = [...t.matchAll(/\b(?:20|21)\d{2}\b/g)].some(([year]) => Number(year) > new Date().getFullYear());
+  const ageReference = /\b(edad (?:legal|ordinaria|efectiva)(?: de jubil\w*)?|edad de (?:jubil\w*|retiro))\b/.test(t)
+    || /\b(jubil\w*|retir\w*)[\s\w]{0,32}\b(?:65|66|67|68|69|70|sesenta(?: y (?:cinco|seis|siete|ocho|nueve))?|setenta)\s*a[nñ]os\b/.test(t)
+    || /\btrabaj\w*[\s\w]{0,28}\b(hasta|cerca de|a los)\b[\s\w]{0,18}\b(?:65|66|67|68|69|70|sesenta(?: y (?:cinco|seis|siete|ocho|nueve))?|setenta)\s*a[nñ]os\b/.test(t);
+  const futureOrCohort = /\b(futur\w*|generaci\w*|j[oó]ven\w*|hoy|actual\w*|seguira|proyect\w*|normal\w*|sera|seran|tendra|tendran)\b/.test(t)
+    || namesFutureYear;
+  const pensionAmountClaim = /\b(cuant[ií]a|importe|pensi[oó]n\w*\s+(?:m[aá]s )?(?:baj\w*|menor\w*|inferior\w*))\b/.test(t);
+  return ageReference && futureOrCohort && !pensionAmountClaim;
+};
+const statutoryRetirementAge = (t) => {
+  const asksAboutOrdinaryAge = /\b(edad (?:legal|ordinaria) (?:de )?jubil\w*|edad de jubil\w*)\b/.test(t)
+    || /\b(a que edad|que edad)\b[\s\w]{0,24}\b(jubil\w*|retir\w*)\b/.test(t);
+  const asksAboutSupportedYear = [...t.matchAll(/\b20\d{2}\b/g)].every(([year]) => Number(year) >= 2026);
+  const asksAboutFutureCohort = /\b(futur\w*|generaci\w*|j[oó]ven\w*|hoy|actual\w*)\b/.test(t);
+  const asksAboutObservedAverage = /\b(media|promedio|efectiva|observad\w*|real)\b/.test(t);
+  const asksAboutMigration = /\b(inmigr\w*|migrant\w*|extranj\w*)\b/.test(t);
+  return asksAboutOrdinaryAge && asksAboutSupportedYear && !asksAboutFutureCohort && !asksAboutObservedAverage && !asksAboutMigration;
+};
 const housingCompletionReference = (t) => !touristHousingMention(t)
   && /\b(viviend\w*|casas?|pisos?)\b/.test(t)
   && /\b(termin\w*|complet\w*|finaliz\w*|acab\w*|conclu\w*)\b/.test(t);
@@ -1211,6 +1232,46 @@ const focuses = [
     limitation: 'Una tasa de empleo o un salario mediano no mide por sí solo los ingresos totales por cotizaciones ni demuestra cuánto debilitan el sistema los salarios bajos.',
   },
   {
+    id: 'statutory-retirement-age', label: 'edad ordinaria legal para acceder a la jubilación',
+    when: statutoryRetirementAge,
+    direct: [], context: [],
+    needs: ['año de acceso solicitado', 'años cotizados por la persona, porque la edad depende de ese umbral', 'modalidad de jubilación, si no se pregunta por la ordinaria'],
+    explanation: 'La edad ordinaria legal depende del tiempo cotizado. Es la edad de acceso a la pensión contributiva, no la edad media a la que se jubila la población ni una predicción para una generación futura.',
+    explanationHeadline: 'La edad ordinaria de jubilación depende de los años cotizados',
+    explanationEvidence: {
+      expiresAt: RETIREMENT_AGE_SNAPSHOT.expiresAt,
+      territories: ['ES'],
+      directClaimEvidence: true,
+      claimVerdict: 'mixed',
+      dimensions: { subject: 'edad ordinaria de acceso a pensión contributiva', population: 'personas que cumplen los requisitos de cotización de cada tramo', period: '2026 y desde 2027', geography: 'España', denominator: 'años y meses cotizados', unit: 'años de edad' },
+      facts: [
+        'En España, en 2026 la edad ordinaria es 66 años y 10 meses con menos de 38 años y 3 meses cotizados, o 65 años con 38 años y 3 meses o más. Desde 2027, es 67 años con menos de 38 años y 6 meses, o 65 años con 38 años y 6 meses o más.',
+        'La edad indicada permite acceder a la pensión contributiva ordinaria si se cumplen también los demás requisitos. No significa que todas las personas trabajen hasta esa edad ni que esa sea la edad efectiva media de retiro.',
+      ],
+      factSourceIds: [
+        [RETIREMENT_AGE_SNAPSHOT.statutorySource.id, RETIREMENT_AGE_SNAPSHOT.currentRulesSource.id],
+        [RETIREMENT_AGE_SNAPSHOT.statutorySource.id, RETIREMENT_AGE_SNAPSHOT.currentRulesSource.id],
+      ],
+      factDimensions: [
+        { subject: 'edad ordinaria de acceso a pensión contributiva', population: 'personas según su periodo de cotización acreditado', period: '2026 y desde 2027', geography: 'España', denominator: 'umbral de cotización: 38 años y 3 meses en 2026; 38 años y 6 meses desde 2027', unit: 'años y meses de edad' },
+        { subject: 'significado de la edad ordinaria legal', population: 'personas que reúnen los requisitos de acceso a pensión contributiva', period: 'normativa vigente', geography: 'España', unit: 'regla legal, no edad efectiva observada' },
+      ],
+      sources: [RETIREMENT_AGE_SNAPSHOT.statutorySource, RETIREMENT_AGE_SNAPSHOT.currentRulesSource],
+    },
+    shareableReplyForContext: ({ claim, facts }) => {
+      const text = normalize(claim);
+      const years = [...text.matchAll(/\b20\d{2}\b/g)].map(([year]) => Number(year));
+      const asksForBothPeriods = years.length === 0 || (years.some((year) => year === 2026) && years.some((year) => year >= 2027));
+      const asksFor2027OrLater = years.some((year) => year >= 2027);
+      const schedule = facts[0];
+      const selected = asksForBothPeriods ? schedule
+        : asksFor2027OrLater ? schedule.slice(schedule.indexOf('Desde 2027,'))
+          : schedule.slice(0, schedule.indexOf('. Desde 2027,'));
+      return [`${(selected || schedule).replace(/[.]?$/, '.')}`, facts[1]].join('\n\n');
+    },
+    limitation: 'La edad legal depende del historial de cotización y de la modalidad de retiro. Este calendario no predice la edad efectiva de una persona ni la de una generación futura.',
+  },
+  {
     id: 'future-pension-outlook', label: 'pensiones futuras de una generación',
     when: futurePensionOutlook,
     direct: [], context: [],
@@ -1225,6 +1286,52 @@ const focuses = [
       sources: [{ id: 'airef-pension-projection-method-2025', title: 'Metodología del modelo para estimar el gasto en pensiones · Documento técnico 3/25', publisher: 'AIReF', url: 'https://www.airef.es/wp-content/uploads/2025/04/Documentos-tecnicos-segunda-opinion-sostenibilidad-a-largo-plazo-AAPP/250225_DT_metodologia_pensiones.pdf', retrievedAt: '2026-11-16' }],
     },
     limitation: 'La comparación actual de pensiones y salarios medios no prueba qué cobrarán los jóvenes: hay que fijar la cohorte, el año de jubilación y las reglas del escenario.',
+  },
+  {
+    id: 'future-retirement-age', label: 'edad legal y efectiva de jubilación',
+    when: futureRetirementAge,
+    direct: [], context: [],
+    needsForClaim: (claim) => {
+      const text = normalize(claim);
+      const needs = ['separar la edad ordinaria legal para acceder a una pensión de la edad efectiva a la que se retira la población'];
+      if (/\b(j[oó]ven\w*|generaci\w*|hoy|actual\w*)\b/.test(text)) needs.push('proyección de la edad efectiva para la cohorte de nacimiento y el año previsto de jubilación');
+      if (/\b(normal\w*|habitual\w*|mayor[ií]a|la mayor parte|muchos)\b/.test(text) || /\b(?:70|setenta)\s*a[nñ]os\b/.test(text)) needs.push('distribución de edades de jubilación por cohorte para medir qué proporción se retiraría cerca de la edad indicada');
+      if (/\b(sub\w*|aument\w*|crec\w*|seguira|cada vez|tendenc\w*)\b/.test(text)) needs.push('serie observada o proyección de la misma medida, población y escenario para los años comparados');
+      return needs;
+    },
+    explanation: 'La edad ordinaria de acceso a la pensión, la edad media observada al jubilarse y una proyección por cohorte son medidas distintas. Un promedio agregado no permite afirmar a qué edad se retirarán las personas jóvenes ni qué edad será «normal».',
+    explanationHeadline: 'Los datos agregados de jubilación no predicen cuándo se retirará la juventud actual',
+    explanationEvidence: {
+      ...RETIREMENT_AGE_SNAPSHOT,
+      directClaimEvidence: false,
+      evidenceLabel: 'Contexto: edad legal, edad observada y proyección agregada de jubilación en España',
+      facts: [
+        'En España, la edad ordinaria para acceder a la pensión contributiva en 2026 es 66 años y 10 meses con menos de 38 años y 3 meses cotizados, o 65 años con ese periodo cotizado. Desde 2027, será 67 años con menos de 38 años y 6 meses, o 65 años con esa cotización.',
+        'La Seguridad Social informó de una edad media de acceso de 65,4 años entre las nuevas altas de jubilación registradas hasta septiembre de 2026, frente a 64,4 años en 2019. Es un promedio observado, no una proyección para la juventud actual.',
+        'El modelo de AIReF de 2025 proyecta una edad efectiva media de 65,2 años en 2024, 66,0 en 2030 y 66,2 en 2035. La cifra es agregada y no ofrece la edad de retiro de cada cohorte joven.',
+      ],
+      factSourceIds: [
+        [RETIREMENT_AGE_SNAPSHOT.statutorySource.id, RETIREMENT_AGE_SNAPSHOT.currentRulesSource.id],
+        [RETIREMENT_AGE_SNAPSHOT.observedAgeSource.id],
+        [RETIREMENT_AGE_SNAPSHOT.projectionSource.id],
+      ],
+      factDimensions: [
+        { subject: 'edad ordinaria de acceso a pensión contributiva', population: 'personas que cumplen los requisitos de cotización de cada tramo', period: '2026 y desde 2027', geography: 'España', denominator: 'años y meses cotizados', unit: 'años de edad' },
+        { subject: 'edad media de acceso a nuevas pensiones de jubilación', population: 'nuevas altas de jubilación de la Seguridad Social', period: '2019 y hasta septiembre de 2026', geography: 'España', denominator: 'personas con nueva alta de jubilación', unit: 'años de edad' },
+        { subject: 'edad efectiva media proyectada al jubilarse', population: 'población cubierta por el modelo agregado de AIReF', period: '2024, 2030 y 2035', geography: 'España', denominator: 'edad media en el escenario del modelo', unit: 'años de edad proyectados' },
+      ],
+    },
+    shareableReplyForContext: ({ claim }) => {
+      const nearSeventy = /\b(?:70|setenta)\s*a[nñ]os\b/.test(normalize(claim));
+      return [
+        'En 2026, la edad legal es 66 años y 10 meses con menos de 38 años y 3 meses cotizados; con ese periodo o más, 65 años. Desde 2027, el corte pasa a 38 años y 6 meses: 67 con menos y 65 con ese periodo o más.',
+        'La Seguridad Social registra una edad media de acceso de 65,4 años hasta septiembre de 2026, frente a 64,4 en 2019. AIReF proyecta una edad media efectiva de 66,2 años en 2035.',
+        nearSeventy
+          ? 'La ley fija acceso a una pensión; las medias no predicen la edad de la juventud actual ni cuántas personas llegarían a 70. La afirmación no queda demostrada.'
+          : 'El aumento agregado no identifica la edad a la que se jubilarán las generaciones jóvenes. La afirmación de futuro no queda demostrada.',
+      ].join('\n\n');
+    },
+    limitation: 'La ley define edades ordinarias de acceso según cotizaciones. Las series observadas describen nuevas altas y AIReF proyecta promedios agregados; no establecen la edad efectiva de una cohorte joven ni la proporción que se jubilará cerca de 70.',
   },
   {
     id: 'retiree-housing-cost-comparison', label: 'ingresos de jubilación y gastos de vivienda',

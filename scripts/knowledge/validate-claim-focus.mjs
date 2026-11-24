@@ -88,6 +88,8 @@ const cases = [
   ['rail-punctuality', ['Los retrasos de Cercanías hacen perder horas a los pasajeros', 'Los trenes de Renfe son poco puntuales', 'Las compensaciones por demoras ferroviarias no cubren el tiempo perdido']],
   ['pension-financing', ['El trabajador no ahorra sus cotizaciones para su propia pensión sino que financia a los jubilados actuales', '¿Las pensiones públicas usan reparto o cuentas individuales?', 'Las cotizaciones sostienen las jubilaciones actuales']],
   ['future-pension-outlook', ['Los jóvenes actuales pagarán pensiones durante décadas pero cobrarán una pensión relativamente menor', 'Las generaciones jóvenes esperan cobrar una pensión más baja al jubilarse', '¿Qué pensión recibirán en el futuro quienes cotizan hoy?']],
+  ['statutory-retirement-age', ['La edad ordinaria de jubilación será de 67 años desde 2027', '¿Cuál es la edad legal de jubilación en 2026?', 'La edad de jubilación en 2026 depende de los años cotizados']],
+  ['future-retirement-age', ['La edad efectiva de jubilación seguirá subiendo para las generaciones jóvenes', 'Trabajar hasta cerca de los setenta años será normal para quienes hoy son jóvenes', 'La edad de retiro de los jóvenes de hoy seguirá aumentando']],
   ['pension-wage-comparison', ['Hay jubilados con pensiones superiores al sueldo de muchos trabajadores jóvenes', 'Los jubilados cobran pensiones más altas que el salario de muchos jóvenes empleados', 'La pensión media supera los ingresos mensuales de muchos trabajadores jóvenes', 'Los jubilados cobran más que los trabajadores jóvenes']],
   ['self-employment-cost-viability', ['La cuota y los costes fijos hacen inviable ser autónomo con ingresos bajos o irregulares', 'Los gastos obligatorios de los autónomos impiden sostener una actividad con ingresos irregulares', 'Ser autónomo deja de compensar cuando la cuota fija supera los ingresos bajos', 'El sistema fiscal castiga empezar una actividad antes de que el negocio tenga ingresos estables', 'Iniciar un negocio antes de tener ingresos estables sale caro por las cuotas e impuestos']],
   ['healthcare-double-payment', ['Muchas familias sienten que pagan dos veces por sanidad al pagar impuestos y además un seguro privado', 'Tener un seguro médico privado y pagar impuestos supone dos pagos relacionados con la atención sanitaria pública y privada', 'La prima del seguro privado se suma a los impuestos que financian la sanidad']],
@@ -1526,6 +1528,51 @@ assert.ok(futurePension.shareableReply.trim().split(/\s+/).length <= 160, 'Futur
 assert.ok(futurePension.evidenceSummary.missingDimensions.some((item) => /cotizaciones y prestaciones futuras para la misma cohorte/.test(item)), 'A lifetime pay-in/pay-out claim must require contributions and benefits for a matched cohort');
 const futurePensionAmount = focusedEvidencePlan('¿Qué pensión recibirán en el futuro quienes cotizan hoy?');
 assert.ok(!futurePensionAmount.evidenceSummary.missingDimensions.some((item) => /cotizaciones y prestaciones futuras para la misma cohorte/.test(item)), 'A future-benefit question alone must not inherit a lifetime funding comparison');
+const statutoryRetirementClaim = 'La edad ordinaria de jubilación será de 67 años desde 2027';
+const statutoryRetirement = focusedEvidencePlan(statutoryRetirementClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(statutoryRetirement.answerScope.family, 'statutory-retirement-age');
+assert.equal(statutoryRetirement.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'mixed', 'The 67-year threshold is conditional on contribution history');
+assert.deepEqual(statutoryRetirement.blocks.find((block) => block.type === 'claim_breakdown').items[0].sourceIds, ['boe-social-security-retirement-age', 'social-security-retirement-age-rules-2026']);
+assert.deepEqual(statutoryRetirement.sourceLinks.map((source) => source.id), ['boe-social-security-retirement-age', 'social-security-retirement-age-rules-2026']);
+assert.match(statutoryRetirement.shareableReply, /67 años con menos de 38 años y 6 meses.*65 años con 38 años y 6 meses o más/);
+assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'statutory-retirement-age', result: statutoryRetirement }, statutoryRetirementClaim).state, 'limited');
+const statutory2026 = focusedEvidencePlan('¿Cuál es la edad legal de jubilación en 2026?', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.match(statutory2026.shareableReply, /66 años y 10 meses.*38 años y 3 meses cotizados/);
+assert.doesNotMatch(statutory2026.shareableReply, /Desde 2027/);
+assert.match(statutory2026.shareableReply, /38 años y 3 meses o más\./, 'A year-specific statutory reply should end the selected schedule cleanly');
+const statutoryWithoutYear = focusedEvidencePlan('¿Cuál es la edad legal de jubilación en España?', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.match(statutoryWithoutYear.shareableReply, /en 2026.*Desde 2027/s, 'Without a year, give both applicable schedules instead of silently choosing one');
+assert.equal(claimFocusFor('La edad media de jubilación en España fue de 65,4 años en 2026'), undefined, 'Observed mean-age claims must not inherit the statutory eligibility schedule');
+const statutoryFrance = focusedEvidencePlan('La edad legal de jubilación en Francia cambia desde 2027', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.deepEqual(statutoryFrance.sourceLinks, [], 'Spanish legal rules must not answer a French claim');
+const futureRetirementClaims = [
+  'La edad efectiva de jubilación seguirá subiendo para las generaciones jóvenes',
+  'Trabajar hasta cerca de los setenta años será normal para quienes hoy son jóvenes',
+  'La edad de retiro de los jóvenes de hoy seguirá aumentando',
+];
+let futureRetirementSources;
+for (const claim of futureRetirementClaims) {
+  const plan = focusedEvidencePlan(claim, { now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.equal(plan.answerScope.family, 'future-retirement-age');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  assert.equal(plan.evidenceLevel, 'limited', 'Observed ages and a national average projection are context for a generational claim');
+  assert.match(plan.shareableReply, /65,4 años.*64,4 en 2019/);
+  assert.match(plan.shareableReply, /AIReF proyecta una edad media efectiva de 66,2 años en 2035/);
+  assert.match(plan.shareableReply, /no identifica la edad a la que se jubilarán las generaciones jóvenes|no predicen la edad de la juventud actual/);
+  assert.ok(plan.shareableReply.trim().split(/\s+/).length <= 160, 'Retirement-age context should remain concise');
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  assert.deepEqual(sourceIds, ['boe-social-security-retirement-age', 'social-security-retirement-age-rules-2026', 'social-security-effective-retirement-age-2026', 'airef-effective-retirement-age-projection-2025']);
+  if (futureRetirementSources) assert.deepEqual(sourceIds, futureRetirementSources, 'Retirement-age paraphrases must keep the same scoped evidence');
+  futureRetirementSources = sourceIds;
+  assert.equal(localPublicCheckResponse({ status: 'partial', requestId: 'future-retirement-age', result: plan }, claim).state, 'insufficient');
+}
+assert.equal(claimFocusFor('Las próximas generaciones cobrarán pensiones más bajas')?.id, 'future-pension-outlook', 'Future benefit claims must not cross-route to retirement age');
+assert.equal(claimFocusFor('La edad media efectiva de jubilación fue de 65,4 años en septiembre de 2026'), undefined, 'An observed average retirement-age statement is not a future-cohort claim');
+const immigrationRetirementAgeClaim = 'La edad legal de jubilación sube a 67 años porque las cotizaciones de los inmigrantes son insuficientes';
+assert.equal(claimFocusFor(immigrationRetirementAgeClaim), undefined, 'A migration-related causal claim needs its causal evidence route, not only the legal age schedule');
+assert.ok(broadDomainPacketsFor(immigrationRetirementAgeClaim).some((packet) => packet.id === 'broad-pension-retirement-age-immigration'), 'A legal-age claim about immigration must retain the separate migration-causality packet');
+assert.deepEqual(focusedEvidencePlan('En Francia, la edad efectiva de jubilación seguirá subiendo para las generaciones jóvenes', { now: Date.parse('2026-11-24T12:00:00Z') }).sourceLinks, [], 'Spanish age sources must not answer a French claim');
 const graduateRate = focusedEvidencePlan('La tasa de paro de titulados universitarios ha subido', { observations: [
   { id: 'overall-graduate-context', metricId: 'unemployment_rate', value: 10, period: '2025', unit: '%', geography: 'España' },
   { id: 'graduate-overqualification-neighbour', metricId: 'tertiary_overqualification_rate', value: 34, period: '2025', unit: '%', geography: 'España' },

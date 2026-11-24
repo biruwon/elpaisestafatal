@@ -243,6 +243,43 @@ assert.deepEqual(ruralMedicalAccess.body.result.sources, []);
 assert.match(ruralMedicalAccess.body.result.reply, /disponibilidad de médicos y especialistas o tiempo de acceso, comparados por población rural y urbana/);
 assert.doesNotMatch(ruralMedicalAccess.body.result.reply, /alquiler o compra e ingresos locales/);
 
+const futureRetirementQueries = [
+  'Trabajar hasta cerca de los setenta años será normal para quienes hoy son jóvenes',
+  'La edad efectiva de jubilación seguirá subiendo para las generaciones jóvenes',
+];
+let futureRetirementSourceIds;
+for (const query of futureRetirementQueries) {
+  const result = await check(query);
+  assert.equal(result.httpStatus, 200);
+  assert.equal(result.body.state, 'insufficient', 'National averages cannot establish retirement age for a future youth cohort');
+  assert.equal(result.body.result.answerScope.family, 'future-retirement-age');
+  assert.deepEqual(result.body.result.answerScope.directMetrics, []);
+  assert.deepEqual(result.body.result.answerScope.contextMetrics, []);
+  assert.equal(result.body.result.arguments[0].verdict, 'insufficient');
+  assert.match(result.body.result.reply, /65,4 años.*64,4 en 2019/);
+  assert.match(result.body.result.reply, /AIReF proyecta una edad media efectiva de 66,2 años en 2035/);
+  assert.match(result.body.result.reply, /no predicen la edad de la juventud actual|no identifica la edad a la que se jubilarán las generaciones jóvenes/);
+  assert.ok(result.body.result.reply.trim().split(/\s+/).length <= 160);
+  const sourceIds = result.body.result.sources.map((source) => source.id);
+  assert.deepEqual(sourceIds, ['boe-social-security-retirement-age', 'social-security-retirement-age-rules-2026', 'social-security-effective-retirement-age-2026', 'airef-effective-retirement-age-projection-2025']);
+  if (futureRetirementSourceIds) assert.deepEqual(sourceIds, futureRetirementSourceIds, `Retirement-age paraphrase changed sources: ${query}`);
+  futureRetirementSourceIds = sourceIds;
+}
+const statutoryAge2027 = await check('La edad ordinaria de jubilación será de 67 años desde 2027');
+assert.equal(statutoryAge2027.body.state, 'limited');
+assert.equal(statutoryAge2027.body.result.answerScope.family, 'statutory-retirement-age');
+assert.equal(statutoryAge2027.body.result.arguments[0].verdict, 'mixed');
+assert.deepEqual(statutoryAge2027.body.result.sources.map((source) => source.id), ['boe-social-security-retirement-age', 'social-security-retirement-age-rules-2026']);
+assert.match(statutoryAge2027.body.result.reply, /67 años con menos de 38 años y 6 meses.*65 años con 38 años y 6 meses o más/);
+assert.match(statutoryAge2027.body.result.reply, /no significa que todas las personas trabajen hasta esa edad/i);
+const statutoryAge2026 = await check('¿Cuál es la edad legal de jubilación en 2026?');
+assert.equal(statutoryAge2026.body.result.answerScope.family, 'statutory-retirement-age');
+assert.match(statutoryAge2026.body.result.reply, /66 años y 10 meses.*38 años y 3 meses cotizados/);
+assert.doesNotMatch(statutoryAge2026.body.result.reply, /Desde 2027/);
+const statutoryAgeFrance = await check('La edad legal de jubilación en Francia cambia desde 2027');
+assert.deepEqual(statutoryAgeFrance.body.result.sources, [], 'A Spain-specific legal schedule must not answer a French claim');
+assert.doesNotMatch(statutoryAgeFrance.body.result.reply, /66 años y 10 meses|67 años con menos/);
+
 const educationPayQueries = [
   'Los sueldos de muchos trabajos cualificados son demasiado parecidos a los de puestos que exigen mucha menos formación',
   'Tener un máster o un doctorado no garantiza un salario acorde con la cualificación',
