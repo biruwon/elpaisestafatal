@@ -2612,6 +2612,37 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'public-document-reuse-denied-right',
+    input: 'La Ley 39/2015 no reconoce el derecho a no volver a aportar documentos elaborados por otra administración',
+    expected: {
+      state: 'limited', family: 'public-document-reuse', verdict: 'contradicted',
+      directSourceIds: ['boe-law-39-2015-art28-document-reuse'],
+      replyIncludes: ['la fuente contradice la afirmación', 'Ley 39/2015', 'art. 28.2'],
+      evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'public-document-reuse-mandatory-resubmission',
+    input: 'La Ley 39/2015 obliga a volver a aportar documentos que ya tiene otra administración',
+    expected: {
+      state: 'limited', family: 'public-document-reuse', verdict: 'contradicted',
+      directSourceIds: ['boe-law-39-2015-art28-document-reuse'],
+      replyIncludes: ['la fuente contradice la afirmación', 'Ley 39/2015', 'art. 28.2'],
+      evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'public-document-reuse-negated-duty-paraphrase',
+    equivalenceGroup: 'public-document-reuse-legal-right',
+    input: 'La Ley 39/2015 dice que no hace falta volver a presentar documentos que ya tiene otra administración',
+    expected: {
+      state: 'limited', family: 'public-document-reuse', verdict: 'supported',
+      directSourceIds: ['boe-law-39-2015-art28-document-reuse'],
+      replyIncludes: ['Ley 39/2015', 'derecho', 'no cabe oponerse en procedimientos sancionadores'],
+      evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
     id: 'public-document-reuse-sanction-exception',
     input: 'La Ley 39/2015 permite siempre oponerse a que se consulten documentos de otra administración, incluso en procedimientos sancionadores',
     expected: {

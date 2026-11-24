@@ -41,8 +41,22 @@ const noExceptionClaim = (text) => /\b(siempre|nunca|jamas|ningun\w*|en ningun c
 const claimVerdictFor = (claim) => {
   const text = normalize(claim);
   if (noExceptionClaim(text) && /\b(oposici\w*|oponer\w*|sancion\w*|inspecci\w*|consentimiento|document\w*|aport\w*|present\w*|entreg\w*|ped\w*|solicit\w*|recab\w*)\b/.test(text)) return 'contradicted';
-  if (/\b(no tienen derecho|deben aportar|deben presentar|estan obligad\w* a (?:aportar|presentar|entregar))\b/.test(text)) return 'contradicted';
-  return 'supported';
+  const deniesRight = /\bno (?:tien\w*|hay|exist\w*|reconoc\w*|conced\w*|garantiz\w*|establec\w*|recog\w*)\b.{0,60}\bderecho\b/.test(text)
+    || /\bderecho\b.{0,50}\bno (?:exist\w*|se reconoc\w*|se conced\w*)\b/.test(text);
+  const deniesDutyToResubmit = /\bno (?:est[aá]\w* obligad\w* a|tien\w* que|deber\w*|hay que|se exig\w*|hace falta|es necesari\w*|resulta necesari\w*|se debe)\b.{0,55}\b(?:volver a )?(?:aport\w*|present\w*|entreg\w*)\b/.test(text);
+  const requiresResubmission = /\b(?:oblig\w*|deber\w*|deben?\b|tien\w* que|hay que|exig\w*|requier\w*)\b.{0,55}\b(?:volver a )?(?:aport\w*|present\w*|entreg\w*|solicit\w*|ped\w*|requer\w*)\b/.test(text)
+    && !/\bno\b.{0,35}\b(?:oblig\w*|deber\w*|deben?\b|tien\w* que|hay que|exig\w*|requier\w*)\b/.test(text);
+  if (deniesRight || requiresResubmission) return 'contradicted';
+  const recognizesRight = /\bderecho\b.{0,60}\bno (?:volver a )?(?:aport\w*|present\w*|entreg\w*)\b/.test(text)
+    || /\bpued\w* no (?:volver a )?(?:aport\w*|present\w*|entreg\w*)\b/.test(text)
+    || /\bpued\w* negarm\w* a (?:aport\w*|present\w*|entreg\w*)\b/.test(text)
+    || deniesDutyToResubmit;
+  const conditionedResubmission = /\b(?:si|cuando|salvo que|en caso de que|excepcionalmente)\b.{0,85}\bno (?:pued\w*|pudier\w*)\b.{0,55}\b(?:recab\w*|consult\w*|recuper\w*)\b/.test(text)
+    && /\b(?:ped\w*|solicit\w*|exig\w*|requer\w*)\b.{0,45}\b(?:de nuevo|nuev\w*|otra vez)\b/.test(text);
+  const sanctionOppositionRule = /\bno (?:cabe|se puede|se permite)\b.{0,45}\b(?:oponer\w*|oposici\w*)\b/.test(text)
+    && /\b(sancion\w*|inspecci\w*)\b/.test(text);
+  if (recognizesRight || conditionedResubmission || sanctionOppositionRule) return 'supported';
+  return 'mixed';
 };
 
 export const PUBLIC_DOCUMENT_REUSE_SNAPSHOT = Object.freeze({
