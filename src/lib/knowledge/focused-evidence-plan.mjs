@@ -1103,7 +1103,14 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     ? focus.shareableReplyForContext({
       claim,
       facts: explanationFacts,
-      metricFacts: educationOutcome ? primaryFacts.map((fact) => ({ id: fact.id, text: factFinding(fact) })) : [],
+      metricFacts: educationOutcome ? primaryFacts.map((fact) => ({
+        id: fact.id,
+        text: factFinding(fact),
+        value: fact.latest.value,
+        period: fact.latest.period,
+        geography: fact.latest.geography || fact.latest.dimensionLabels?.geo,
+        publisher: fact.latest.source?.publisher,
+      })) : [],
       scopeNotes,
       needs,
       limitation,

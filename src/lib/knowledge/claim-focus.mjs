@@ -1576,20 +1576,31 @@ const focuses = [
       when: educationSiiuGraduateOutcomes,
     },
     shareableReplyForContext: ({ claim, facts, metricFacts, scopeNotes = [] }) => {
-      const overqualification = metricFacts?.find((fact) => ['tertiary_overqualification_rate', 'tertiary_overqualification_rate_age_20_34'].includes(fact.id));
+      const metricFinding = (fact) => {
+        if (!Number.isFinite(fact.value) || !fact.period) return fact.text;
+        const value = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 }).format(fact.value);
+        const scope = `${fact.geography || 'España'}, ${fact.period}`;
+        if (fact.id === 'employment_rate_tertiary_education') return `${fact.publisher || 'Eurostat'} (${scope}): el ${value} % de residentes de 20 a 64 años con educación terciaria tenía empleo.`;
+        if (fact.id === 'unemployment_rate_tertiary_education') return `${fact.publisher || 'Eurostat'} (${scope}): el ${value} % de la población activa de 20 a 64 años con educación terciaria estaba en paro.`;
+        if (fact.id === 'tertiary_overqualification_rate') return `Sobrecualificación (${scope}): el ${value} % de personas ocupadas de 20 a 64 años con educación terciaria trabajaba en ocupaciones ISCO 4–9, de cualificación baja o media.`;
+        if (fact.id === 'tertiary_overqualification_rate_age_20_34') return `Sobrecualificación (${scope}): el ${value} % de personas ocupadas de 20 a 34 años con educación terciaria trabajaba en ocupaciones ISCO 4–9, de cualificación baja o media.`;
+        return fact.text;
+      };
+      const selectedMetricFindings = metricFacts?.map(metricFinding).filter(Boolean) || [];
       const conciseScopeNotes = scopeNotes.map((note) => note.startsWith('La fuente señala que la definición de este dato difiere')
         ? 'La fuente señala una diferencia de definición; compara años con cautela.'
         : note);
       const normalizedClaim = normalize(claim);
       const individualGuaranteeLimit = /\bgarant\w*\b/.test(normalizedClaim) ? 'Son resultados de grupo, no una garantía individual.' : '';
       const temporalLimit = /\b(ya no|antes|ahora|cada vez|ha aumentado|ha subido|ha bajado|evoluci\w*)\b/.test(normalizedClaim)
-        ? 'No compara cohortes previas, así que no muestra un cambio temporal.'
+        ? 'No compara cohortes previas ni acredita un cambio temporal.'
         : '';
-      return [overqualification?.text, ...conciseScopeNotes, ...facts,
-        'El grupo de cotización solo aproxima el nivel laboral; no confirma requisitos ni ajuste por campo. El SIIU solo recoge asalariados afiliados en España; excluye empleo exterior y parte de mutualidades. Medir el ajuste requiere vincular estudios y tareas del puesto.',
-        individualGuaranteeLimit,
-        temporalLimit,
-      ].filter(Boolean).join(' ');
+      const measurementSummary = [...selectedMetricFindings, ...conciseScopeNotes].filter(Boolean).join(' ');
+      const outcomeLimit = [individualGuaranteeLimit, temporalLimit].filter(Boolean).join(' ');
+      return [measurementSummary, facts.join(' '),
+        'El grupo de cotización aproxima el nivel del puesto, pero no confirma los requisitos ni el ajuste por campo. El SIIU cubre afiliados por cuenta ajena en España, no empleo exterior. Medir el ajuste requiere vincular estudios y tareas del puesto.',
+        outcomeLimit,
+      ].filter(Boolean).join('\n\n');
     },
     limitation: 'Las tasas de empleo, paro y sobrecualificación tienen denominadores distintos: residentes con estudios terciarios, personas activas con esos estudios y personas ocupadas con esos estudios. Las series no prueban una garantía individual, no se limitan a recién titulados y no miden anuncios que exigen un máster ni el campo de estudios.',
   },

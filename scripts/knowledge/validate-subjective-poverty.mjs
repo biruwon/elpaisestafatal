@@ -4,6 +4,7 @@ import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-
 import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
 import { measurementMeaningPlan } from '../../src/lib/knowledge/measurement-meaning.mjs';
 import { SUBJECTIVE_POVERTY_SNAPSHOT } from '../../src/lib/knowledge/subjective-poverty-snapshot.mjs';
+import { localPublicCheckResponse } from '../lib/local-public-check-response.mjs';
 
 const now = Date.parse('2026-11-23T15:12:58Z');
 const answer = (text, inputType = 'text', at = now) => deterministicApiFallback({ text, inputType, now: at });
@@ -126,8 +127,9 @@ assert.equal(claimFocusFor('Cada vez cuesta más llegar a fin de mes en España'
   'A current subjective-poverty cross-section must not answer a trend in living costs.');
 
 const householdDenominator = answer('En España, en 2025, más del 20 % de los hogares declaró dificultad para llegar a fin de mes.');
-assert.equal(householdDenominator.status, 'uncovered');
+assert.equal(householdDenominator.status, 'partial', 'The population-level context has sources, but does not measure the requested household share.');
 assert.equal(householdDenominator.result?.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+assert.equal(localPublicCheckResponse({ ...householdDenominator, requestId: 'subjective-household-denominator' }, 'En España, en 2025, más del 20 % de los hogares declaró dificultad para llegar a fin de mes.').state, 'insufficient');
 assert.ok(householdDenominator.result?.sourceIds.includes('eurostat-subjective-poverty-2026-11'));
 assert.deepEqual(householdDenominator.result?.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, []);
 assert.ok(householdDenominator.result?.shareableReply.includes('20,6 % de la población'));
@@ -135,7 +137,8 @@ assert.ok(!householdDenominator.result?.shareableReply.includes('20,6 % de los h
 assert.ok(householdDenominator.result?.shareableReply.includes('porcentaje de hogares'));
 
 const personalClaim = answer('A mí me cuesta llegar a fin de mes.');
-assert.equal(personalClaim.status, 'uncovered');
+assert.equal(personalClaim.status, 'partial', 'Definition sources may explain the measure but cannot answer an individual claim.');
+assert.equal(localPublicCheckResponse({ ...personalClaim, requestId: 'subjective-personal' }, 'A mí me cuesta llegar a fin de mes.').state, 'insufficient');
 assert.ok(!personalClaim.result?.sourceIds.includes('eurostat-subjective-poverty-2026-11'));
 assert.ok(!personalClaim.result?.shareableReply.includes('20,6 %'));
 
@@ -143,7 +146,8 @@ const fullTimeClaim = 'En España se puede trabajar a jornada completa y seguir 
 assert.equal(claimFocusFor(fullTimeClaim)?.id, 'working-poverty');
 assert.ok(focusedMetricIdsFor(fullTimeClaim).has('subjective_poverty_rate'), 'A work claim may show the household measure as separate context.');
 const fullTime = answer(fullTimeClaim);
-assert.equal(fullTime.status, 'uncovered');
+assert.equal(fullTime.status, 'partial', 'Sourced work-poverty context is available but does not measure subjective household hardship by work schedule.');
+assert.equal(localPublicCheckResponse({ ...fullTime, requestId: 'subjective-full-time' }, fullTimeClaim).state, 'insufficient');
 assert.equal(fullTime.result.answerScope.family, 'working-poverty');
 assert.equal(fullTime.result.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
 assert.ok(fullTime.result.shareableReply.includes('9,5 % de las personas ocupadas a jornada completa'));

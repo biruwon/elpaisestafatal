@@ -424,10 +424,10 @@ const graduateOutcome = await check('Un título universitario ya no garantiza en
 assert.equal(graduateOutcome.httpStatus, 200);
 assert.equal(graduateOutcome.body.state, 'limited');
 assert.equal(graduateOutcome.body.result.evidenceSummary.mode, 'snapshot');
-assert.match(graduateOutcome.body.result.reply, /83,2 %.*2025/);
-assert.match(graduateOutcome.body.result.reply, /34 %.*2025/);
-assert.match(graduateOutcome.body.result.reply, /definición de este dato difiere/);
-assert.match(graduateOutcome.body.result.reply, /no garantizan el resultado de cada persona/);
+assert.match(graduateOutcome.body.result.reply, /Eurostat \(España, 2025\): el 83,2 %/);
+assert.match(graduateOutcome.body.result.reply, /Sobrecualificación \(España, 2025\): el 34 %/);
+assert.match(graduateOutcome.body.result.reply, /diferencia de definición; compara años con cautela/);
+assert.match(graduateOutcome.body.result.reply, /no una garantía individual/);
 assert.doesNotMatch(graduateOutcome.body.result.reply, /no compara dos periodos/);
 assert.ok(graduateOutcome.body.result.sources.some((source) => source.id === 'eurostat-tertiary-employment'));
 assert.ok(graduateOutcome.body.result.sources.some((source) => source.id === 'eurostat-tertiary-overqualification'));
