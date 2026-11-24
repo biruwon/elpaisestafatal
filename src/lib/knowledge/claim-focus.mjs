@@ -8,6 +8,7 @@ import { UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT } from './university-graduate-out
 import { RAIL_PUNCTUALITY_EVIDENCE, railPunctualityShareableReply } from './rail-punctuality-snapshot.mjs';
 import { GDP_HOUSEHOLD_WELFARE_SNAPSHOT } from './gdp-household-welfare-snapshot.mjs';
 import { HOUSEHOLD_BUDGET_SNAPSHOT, HOUSEHOLD_SAVING_SNAPSHOT } from './household-budget-snapshot.mjs';
+import { FOOD_CHAIN_PRICE_SPREAD_EVIDENCE } from './food-chain-price-spread-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -413,6 +414,14 @@ const wagePriceMarginPassThrough = (t) => has(t, wages)
   && /\b(oblig\w*|forz\w*|traslad\w*|repercut\w*|provoc\w*|caus\w*|encarec\w*|absorber|asumir|reduc\w*|sub\w*|aument\w*)\b/.test(t)
   && !/\b(?:mas lent\w*|mas despaci\w*|mas rapid\w*|mas deprisa|menos que|mas que|por debajo|por detras|por encima|por delante|no compens\w*|no.{0,12}sigui\w*|ritmo|compens\w*|recuper\w*|super\w*|perdi\w* poder)\b/.test(t)
   && !/\b(poder adquisitivo|poder de compra|salari\w* real|coste de (?:la )?vida|viviend\w*|alquil\w*|arrendam\w*|hipotec\w*|renta mensual)\b/.test(t);
+const foodChainPriceSpread = (t) => {
+  const producer = /\b(agricultor\w*|productor\w*|campesin\w*|precio\s+en\s+origen|en\s+origen|desde\s+el\s+campo)\b/.test(t);
+  const retail = /\b(supermercad\w*|minorist\w*|comercio\s+detallist\w*|venta\s+al\s+p[uú]blico|consumidor\w*|precio\s+final|precio\s+en\s+destino|en\s+destino|tiendas?\s+(?:de\s+)?alimentaci[oó]n|cadena\s+alimentaria)\b/.test(t);
+  const priceDistribution = /\b(preci\w*|margen\w*|repart\w*|captur\w*|remuner\w*|pag\w*)\b/.test(t);
+  const normOrComparison = /\b(m[aá]s\s+(?:alto\w*|baj\w*|car\w*|barat\w*)|menos\s+(?:alto\w*|baj\w*|car\w*|barat\w*)|m[aá]s|menos|mayor\w*|menor\w*|superior\w*|inferior\w*|poc\w*|demasiad\w*|excesiv\w*|desproporcionad\w*|abusiv\w*|compar\w*|diferenc\w*|brecha\w*|margen\w*|repart\w*|captur\w*|recib\w*|cobra\w*|llega\w*)\b/.test(t);
+  return producer && retail && priceDistribution && normOrComparison
+    && !/\b(alquil\w*|arrendam\w*|renta\s+de\s+tierras?|hipotec\w*)\b/.test(t);
+};
 const electricityIndustryPrice = (t) => has(t, electricity)
   && /\b(industria\w*|industrial\w*|empresas?|negocios?|f[aá]bricas?|manufactur\w*|sector productivo|no dom[eé]stic\w*|grandes? consumidores?)\b/.test(t)
   && has(t, cost)
@@ -1638,6 +1647,21 @@ const focuses = [
     needs: ['vacantes y personas que buscan empleo en el mismo lugar y periodo', 'ocupación, condiciones del puesto y perfil de las personas', 'una definición de oportunidad de empleo'],
     explanation: 'La tasa de paro cuenta a las personas desempleadas entre las personas activas; no cuenta los puestos disponibles ni indica si una persona concreta encontrará trabajo.',
     limitation: 'Las oportunidades dependen del territorio, la ocupación y las condiciones del puesto. La temporalidad de los contratos tampoco mide cuántos empleos hay disponibles.',
+  },
+  {
+    id: 'food-chain-price-spread', label: 'precios agrícolas y diferencias entre etapas de la cadena alimentaria',
+    when: foodChainPriceSpread, direct: [], context: [], claimType: 'comparative',
+    claimTypeFor: (t) => /\b(demasiad\w*|excesiv\w*|desproporcionad\w*|abusiv\w*|poc\w*)\b/.test(t) ? 'normative' : 'comparative',
+    needs: ['producto alimentario y periodo definidos', 'precios comparables del mismo producto, calidad y unidad en las etapas que se comparan', 'costes atribuibles a cada etapa para distinguir margen bruto de beneficio neto', 'un criterio medible para decidir qué precio o margen sería «demasiado» alto o bajo'],
+    explanationHeadline: 'La diferencia de precios no equivale al beneficio de cada intermediario',
+    explanation: 'El precio en origen y el precio final describen etapas distintas. Su diferencia no permite atribuir por sí sola cuánto cobra cada intermediario ni si el margen es excesivo.',
+    shareableReplyForContext: ({ facts }) => [
+      facts[0],
+      facts[1],
+      'Con esta afirmación general no se puede decidir si el precio de origen es «demasiado bajo» ni si el margen es «excesivo»: faltan el producto y el periodo definidos, la calidad comparable y un criterio medible.',
+    ].filter(Boolean).join('\n\n'),
+    explanationEvidence: FOOD_CHAIN_PRICE_SPREAD_EVIDENCE,
+    limitation: 'Las series del MAPA cubren productos y etapas concretos; los precios de origen y destino no siempre son homogéneos. La diferencia de precios no demuestra por sí sola el beneficio neto de intermediarios ni qué reparto sería justo.',
   },
   {
     id: 'wage-price-margin-pass-through', label: 'salarios, costes empresariales, precios y márgenes',

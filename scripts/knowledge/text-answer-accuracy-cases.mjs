@@ -1351,4 +1351,31 @@ export const textAnswerAccuracyCases = [
       evidence: [], maxReplyWords: 130,
     },
   },
+  {
+    id: 'farm-gate-to-retail-price-claim',
+    equivalenceGroup: 'food-chain-price-spread-context-spain',
+    input: 'Los agricultores reciben precios demasiado bajos en origen comparados con el precio final de los alimentos',
+    expected: {
+      state: 'insufficient', family: 'food-chain-price-spread', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['origen, mayorista y destino', 'margen bruto', 'beneficio neto', 'producto', 'periodo'],
+      replyExcludes: ['el precio final es beneficio', 'la mitad del precio', 'excesivo en toda la cadena'],
+      evidence: [
+        { familyId: 'food-chain-price-spread', sourceIds: ['mapa-food-chain-prices-and-methodology', 'mapa-agricultural-prices-perceived'], dataIncludes: ['evolución nacional', 'origen, mayorista y destino'], dimensions: { geography: 'España', period: 'mensuales y anuales', unit: 'euros por kilogramo' } },
+        { familyId: 'food-chain-price-spread', sourceIds: ['mapa-food-chain-prices-and-methodology'], dataIncludes: ['margen bruto', 'beneficio neto'], dimensions: { geography: 'España' } },
+      ],
+      maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'farm-gate-to-retail-price-paraphrase',
+    equivalenceGroup: 'food-chain-price-spread-context-spain',
+    input: 'Los intermediarios capturan una parte excesiva del margen entre el agricultor y el supermercado',
+    expected: {
+      state: 'insufficient', family: 'food-chain-price-spread', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['margen bruto', 'beneficio neto', 'costes', 'producto y el periodo'],
+      replyExcludes: ['la mitad del precio', 'intermediarios se llevan todo', 'excesivo en toda la cadena'],
+      evidence: [],
+      maxReplyWords: 150,
+    },
+  },
 ];

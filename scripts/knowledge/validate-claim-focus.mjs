@@ -42,6 +42,11 @@ const cases = [
   ['working-poverty', ['En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes', 'Tener trabajo a tiempo completo no impide ser pobre', 'La pobreza también alcanza a personas ocupadas']],
   ['real-wages', ['Los salarios pierden poder adquisitivo frente al coste de la vida', 'Los sueldos no siguen el ritmo de los precios', 'La inflación se come la nómina']],
   ['wage-price-margin-pass-through', ['Subir mucho los salarios de hostelería obligaría a subir precios o reducir márgenes en muchos negocios', 'Un aumento de sueldo en las empresas se acaba trasladando a los precios o reduce sus márgenes', 'Si suben los salarios, los negocios tienen que encarecer sus productos o ganar menos']],
+  ['food-chain-price-spread', [
+    'Los agricultores reciben precios demasiado bajos en origen comparados con el precio final de los alimentos',
+    'Los intermediarios capturan una parte excesiva del margen entre el agricultor y el supermercado',
+    'El productor agrario se queda con muy poco de lo que paga el consumidor en la tienda',
+  ]],
   ['rental-affordability', ['Con un sueldo normal ya no se puede alquilar un piso entero solo', 'El alquiler se lleva la mitad de los ingresos', 'La renta mensual consume casi todo el salario']],
   ['business-tax-burden', ['Las multinacionales digitales pagan proporcionalmente menos impuestos que las tiendas locales', 'La carga fiscal efectiva de grandes empresas tecnológicas es menor que la de los comercios pequeños', 'Las empresas digitales compiten con el comercio de barrio con una tributación más baja']],
   ['small-business-cost-pressure', ['Los comercios de barrio cierran por la suma de alquiler, energía e impuestos', 'El aumento de los costes operativos está haciendo desaparecer pequeños negocios', 'Las tiendas pequeñas no sobreviven cuando suben a la vez salarios, alquileres y electricidad']],
@@ -946,6 +951,39 @@ const ruralAccess = focusedEvidencePlan('La España rural tiene vivienda más ba
 assert.equal(ruralAccess.answerScope.family, 'rural-urban-service-access');
 assert.match(ruralAccess.shareableReply, /promedios nacionales.*no permiten concluir/i);
 assert.equal(ruralAccess.sourceLinks.length, 0, 'National indicators must not be presented as rural-versus-urban evidence');
+const foodChainClaims = [
+  'Los agricultores reciben precios demasiado bajos en origen comparados con el precio final de los alimentos',
+  'Los intermediarios capturan una parte excesiva del margen entre el agricultor y el supermercado',
+  'El productor agrario se queda con muy poco de lo que paga el consumidor en la tienda',
+];
+for (const claim of foodChainClaims) {
+  const answer = focusedEvidencePlan(claim, { now: Date.parse('2026-11-24T12:00:00Z') });
+  validateAnswerPlan(answer);
+  assert.equal(answer.answerScope.family, 'food-chain-price-spread', `A producer-to-retail price claim lost its family: ${claim}`);
+  assert.equal(answer.evidenceLevel, 'limited', 'Methodological context must not be presented as a direct finding about fairness or profit');
+  assert.equal(answer.claimType, 'normative');
+  assert.deepEqual(answer.answerScope.directMetrics, []);
+  assert.deepEqual(answer.sourceLinks.map((source) => source.id), ['mapa-food-chain-prices-and-methodology', 'mapa-agricultural-prices-perceived']);
+  const argument = answer.blocks.find((block) => block.type === 'claim_breakdown').items[0];
+  assert.equal(argument.verdict, 'insufficient');
+  assert.deepEqual(argument.evidenceIds, [], 'Price-stage methodology must not be attributed as proof of excessive prices or margins');
+  assert.deepEqual(argument.sourceIds, [], 'Contextual MAPA sources must not appear as direct proof of the submitted claim');
+  assert.match(answer.shareableReply, /precios de origen.*minorista|origen, mayorista y destino/i);
+  assert.match(answer.shareableReply, /margen bruto.*beneficio neto/s);
+  assert.match(answer.shareableReply, /producto.*periodo/i);
+  assert.doesNotMatch(answer.shareableReply, /\d[.,]?\d*\s*%|\d+\s*€/);
+  const publicAnswer = localPublicCheckResponse({ status: 'complete', requestId: 'food-chain-price-spread', result: answer }, claim);
+  assert.equal(publicAnswer.state, 'insufficient', 'Context about the method must not be mistaken for direct proof of an excessive price or margin');
+  assert.deepEqual(publicAnswer.result.sources.map((source) => source.id), ['mapa-food-chain-prices-and-methodology', 'mapa-agricultural-prices-perceived']);
+  assert.match(publicAnswer.result.reply, /La evidencia no basta para confirmar toda la afirmaci[oó]n/);
+  assert.ok(publicAnswer.result.criteria.every((criterion) => criterion.label === 'Contexto'));
+}
+for (const claim of [
+  'Los alimentos españoles son demasiado caros comparados con los importados',
+  'La cesta de la compra ha subido más que los salarios este año',
+  'Los precios que cobran los agricultores han bajado respecto al año pasado',
+  'El alquiler de tierras agrícolas sube más que el precio del tomate en el supermercado',
+]) assert.notEqual(claimFocusFor(claim)?.id, 'food-chain-price-spread', `A nearby food-price or farm claim crossed into origin-to-retail evidence: ${claim}`);
 const gdpHousehold = focusedEvidencePlan('Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio');
 assert.equal(gdpHousehold.answerScope.family, 'gdp-household-welfare');
 assert.equal(gdpHousehold.evidenceLevel, 'limited', 'Definitions explain the scope but do not establish household outcomes');
