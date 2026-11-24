@@ -1054,6 +1054,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     : explanation
       ? explanationSupportsClaim ? explanationFacts.join('\n\n') : [focusedExplanation, `Como contexto: ${explanationFacts.join('\n\n')}`].filter(Boolean).join('\n\n')
       : focusedExplanation;
+  const shareableContextReply = explanation && typeof focus.shareableReplyForContext === 'function'
+    ? focus.shareableReplyForContext({ claim, facts: explanationFacts, needs, limitation })
+    : undefined;
   const findingLead = direct.length ? 'Datos de la fuente: ' : focus.id === 'sector-wage-comparison' ? '' : 'Como contexto: ';
   const primaryCareCausalityReply = (() => {
     if (focus.id !== 'primary-care-wait-causes') return undefined;
@@ -1130,7 +1133,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       return `El dato (${number(directThresholdAssessment.actual, fact.id)}${suffix}) ${position}; ${directThresholdAssessment.verdict === 'supported' ? 'respalda' : 'contradice'} esa parte.`;
     })()
     : '';
-  const reply = primaryCareCausalityReply || tourismEmploymentReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+  const reply = primaryCareCausalityReply || tourismEmploymentReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
     directThresholdComparisonNote,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length ? 'limited' : 'insufficient';

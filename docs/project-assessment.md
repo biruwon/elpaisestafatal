@@ -1079,7 +1079,8 @@ These are a plan, a policy assessment and future capacity; they do not measure
 current MWh lost specifically to grid constraints or compare executed spending
 with realized growth in renewables and demand. Both claim families therefore
 retain an insufficient verdict. The national plan is withheld for claims about
-regional bottlenecks.
+regional bottlenecks. Their copyable answers now fit in two paragraphs, while
+the evidence explorer retains the detailed scope and measurement gaps.
 
 The current deterministic audit reports 3 complete, 44 limited and 253
 uncovered responses in the 300-item unverified discovery set. Of these claims,

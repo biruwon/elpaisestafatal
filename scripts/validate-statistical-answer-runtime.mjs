@@ -335,12 +335,14 @@ try {
   assert.equal(renewableGrid.state, 'insufficient');
   assert.equal(renewableGrid.result.answerScope?.family, 'renewable-grid-integration');
   assert.match(renewableGrid.result.reply, /154 GW.*reducci[oó]n significativa de los vertidos/s);
-  assert.match(renewableGrid.result.reply, /no mide por s[ií] sola cu[aá]nta generaci[oó]n renovable disponible se pierde actualmente/);
+  assert.match(renewableGrid.result.reply, /no una medici[oó]n de los MWh que hoy no se integran por l[ií]mites de red/);
+  assert.equal(renewableGrid.result.shareableReply?.split(/\n{2,}/).length, 2);
   assert.deepEqual(renewableGrid.result.sources.map((source) => source.id), ['miteco-electricity-plan-2030']);
   const gridInvestment = await check('La inversión en redes eléctricas no acompasa el crecimiento de renovables y nueva demanda', undefined, { DB: emptyD1 });
   assert.equal(gridInvestment.state, 'insufficient');
   assert.equal(gridInvestment.result.answerScope?.family, 'electricity-grid-investment-gap');
   assert.match(gridInvestment.result.reply, /17\.142 millones de euros.*47 GW.*importes planificados, no gasto ya ejecutado/s);
+  assert.equal(gridInvestment.result.shareableReply?.split(/\n{2,}/).length, 2);
   assert.deepEqual(gridInvestment.result.sources.map((source) => source.id), ['miteco-electricity-investment-limits-2026', 'miteco-electricity-plan-2030']);
   }
   if (!rentMagnitudeOnly) {

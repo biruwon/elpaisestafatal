@@ -1731,7 +1731,8 @@ for (const query of renewableGridClaims) {
   assert.deepEqual(plan.answerScope.contextMetrics, []);
   assert.equal(plan.evidenceLevel, 'limited');
   assert.match(plan.shareableReply, /154 GW.*reducci[oó]n significativa de los vertidos/s);
-  assert.match(plan.shareableReply, /no mide por s[ií] sola cu[aá]nta generaci[oó]n renovable disponible se pierde actualmente/);
+  assert.match(plan.shareableReply, /no una medici[oó]n de los MWh que hoy no se integran por l[ií]mites de red/);
+  assert.equal(plan.shareableReply.split(/\n{2,}/).length, 2, 'The text-first answer should lead with two concise paragraphs; detail remains in the evidence panel');
   assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'renewable-grid', result: plan }, query).state, 'insufficient');
   const sourceIds = plan.sourceLinks.map((source) => source.id);
   assert.deepEqual(sourceIds, ['miteco-electricity-plan-2030']);
@@ -1757,6 +1758,7 @@ for (const query of investmentGapClaims) {
   assert.deepEqual(plan.answerScope.contextMetrics, []);
   assert.equal(plan.evidenceLevel, 'limited');
   assert.match(plan.shareableReply, /17\.142 millones de euros.*47 GW.*importes planificados, no gasto ya ejecutado/s);
+  assert.equal(plan.shareableReply.split(/\n{2,}/).length, 2, 'The investment context should fit in two concise paragraphs');
   assert.match(plan.shareableReply, /se hab[ií]an mostrado insuficientes/);
   assert.match(plan.limitation, /no compara el gasto ejecutado con el crecimiento efectivo/);
   assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'grid-investment-gap', result: plan }, query).state, 'insufficient');

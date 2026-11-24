@@ -1458,6 +1458,10 @@ const focuses = [
       'nivel geográfico y tecnología de generación',
     ],
     explanation: 'La planificación eléctrica indica qué capacidad de red se proyecta y qué objetivos de integración se persiguen; no mide por sí sola cuánta generación renovable disponible se pierde actualmente por límites de red.',
+    shareableReplyForContext: ({ facts }) => [
+      facts.join(' '),
+      'Es una meta para 2030, no una medición de los MWh que hoy no se integran por límites de red; por sí sola no permite confirmar la afirmación causal.',
+    ].join('\n\n'),
     explanationEvidence: {
       expiresAt: '2027-02-20', territories: ['ES'],
       dimensions: {
@@ -1466,7 +1470,7 @@ const focuses = [
         geography: 'España', period: 'Planificación aprobada el 20/11/2026, horizonte 2030', unit: 'GW de potencia renovable prevista',
       },
       facts: [
-        'El plan eléctrico aprobado el 20 de noviembre de 2026 prevé integrar en 2030 los 154 GW de potencia renovable del PNIEC y plantea una reducción significativa de los vertidos. Es un objetivo de planificación, no una medición de la energía que se pierde hoy por límites de red.',
+        'El plan eléctrico aprobado el 20 de noviembre de 2026 prevé integrar en 2030 los 154 GW de potencia renovable del PNIEC y plantea una reducción significativa de los vertidos.',
       ],
       sources: [{ id: 'miteco-electricity-plan-2030', title: 'Planificación de la red de transporte de electricidad con horizonte 2030', publisher: 'Ministerio para la Transición Ecológica y el Reto Demográfico', url: 'https://www.miteco.gob.es/es/prensa/ultimas-noticias/2026/noviembre/el-gobierno-aprueba-la-planificacion-electrica-en-el-horizonte-2.html', publishedAt: '2026-11-20', retrievedAt: '2026-11-24', role: 'primary' }],
     },
@@ -1482,6 +1486,10 @@ const focuses = [
       'definición de la brecha de inversión y territorio comparables',
     ],
     explanation: 'MITECO ha reconocido límites de inversión insuficientes para las nuevas necesidades y ha aprobado una ampliación de la red. Eso documenta una respuesta de planificación, pero no calcula cuánto quedó atrás la inversión ya ejecutada.',
+    shareableReplyForContext: ({ facts }) => [
+      facts.join(' '),
+      'El plan es futuro y no compara el gasto ejecutado con el crecimiento observado de demanda y renovables; así no permite confirmar que la inversión ya vaya por detrás.',
+    ].join('\n\n'),
     explanationEvidence: {
       expiresAt: '2027-02-20', territories: ['ES'],
       dimensions: {

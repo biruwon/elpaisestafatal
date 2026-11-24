@@ -256,7 +256,8 @@ assert.equal(renewableGrid.body.state, 'insufficient');
 assert.equal(renewableGrid.body.result.answerScope.family, 'renewable-grid-integration');
 assert.deepEqual(renewableGrid.body.result.answerScope.directMetrics, []);
 assert.match(renewableGrid.body.result.reply, /154 GW.*reducci[oó]n significativa de los vertidos/s);
-assert.match(renewableGrid.body.result.reply, /no mide por s[ií] sola cu[aá]nta generaci[oó]n renovable disponible se pierde actualmente/);
+assert.match(renewableGrid.body.result.reply, /no una medici[oó]n de los MWh que hoy no se integran por l[ií]mites de red/);
+assert.equal(renewableGrid.body.result.shareableReply?.split(/\n{2,}/).length, 2);
 assert.deepEqual(renewableGrid.body.result.sources.map((source) => source.id), ['miteco-electricity-plan-2030']);
 const renewableGridRegion = await check('Los cuellos de botella de la red eléctrica impiden aprovechar toda la generación renovable disponible en Andalucía');
 assert.equal(renewableGridRegion.body.state, 'insufficient');
@@ -270,6 +271,7 @@ assert.equal(gridInvestment.body.result.answerScope.family, 'electricity-grid-in
 assert.deepEqual(gridInvestment.body.result.answerScope.directMetrics, []);
 assert.match(gridInvestment.body.result.reply, /límites anuales vigentes de inversión.*insuficientes/s);
 assert.match(gridInvestment.body.result.reply, /17\.142 millones de euros.*47 GW.*importes planificados, no gasto ya ejecutado/s);
+assert.equal(gridInvestment.body.result.shareableReply?.split(/\n{2,}/).length, 2);
 assert.match(gridInvestment.body.result.limitations?.join(' '), /no compara el gasto ejecutado con el crecimiento efectivo/);
 assert.deepEqual(gridInvestment.body.result.sources.map((source) => source.id), ['miteco-electricity-investment-limits-2026', 'miteco-electricity-plan-2030']);
 
