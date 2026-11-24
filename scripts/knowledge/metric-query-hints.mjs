@@ -32,15 +32,24 @@ const pensionSpendingMetricIds = new Set([
   'pension_system_expenditure_projected', 'social_security_contributory_pension_budget',
   'social_security_noncontributory_pension_budget', 'social_security_pension_budget_total',
 ]);
+const pensionDemographyMetricIds = new Set([
+  'old_age_dependency_ratio', 'older_population_share', 'projected_population_65_plus', 'projected_population_20_64',
+]);
 const pensionSpendingRequested = (normalized) => /\b(?:gasto\w*|gast\w*|presupuest\w*|coste\w*|importe\w*|dedic\w*|euros?|millones|spending|expenditure)\b/.test(normalized);
 const europeRequested = (normalized) => /\b(?:europa|europe\w*|ue|union europea)\b/.test(normalized);
 const oldAgeDependencyRequested = (normalized) => /\b(?:dependencia demografica|dependencia por edad|ratio de dependencia|indice de dependencia|personas de 65 anos o mas por cada 100|mayores por cada 100 personas en edad de trabajar|personas? mayores? hay por cada (?:100|cien) en edad laboral)\b/.test(normalized);
+const pensionContextRequested = (normalized) => /\b(?:pension\w*|jubilacion\w*|cotizacion\w*)\b/.test(normalized);
+const pensionDemographyRequested = (normalized) => pensionContextRequested(normalized)
+  && /\b(?:demograf\w*|envejec\w*|dependenc\w*|poblacion|mayores?|natalidad|fecundidad|edad de trabajar)\b/.test(normalized);
+const pensionFinancialSustainabilityRequested = (normalized) => pensionContextRequested(normalized)
+  && /\b(?:insostenib\w*|sostenib\w*|viabilid\w*|inviab\w*|equilibrio financiero|solvencia financiera)\b/.test(normalized);
 
 export const constrainMetricIdsToQueryScope = (query, metricIds) => {
   const normalized = normalise(query);
   if (isPrivateSectorMultiGroupFinancingClaim(query)) return new Set();
   return new Set([...metricIds].filter((metricId) => {
-    if (pensionSpendingMetricIds.has(metricId) && !pensionSpendingRequested(normalized)) return false;
+    if (pensionSpendingMetricIds.has(metricId) && !pensionSpendingRequested(normalized) && !pensionFinancialSustainabilityRequested(normalized)) return false;
+    if (pensionDemographyMetricIds.has(metricId) && pensionContextRequested(normalized) && !pensionDemographyRequested(normalized)) return false;
     if (metricId === 'old_age_survivors_benefits_per_capita_europe' && !europeRequested(normalized)) return false;
     if (metricId === 'old_age_dependency_ratio' && !oldAgeDependencyRequested(normalized)) return false;
     return true;
@@ -88,6 +97,7 @@ const registryMetricIdsForQuery = (normalized) => {
 // It is not a claim catalogue and contains no wording-specific answer.
 const conceptMetricFamilies = {
   pension_finance: ['pension_contributory_income_projected', 'pension_public_transfers_projected', 'pension_contributory_expenditure_projected', 'pension_noncontributory_expenditure_projected', 'pension_system_income_projected', 'pension_system_expenditure_projected', 'pension_system_balance_projected', 'pension_implicit_transfers_projected', 'social_security_contributory_pension_budget', 'social_security_pension_complements_minimum_budget', 'social_security_noncontributory_pension_budget', 'social_security_pension_budget_total', 'social_security_minimum_complements_transfer_budget', 'social_security_noncontributory_transfer_budget', 'social_security_pact_toledo_transfer_budget'],
+  pension_demography_finance: ['projected_population_65_plus', 'projected_population_20_64', 'old_age_dependency_ratio', 'pension_system_balance_projected', 'pension_system_expenditure_projected', 'pension_system_income_projected', 'pension_contributory_income_projected', 'pension_public_transfers_projected', 'pension_contributory_expenditure_projected'],
   healthcare: ['unmet_healthcare_waiting_list_rate', 'unmet_healthcare_availability_rate', 'unmet_healthcare_cost_rate', 'health_expenditure_per_capita', 'hospital_beds', 'hospital_beds_per_100k', 'physicians_density', 'emergency_wait_declared'],
   health_access: ['unmet_healthcare_waiting_list_rate', 'unmet_healthcare_distance_rate', 'unmet_healthcare_availability_rate', 'unmet_healthcare_cost_rate'],
   healthcare_collapse: ['unmet_healthcare_waiting_list_rate', 'emergency_wait_declared', 'hospital_beds', 'hospital_beds_per_100k', 'physicians_density', 'health_expenditure_per_capita'],
@@ -134,7 +144,19 @@ const domain = /(?:ayud|prestacion|benefici|subsid|imv|cobrar el paro)/.test(nor
     excluded.add('temporary_employment_rate');
     excluded.add('temporary_employment_rate_europe');
   }
-  const conceptIds = [...new Set([...concepts.map((item) => normalise(item)), ...(domain ? [domain] : [])].filter((item) => conceptMetricFamilies[item]))];
+  // A broad claim about pension-system sustainability needs financial series.
+  // Do not fill the metric shortlist with population-age indicators unless the
+  // claim actually states a demographic mechanism or asks for a dependency ratio.
+  const sustainabilityFamily = pensionFinancialSustainabilityRequested(normalized)
+    ? pensionDemographyRequested(normalized) ? 'pension_demography_finance' : 'pension_finance'
+    : undefined;
+  const conceptIds = sustainabilityFamily
+    ? [
+      ...new Set([...concepts.map((item) => normalise(item)), ...(domain ? [domain] : [])]
+        .filter((item) => conceptMetricFamilies[item] && !['benefits', 'pension_system', 'pensions'].includes(item))),
+      sustainabilityFamily,
+    ]
+    : [...new Set([...concepts.map((item) => normalise(item)), ...(domain ? [domain] : [])].filter((item) => conceptMetricFamilies[item]))];
   // Interleave families so a multi-topic sentence keeps at least one route
   // for each concept instead of exhausting the limit on the first concept.
   const conceptLists = conceptIds.map((concept) => conceptMetricFamilies[concept] || []);

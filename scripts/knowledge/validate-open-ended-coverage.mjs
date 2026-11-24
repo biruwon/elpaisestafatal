@@ -31,10 +31,24 @@ for (const [text, expectedConcepts] of cases) {
     assert([...candidates].some((metricId) => ['recorded_offences', 'standardised_homicide_rate'].includes(metricId)), `${text}: crime family was dropped`);
   }
   if (text === 'El sistema de pensiones es insostenible') {
-    assert(candidates.has('old_age_dependency_ratio'), `${text}: pension dependency family was dropped`);
+    assert(candidates.has('pension_system_balance_projected'), `${text}: pension-finance balance family was dropped`);
+    assert(candidates.has('pension_system_expenditure_projected'), `${text}: pension-finance expenditure family was dropped`);
+    assert(!candidates.has('old_age_dependency_ratio'), `${text}: an age-dependency metric leaked into a financial-sustainability claim without demographic wording`);
+    assert(!candidates.has('older_population_share'), `${text}: an older-population share was used as a proxy for pension-system solvency`);
     assert(!candidates.has('imv_title_holders_by_nationality'), `${text}: benefits-by-nationality metric leaked into pensions claim`);
   }
 }
+const demographicPensionMetrics = metricCandidatesForQuery('La dependencia demográfica hace insostenible el sistema de pensiones', ['benefits', 'pension_system']);
+assert(demographicPensionMetrics.has('old_age_dependency_ratio'), 'An explicit demographic-dependency claim lost its age-ratio metric');
+assert(demographicPensionMetrics.has('pension_system_balance_projected'), 'A compound demographic and financial claim lost its pension-balance metric');
+const populationAgeClaim = '¿Qué porcentaje de la población tiene 65 años o más?';
+const populationAgeCompiler = deterministicFallbackCompiler(populationAgeClaim);
+const populationAgeMetrics = metricCandidatesForQuery(populationAgeClaim, populationAgeCompiler.concepts || []);
+assert(populationAgeMetrics.has('older_population_share'), 'An explicit population-age question lost its age-share metric');
+assert(!populationAgeMetrics.has('pension_system_balance_projected'), 'A population-age question leaked into pension-finance projections');
+const pensionSupportRatioMetrics = metricCandidatesForQuery('La proporción de cotizantes por pensionista empeora', ['pension_system']);
+assert(!pensionSupportRatioMetrics.has('old_age_dependency_ratio'), 'A contributor-to-pensioner ratio claim leaked into a distinct demographic-age ratio');
+assert(!pensionSupportRatioMetrics.has('older_population_share'), 'A contributor-to-pensioner ratio claim leaked into older-population share');
 
 const broadPolitical = deterministicFallbackCompiler('El país está fatal');
 assert(metricCandidatesForQuery('El país está fatal', broadPolitical.concepts || []).size === 0, 'political scorecard wording was incorrectly assigned arbitrary metric families');
