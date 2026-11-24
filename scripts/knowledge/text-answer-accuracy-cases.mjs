@@ -740,6 +740,16 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'rural-patient-access-to-doctors',
+    equivalenceGroup: 'rural-urban-doctor-access',
+    input: 'Los pacientes rurales tienen menos acceso a médicos y especialistas que quienes viven en ciudades',
+    expected: {
+      state: 'insufficient', family: 'rural-urban-service-access', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['disponibilidad de médicos y especialistas o tiempo de acceso', 'población rural y urbana', 'definición rural y urbana común'],
+      replyExcludes: ['el promedio nacional demuestra', 'alquiler o compra e ingresos locales'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
     id: 'nominal-wages-and-purchasing-power-claim',
     equivalenceGroup: 'nominal-wages-and-purchasing-power-spain-2020-2025',
     input: 'Los salarios nominales han subido pero no lo suficiente para recuperar todo el poder adquisitivo perdido',

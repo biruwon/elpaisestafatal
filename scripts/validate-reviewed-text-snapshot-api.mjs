@@ -236,6 +236,12 @@ const unpaidOvertimeNeighbour = await check('Las horas extra sin pagar son habit
 assert.equal(unpaidOvertimeNeighbour.body.result.answerScope.family, 'unpaid-overtime');
 const tourismEmploymentNeighbour = await check('Las ramas características del turismo concentran demasiados puestos de trabajo');
 assert.equal(tourismEmploymentNeighbour.body.result.answerScope.family, 'tourism-employment-contribution');
+const ruralMedicalAccess = await check('Los pacientes rurales tienen menos acceso a médicos y especialistas que quienes viven en ciudades');
+assert.equal(ruralMedicalAccess.body.state, 'insufficient');
+assert.equal(ruralMedicalAccess.body.result.answerScope.family, 'rural-urban-service-access');
+assert.deepEqual(ruralMedicalAccess.body.result.sources, []);
+assert.match(ruralMedicalAccess.body.result.reply, /disponibilidad de médicos y especialistas o tiempo de acceso, comparados por población rural y urbana/);
+assert.doesNotMatch(ruralMedicalAccess.body.result.reply, /alquiler o compra e ingresos locales/);
 
 const educationPayQueries = [
   'Los sueldos de muchos trabajos cualificados son demasiado parecidos a los de puestos que exigen mucha menos formación',

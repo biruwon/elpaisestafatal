@@ -460,16 +460,32 @@ const energyPricePassThrough = (t) => {
   return wholesaleReference && retailContract && lagOrPassThrough && !nonEnergyProduct
     && (energyNamed || genericConsumerContract);
 };
-const ruralUrbanAccess = (t) => /\b(rural\w*|pueblo\w*|campo|zonas? rurales?)\b/.test(t)
-  && /\b(acceso|acceder|llegar|disponibilidad|servicios?)\b/.test(t)
-  && [
+const ruralUrbanAccessCategories = [
     /\b(viviend\w*|alquil\w*|piso\w*|casas?)\b/,
     /\b(emple\w*|trabaj\w*|oportunidad\w*)\b/,
     /\b(sanidad|salud|medic\w*|hospital\w*)\b/,
     /\b(educaci[oó]n|escuel\w*|colegio\w*|formaci[oó]n)\b/,
     /\b(transporte|autob[uú]s|tren|coche)\b/,
-  ].filter((pattern) => pattern.test(t)).length >= 2
-  && /\b(mas|menos|mejor|peor|diferenc\w*|compar\w*|frente a|que en|que quienes)\b/.test(t);
+  ];
+const ruralUrbanAccess = (t) => {
+  const rural = /\b(rural\w*|pueblo\w*|campo|zonas? rurales?)\b/.test(t);
+  const access = /\b(acceso|acceder|llegar|disponibilidad|servicios?|demor\w*|esper\w*)\b/.test(t);
+  const explicitUrbanComparator = /\b(ciudad\w*|urban\w*|capital\w*|metropolitan\w*)\b/.test(t);
+  const categoryCount = ruralUrbanAccessCategories.filter((pattern) => pattern.test(t)).length;
+  return rural && access && (categoryCount >= 2 || explicitUrbanComparator && categoryCount >= 1)
+    && /\b(mas|menos|mejor|peor|diferenc\w*|compar\w*|frente a|que en|que quienes)\b/.test(t);
+};
+const ruralUrbanAccessNeedsForClaim = (claim) => {
+  const text = normalize(claim);
+  const needs = [];
+  if (/\b(viviend\w*|alquil\w*|piso\w*|casas?)\b/.test(text)) needs.push('alquiler o compra e ingresos locales comparables en zonas rurales y urbanas');
+  if (/\b(emple\w*|trabaj\w*|oportunidad\w*)\b/.test(text)) needs.push('empleo disponible y tiempo o distancia para llegar al trabajo, para la misma población y periodo');
+  if (/\b(sanidad|salud|medic\w*|hospital\w*)\b/.test(text)) needs.push('disponibilidad de médicos y especialistas o tiempo de acceso, comparados por población rural y urbana');
+  if (/\b(educaci[oó]n|escuel\w*|colegio\w*|formaci[oó]n)\b/.test(text)) needs.push('plazas, centros y tiempo de desplazamiento para la misma etapa educativa y población');
+  if (/\b(transporte|autob[uú]s|tren|coche)\b/.test(text)) needs.push('frecuencia, duración y cobertura de los trayectos que usa la población comparada');
+  needs.push('una definición rural y urbana común, con el mismo territorio, población y periodo');
+  return needs;
+};
 const gdpHouseholdSignalNegated = (t) => /\b(?:no se (?:mencion\w*|habl\w*|disc\w*|inclu\w*)|sin (?:mencion\w*|habl\w*))\b[\s\w]{0,45}\b(?:pib|gdp|datos? macro|indicadores? macro)\b/.test(t);
 const gdpHouseholdWelfare = (t) => !gdpHouseholdSignalNegated(t)
   && /\b(?:pib|gdp|crecimiento economico|economia crece|datos? macro(?:economicos)?|indicadores? macro(?:economicos)?)\b/.test(t)
@@ -1137,12 +1153,12 @@ const focuses = [
     limitation: 'Esta comparación de datos de España cubre 2024–2025. El PIB no mide el ingreso de cada hogar y los porcentajes de la ECV son respuestas de la población, no tasas por hogar ni una medición de la experiencia de cada persona.',
   },
   {
-    id: 'rural-urban-service-access', label: 'acceso rural y urbano a vivienda y servicios',
-    when: ruralUrbanAccess,
+    id: 'rural-urban-service-access', label: 'comparación de acceso rural y urbano a servicios',
+    when: ruralUrbanAccess, claimType: 'comparative',
     direct: [], context: [],
-    needs: ['indicadores de acceso rural y urbano para cada servicio mencionado', 'misma población, territorio y periodo en cada comparación', 'vivienda asequible medida con alquiler o compra e ingresos locales'],
-    explanation: 'Que la vivienda cueste menos en una zona rural no demuestra que haya mejor acceso a empleo, sanidad, educación o transporte. Cada ámbito necesita su propia medida y una comparación territorial compatible.',
-    limitation: 'Los promedios nacionales de precios, empleo o sanidad no permiten concluir cómo difiere el acceso entre población rural y urbana.',
+    needsForClaim: ruralUrbanAccessNeedsForClaim,
+    explanation: 'Una diferencia de acceso debe medirse para el mismo servicio y con una definición comparable de población rural y urbana. Un promedio nacional o un dato de otro servicio no demuestra esa diferencia.',
+    limitation: 'Sin medidas comparables por servicio, población, territorio y periodo no se puede establecer cuánto difiere el acceso rural y urbano.',
   },
   {
     id: 'pension-private-savings-requirement', label: 'cotizaciones públicas y ahorro privado para la jubilación',

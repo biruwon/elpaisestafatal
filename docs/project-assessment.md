@@ -1258,16 +1258,16 @@ threshold and comparison years are vague, the fallback asks for those details
 and for gross or net pay and a comparable population; it does not substitute
 household median income or invent a trend.
 
-The held-out benchmark now passes 109/109 cases across 33 paraphrase groups,
+The held-out benchmark now passes 110/110 cases across 34 paraphrase groups,
 checking verdict, source links, evidence values, scope, concise answers and
-public traceability. The full claim-focus suite covers 291 paraphrase and
+public traceability. The full claim-focus suite covers 292 paraphrase and
 boundary checks. These are reviewed regressions, not a guarantee about every
 possible submission or a population-wide accuracy estimate.
 
 On the 300-item web-observed discovery corpus, the deterministic fallback
 returns 7 complete, 72 limited and 221 uncovered responses. A metric or family
-route exists for 161 claims (71 metric matches and 137 family matches, with 47
-overlapping); 139 have neither. Public results are 268 insufficient and 32
+route exists for 162 claims (71 metric matches and 138 family matches, with 47
+overlapping); 138 have neither. Public results are 268 insufficient and 32
 limited; 79 attach a consultable source, and none contains an untraceable
 non-insufficient argument. No copyable answer in this run exceeds 160 words.
 The inputs remain explicitly unverified, so these counts measure routing,
@@ -1287,3 +1287,11 @@ contracts, or count omitted hours. The answers therefore remain insufficient.
 A contract-hours claim without a named sector receives no hospitality data.
 Sources: [INE EPA overtime table](https://www.ine.es/jaxiT3/Tabla.htm?L=0&t=79313) and
 [EPA questionnaire](https://www.ine.es/inebaseDYN/epa30308/docs/epacues21.pdf).
+
+A rural-versus-city claim about access to doctors now uses the existing rural
+access family, but it receives no statistics because the project has no
+comparable physician-access measure for both populations. Its evidence gap
+asks for provider availability or access time by rural and urban population,
+with a shared territorial definition and period. The requested fields adjust
+to the service in the claim; a health-only claim no longer asks for housing,
+employment, education or transport data.

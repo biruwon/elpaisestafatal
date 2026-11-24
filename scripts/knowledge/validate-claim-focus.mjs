@@ -122,7 +122,7 @@ const cases = [
   ['rental-landlord-motives', ['El miedo a la okupación y al impago hace que propietarios retiren pisos del alquiler', 'Hay viviendas vacías que no se alquilan por miedo a problemas legales con inquilinos', 'Los propietarios prefieren el alquiler de temporada porque les da más flexibilidad que el alquiler habitual', '¿Qué preocupa a los arrendadores cuando alquilan una vivienda?', 'El temor a los impagos lleva a algunos propietarios a dejar casas fuera del mercado de alquiler']],
   ['sector-wage-comparison', ['El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', 'Los sueldos turísticos son más bajos que en las industrias más productivas', 'En hostelería se pagan menos salarios altos que en otros sectores', 'El empleo aumenta más en sectores de baja productividad que en sectores con salarios elevados', 'La hostelería arrastra hacia abajo el promedio de los sueldos en España', 'La actividad turística reduce la media de los salarios']],
   ['nominal-wages', ['Los salarios españoles son más bajos que los europeos', 'El sueldo ha bajado durante años', 'Las remuneraciones aumentan en España']],
-  ['rural-urban-service-access', ['La España rural tiene vivienda más barata, pero peor acceso a empleo, sanidad, educación y transporte', 'En los pueblos cuesta menos la vivienda, aunque quienes viven allí tienen menos acceso a servicios y trabajo que en las ciudades', 'La población rural tiene peor acceso a vivienda, salud y transporte que la población urbana']],
+  ['rural-urban-service-access', ['La España rural tiene vivienda más barata, pero peor acceso a empleo, sanidad, educación y transporte', 'En los pueblos cuesta menos la vivienda, aunque quienes viven allí tienen menos acceso a servicios y trabajo que en las ciudades', 'La población rural tiene peor acceso a vivienda, salud y transporte que la población urbana', 'Los pacientes rurales tienen menos acceso a médicos y especialistas que quienes viven en ciudades']],
 ];
 for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
   assert.equal(claimFocusFor(claim)?.id, family, claim);
@@ -983,8 +983,20 @@ assert.equal(measurementMeaningPlan('El empleo público ofrece mejores condicion
 assert.equal(measurementMeaningPlan('¿Qué mide la tasa de empleo?')?.headline, 'Qué mide tasa de empleo', 'An explicit request for a definition must retain the metric explainer');
 const ruralAccess = focusedEvidencePlan('La España rural tiene vivienda más barata, pero peor acceso a empleo, sanidad, educación y transporte');
 assert.equal(ruralAccess.answerScope.family, 'rural-urban-service-access');
-assert.match(ruralAccess.shareableReply, /promedios nacionales.*no permiten concluir/i);
+assert.match(ruralAccess.shareableReply, /promedio nacional.*no demuestra/i);
 assert.equal(ruralAccess.sourceLinks.length, 0, 'National indicators must not be presented as rural-versus-urban evidence');
+const ruralMedicalAccessClaim = 'Los pacientes rurales tienen menos acceso a médicos y especialistas que quienes viven en ciudades';
+const ruralMedicalAccess = focusedEvidencePlan(ruralMedicalAccessClaim);
+assert.equal(ruralMedicalAccess.answerScope.family, 'rural-urban-service-access');
+assert.deepEqual(ruralMedicalAccess.answerScope.directMetrics, []);
+assert.deepEqual(ruralMedicalAccess.answerScope.contextMetrics, []);
+assert.deepEqual(ruralMedicalAccess.sourceLinks, [], 'National healthcare statistics must not stand in for a rural-versus-urban comparison');
+assert.match(ruralMedicalAccess.shareableReply, /disponibilidad de médicos y especialistas o tiempo de acceso, comparados por población rural y urbana/);
+assert.doesNotMatch(ruralMedicalAccess.shareableReply, /vivienda|alquiler|educaci[oó]n|transporte/);
+for (const neighbour of [
+  'La atención médica rural necesita más profesionales',
+  'En los pueblos hay pocos especialistas disponibles',
+]) assert.equal(claimFocusFor(neighbour), undefined, `A non-comparative rural health claim entered the rural-urban comparison family: ${neighbour}`);
 const foodChainClaims = [
   'Los agricultores reciben precios demasiado bajos en origen comparados con el precio final de los alimentos',
   'Los intermediarios capturan una parte excesiva del margen entre el agricultor y el supermercado',
