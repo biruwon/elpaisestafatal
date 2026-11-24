@@ -28,6 +28,7 @@ const cases = [
   ['household-inflation-basket', ['El IPC general no refleja bien lo que notan los hogares que gastan mucho en comida y alquiler', '¿Cómo han cambiado desde 2020 los alimentos, el alquiler y la inflación general para las familias?', 'El índice general no describe toda la cesta de familias que destinan más dinero a alimentación y vivienda', 'La cesta de la compra ha subido más de lo que percibe quien mira solo el IPC general', 'Los precios de los alimentos han subido más que la inflación general', 'Los alimentos se encarecieron por encima del IPC general']],
   ['gdp-household-welfare', ['Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', 'Que el PIB crezca no se traduce directamente en una mejora de la vida de las familias', 'El PIB por habitante no refleja cómo se reparte la prosperidad entre los hogares']],
   ['education-employment-outcomes', ['Un título universitario ya no garantiza encontrar un empleo cualificado', 'Tener estudios superiores no asegura trabajar en un puesto acorde con la titulación', 'La universidad ya no asegura encontrar trabajo acorde con sus estudios', 'La tasa de paro de titulados universitarios ha subido', 'Los graduados tienen menos empleo que quienes cursan formación profesional']],
+  ['education-socioeconomic-performance', ['El rendimiento escolar depende demasiado de los recursos económicos de la familia', 'Las notas del alumnado están relacionadas con el nivel socioeconómico de sus hogares', 'El origen social condiciona los resultados académicos en ciencias', 'Los estudiantes de familias de bajos ingresos sacan peores notas']],
   ['job-opportunities', ['No hay trabajo', 'Aquí hay pocas ofertas de empleo', 'Es difícil encontrar trabajo en España', 'Los jóvenes no encuentran empleo', 'Empleo no hay', 'No hay empleo temporal', 'Hay pocos trabajos bien pagados']],
   ['working-poverty', ['En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes', 'Tener trabajo a tiempo completo no impide ser pobre', 'La pobreza también alcanza a personas ocupadas']],
   ['real-wages', ['Los salarios pierden poder adquisitivo frente al coste de la vida', 'Los sueldos no siguen el ritmo de los precios', 'La inflación se come la nómina']],
@@ -609,6 +610,58 @@ assert.ok(EDUCATION_EARNINGS_SNAPSHOT.observations.every((item) => item.period =
 const expiredEducationPayFallback = deterministicApiFallback({ text: educationPayQueries[0], inputType: 'text', now: Date.parse('2028-07-01') });
 assert.equal(expiredEducationPayFallback.status, 'uncovered');
 assert.doesNotMatch(expiredEducationPayFallback.result.shareableReply, /10,04|11,48|17,71/, 'Expired earnings context must not be returned');
+const educationSocioeconomicQueries = [
+  'El rendimiento escolar depende demasiado de los recursos económicos de la familia',
+  'Las notas del alumnado están relacionadas con el nivel socioeconómico de sus hogares',
+  'El origen social condiciona los resultados académicos en ciencias',
+  'Los estudiantes de familias de bajos ingresos sacan peores notas',
+];
+let educationSocioeconomicEvidenceIds;
+for (const query of educationSocioeconomicQueries) {
+  const plan = focusedEvidencePlan(query, { now: Date.parse('2026-11-24') });
+  assert.equal(plan.answerScope.family, 'education-socioeconomic-performance');
+  assert.equal(plan.claimType, 'causal');
+  assert.deepEqual(plan.answerScope.directMetrics, [], 'PISA context must not be marked as direct proof of a causal or normative claim');
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.equal(plan.evidenceSummary.mode, 'snapshot');
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+  assert.match(plan.shareableReply, /PISA 2025.*15 a[nñ]os.*71 puntos.*25 %.*85 puntos/s);
+  assert.match(plan.shareableReply, /9 %.*12 %/);
+  assert.match(plan.shareableReply, /no mide solo los ingresos familiares/i);
+  assert.match(plan.shareableReply, /correlaciones emp[ií]ricas, no efectos causales/i);
+  assert.match(plan.shareableReply, /no mide las notas de todas las etapas/);
+  assert.ok(plan.shareableReply.split(/\s+/).length <= 150, 'The public answer should be concise while retaining the measured scope and limits');
+  const sourceIds = ['oecd-pisa-2025-spain-socioeconomic-results', 'oecd-pisa-2025-framework'];
+  assert.deepEqual(plan.sourceIds, sourceIds);
+  const publicResult = localPublicCheckResponse({ status: 'complete', requestId: 'education-socioeconomic', result: plan }, query);
+  assert.equal(publicResult.state, 'insufficient', 'PISA context must not settle whether socioeconomic influence is excessive or causal');
+  assert.deepEqual(publicResult.result.sources.map((source) => source.id), sourceIds);
+  assert.deepEqual(publicResult.result.criteria.map((criterion) => criterion.sourceIds), [
+    [sourceIds[0]], [sourceIds[0]], [sourceIds[1]],
+  ], 'Each PISA finding must cite only the OECD source that supports it');
+  const evidenceIds = plan.evidenceIds.slice().sort();
+  if (educationSocioeconomicEvidenceIds) assert.deepEqual(evidenceIds, educationSocioeconomicEvidenceIds, `A socioeconomic-performance paraphrase changed its evidence: ${query}`);
+  educationSocioeconomicEvidenceIds = evidenceIds;
+}
+for (const nearby of [
+  'El acceso a buenos centros educativos depende demasiado del barrio donde se vive',
+  'Las familias con dinero pueden compensar fallos del sistema educativo con academias y refuerzo',
+  'La tasa de paro de titulados universitarios ha subido',
+]) assert.notEqual(claimFocusFor(nearby)?.id, 'education-socioeconomic-performance', `A nearby education claim inherited PISA performance context: ${nearby}`);
+for (const outOfScope of [
+  'El rendimiento escolar depende de la renta familiar en 2022',
+  'El rendimiento escolar de estudiantes de 12 años depende del nivel socioeconómico',
+  'El rendimiento escolar en Portugal depende del origen social',
+]) {
+  const plan = focusedEvidencePlan(outOfScope, { now: Date.parse('2026-11-24') });
+  assert.equal(plan.answerScope.family, 'education-socioeconomic-performance');
+  assert.deepEqual(plan.sourceIds, [], `The Spain 2025 PISA snapshot must not answer an out-of-scope request: ${outOfScope}`);
+  assert.doesNotMatch(plan.shareableReply, /71 puntos|9 %/);
+}
+const expiredEducationSocioeconomicFallback = deterministicApiFallback({ text: educationSocioeconomicQueries[0], inputType: 'text', now: Date.parse('2028-10-01') });
+assert.equal(expiredEducationSocioeconomicFallback.status, 'uncovered');
+assert.doesNotMatch(expiredEducationSocioeconomicFallback.result.shareableReply, /71 puntos|9 %/, 'Expired PISA context must not be returned');
 const touristHousingFallbackQueries = [
   'Los pisos turísticos están retirando demasiada vivienda del alquiler residencial',
   'El alquiler turístico es solo una parte del problema y la escasez estructural de oferta pesa más',

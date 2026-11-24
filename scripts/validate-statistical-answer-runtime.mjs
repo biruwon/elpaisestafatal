@@ -293,6 +293,52 @@ try {
     if (educationPayEvidenceIds) assert.deepEqual([...evidenceIds].sort(), educationPayEvidenceIds, `A paraphrase selected different education-pay observations: ${query}`);
     educationPayEvidenceIds = [...evidenceIds].sort();
   }
+  const educationSocioeconomicQueries = [
+    'El rendimiento escolar depende demasiado de los recursos económicos de la familia',
+    'Las notas del alumnado están relacionadas con el nivel socioeconómico de sus hogares',
+    'El origen social condiciona los resultados académicos en ciencias',
+    'Los estudiantes de familias de bajos ingresos sacan peores notas',
+  ];
+  let educationSocioeconomicSourceIds;
+  for (const query of educationSocioeconomicQueries) {
+    const result = await check(query, undefined, { DB: emptyD1 });
+    assert.equal(result.state, 'insufficient', JSON.stringify(result));
+    assert.equal(result.result.answerScope?.family, 'education-socioeconomic-performance');
+    assert.deepEqual(result.result.answerScope.directMetrics, []);
+    assert.deepEqual(result.result.answerScope.contextMetrics, []);
+    assert.equal(result.result.arguments?.[0]?.verdict, 'insufficient');
+    assert.match(result.result.reply, /PISA 2025.*15 a[nñ]os.*71 puntos.*25 %.*85 puntos/s);
+    assert.match(result.result.reply, /9 %.*12 %/);
+    assert.match(result.result.reply, /no mide solo los ingresos familiares/i);
+    assert.match(result.result.reply, /correlaciones emp[ií]ricas, no efectos causales/i);
+    assert.match(result.result.reply, /no mide las notas de todas las etapas/);
+    assert.doesNotMatch(result.result.reply, /^La evidencia no basta para confirmar toda la afirmaci[oó]n\./, 'The useful PISA context should remain visible after public causal-claim qualification');
+    assert.ok(result.result.reply.split(/\s+/).length <= 150, 'The final text response should stay concise');
+    assert.deepEqual(result.result.sources.map((source) => source.id), [
+      'oecd-pisa-2025-spain-socioeconomic-results', 'oecd-pisa-2025-framework',
+    ]);
+    assert.deepEqual(result.result.criteria.map((criterion) => criterion.sourceIds), [
+      ['oecd-pisa-2025-spain-socioeconomic-results'],
+      ['oecd-pisa-2025-spain-socioeconomic-results'],
+      ['oecd-pisa-2025-framework'],
+    ]);
+    const sourceIds = result.result.sources.map((source) => source.id);
+    if (educationSocioeconomicSourceIds) assert.deepEqual(sourceIds, educationSocioeconomicSourceIds, `A text paraphrase changed the socioeconomic evidence sources: ${query}`);
+    educationSocioeconomicSourceIds = sourceIds;
+  }
+  for (const nearby of [
+    'El acceso a buenos centros educativos depende demasiado del barrio donde se vive',
+    'Las familias con dinero pueden compensar fallos del sistema educativo con academias y refuerzo',
+  ]) {
+    const result = await check(nearby, undefined, { DB: emptyD1 });
+    assert.notEqual(result.result.answerScope?.family, 'education-socioeconomic-performance');
+    assert.ok(!result.result.sources.some((source) => source.id.startsWith('oecd-pisa-')), `A nearby education claim inherited PISA performance evidence: ${nearby}`);
+    assert.doesNotMatch(result.result.reply, /71 puntos|9 %/);
+  }
+  const differentPeriodPisaNeighbour = await check('El rendimiento escolar depende de los ingresos familiares en 2022', undefined, { DB: emptyD1 });
+  assert.equal(differentPeriodPisaNeighbour.result.answerScope?.family, 'education-socioeconomic-performance');
+  assert.deepEqual(differentPeriodPisaNeighbour.result.sources, [], 'PISA 2025 must not be shown for an explicit 2022 claim');
+  assert.doesNotMatch(differentPeriodPisaNeighbour.result.reply, /71 puntos|9 %/);
   const educationOverqualificationNeighbour = await check('La tasa de sobrecualificación de titulados universitarios es alta');
   assert.notEqual(educationOverqualificationNeighbour.state, 'supported');
   assert.equal(educationOverqualificationNeighbour.result.answerScope?.family, 'education-employment-outcomes');

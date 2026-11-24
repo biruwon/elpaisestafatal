@@ -3,6 +3,7 @@ import { HOUSING_COMPLETION_EVIDENCE, HOUSING_SUPPLY_PRESSURE_EVIDENCE } from '.
 import { MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE } from './mortgage-entry-snapshot.mjs';
 import { UNPAID_OVERTIME_SNAPSHOT } from './unpaid-overtime-snapshot.mjs';
 import { PENSION_CONTRIBUTOR_RATIO_SNAPSHOT } from './pension-contributor-ratio-snapshot.mjs';
+import { EDUCATION_SOCIOECONOMIC_SNAPSHOT } from './education-socioeconomic-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -394,6 +395,16 @@ const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|car
   && !migrationPopulation.test(t) && !healthcareWorkforceCausality(t)
   && !/\b(estigma|estereotip\w*|prestigio|percepcion\w*|reputacion\w*)\b/.test(t)
   && (/\b(emple\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*|salida laboral|salidas laborales|empleabilidad|perspectivas laborales)\b/.test(t) || /\bsobrecualific\w*\b/.test(t));
+const educationSocioeconomicPerformance = (t) => /\b(recursos? (?:economicos?|materiales?) (?:de la familia|familiares?|del hogar|del entorno familiar)|ingresos? (?:familiares?|del hogar|bajos?)|nivel socioeconomico|estatus socioeconomico|origen socioeconomico|origen social|situacion socioeconomica|situacion economica familiar|posicion socioeconomica|contexto socioeconomico|riqueza (?:familiar|del hogar)|renta (?:familiar|del hogar|baja)|familias? (?:pobres?|de bajos? ingresos|con bajos? ingresos|con rentas? bajas|con pocos recursos|con escasos recursos|con dinero|con mas recursos|con menos recursos)|hogares? (?:pobres?|de bajos? ingresos|con bajos? ingresos|con pocos recursos)|(?:estudiantes?|alumn\w*) en situacion de pobreza)\b/.test(t)
+  && /\b(rendimient\w*|resultados? academ\w*|notas?|calificacion\w*|puntuacion\w*|aprendizaje|desempeno academ\w*|desempeno escolar|resultados? escolares?|pruebas? pisa|rendimiento en ciencias)\b/.test(t)
+  && !/\b(emple\w*|trabaj\w*|ocupaci\w*|salari\w*|sueld\w*|mercado laboral|universidad\w*|universitari\w*|formacion profesional|\bfp\b)\b/.test(t);
+const educationSocioeconomicSnapshotFitsRequest = (t) => {
+  const years = [...t.matchAll(/\b20\d{2}\b/g)].map(([year]) => year);
+  if (years.some((year) => year !== '2025')) return false;
+  const explicitAges = [...t.matchAll(/\b(?:de|con|a los?)\s+(\d{1,2})\s+a[nñ]os\b/g)].map(([, age]) => Number(age));
+  if (explicitAges.some((age) => age !== 15)) return false;
+  return requestedGeographyScopes(t).every(({ id }) => id === 'ES');
+};
 const educationSkillsVsCurriculum = (t) => /\b(idiom\w*|competenci\w*|habilidad\w*|destrez\w*|aptitud\w*|digital\w*|soft skills|habilidades blandas)\b/.test(t)
   && /\b(asignatur\w*|materia\w*|curr[ií]cul\w*|contenid\w*|plan de estudios|grado\w*|t[ií]tul\w*|carrer\w*|universidad\w*|formaci[oó]n)\b/.test(t)
   && /\b(emple\w*|trabaj\w*|mercado laboral|puesto\w*|empresas?|empleador\w*|contrataci[oó]n|vacantes?|ofertas?)\b/.test(t)
@@ -1394,6 +1405,17 @@ const focuses = [
     needs: ['salarios brutos y netos por ocupación, cualificación, antigüedad y jornada', 'complementos, estabilidad y horas trabajadas en ambos sectores', 'misma población, territorio y periodo'],
     explanation: 'Comparar salarios públicos y privados exige igualar ocupación, cualificación, jornada y antigüedad. Las medias generales de cada sector pueden reflejar que sus plantillas realizan trabajos distintos.',
     limitation: 'Sin perfiles laborales comparables no se puede afirmar qué sector paga más en puestos de baja cualificación ni trasladar una media sectorial a cada trabajador.',
+  },
+  {
+    id: 'education-socioeconomic-performance', label: 'origen socioeconómico y rendimiento académico',
+    when: educationSocioeconomicPerformance,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['resultados académicos y condiciones socioeconómicas medidos para el mismo alumnado, materia, edad, curso, territorio y periodo', 'una comparación que separe ingresos, educación y ocupación familiar, recursos escolares y otros factores', 'un criterio cuantificable para valorar qué significa «demasiado»'],
+    explanationHeadline: 'PISA encuentra una diferencia por contexto socioeconómico, pero no demuestra una causa única',
+    explanation: 'PISA mide el rendimiento en una prueba estandarizada y relaciona las puntuaciones con un índice socioeconómico amplio. La asociación no demuestra cuánto causan los ingresos familiares ni si una diferencia es «demasiado» grande.',
+    explanationEvidence: { ...EDUCATION_SOCIOECONOMIC_SNAPSHOT, when: educationSocioeconomicSnapshotFitsRequest },
+    shareableReplyForContext: ({ facts }) => `${facts.slice(0, 3).join(' ')} La asociación no permite atribuir la brecha a los ingresos familiares ni decidir si es excesiva. PISA evalúa ciencias a los 15 años; no mide las notas de todas las etapas.`,
+    limitation: 'El dato se refiere a ciencias y estudiantes de 15 años en PISA 2025; no mide las calificaciones de todas las etapas. El ESCS combina educación y ocupación parentales y posesiones del hogar, no solo renta. Una asociación estadística no identifica por sí sola un efecto causal ni determina si la diferencia es excesiva.',
   },
   {
     id: 'education-pay-comparison', label: 'salarios según formación exigida por el puesto',
