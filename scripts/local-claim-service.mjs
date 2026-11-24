@@ -8,7 +8,7 @@ import { execFile } from 'node:child_process';
 import { promisify } from 'node:util';
 import { handlerForInput, handlerForPublishedClaim, handlerForSemanticProfile, hasHouseholdArrangementContrast, visualBlockForHandler } from './knowledge/handlers.mjs';
 import { discoverOfficialDocuments, discoveryObservation } from './knowledge/official-discovery.mjs';
-import { findWarehouseObservations, populationEvidenceFit, recordedOffenceCategoryForQuery } from './knowledge/warehouse-query.mjs';
+import { filterObservationsForRequestedGroup, findWarehouseObservations, hasSufficientClaimTermOverlap, populationEvidenceFit, recordedOffenceCategoryForQuery } from './knowledge/warehouse-query.mjs';
 import { INPUT_LIMITS, validateInputMetadata, fileMimeType } from '../src/lib/knowledge/input-contract.mjs';
 import { resolveExtractedSubmission } from './lib/submission-extraction.mjs';
 import { alignPropositionOutcomes, comparableObservationGroups, composePropositionFindings, contextualPropositionEvidence, propositionPlanCompatible } from './lib/compound-evidence.mjs';
@@ -50,7 +50,7 @@ import { EDUCATION_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/education-em
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../src/lib/knowledge/education-earnings-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from '../src/lib/knowledge/tourist-housing-snapshot.mjs';
 import { governmentScorecardGapPlan, isBroadGovernmentScorecardClaim } from '../src/lib/knowledge/scorecard-interpretation.mjs';
-import { answerPlanForBroadDomains, broadDomainPacketsFor, broadMetricIdsFor } from '../src/lib/knowledge/broad-domain-snapshot.mjs';
+import { answerPlanForBroadDomains, broadDomainPacketsFor, broadMetricIdsFor, broadPacketsCoverRequestedMetrics } from '../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { researchFamilyGaps } from './knowledge/research-family-gaps.mjs';
 import { snapshotLifecycle } from '../src/lib/knowledge/snapshot-lifecycle.mjs';
 import { metricDimensionContractFits } from '../src/lib/knowledge/metric-contract.mjs';
@@ -167,7 +167,8 @@ const compoundMetricIdsForInput = (text) => {
   return ids;
 };
 const metricIdsForInput = (text, compiler = {}) => {
-  const ids = (compiler.explicitPropositions?.length > 1 ? undefined : focusedMetricIdsFor(text)) || new Set([
+  const focusedMetricIds = compiler.explicitPropositions?.length > 1 ? undefined : focusedMetricIdsFor(text);
+  const ids = (focusedMetricIds?.size ? focusedMetricIds : undefined) || new Set([
     ...(Array.isArray(compiler.metricIds) ? compiler.metricIds : []),
     ...preferredMetricIdsForQuery(text),
     ...compoundMetricIdsForInput(text),
@@ -795,6 +796,9 @@ const selectCompatibleWarehouseSeries = (query, observations) => {
 const findWarehouseEvidence = async (query, compiler, queryEmbedding, warehouseRecords) => {
   const normalizedQuery = normalise(query);
   const metricScopeText = compiler?.claimText || query;
+  const explicitMetricIds = new Set(Array.isArray(compiler?.explicitMetricIds)
+    ? compiler.explicitMetricIds
+    : Array.isArray(compiler?.metricIds) ? compiler.metricIds : []);
   const comparisonTexts = [normalizedQuery, ...(compiler?.claimText ? [normalise(compiler.claimText)] : []), ...(Array.isArray(compiler?.explicitPropositions) ? compiler.explicitPropositions : [])
     .filter((item) => item?.explicit !== false && item?.text).map((item) => normalise(item.text))];
   const explicitComparison = comparisonTexts.some((value) => /\b(?:mas|menos|mayor|menor|superior|inferior)\b[\s\S]{0,80}\b(?:que|frente a|comparad)\b/.test(value)
@@ -807,9 +811,7 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding, warehouseR
     || explicitComparison || compiler?.claimType === 'comparative'
     || compiler?.explicitPropositions?.some((item) => item?.explicit !== false && item?.type === 'comparative')
     || Boolean(compiler?.claimText && claimFocusFor(compiler.claimText)?.claimType === 'comparative');
-  const meaningfulTerms = tokens(query).filter((token) => !lowSignalTokens.has(token));
-  const locationOnlyTerms = new Set(['europa', 'europea', 'europeo', 'pais', 'paises', 'nacional', 'nacionales', 'actual', 'actualidad', 'hoy']);
-  const subjectTerms = meaningfulTerms.filter((term) => !locationOnlyTerms.has(term));
+  const meaningfulTerms = tokens(metricScopeText).filter((token) => !lowSignalTokens.has(token));
   // Prefer the metric contract produced by the shared compiler, while
   // retaining the deterministic query lookup as a safety net for fast-path
   // and legacy callers. The answer is therefore based on reusable evidence
@@ -834,17 +836,18 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding, warehouseR
   const comparisonMetricRoute = hintedMetricIds.has('gdp_real_growth_europe') || hintedMetricIds.has('gdp_per_capita_europe') || hintedMetricIds.has('inflation_rate_europe') || hintedMetricIds.has('employment_rate_europe') || hintedMetricIds.has('part_time_employment_rate_europe') || hintedMetricIds.has('temporary_employment_rate_europe') || hintedMetricIds.has('median_hourly_earnings_europe') || hintedMetricIds.has('housing_cost_overburden_rate_europe') || hintedMetricIds.has('youth_unemployment_rate_europe') || hintedMetricIds.has('early_school_leaving_rate_europe') || hintedMetricIds.has('tertiary_education_attainment_rate_europe') || hintedMetricIds.has('neet_rate_europe') || hintedMetricIds.has('arope_rate_europe') || hintedMetricIds.has('life_expectancy_at_birth_europe') || hintedMetricIds.has('fertility_rate_europe') || hintedMetricIds.has('unmet_healthcare_waiting_list_rate_europe') || hintedMetricIds.has('government_revenue_ratio_europe') || hintedMetricIds.has('government_current_taxes_income_wealth_europe') || hintedMetricIds.has('government_expenditure_ratio_europe') || hintedMetricIds.has('government_education_expenditure_ratio_europe') || hintedMetricIds.has('health_expenditure_per_capita_europe') || hintedMetricIds.has('median_equivalised_income_europe') || hintedMetricIds.has('old_age_survivors_benefits_per_capita_europe') || hintedMetricIds.has('social_protection_benefits_per_capita_europe') || hintedMetricIds.has('government_deficit_ratio_europe') || hintedMetricIds.has('government_debt_ratio_europe') || hintedMetricIds.has('gini_coefficient_europe') || hintedMetricIds.has('household_electricity_price_europe');
   const candidateLimit = requestsLatestObservation(query) ? 1000 : comparisonMetricRoute ? 500 : hintedMetricIds.size ? 250 : 100;
   const rawCandidates = await findWarehouseObservations(query, candidateLimit, { queryEmbedding, metricIds: hintedMetricIds, records: warehouseRecords, useProvidedRecords: Array.isArray(warehouseRecords) });
-  const candidates = rawCandidates.filter((item) => {
+  const claimScopedCandidates = filterObservationsForRequestedGroup(metricScopeText, rawCandidates);
+  const candidates = claimScopedCandidates.filter((item) => {
     if (!metricDimensionContractFits(item)) return false;
-    const explicitMetricCandidate = hintedMetricIds.has(item.metricId);
+    const explicitMetricCandidate = explicitMetricIds.has(item.metricId);
     if (item.evidenceFit === 'weak' && !explicitMetricCandidate && !(['legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length >= 3)) return false;
     // Stale observations remain available as explicitly limited context; an
     // invalid/future timestamp is never evidence.
     if (item.freshness === 'invalid') return false;
-    if (['official_publication', 'legal_document', 'legal_rule'].includes(item.kind) && item.matchedTerms?.length < Math.min(3, meaningfulTerms.length)) return false;
+    if (['official_publication', 'legal_document', 'legal_rule'].includes(item.kind) && !hasSufficientClaimTermOverlap(metricScopeText, item.matchedTerms, Math.min(3, meaningfulTerms.length))) return false;
     // A location or comparison word alone is not evidence of subject fit.
     const semanticQualified = item.semanticScore >= 0.42 && item.retrievalChannels?.includes('semantic');
-    if (!explicitMetricCandidate && subjectTerms.length && !(item.matchedTerms || []).some((term) => subjectTerms.includes(term)) && !semanticQualified) return false;
+    if (!explicitMetricCandidate && !hasSufficientClaimTermOverlap(metricScopeText, item.matchedTerms) && !semanticQualified) return false;
     // An explicit metric phrase is a stronger population contract than an
     // uncertain small-model label. For example, “alquileres” should retrieve
     // the rental series even if the compiler guessed a generic resident
@@ -876,7 +879,7 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding, warehouseR
   const preserveMetricFamilies = Array.isArray(compiler?.retrievalMetricIds) && compiler.retrievalMetricIds.length > 1;
   const familyObservations = preserveMetricFamilies
     ? [...new Set(compiler.retrievalMetricIds)].flatMap((metricId) => selectCompatibleWarehouseSeries(
-      `${query} ${metricId}`,
+      `${metricScopeText} ${metricId}`,
       compatibleCandidates.filter((item) => item.metricId === metricId),
     ).slice(-3)).slice(0, 16)
     : [];
@@ -884,9 +887,9 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding, warehouseR
     ? familyObservations
     : rankingQuery || compiler?.claimType === 'legal' || preserveGroupSeries
     ? compatibleCandidates
-    : selectCompatibleWarehouseSeries(query, compatibleCandidates);
+    : selectCompatibleWarehouseSeries(metricScopeText, compatibleCandidates);
   const source = (rankingQuery ? observations.find((item) => item.source?.title && normalise(item.source.title).includes('europa')) : null)?.source || observations.find((item) => item.source)?.source;
-  const selection = selectEvidence({ query, observations, candidateIds: compilerMetricIds, claimType: compiler?.claimType || 'descriptive' });
+  const selection = selectEvidence({ query: metricScopeText, observations, candidateIds: compilerMetricIds, claimType: compiler?.claimType || 'descriptive' });
   return { observations, source, selection };
 };
 
@@ -3071,12 +3074,16 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
   const householdArrangementContrast = hasHouseholdArrangementContrast(text);
   const meaning = measurementMeaningPlan(text);
   if (meaning) return { status: 'complete', requestId: resultRequestId, result: meaning, relatedClaims: [] };
-  const retrieveWarehouseEvidence = (query, compiler, queryEmbedding) => findWarehouseEvidence(query, { ...compiler, claimText: text }, queryEmbedding, warehouseRecords);
+  const explicitClaimMetricIds = [...metricIdsForInput(text, { ...(classified.compiler || {}), metricIds: [] })];
+  const retrieveWarehouseEvidence = (query, compiler, queryEmbedding) => findWarehouseEvidence(query, { ...compiler, claimText: text, explicitMetricIds: explicitClaimMetricIds }, queryEmbedding, warehouseRecords);
   // Preserve a canonical published answer. A short alias may express a
   // different measurement from its editorial page, so focused measurement
   // claims must not inherit an answer merely because an alias matches.
   const enrichmentIndex = await getIndex();
-  const broadPacketAvailable = broadDomainPacketsFor(text).length > 0 && !hasSpecificVacancyMeasurement(text);
+  const broadPacketCandidates = broadDomainPacketsFor(text);
+  const broadPacketAvailable = broadPacketCandidates.length > 0
+    && !hasSpecificVacancyMeasurement(text)
+    && broadPacketsCoverRequestedMetrics(broadPacketCandidates, explicitClaimMetricIds);
   if (!classified.primary && answerPlannerEnabled && !broadPacketAvailable) {
     const candidates = (classified.alternatives || []).filter((item) => item.kind === 'claim' && item.validated === true).slice(0, 4);
     if (candidates.length > 1) {
@@ -3482,7 +3489,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
   // value in a generic compound answer.
   const hasConcreteMetricEvidence = observations.some((item) => typeof item.value === 'number' && Number.isFinite(item.value));
   const broadPlanHasData = broadContextPlan?.evidenceSummary?.families?.some((family) => family.data?.length) === true;
-  if (broadContextPlan && !hasSpecificVacancyMeasurement(text)
+  if (broadPacketAvailable && broadContextPlan && !hasSpecificVacancyMeasurement(text)
     && (broadPlanHasData || (!hasConcreteMetricEvidence && !evidenceSelection.selected.length))) {
     deterministic.result = broadContextPlan;
     deterministic.status = 'complete';

@@ -1,5 +1,6 @@
-import { indexLegacyWarehouseRecordPayload, indexWarehouseRecordFiles, populationEvidenceFit, rankWarehouseObservations, recordedOffenceCategoryForQuery, selectWarehouseRecordFiles, warehouseEvidenceFit } from './warehouse-query.mjs';
+import { filterObservationsForRequestedGroup, indexLegacyWarehouseRecordPayload, indexWarehouseRecordFiles, populationEvidenceFit, rankWarehouseObservations, recordedOffenceCategoryForQuery, selectWarehouseRecordFiles, warehouseEvidenceFit } from './warehouse-query.mjs';
 import { excludedMetricIdsForQuery, metricCandidatesForQuery, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
+import { handlerForInput } from './handlers.mjs';
 import { observationMatchesAgeScope, requestedAgeScopes } from '../../src/lib/knowledge/age-scope.mjs';
 
 const records = [
@@ -389,7 +390,20 @@ const naturalLanguageTrend = rankWarehouseObservations('España tiene menos paro
   { id: 'obs-4', datasetId: 'Unemployment by sex and age', metric: undefined, value: 10.8, unit: '%', period: '2026', dimensions: { geo: 'ES' }, source: { id: 'source-eurostat', title: 'Tasa de desempleo de España · Eurostat', aliases: ['paro', 'desempleo'], url: 'https://ec.europa.eu/eurostat/' } },
 ]);
 if (naturalLanguageTrend.length !== 1 || naturalLanguageTrend[0].id !== 'obs-4') throw new Error('Warehouse query did not handle natural trend phrasing');
+const benefitGroups = [
+  { id: 'foreign-benefit-count', metricId: 'unemployment_beneficiaries_by_nationality', dimensions: { group: 'Extranjera' } },
+  { id: 'spanish-benefit-count', metricId: 'unemployment_beneficiaries_by_nationality', dimensions: { group: 'Española' } },
+  { id: 'all-benefit-count', metricId: 'unemployment_beneficiaries_by_nationality', dimensions: { group: 'Total' } },
+];
+const foreignBenefitRows = filterObservationsForRequestedGroup('¿Cuántas personas extranjeras cobran prestaciones por desempleo?', benefitGroups);
+if (foreignBenefitRows.length !== 1 || foreignBenefitRows[0].id !== 'foreign-benefit-count') throw new Error('A single-group benefit count mixed foreign and total recipients');
+const spanishBenefitRows = filterObservationsForRequestedGroup('¿Cuántas personas españolas cobran prestaciones por desempleo?', benefitGroups);
+if (spanishBenefitRows.length !== 1 || spanishBenefitRows[0].id !== 'spanish-benefit-count') throw new Error('A nearby Spanish-recipient question crossed into foreign-recipient counts');
+const benefitComparisonRows = filterObservationsForRequestedGroup('Compara beneficiarios extranjeros y españoles', benefitGroups);
+if (benefitComparisonRows.length !== benefitGroups.length) throw new Error('A multi-group comparison prematurely discarded comparison groups');
 if (!preferredMetricIdsForQuery('En España cuesta cada vez más encontrar trabajo que en Europa').has('unemployment_rate_europe')) throw new Error('Metric hints did not resolve conversational job-finding difficulty to European unemployment');
+if (handlerForInput('Número de beneficiarios extranjeros de prestaciones del paro') !== 'quantity') throw new Error('A count phrased as a noun phrase was misclassified as a group comparison');
+if (handlerForInput('¿Reciben más prestaciones los extranjeros que los españoles?') !== 'group_comparison') throw new Error('An explicit between-group claim was downgraded to a simple count');
 if (preferredMetricIdsForQuery('En España cuesta cada vez más encontrar trabajo que en Europa').has('employment_rate_europe')) throw new Error('Conversational job-finding difficulty incorrectly retained European employment as the primary metric');
 if (!preferredMetricIdsForQuery('La luz para las familias sube más que el coste de vida').has('household_electricity_price')) throw new Error('Metric hints did not resolve family electricity wording to household electricity');
 if (preferredMetricIdsForQuery('La luz para las familias sube más que el coste de vida').has('cpi_index')) throw new Error('Family electricity wording incorrectly fell through to generic CPI');

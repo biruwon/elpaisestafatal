@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import { utils, write } from 'xlsx';
 import { canSkipLocalCompilerForFocusedMeasurement, claimFocusFor, focusedMetricIdsFor, tertiaryOverqualificationCitizenshipGroupsForClaim } from '../../src/lib/knowledge/claim-focus.mjs';
 import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
-import { broadDomainPacketsFor } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
+import { broadDomainPacketsFor, broadPacketsCoverRequestedMetrics } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { answerPlanForBroadDomains } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import { needsScopedMeasurement } from '../../src/lib/knowledge/measurement-intent.mjs';
@@ -19,7 +19,8 @@ import { TOURIST_HOUSING_SNAPSHOT } from '../../src/lib/knowledge/tourist-housin
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { validateAnswerPlan } from './answer-plan-validation.mjs';
 import { alignPropositionOutcomes, comparableObservationGroups, composePropositionFindings, evidenceForProposition } from '../lib/compound-evidence.mjs';
-import { rankWarehouseObservations } from './warehouse-query.mjs';
+import { hasSufficientClaimTermOverlap, rankWarehouseObservations } from './warehouse-query.mjs';
+import { preferredMetricIdsForQuery } from './metric-query-hints.mjs';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 
 const cases = [
@@ -3131,6 +3132,21 @@ assert.equal(focusedEvidencePlan('Los salarios pierden poder adquisitivo y los t
 const revenue = { id: 'revenue', metricId: 'government_revenue_ratio', metric: 'Ingresos públicos', value: 42.9, period: '2025', unit: '% del PIB', geography: 'España' };
 assert.deepEqual(evidenceForProposition({ text: 'La recaudación aumenta' }, [revenue]), [revenue]);
 assert.deepEqual(evidenceForProposition({ text: 'Los ciudadanos no notan mejoras en los servicios públicos' }, [revenue]), [], 'A shared word cannot attach revenue to perceived service quality');
+const pensionReformClaim = 'Las reformas de pensiones suben cotizaciones porque recortar prestaciones es políticamente más difícil';
+assert.equal(hasSufficientClaimTermOverlap(pensionReformClaim, ['prestaciones']), false, 'A single broad benefits term must not attach IMV or unemployment series to a pension-reform claim');
+assert.equal(hasSufficientClaimTermOverlap(pensionReformClaim, ['prestaciones', 'cotizaciones']), true, 'Two claim-specific terms may retain directly related pension-finance context');
+assert.equal(hasSufficientClaimTermOverlap('Las prestaciones por desempleo aumentan entre los trabajadores extranjeros', ['prestaciones', 'desempleo', 'extranjeros']), true, 'A same-family benefits claim should retain its matching evidence');
+const electricityTariffClaim = 'Los impuestos, peajes y cargos hacen que la factura final se mueva de forma distinta al precio mayorista';
+assert.equal(hasSufficientClaimTermOverlap(electricityTariffClaim, ['impuestos']), false, 'A shared tax word must not attach public-finance data to a household electricity-bill claim');
+assert.equal(hasSufficientClaimTermOverlap(electricityTariffClaim, ['factura', 'mayorista']), true, 'Evidence matching both the bill and wholesale-price relationship remains eligible');
+const unemploymentBenefitCountQuery = '¿Cuántas personas extranjeras cobran prestaciones por desempleo en España?';
+const unemploymentBenefitCountMetrics = preferredMetricIdsForQuery(unemploymentBenefitCountQuery);
+assert.deepEqual([...unemploymentBenefitCountMetrics], ['unemployment_beneficiaries_by_nationality'], 'A foreign unemployment-benefit count must not route to an unemployment rate, benefit share or IMV family');
+const unemploymentBenefitPackets = broadDomainPacketsFor(unemploymentBenefitCountQuery);
+assert.equal(broadPacketsCoverRequestedMetrics(unemploymentBenefitPackets, [...unemploymentBenefitCountMetrics]), false, 'A multi-topic overview must not override a specific measure it does not contain');
+assert.equal(broadPacketsCoverRequestedMetrics([{ criteria: [{ metricIds: ['unemployment_beneficiaries_by_nationality'] }] }], [...unemploymentBenefitCountMetrics]), true, 'A reviewed broad packet may remain active when it includes the exact requested measure');
+assert.deepEqual([...preferredMetricIdsForQuery('¿Qué proporción de extranjeros que cobran el paro son beneficiarios?')], ['unemployment_benefit_share_by_nationality'], 'A recipient share must remain distinct from a recipient count');
+assert.deepEqual([...preferredMetricIdsForQuery('¿Cuántas adjudicaciones de vivienda pública hay?')], ['public_housing_allocations_by_group'], 'An explicit reviewed allocation metric should bypass an empty broad family route');
 const itemList = [{ text: 'Afirmación completa', explicit: true }, { text: 'Parte A', explicit: true }, { text: 'Parte B', explicit: true }];
 const launched = itemList.slice(1);
 const outcomes = [{ status: 'fulfilled', value: { result: { evidenceIds: ['source-A'], summary: 'A' } } }, { status: 'fulfilled', value: { result: { evidenceIds: ['source-B'], summary: 'B' } } }];

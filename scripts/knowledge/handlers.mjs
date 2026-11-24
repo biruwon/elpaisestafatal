@@ -7,11 +7,12 @@ const numericThreshold = (text) => /\b(?:mas de|menos de|supera|superan|excede|e
 const namesComparisonTarget = (text) => /\b(?:que|frente a|respecto a|comparad[oa]s? con|versus|vs\.?)\s+(?:(?:la|el|los|las|un|una)\s+)?(?:europa|ue|francia|alemania|italia|portugal|reino unido|estados unidos|inmigrantes|extranjeros|espanoles|hombres|mujeres|mayores|jubilados|jovenes|hogares|familias|otro grupo|resto|media|promedio)\b/.test(text);
 
 export const handlerForInput = (input, claimType = '') => {
-  const text = normalized([
+  const rawText = [
     typeof input === 'string' ? input : input?.original || '',
     ...(input?.retrievalHints || []),
     ...(input?.entities || []),
-  ].join(' '));
+  ].join(' ');
+  const text = normalized(rawText);
   const propositions = Array.isArray(input?.impliedPropositions)
     ? input.impliedPropositions
     : Array.isArray(input?.propositions) ? input.propositions : [];
@@ -37,6 +38,9 @@ export const handlerForInput = (input, claimType = '') => {
   if (groupLanguageSignal && includesAny(text, ['desproporcion', 'más ayudas', 'mas ayudas', 'menos ayudas', 'reciben más', 'reciben mas', 'delinquen', 'cometen delitos'])) return 'group_comparison';
   const proportionSignal = includesAny(text, ['porcentaje', 'proporcion', 'mayoria', 'minoría', 'minoria', 'de cada', 'por cada', 'uno de cada', 'mitad', 'tercio', 'cuarto', '%']);
   if (proportionSignal) return 'proportion';
+  const explicitCountRequest = /\b(?:n[uú]mero|cantidad|cifra|recuento|total)\s+de\b|\bcu[aá]nt[oa]s?\b/i.test(rawText);
+  const explicitComparisonIntent = /\b(?:frente a|versus|vs\.?|comparad[oa]s?\s+con|(?:m[aá]s|menos|mayor|menor)\s+que)\b/i.test(rawText);
+  if (explicitCountRequest && !explicitComparisonIntent) return 'quantity';
   if ((claimType === 'normative' && includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen', 'debe tener', 'deben tener'])) || includesAny(text, ['deberia', 'deberian', 'justo', 'prioridad', 'merecen'])) return 'normative';
   if (claimType === 'legal' || includesAny(text, ['ley', 'legal', 'okupa', 'okupas', 'ocupante', 'ocupacion', 'desalojo', 'desahucio', 'puede desahuciar', 'obligatorio', 'prohibido', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal_rule';
   if (claimType === 'causal' || hasCausalClaimLanguage(text) || includesAny(text, ['dispara', 'disparado', 'aumenta la', 'destruy'])) return 'causal';

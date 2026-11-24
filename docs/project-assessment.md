@@ -1412,3 +1412,37 @@ remain open text-first work. This exploratory sample is not an accuracy
 benchmark.
 
 Source: [BOE, consolidated Law 39/2015](https://www.boe.es/buscar/act.php?id=BOE-A-2015-10565&p=20261001&tn=1).
+
+## Direct text measures and subgroup scope — 24 November 2026
+
+A fresh resolver replay found that pension-reform causality wording could
+receive unrelated IMV and unemployment-benefit context, and a direct count of
+foreign unemployment-benefit recipients could be replaced by a migration,
+benefits and employment overview. That answer also mixed the foreign-recipient
+count with the all-recipient total. Text retrieval now applies the original
+claim's metric and population scope, blocks a broad packet that omits a
+requested measure, filters total rows from a single-group count, and preserves
+multiple groups when the wording asks for a comparison. Count wording in a
+noun phrase routes through the quantity handler; a share remains a separate
+metric.
+
+Live checks kept two pension-causality paraphrases free of unrelated IMV and
+unemployment figures. A household electricity claim retained the household
+price-per-kWh series, with the wholesale-price clause left unconfirmed. Two
+count phrasings resolved to the same SEPE series: 231,920 foreign recipients
+in November 2025 and 239,124 in December 2025. The separate share series was
+13.0% and 13.39% of all unemployment-benefit recipients in those months. A
+nearby question about Spanish recipients did not receive the foreign count.
+The SEPE snapshots in the local warehouse were retrieved in August 2026 and
+end in December 2025, so these answers remain limited and explicitly need an
+update; they are not current November 2026 totals. The sources measure the
+SEPE monthly definition, not every public benefit or the probability of
+receiving a benefit within either population.
+
+Warehouse-query, semantic-metric-coverage and claim-focus validators pass,
+including count/share, foreign/Spanish subgroup and rental/employment boundary
+cases. `npm run classifier:validate` passes, including the 194-case held-out
+answer benchmark and live statistical-answer integration. These checks cover
+reviewed formulations and regression boundaries; they do not establish
+accuracy for every text a user may submit. Multimodal evidence quality remains
+outside this text-first pass.

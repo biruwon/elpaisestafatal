@@ -21,6 +21,14 @@ const legacyRecordIndexCache = new Map();
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
 const stopWords = new Set(['como', 'esta', 'este', 'para', 'pero', 'que', 'sus', 'tiene', 'una', 'uno', 'en', 'el', 'la', 'los', 'las', 'un', 'del', 'de', 'y', 'o', 'a', 'por', 'con', 'segun', 'dicen', 'grupo', 'insiste', 'hay', 'todo', 'va', 'peor', 'hace', 'ano', 'anos', 'año', 'años', 'diez', 'mas', 'más', 'menos', 'cada', 'vez', 'sube', 'subido', 'baja', 'bajado', 'crece', 'creciendo', 'historico', 'historica', 'histórico', 'histórica', 'actual', 'actualmente', 'anterior', 'periodo']);
 const tokens = (value) => [...new Set(normalise(value).split(' ').filter((token) => token.length > 2 && !stopWords.has(token)))];
+const weakSubjectTerms = new Set(['espana', 'pais', 'gente', 'cosas', 'problema', 'problemas', 'europa', 'europea', 'europeo', 'nacional', 'nacionales', 'actual', 'actualidad', 'hoy']);
+export const hasSufficientClaimTermOverlap = (claim, matchedTerms = [], minimumTerms = 2) => {
+  const subjectTerms = tokens(claim).filter((token) => !weakSubjectTerms.has(token));
+  if (!subjectTerms.length) return false;
+  const matched = new Set((matchedTerms || []).map(normalise));
+  const overlap = subjectTerms.filter((token) => matched.has(token)).length;
+  return overlap >= Math.min(Math.max(1, minimumTerms), subjectTerms.length);
+};
 export const warehouseEvidenceFit = (score) => score >= 0.67 ? 'direct' : score >= 0.5 ? 'qualified' : 'weak';
 
 const recordedOffenceCategories = [
@@ -86,6 +94,22 @@ const filterForeignCitizenshipObservations = (observations) => observations.filt
   const citizenship = normalise(item.dimensionLabels?.citizen || item.dimensions?.citizen || '');
   return citizenship === 'foreign country and stateless' || citizenship === 'for stls';
 });
+
+const requestedGroupScopes = [
+  { query: /\b(?:extranj\w*|foreign\w*)\b/, keys: /^(?:group|grupo|nationality|nacionalidad|citizenship|citizen)$/, value: /^(?:for|extranj\w*|foreign\w*)$/ },
+  { query: /\b(?:(?:personas?|trabajadores?|ciudadanos?|residentes?|beneficiarios?)\s+espanol\w*|espanol\w*\s+(?:que\s+)?(?:cobran|reciben|trabajan|viven|son|tienen)|(?:que|frente a|y|o)\s+espanol\w*)\b/, keys: /^(?:group|grupo|nationality|nacionalidad|citizenship|citizen)$/, value: /(?:espanol|spanish|national)/ },
+];
+
+export const filterObservationsForRequestedGroup = (query, observations = []) => {
+  const normalized = normalise(query);
+  const requested = requestedGroupScopes.filter((scope) => scope.query.test(normalized));
+  // Keep all groups available when the claim explicitly names more than one;
+  // the answer composer can then test whether they are actually comparable.
+  if (requested.length !== 1) return observations;
+  const scope = requested[0];
+  return observations.filter((item) => Object.entries({ ...(item.dimensions || {}), ...(item.dimensionLabels || {}) })
+    .some(([key, value]) => scope.keys.test(normalise(key)) && scope.value.test(normalise(value))));
+};
 
 const filterResidentPopulationObservations = (query, observations) => {
   const text = normalise(query);
@@ -324,7 +348,7 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
   const matchesPeriod = periodScopeMatcherFor(query);
   const matchesGeography = geographyScopeMatcherFor(query);
   const matchesSex = sexScopeMatcherFor(query);
-  const scopedRecords = filterResidentPopulationObservations(query, filterForeignCitizenshipObservations(filterForeignBornObservations((metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records)))).filter((record) => matchesAge(record) && matchesPeriod(record) && matchesGeography(record) && matchesSex(record) && tertiaryOverqualificationCitizenshipFitsClaim(query, record)).filter((record) => {
+  const scopedRecords = filterObservationsForRequestedGroup(query, filterResidentPopulationObservations(query, filterForeignCitizenshipObservations(filterForeignBornObservations((metricIds?.size ? records.filter((record) => metricIds.has(record.metricId)) : records))))).filter((record) => matchesAge(record) && matchesPeriod(record) && matchesGeography(record) && matchesSex(record) && tertiaryOverqualificationCitizenshipFitsClaim(query, record)).filter((record) => {
     if (record.metricId !== 'recorded_offences') return true;
     const category = recordedOffenceCategoryForQuery(query);
     if (!category) return false;

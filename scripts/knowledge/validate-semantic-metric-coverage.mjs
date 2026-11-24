@@ -84,6 +84,8 @@ const cases = [
   ['¿Qué residentes adultos forman el denominador de la cobertura del ingreso mínimo vital?', 'imv_comparable_population_by_nationality'],
   ['¿Cuál es la edad media de las personas beneficiarias del IMV?', 'imv_beneficiary_average_age'],
   ['¿Qué tasa de desempleo tienen las personas de nacionalidad extranjera?', 'unemployment_rate_by_nationality'],
+  ['¿Cuántas personas extranjeras cobran prestaciones por desempleo en España?', 'unemployment_beneficiaries_by_nationality'],
+  ['Número de beneficiarios extranjeros de prestaciones del paro', 'unemployment_beneficiaries_by_nationality'],
   ['¿Qué parte de todas las personas que reciben prestaciones por desempleo es extranjera?', 'unemployment_benefit_share_by_nationality'],
   ['¿Cuántos adultos reciben una condena firme según su nacionalidad?', 'crime_convictions_by_nationality'],
   ['¿Cuál es la tasa de condenados por cada mil residentes adultos según nacionalidad?', 'crime_conviction_rate_by_nationality'],
@@ -158,6 +160,15 @@ if (preferredMetricIdsForQuery(sexSpecificUnemployment).size
 const unemploymentRateAndCount = '¿Cuál es la tasa de desempleo y cuántas personas no tienen empleo?';
 if (!preferredMetricIdsForQuery(unemploymentRateAndCount).has('unemployment_rate')) {
   throw new Error('Vacancy-specific rate/count ambiguity must not suppress unemployment routing');
+}
+const unemploymentBenefitCount = preferredMetricIdsForQuery('¿Cuántas personas extranjeras cobran prestaciones por desempleo en España?');
+if (!unemploymentBenefitCount.has('unemployment_beneficiaries_by_nationality')
+  || ['unemployment_rate', 'unemployment_benefit_share_by_nationality', 'benefit_recipients_by_group', 'imv_title_holders_by_nationality'].some((id) => unemploymentBenefitCount.has(id))) {
+  throw new Error(`A count of foreign unemployment-benefit recipients crossed into a rate, share, or IMV family: ${[...unemploymentBenefitCount].join(', ')}`);
+}
+const unemploymentBenefitShare = preferredMetricIdsForQuery('¿Qué proporción de extranjeros que cobran el paro son beneficiarios?');
+if (!unemploymentBenefitShare.has('unemployment_benefit_share_by_nationality') || unemploymentBenefitShare.has('unemployment_beneficiaries_by_nationality')) {
+  throw new Error(`A recipient-share question did not remain distinct from a recipient count: ${[...unemploymentBenefitShare].join(', ')}`);
 }
 const pensionNearNeighbors = [
   ['¿Qué déficit proyecta AIReF para el sistema público de pensiones?', 'pension_system_balance_projected', 'pension_system_expenditure_projected'],

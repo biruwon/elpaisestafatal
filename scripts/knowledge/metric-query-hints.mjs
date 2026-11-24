@@ -426,6 +426,20 @@ export const preferredMetricIdsForQuery = (query) => {
   const focused = focusedMetricIdsFor(query);
   const normalized = normalise(query);
   if (focused) {
+    // A focused narrative family can deliberately have no direct metrics.
+    // If the user then names a reviewed metric alias explicitly, let that
+    // measurement request use its own series instead of inheriting the empty
+    // family route.
+    if (!focused.size) {
+      const explicitlyNamedMetricIds = constrainMetricIdsToQueryScope(query, registryMetricIdsForQuery(normalized));
+      if (!explicitlyNamedMetricIds.size) return focused;
+      if (hasHousingContextWithoutEmployment(normalized)) {
+        explicitlyNamedMetricIds.delete('temporary_employment_rate');
+        explicitlyNamedMetricIds.delete('temporary_employment_rate_europe');
+        if (claimFocusFor(query)?.id === 'rental-regulation-contract-shift') explicitlyNamedMetricIds.add('rental_price_index');
+      }
+      return explicitlyNamedMetricIds;
+    }
     if (!hasHousingContextWithoutEmployment(normalized)) return constrainMetricIdsToQueryScope(query, focused);
     const scoped = new Set(focused);
     scoped.delete('temporary_employment_rate');
@@ -806,6 +820,8 @@ export const preferredMetricIdsForQuery = (query) => {
     } else {
       preferScopedMetric('unemployment_rate_by_nationality', ['unemployment_rate', 'youth_unemployment_rate', 'unemployment_beneficiaries_by_nationality']);
     }
+  } else if (foreignGroup && hasAny('paro', 'desempleo') && hasAny('beneficiario', 'beneficiarios', 'cobra', 'cobran', 'prestacion', 'prestaciones', 'ayuda', 'ayudas')) {
+    preferScopedMetric('unemployment_beneficiaries_by_nationality', ['unemployment_rate', 'unemployment_rate_by_nationality', 'unemployment_benefit_share_by_nationality', 'imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality', 'benefit_recipients_by_group']);
   }
   if (foreignGroup && hasAny('condena', 'condenas', 'condenado', 'condenados', 'sentencia firme')) {
     if (hasAny('tasa', 'por cada', 'por mil', 'por 1.000')) {

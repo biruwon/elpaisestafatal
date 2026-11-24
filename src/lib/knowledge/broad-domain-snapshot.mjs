@@ -890,6 +890,13 @@ export const broadMetricIdsFor = (text) => new Set(
   broadDomainPacketsFor(text).flatMap((packet) => packet.criteria.flatMap((criterion) => criterion.metricIds || [])),
 );
 
+export const broadPacketsCoverRequestedMetrics = (packets, requestedMetricIds = []) => {
+  const requested = [...new Set(requestedMetricIds || [])];
+  if (!requested.length) return true;
+  const packetMetrics = new Set((packets || []).flatMap((packet) => (packet.criteria || []).flatMap((criterion) => criterion.metricIds || [])));
+  return requested.every((metricId) => packetMetrics.has(metricId));
+};
+
 const formatObservation = (observation, fallbackUnit) => {
   const rawUnit = observation.displayUnit || observation.unit || fallbackUnit || '';
   const value = typeof observation.value === 'number' ? new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2, minimumFractionDigits: /euro|millones|€/i.test(rawUnit) ? 2 : 0 }).format(observation.value) : String(observation.value || '').trim();
