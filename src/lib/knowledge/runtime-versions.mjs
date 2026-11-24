@@ -5,7 +5,7 @@ export const RUNTIME_VERSIONS = Object.freeze({
   evidencePacketSchema: '1',
   compilerContract: '2',
   knowledge: '2026-08-04.2',
-  fallbackKnowledge: 'deterministic-fallback-64-fixed-discontinuous-status-2026-11',
-  warehouseKnowledge: 'warehouse-2026-11-24.28-fixed-discontinuous-status',
+  fallbackKnowledge: 'deterministic-fallback-66-price-wage-eu-and-living-standard-2026-11',
+  warehouseKnowledge: 'warehouse-2026-11-24.30-price-wage-eu-and-living-standard',
   indexKnowledge: 'index-only-2026-08-05.9',
 });

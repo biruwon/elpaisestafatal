@@ -40,7 +40,8 @@ const cases = [
   ['education-socioeconomic-performance', ['El rendimiento escolar depende demasiado de los recursos económicos de la familia', 'Las notas del alumnado están relacionadas con el nivel socioeconómico de sus hogares', 'El origen social condiciona los resultados académicos en ciencias', 'Los estudiantes de familias de bajos ingresos sacan peores notas']],
   ['job-opportunities', ['No hay trabajo', 'Aquí hay pocas ofertas de empleo', 'Es difícil encontrar trabajo en España', 'Los jóvenes no encuentran empleo', 'Empleo no hay', 'No hay empleo temporal', 'Hay pocos trabajos bien pagados']],
   ['working-poverty', ['En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes', 'Tener trabajo a tiempo completo no impide ser pobre', 'La pobreza también alcanza a personas ocupadas']],
-  ['real-wages', ['Los salarios pierden poder adquisitivo frente al coste de la vida', 'Los sueldos no siguen el ritmo de los precios', 'La inflación se come la nómina']],
+  ['price-wage-european-convergence', ['El coste de vida español se ha acercado al de países más ricos sin que los salarios hayan convergido igual', 'Los precios en España ya se parecen a los de Europa, pero los sueldos siguen sin alcanzar a los europeos', 'España tiene precios como países ricos, pero los salarios no han convergido']],
+  ['real-wages', ['Los salarios pierden poder adquisitivo frente al coste de la vida', 'Los sueldos no siguen el ritmo de los precios', 'La inflación se come la nómina', 'Un sueldo considerado bueno hace pocos años ya no permite el mismo nivel de vida', 'Lo que antes era un buen salario ya no da para mantener el mismo nivel de vida']],
   ['wage-price-margin-pass-through', ['Subir mucho los salarios de hostelería obligaría a subir precios o reducir márgenes en muchos negocios', 'Un aumento de sueldo en las empresas se acaba trasladando a los precios o reduce sus márgenes', 'Si suben los salarios, los negocios tienen que encarecer sus productos o ganar menos']],
   ['food-chain-price-spread', [
     'Los agricultores reciben precios demasiado bajos en origen comparados con el precio final de los alimentos',
@@ -2659,7 +2660,72 @@ for (const paraphrase of [
   assert.deepEqual(plan.answerScope.contextMetrics, []);
   assert.equal(plan.sourceLinks.length, 0);
 }
+const europeanPriceWageClaims = [
+  'El coste de vida español se ha acercado al de países más ricos sin que los salarios hayan convergido igual',
+  'Los precios en España ya se parecen a los de Europa, pero los sueldos siguen sin alcanzar a los europeos',
+  'España tiene precios como países ricos, pero los salarios no han convergido',
+];
+let europeanPriceWageSources;
+for (const claim of europeanPriceWageClaims) {
+  assert.equal(claimFocusFor(claim)?.id, 'price-wage-european-convergence', `A price/wage convergence paraphrase changed family: ${claim}`);
+  const plan = focusedEvidencePlan(claim, { observations: [], now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.equal(plan.answerScope.family, 'price-wage-european-convergence');
+  assert.equal(plan.claimType, 'comparative');
+  assert.deepEqual(plan.answerScope.directMetrics, [], 'A broad convergence claim must not receive a direct numeric metric');
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  assert.equal(plan.evidenceLevel, 'limited', 'Official EU comparison data should provide scoped context');
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  assert.deepEqual(sourceIds, [
+    'eurostat-household-price-levels-eu-2026-11-24',
+    'eurostat-median-hourly-earnings-spain-eu-2026-11-24',
+    'eurostat-ppp-price-level-time-comparison-methodology-2026-11-24',
+  ]);
+  if (europeanPriceWageSources) assert.deepEqual(sourceIds, europeanPriceWageSources, 'Paraphrases must reuse the same matched comparison data');
+  europeanPriceWageSources = sourceIds;
+  assert.match(plan.shareableReply, /99,7 en 2010 y 93,8 en 2022/);
+  assert.match(plan.shareableReply, /Espa[nñ]a 11,02 €, UE-27 14,91 €/);
+  assert.match(plan.shareableReply, /79,6 % en 2010 a 73,9 % en 2022/);
+  assert.match(plan.shareableReply, /no mide de forma fiable la evoluci[oó]n de los precios/);
+  assert.match(plan.shareableReply, /no representa a todos los pa[ií]ses m[aá]s ricos/);
+  assert.ok(plan.shareableReply.trim().split(/\s+/).length <= 155, 'The cross-country comparison should remain digestible');
+  const response = localPublicCheckResponse({ status: 'partial', requestId: 'price-wage-eu-convergence', result: plan }, claim);
+  assert.equal(response.state, 'insufficient', 'A selected EU benchmark cannot settle unspecified richer countries or cost-of-living scopes');
+  assert.deepEqual(response.result.sources.map((source) => source.id), sourceIds);
+  assert.deepEqual(response.result.arguments[0].verdict, 'insufficient');
+}
+for (const neighbour of [
+  'Los precios de las grandes ciudades son europeos, pero los salarios siguen siendo españoles',
+  'Los salarios españoles pierden poder adquisitivo frente al coste de la vida',
+  'Los precios en España suben más rápido que en Europa',
+  'España cobra menos por hora que Europa',
+]) {
+  assert.notEqual(claimFocusFor(neighbour)?.id, 'price-wage-european-convergence', `A neighbouring claim crossed into price/wage convergence: ${neighbour}`);
+  const plan = focusedEvidencePlan(neighbour, { observations: [], now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.ok(!plan?.sourceLinks?.some((source) => europeanPriceWageSources.includes(source.id)), `Price/wage convergence sources were attached to an incompatible claim: ${neighbour}`);
+}
 assert.equal(claimFocusFor('Los salarios españoles pierden poder adquisitivo frente al coste de la vida')?.id, 'real-wages', 'Purchasing-power claims must keep the aligned wage and price series');
+const goodSalaryClaims = [
+  'Un sueldo considerado bueno hace pocos años ya no permite el mismo nivel de vida',
+  'Lo que antes era un buen salario ya no da para mantener el mismo nivel de vida',
+];
+let goodSalarySources;
+for (const claim of goodSalaryClaims) {
+  const plan = focusedEvidencePlan(claim, { observations: [], now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.equal(claimFocusFor(claim)?.id, 'real-wages');
+  assert.equal(plan.answerScope.family, 'real-wages');
+  assert.deepEqual(plan.answerScope.directMetrics, [], 'An undefined good-salary threshold must not receive a direct numerical verdict');
+  assert.deepEqual(plan.sourceLinks, [], 'No compatible wage and price observations were supplied');
+  assert.equal(plan.evidenceLevel, 'insufficient');
+  assert.match(plan.shareableReply, /qu[eé] importe o criterio define un sueldo/);
+  assert.match(plan.shareableReply, /fechas concretas de inicio y fin/);
+  assert.match(plan.shareableReply, /tipo de salario \(bruto o neto\), la jornada y una poblaci[oó]n comparable/);
+  if (goodSalarySources) assert.deepEqual(plan.sourceLinks.map((source) => source.id), goodSalarySources);
+  goodSalarySources = plan.sourceLinks.map((source) => source.id);
+}
+for (const neighbour of [
+  'Los ingresos medianos equivalentes de los hogares españoles bajaron',
+  'El alquiler de Madrid consume más ingresos que hace diez años',
+]) assert.notEqual(claimFocusFor(neighbour)?.id, 'real-wages', `A household-income or rent claim entered the real-wage family: ${neighbour}`);
 assert.equal(claimFocusFor('Los sueldos turísticos son más bajos que en las industrias más productivas')?.id, 'sector-wage-comparison', 'A sector wage comparison must not become a wage price pass-through claim');
 assert.equal(focusedEvidencePlan('Los salarios pierden poder adquisitivo y los trenes se retrasan', { propositions: [{ text: 'Los salarios pierden poder adquisitivo' }, { text: 'Los trenes se retrasan' }] }), undefined, 'A compound claim must not silently lose its second proposition');
 const revenue = { id: 'revenue', metricId: 'government_revenue_ratio', metric: 'Ingresos públicos', value: 42.9, period: '2025', unit: '% del PIB', geography: 'España' };

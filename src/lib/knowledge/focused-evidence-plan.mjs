@@ -677,8 +677,13 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     const sameRealWageComparison = focus.id === 'real-wages'
       && propositions.length <= 3 && propositions.length >= 2
       && propositions.some((proposition) => /\b(?:salari\w*|sueld\w*|nomina\w*|remuner\w*)\b/.test(normalize(proposition.text)))
-      && propositions.some((proposition) => /\b(?:poder adquisitivo|poder de compra|inflacion|precios|coste de la vida)\b/.test(normalize(proposition.text)))
-      && propositions.every((proposition) => /\b(?:salari\w*|sueld\w*|nomina\w*|remuner\w*|poder adquisitivo|poder de compra|inflacion|precios|coste de la vida)\b/.test(normalize(proposition.text)));
+      && propositions.some((proposition) => /\b(?:poder adquisitivo|poder de compra|nivel de vida|inflacion|precios|coste de la vida)\b/.test(normalize(proposition.text)))
+      && propositions.every((proposition) => /\b(?:salari\w*|sueld\w*|nomina\w*|remuner\w*|poder adquisitivo|poder de compra|nivel de vida|inflacion|precios|coste de la vida)\b/.test(normalize(proposition.text)));
+    const sameEuropeanPriceWageConvergence = focus.id === 'price-wage-european-convergence'
+      && propositions.length <= 3 && propositions.length >= 2
+      && propositions.some((proposition) => /\b(?:precios?|coste de la vida|nivel de precios)\b/.test(normalize(proposition.text)))
+      && propositions.some((proposition) => /\b(?:salari\w*|sueld\w*|nomina\w*|remuner\w*)\b/.test(normalize(proposition.text)))
+      && propositions.every((proposition) => /\b(?:precios?|coste de la vida|nivel de precios|salari\w*|sueld\w*|nomina\w*|remuner\w*)\b/.test(normalize(proposition.text)));
     const sameHicpBasketComparison = focus.id === 'household-inflation-basket'
       && propositions.length <= 3 && propositions.length >= 2
       && propositions.every((proposition) => /\b(?:ipc|hicp|inflacion\w*|precios? de consumo|aliment\w*|comid\w*|supermercad\w*|alquil\w*|arrendam\w*|viviend\w*|hogar\w*|familia\w*|cesta\w*)\b/.test(normalize(proposition.text)))
@@ -720,6 +725,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       });
     if (sameSectorOutput || sameGdpComparison && (gdpAggregateClause || gdpPerPersonClause)
       || sameRealWageComparison
+      || sameEuropeanPriceWageConvergence
       || sameHicpBasketComparison
       || sameProductivityComparison && /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(clauseText)) return true;
     if (sameLandlordMotive) return true;

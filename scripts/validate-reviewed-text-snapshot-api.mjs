@@ -183,6 +183,27 @@ assert.equal(fixedDiscontinuousParaphrase.body.result.answerScope.family, fixedD
 assert.deepEqual(fixedDiscontinuousParaphrase.body.result.sources.map((source) => source.id), fixedDiscontinuous.body.result.sources.map((source) => source.id));
 assert.match(fixedDiscontinuousParaphrase.body.result.reply, /microdatos EPA por semana/);
 
+const priceWageConvergenceClaim = 'El coste de vida español se ha acercado al de países más ricos sin que los salarios hayan convergido igual';
+const priceWageConvergence = await check(priceWageConvergenceClaim);
+assert.equal(priceWageConvergence.body.state, 'insufficient');
+assert.equal(priceWageConvergence.body.result.answerScope.family, 'price-wage-european-convergence');
+assert.deepEqual(priceWageConvergence.body.result.answerScope.directMetrics, []);
+assert.equal(priceWageConvergence.body.result.arguments[0].verdict, 'insufficient');
+assert.match(priceWageConvergence.body.result.reply, /99,7 en 2010 y 93,8 en 2022/);
+assert.match(priceWageConvergence.body.result.reply, /Espa[nñ]a 11,02 €, UE-27 14,91 €/);
+assert.match(priceWageConvergence.body.result.reply, /79,6 % en 2010 a 73,9 % en 2022/);
+assert.match(priceWageConvergence.body.result.reply, /no mide de forma fiable la evoluci[oó]n de los precios/);
+assert.deepEqual(priceWageConvergence.body.result.sources.map((source) => source.id), [
+  'eurostat-household-price-levels-eu-2026-11-24',
+  'eurostat-median-hourly-earnings-spain-eu-2026-11-24',
+  'eurostat-ppp-price-level-time-comparison-methodology-2026-11-24',
+]);
+const priceWageConvergenceParaphrase = await check('Los precios en España ya se parecen a los de Europa, pero los sueldos siguen sin alcanzar a los europeos');
+assert.equal(priceWageConvergenceParaphrase.body.state, priceWageConvergence.body.state);
+assert.equal(priceWageConvergenceParaphrase.body.result.answerScope.family, priceWageConvergence.body.result.answerScope.family);
+assert.deepEqual(priceWageConvergenceParaphrase.body.result.sources.map((source) => source.id), priceWageConvergence.body.result.sources.map((source) => source.id));
+assert.match(priceWageConvergenceParaphrase.body.result.reply, /no representa a todos los pa[ií]ses m[aá]s ricos/);
+
 const educationPayQueries = [
   'Los sueldos de muchos trabajos cualificados son demasiado parecidos a los de puestos que exigen mucha menos formación',
   'Tener un máster o un doctorado no garantiza un salario acorde con la cualificación',

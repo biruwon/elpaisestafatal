@@ -11,11 +11,18 @@ import { HOUSEHOLD_BUDGET_SNAPSHOT, HOUSEHOLD_SAVING_SNAPSHOT } from './househol
 import { FOOD_CHAIN_PRICE_SPREAD_EVIDENCE } from './food-chain-price-spread-snapshot.mjs';
 import { ENERGY_PRICE_PASS_THROUGH_EVIDENCE } from './energy-price-pass-through-snapshot.mjs';
 import { FIXED_DISCONTINUOUS_STATUS_EVIDENCE } from './fixed-discontinuous-snapshot.mjs';
+import { EUROPEAN_PRICE_WAGE_CONVERGENCE_EVIDENCE } from './european-price-wage-convergence-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
 const has = (text, expression) => expression.test(text);
 const wages = /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|cobr\w*|pagan?)\b/;
+const europeanPriceWageConvergence = (t) => /\b(espana|espanol\w*)\b/.test(t)
+  && /\b(precios?|coste de (?:la )?vida|nivel de precios)\b/.test(t)
+  && wages.test(t)
+  && /\b(europ\w*|union europea|ue|paises? (?:mas )?ricos?|economias? (?:mas )?ricas?)\b/.test(t)
+  && /\b(acerc\w*|converg\w*|equipar\w*|parec\w*|igual\w*|brecha\w*|lejos)\b/.test(t)
+  && !/\b(ciudad\w*|municipio\w*|barri\w*|provincia\w*|alquil\w*|viviend\w*|casas?|pisos?)\b/.test(t);
 const rents = /\b(alquil\w*|arrendam\w*|inquilin\w*|renta mensual)\b/;
 const householdInflationBasketComparison = (t) => /\b(ipc|hicp|inflacion\w*|precios? de consumo|indice general(?: de precios)?)\b/.test(t)
   && /\b(aliment\w*|comid\w*|supermercad\w*|cesta de la compra)\b/.test(t)
@@ -1810,11 +1817,40 @@ const focuses = [
     limitation: 'La tasa de ahorro agregada puede cambiar aunque algunos grupos ahorren más y otros menos. El quintil de gasto de la EPF no equivale a un quintil de ingresos, y estos datos no aíslan hogares de renta media o con dos personas perceptoras.',
   },
   {
+    id: 'price-wage-european-convergence', label: 'niveles de precios y salarios frente a la Unión Europea',
+    when: europeanPriceWageConvergence,
+    direct: [], context: [], claimType: 'comparative',
+    needsForClaim: () => [
+      'países de referencia concretos y el mismo periodo para comparar precios y salarios',
+      'nivel de precios de una cesta definida y salarios brutos o netos para una población comparable',
+      'datos de vivienda y salarios locales si la afirmación se refiere a ciudades o al alquiler',
+    ],
+    explanationHeadline: 'Los indicadores disponibles comparan España con la media de la UE-27',
+    explanation: 'El nivel general de precios y la mediana salarial son medidas distintas. La UE-27 sirve como referente concreto, pero no representa a todos los países de mayor renta ni mide el coste de vida de cada hogar o ciudad.',
+    explanationEvidence: EUROPEAN_PRICE_WAGE_CONVERGENCE_EVIDENCE,
+    shareableReplyForContext: ({ facts }) => [
+      facts[0],
+      facts[1],
+      facts[2],
+      'La mediana salarial española perdió terreno frente a la UE-27; el índice de precios no establece una tendencia fiable. La UE-27 no representa a todos los países más ricos. La comparación requiere países, cesta, fechas y salarios comparables.',
+    ].filter(Boolean).join('\n\n'),
+    limitation: 'El índice de precios cubre el consumo final de los hogares a escala nacional; no mide los precios de cada ciudad, el alquiler ni el gasto de una familia concreta. La mediana salarial es bruta, cubre empresas con diez o más personas y llega hasta 2022; no es salario neto ni representa a todos los trabajadores. «Países más ricos» no define un grupo comparable.',
+  },
+  {
     id: 'real-wages', label: 'salarios y poder adquisitivo',
-    when: (t) => has(t, wages) && /\b(poder (?:adquisitivo|de compra)|inflacion|coste de (?:la )?vida|precios|salari\w* real(?:es)?|perdi\w* poder)\b/.test(t)
+    when: (t) => has(t, wages) && /\b(poder (?:adquisitivo|de compra)|nivel de vida|inflacion|coste de (?:la )?vida|precios|salari\w* real(?:es)?|perdi\w* poder)\b/.test(t)
       && !/\b(?:caus\w*|provoc\w*|gener\w*|traslad\w*|oblig\w*)\b/.test(t),
     direct: [], context: ['annual_hourly_wage_index', 'annual_hicp_index', 'median_hourly_earnings', 'cpi_index'],
-    needs: ['una serie salarial y una de precios con las mismas fechas', 'salario bruto o neto y población', 'cambio acumulado descontando inflación'],
+    needsForClaim: (claim) => {
+      const text = normalize(claim);
+      return [
+        ...(/\b(buen\w*|considerad\w* buen\w*)\b/.test(text) ? ['qué importe o criterio define un sueldo «bueno»'] : []),
+        ...(/\b(antes|hace pocos anos|hace unos anos|anos atras|hace anos)\b/.test(text) ? ['un periodo expresado con fechas concretas de inicio y fin'] : []),
+        'una serie salarial y otra de precios con las mismas fechas',
+        'el tipo de salario (bruto o neto), la jornada y una población comparable',
+        'el cambio acumulado descontando la inflación',
+      ];
+    },
     explanation: 'El poder adquisitivo cambia según cuánto sube el salario respecto a los precios. Hay que comparar ambas series entre las mismas fechas.',
     limitation: 'Un salario nominal o un IPC aislado no demuestra una pérdida salarial real. Tampoco la temporalidad o la cuña fiscal responden a esa comparación.',
   },

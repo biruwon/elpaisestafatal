@@ -1238,18 +1238,39 @@ labelled by attained education, not job requirements. Paraphrases share a
 family only when their population and territory are compatible; nearby city
 claims keep the national snapshot out.
 
-The held-out benchmark now passes 91/91 cases across 25 paraphrase groups,
+For a broad Spain–Europe price-and-wage comparison, the fallback now supplies
+Eurostat context but keeps the overall verdict insufficient. Spain's household
+consumption price-level index was 99.7 in 2010 and 93.8 in 2022 (EU-27 = 100),
+but Eurostat says changes in these indices over time are only indicative and
+are not a reliable measure of price changes. Median gross hourly earnings in
+Spain fell from 79.6% to 73.9% of the EU-27 median between 2010 and 2022. This
+earnings sample covers both sexes at enterprises with at least ten employees,
+excludes apprentices and agriculture, forestry, fishing and public
+administration, and does not represent every worker. The EU average also does
+not identify which richer countries the original claim means. Sources:
+[Eurostat household price levels](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_ppp_ind_1?freq=A&indic_ppp=PLI_EU27_2020&ppp_cat18=E011&geo=ES&sinceTimePeriod=2010),
+[Eurostat median earnings](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses_pub2s?geo=ES&geo=EU27_2020&sizeclas=GE10&sex=T&unit=EUR&sinceTimePeriod=2010), and
+[Eurostat guidance on comparing price levels over time](https://ec.europa.eu/eurostat/web/purchasing-power-parities/information-data).
+
+A related claim that a formerly “good” salary no longer supports the same
+standard of living now follows the real-wage interpretation. Because the salary
+threshold and comparison years are vague, the fallback asks for those details
+and for gross or net pay and a comparable population; it does not substitute
+household median income or invent a trend.
+
+The held-out benchmark now passes 105/105 cases across 32 paraphrase groups,
 checking verdict, source links, evidence values, scope, concise answers and
-public traceability. The full claim-focus suite covers 271 paraphrase and
+public traceability. The full claim-focus suite covers 287 paraphrase and
 boundary checks. These are reviewed regressions, not a guarantee about every
 possible submission or a population-wide accuracy estimate.
 
 On the 300-item web-observed discovery corpus, the deterministic fallback
-returns 7 complete, 65 limited and 228 uncovered responses. A metric or family
-route exists for 157 claims; 143 have neither. Public results are 267
-insufficient and 33 limited, 72 attach a consultable source, and none contains
-an untraceable non-insufficient argument. No copyable answer in this run
-exceeds 160 words. The inputs remain explicitly unverified, so these counts
-measure routing, source attachment and reply length—not truth or factual
-accuracy. Unsupported and city-specific claims continue to receive evidence
-gaps rather than adjacent national figures.
+returns 7 complete, 71 limited and 222 uncovered responses. A metric or family
+route exists for 159 claims (71 metric matches and 135 family matches, with 47
+overlapping); 141 have neither. Public results are 268 insufficient and 32
+limited; 78 attach a consultable source, and none contains an untraceable
+non-insufficient argument. No copyable answer in this run exceeds 160 words.
+The inputs remain explicitly unverified, so these counts measure routing,
+source attachment and reply length—not truth or factual accuracy. Unsupported
+and city-specific claims continue to receive evidence gaps rather than adjacent
+national figures.

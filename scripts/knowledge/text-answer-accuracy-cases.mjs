@@ -650,6 +650,52 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'cost-of-living-and-wage-eu-convergence',
+    equivalenceGroup: 'cost-of-living-and-wage-eu-convergence-spain-2010-2022',
+    input: 'El coste de vida español se ha acercado al de países más ricos sin que los salarios hayan convergido igual',
+    expected: {
+      state: 'insufficient', family: 'price-wage-european-convergence', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['99,7 en 2010 y 93,8 en 2022', 'España 11,02 €, UE-27 14,91 €', '79,6 % en 2010 a 73,9 % en 2022', 'no mide de forma fiable la evolución de los precios', 'no representa a todos los países más ricos', 'empresas con al menos 10 empleados'],
+      replyExcludes: ['los precios españoles se acercaron a los de todos los países ricos', 'salarios netos', 'precios de alquileres en Madrid'],
+      evidence: [
+        { familyId: 'price-wage-european-convergence', sourceIds: ['eurostat-household-price-levels-eu-2026-11-24'], dataIncludes: ['99,7 en 2010', '93,8 en 2022'], dimensions: { period: '2010 y 2022', geography: 'España; media de la UE-27 fijada en 100 cada año', denominator: 'índice comparativo de nivel de precios, UE-27=100', unit: 'índice de nivel de precios' } },
+        { familyId: 'price-wage-european-convergence', sourceIds: ['eurostat-median-hourly-earnings-spain-eu-2026-11-24'], dataIncludes: ['España 11,02 €, UE-27 14,91 €', '79,6 % en 2010 a 73,9 % en 2022'], dimensions: { population: 'personas empleadas de ambos sexos, sin aprendices, en empresas de diez o más personas de los sectores B-S salvo agricultura, silvicultura, pesca y administración pública', period: '2010 y 2022; encuesta estructural con observaciones cada cuatro años', geography: 'España y UE-27', unit: 'euros brutos por hora; no ajustados por precios' } },
+        { familyId: 'price-wage-european-convergence', sourceIds: ['eurostat-ppp-price-level-time-comparison-methodology-2026-11-24'], dataIncludes: ['comparan países en un momento dado', 'no mide de forma fiable la evolución de los precios'], dimensions: { subject: 'interpretación temporal de los índices de nivel de precios basados en PPA', period: 'metodología consultada el 24/11/2026', unit: 'límite metodológico; no una observación numérica' } },
+      ],
+      maxReplyWords: 155,
+    },
+  },
+  {
+    id: 'cost-of-living-and-wage-eu-convergence-paraphrase',
+    equivalenceGroup: 'cost-of-living-and-wage-eu-convergence-spain-2010-2022',
+    input: 'Los precios en España ya se parecen a los de Europa, pero los sueldos siguen sin alcanzar a los europeos',
+    expected: {
+      state: 'insufficient', family: 'price-wage-european-convergence', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['99,7 en 2010 y 93,8 en 2022', 'España 11,02 €, UE-27 14,91 €', '79,6 % en 2010 a 73,9 % en 2022', 'no mide de forma fiable la evolución de los precios', 'no representa a todos los países más ricos'],
+      replyExcludes: ['los precios españoles se acercaron a los de todos los países ricos'], evidence: [], maxReplyWords: 155,
+    },
+  },
+  {
+    id: 'good-salary-and-living-standard',
+    equivalenceGroup: 'good-salary-and-living-standard-period-and-benchmark',
+    input: 'Un sueldo considerado bueno hace pocos años ya no permite el mismo nivel de vida',
+    expected: {
+      state: 'insufficient', family: 'real-wages', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['no se puede confirmar ni descartar', 'qué importe o criterio define un sueldo', 'fechas concretas de inicio y fin', 'tipo de salario (bruto o neto), la jornada y una población comparable'],
+      replyExcludes: ['la renta mediana de los hogares demuestra'], evidence: [], maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'good-salary-and-living-standard-paraphrase',
+    equivalenceGroup: 'good-salary-and-living-standard-period-and-benchmark',
+    input: 'Lo que antes era un buen salario ya no da para mantener el mismo nivel de vida',
+    expected: {
+      state: 'insufficient', family: 'real-wages', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['no se puede confirmar ni descartar', 'fechas concretas de inicio y fin', 'tipo de salario (bruto o neto), la jornada y una población comparable'],
+      replyExcludes: ['la renta mediana de los hogares demuestra'], evidence: [], maxReplyWords: 150,
+    },
+  },
+  {
     id: 'nominal-wages-and-purchasing-power-claim',
     equivalenceGroup: 'nominal-wages-and-purchasing-power-spain-2020-2025',
     input: 'Los salarios nominales han subido pero no lo suficiente para recuperar todo el poder adquisitivo perdido',
