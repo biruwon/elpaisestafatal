@@ -2553,8 +2553,92 @@ export const textAnswerAccuracyCases = [
     id: 'public-digital-access-duplicate-document-neighbour',
     input: 'Las administraciones piden por internet documentos que otras administraciones ya tienen',
     expected: {
-      state: 'insufficient', family: undefined, verdict: 'insufficient', directSourceIds: [],
-      replyExcludes: ['6,5 %', '73,3 %', '55,9 %'], evidence: [], maxReplyWords: 120,
+      state: 'insufficient', family: 'public-document-reuse', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['Ley 39/2015', 'art. 28.2', 'derecho a no aportar', 'no mide con qué frecuencia', 'práctica'],
+      replyExcludes: ['6,5 %', '73,3 %', '55,9 %'],
+      evidence: [{
+        familyId: 'public-document-reuse', sourceIds: ['boe-law-39-2015-art28-document-reuse'],
+        dataIncludes: ['Ley 39/2015', 'derecho a no aportar', 'procedimientos sancionadores'],
+        dimensions: { period: 'texto consolidado consultado el 01-10-2026', geography: 'España', denominator: 'no recuento de solicitudes ni de incumplimientos', unit: 'derechos, deberes y excepciones legales' },
+      }],
+      maxReplyWords: 130,
+    },
+  },
+  {
+    id: 'public-document-reuse-practice-paraphrase',
+    equivalenceGroup: 'public-document-reuse-practice-vs-law',
+    input: 'A veces las administraciones vuelven a pedir papeles que otra administración ya tiene',
+    expected: {
+      state: 'insufficient', family: 'public-document-reuse', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['Ley 39/2015', 'no mide con qué frecuencia', 'práctica'],
+      evidence: [], maxReplyWords: 130,
+    },
+  },
+  {
+    id: 'public-document-reuse-practice-original',
+    equivalenceGroup: 'public-document-reuse-practice-vs-law',
+    input: 'Las administraciones piden documentos que otras administraciones ya tienen',
+    expected: {
+      state: 'insufficient', family: 'public-document-reuse', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['Ley 39/2015', 'no mide con qué frecuencia', 'práctica'],
+      evidence: [], maxReplyWords: 130,
+    },
+  },
+  {
+    id: 'public-document-reuse-legal-right',
+    equivalenceGroup: 'public-document-reuse-legal-right',
+    input: '¿La Ley 39/2015 reconoce el derecho a no volver a aportar documentos elaborados por otra administración?',
+    expected: {
+      state: 'limited', family: 'public-document-reuse', verdict: 'supported',
+      directSourceIds: ['boe-law-39-2015-art28-document-reuse'],
+      replyIncludes: ['Ley 39/2015', 'art. 28.2', 'derecho', 'no cabe oponerse en procedimientos sancionadores'],
+      evidence: [{
+        familyId: 'public-document-reuse', sourceIds: ['boe-law-39-2015-art28-document-reuse'],
+        dataIncludes: ['derecho a no aportar documentos', 'administración que tramita', 'recabarse electrónicamente'],
+        dimensions: { period: 'texto consolidado consultado el 01-10-2026', geography: 'España', unit: 'derechos, deberes y excepciones legales' },
+      }],
+      maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'public-document-reuse-legal-right-paraphrase',
+    equivalenceGroup: 'public-document-reuse-legal-right',
+    input: 'Según la normativa española, ¿puedo no presentar otra vez un certificado que preparó un organismo público distinto?',
+    expected: {
+      state: 'limited', family: 'public-document-reuse', verdict: 'supported',
+      directSourceIds: ['boe-law-39-2015-art28-document-reuse'],
+      replyIncludes: ['Ley 39/2015', 'derecho', 'no cabe oponerse en procedimientos sancionadores'],
+      evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'public-document-reuse-sanction-exception',
+    input: 'La Ley 39/2015 permite siempre oponerse a que se consulten documentos de otra administración, incluso en procedimientos sancionadores',
+    expected: {
+      state: 'limited', family: 'public-document-reuse', verdict: 'contradicted',
+      directSourceIds: ['boe-law-39-2015-art28-document-reuse'],
+      replyIncludes: ['no cabe oponerse en procedimientos sancionadores', 'art. 28.2'],
+      evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'public-document-reuse-retrieval-exception',
+    input: 'Según la Ley 39/2015, si una administración no puede recuperar un certificado presentado antes a otra administración, ¿puede pedirlo de nuevo?',
+    expected: {
+      state: 'limited', family: 'public-document-reuse', verdict: 'supported',
+      directSourceIds: ['boe-law-39-2015-art28-document-reuse'],
+      replyIncludes: ['art. 28.3', 'excepcionalmente', 'pueden volver a pedirlos'],
+      evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'public-document-reuse-no-blanket-guarantee',
+    input: 'La Ley 39/2015 impide siempre que la administración vuelva a pedir documentos ya presentados, aunque no pueda recuperarlos',
+    expected: {
+      state: 'limited', family: 'public-document-reuse', verdict: 'contradicted',
+      directSourceIds: ['boe-law-39-2015-art28-document-reuse'],
+      replyIncludes: ['si excepcionalmente no pueden recabarse', 'pueden volver a pedirlos'],
+      evidence: [], maxReplyWords: 100,
     },
   },
 ];

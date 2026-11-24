@@ -23,6 +23,7 @@ import { PUBLIC_SOCIAL_HOUSING_SNAPSHOT, asksForPublicSocialStockCount } from '.
 import { YOUTH_HOUSING_INDEPENDENCE_SNAPSHOT } from './youth-housing-independence-snapshot.mjs';
 import { ROOM_RENTAL_MARKET_SNAPSHOT, roomRentalMarketDirectMeasureFor, roomRentalMarketRequestedMeasureFor } from './room-rental-market-snapshot.mjs';
 import { PUBLIC_SERVICE_DIGITAL_ACCESS_SNAPSHOT, publicServiceDigitalAccessClaimFor, publicServiceDigitalAccessMeasureFor } from './public-service-digital-access-snapshot.mjs';
+import { PUBLIC_DOCUMENT_REUSE_SNAPSHOT, publicDocumentReuseClaimFor, publicDocumentReuseLegalQuestionFor } from './public-document-reuse-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -1872,6 +1873,25 @@ const focuses = [
     needs: ['cambios de población residente y flujos migratorios en los mismos municipios y periodos', 'alquileres o precios de vivienda, viviendas disponibles y oferta nueva en esas zonas', 'una comparación causal que separe el efecto de población de empleo, turismo, oferta y financiación'],
     explanation: 'El crecimiento de población puede coincidir con más demanda de vivienda, pero el recuento de residentes no mide cuánto cambia los precios ni permite atribuir una subida a la inmigración.',
     limitation: 'Las cifras nacionales de población inmigrante y los índices nacionales de vivienda no muestran la presión local sobre alquileres ni su efecto causal. Hacen falta medidas locales y una comparación para el mismo periodo.',
+  },
+  {
+    id: 'public-document-reuse', label: 'derecho a no volver a aportar documentos que ya tiene la Administración',
+    when: publicDocumentReuseClaimFor,
+    claimTypeFor: (claim) => publicDocumentReuseLegalQuestionFor(claim) ? 'legal' : 'descriptive',
+    direct: [], context: [],
+    needs: [
+      'un recuento representativo de solicitudes repetidas de documentos, por administración y tipo de procedimiento',
+      'datos de cumplimiento y excepciones para el mismo periodo y territorio',
+    ],
+    explanationHeadline: 'La ley reconoce el derecho a no aportar documentos ya disponibles; no mide el cumplimiento en la práctica',
+    explanation: 'La Ley 39/2015 establece cuándo la ciudadanía puede no volver a aportar documentos y cuándo la administración debe consultarlos. La ley determina la regla aplicable, no la frecuencia con que se cumple en las oficinas.',
+    evidenceGap: 'No hay en esta fuente un recuento de cuántas administraciones solicitan documentos que ya tienen.',
+    explanationEvidence: PUBLIC_DOCUMENT_REUSE_SNAPSHOT,
+    shareableReplyForContext: ({ claim, facts }) => {
+      if (publicDocumentReuseLegalQuestionFor(claim)) return facts.join(' ');
+      return [...facts, 'La norma establece la regla jurídica, pero no mide con qué frecuencia las oficinas piden esos documentos en la práctica.'].join('\n\n');
+    },
+    limitation: 'La norma no cuantifica solicitudes repetidas ni demuestra el cumplimiento de cada oficina. Los procedimientos sujetos a normativa especial y las excepciones expresas pueden cambiar cómo se aplica el derecho.',
   },
   {
     id: 'public-service-digital-access', label: 'acceso y dificultades de uso de servicios públicos digitales',

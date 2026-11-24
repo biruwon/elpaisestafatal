@@ -660,6 +660,12 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     const clauseFocus = claimFocusFor(item.text);
     if (clauseFocus?.id === focus.id) return true;
     const clauseText = normalize(item.text);
+    const sameDocumentRetrievalException = focus.id === 'public-document-reuse'
+      && /\b(aunque|si|cuando|salvo que|excepto que|en caso de que)\b/.test(normalizedClaim)
+      && /\b(recuper\w*|recab\w*|consult\w*|obten\w*)\b/.test(clauseText)
+      && (/\b(lo|la|los|las|document\w*|certificad\w*|papel\w*)\b/.test(clauseText)
+        || /\b(?:recuper|recab|consult|obten)\w*(?:lo|la|los|las)\b/.test(clauseText));
+    if (sameDocumentRetrievalException) return true;
     const educationOutcomeCauseClause = educationOutcomeCausalClaim
       && propositions.length === 2
       && propositions.some((proposition) => claimFocusFor(proposition.text)?.id === focus.id)

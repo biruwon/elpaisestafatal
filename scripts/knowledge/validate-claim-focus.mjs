@@ -62,6 +62,11 @@ const cases = [
     'La falta de habilidades digitales dificulta solicitar ayudas en la sede electrónica',
     'Usuarios encuentran fallos en las webs de las administraciones públicas',
   ]],
+  ['public-document-reuse', [
+    'Las administraciones piden documentos que otras administraciones ya tienen',
+    'A veces te exigen volver a entregar papeles que ya constan en otra administración',
+    '¿La Ley 39/2015 reconoce el derecho a no volver a aportar documentos elaborados por otro organismo público?',
+  ]],
   ['business-tax-burden', ['Las multinacionales digitales pagan proporcionalmente menos impuestos que las tiendas locales', 'La carga fiscal efectiva de grandes empresas tecnológicas es menor que la de los comercios pequeños', 'Las empresas digitales compiten con el comercio de barrio con una tributación más baja']],
   ['small-business-cost-pressure', ['Los comercios de barrio cierran por la suma de alquiler, energía e impuestos', 'El aumento de los costes operativos está haciendo desaparecer pequeños negocios', 'Las tiendas pequeñas no sobreviven cuando suben a la vez salarios, alquileres y electricidad']],
   ['business-size-productivity', ['El pequeño tamaño medio de las empresas frena la inversión y la productividad', 'Las pymes tienen menos capacidad para adoptar tecnología y pagar buenos salarios', 'El tamaño empresarial limita la innovación y los sueldos']],
@@ -187,8 +192,21 @@ const appointmentAccessNeighbour = 'La cita previa obligatoria en la DGT ha conv
 assert.equal(claimFocusFor(appointmentAccessNeighbour), undefined, 'Evidence on online service problems must not route to appointment availability');
 assert.equal(focusedEvidencePlan(appointmentAccessNeighbour), undefined);
 const duplicateDocumentNeighbour = 'Las administraciones piden por internet documentos que otras administraciones ya tienen';
-assert.equal(claimFocusFor(duplicateDocumentNeighbour), undefined, 'Digital access statistics must not be reused to prove duplicate document requests');
-assert.equal(focusedEvidencePlan(duplicateDocumentNeighbour), undefined);
+assert.equal(claimFocusFor(duplicateDocumentNeighbour)?.id, 'public-document-reuse', 'Document-reuse claims should route to the legal rule, not digital-access statistics');
+const duplicateDocumentPlan = focusedEvidencePlan(duplicateDocumentNeighbour, { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.deepEqual(duplicateDocumentPlan.sourceLinks.map((source) => source.id), ['boe-law-39-2015-art28-document-reuse']);
+assert.equal(duplicateDocumentPlan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient',
+  'A legal right does not measure how often a public office requests a document again');
+assert.match(duplicateDocumentPlan.shareableReply, /no mide con qu[eé] frecuencia/);
+assert.ok(!duplicateDocumentPlan.sourceLinks.some((source) => source.id.startsWith('ine-tich-2026-egovernment-')));
+const duplicateDocumentRight = focusedEvidencePlan('¿La Ley 39/2015 reconoce que una persona puede no volver a aportar documentos ya elaborados por otra administración?', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.deepEqual(duplicateDocumentRight.sourceLinks.map((source) => source.id), ['boe-law-39-2015-art28-document-reuse']);
+assert.equal(duplicateDocumentRight.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'supported');
+const duplicateDocumentException = focusedEvidencePlan('La Ley 39/2015 permite siempre oponerse a que se consulten documentos de otra administración, incluso en procedimientos sancionadores', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(duplicateDocumentException.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'contradicted',
+  'The right to oppose consultation has a statutory exception for sanction and inspection procedures');
+assert.deepEqual(duplicateDocumentException.sourceLinks.map((source) => source.id), ['boe-law-39-2015-art28-document-reuse']);
+validateAnswerPlan(duplicateDocumentPlan);
 const landlordConcernQueries = [
   'El miedo a la okupación y al impago hace que propietarios retiren pisos del alquiler',
   'Hay viviendas vacías que no se alquilan por miedo a problemas legales con inquilinos',
