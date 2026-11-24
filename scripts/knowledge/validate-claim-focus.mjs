@@ -75,6 +75,7 @@ const cases = [
   ['primary-care-waits', ['Hay que esperar demasiado para conseguir cita con el médico de familia', '¿Cuántos días tarda una cita en atención primaria?', 'La cita con el médico de cabecera llega con mucha demora']],
   ['private-healthcare-access', ['Se contrata seguro privado para evitar esperas de especialistas', '¿La sanidad privada permite acceder antes a las pruebas?', 'El seguro privado se compra por la rapidez de las citas']],
   ['electricity-price-transmission', ['El gas encarece la electricidad en el sistema marginalista', 'Los hogares no notan la electricidad barata de las renovables', 'El precio mayorista no llega íntegro a la factura de la luz']],
+  ['energy-price-pass-through-lag', ['Las bajadas del precio mayorista tardan en trasladarse a muchos contratos de consumidores', 'La electricidad tarda en reflejar en las facturas las variaciones del mercado mayorista', 'Los precios minoristas de la luz se ajustan más despacio que los precios mayoristas']],
   ['electricity-industry-costs', ['El precio de la electricidad resta competitividad a parte de la industria española', 'La factura eléctrica reduce la competitividad de las fábricas españolas', 'La electricidad encarece la producción de muchas empresas industriales']],
   ['electricity-market-trading', ['España puede exportar electricidad barata en horas solares y necesitar energía más cara en otros momentos', 'España exporta electricidad barata al mediodía e importa energía más cara por la noche', 'Las interconexiones permiten vender electricidad cuando sobra y comprarla cuando sube el precio']],
   ['self-consumption-connection-delays', ['Los trámites para autoconsumo y conexión frenan instalaciones solares que serían rentables', 'La burocracia de acceso a red retrasa proyectos de autoconsumo solar viables', 'Las demoras de conexión impiden poner en marcha instalaciones fotovoltaicas de autoconsumo rentables']],
@@ -2354,6 +2355,45 @@ assert.deepEqual(householdElectricityAnswer.answerScope.directMetrics, ['househo
 assert.deepEqual(householdElectricityAnswer.answerScope.contextMetrics, []);
 assert.ok(householdElectricityAnswer.shareableReply.includes('0,2739 €/kWh'));
 assert.doesNotMatch(householdElectricityAnswer.shareableReply, /0,1177|0,1559/);
+const energyPassThroughClaims = [
+  'Las bajadas del precio mayorista tardan en trasladarse a muchos contratos de consumidores',
+  'La electricidad tarda en reflejar en las facturas las variaciones del mercado mayorista',
+  'Los precios minoristas de la luz se ajustan más despacio que los precios mayoristas',
+];
+let energyPassThroughSourceIds;
+for (const query of energyPassThroughClaims) {
+  const plan = focusedEvidencePlan(query, { observations: allElectricityRows, now: Date.parse('2026-11-24') });
+  assert.equal(claimFocusFor(query)?.id, 'energy-price-pass-through-lag');
+  assert.equal(plan.answerScope.family, 'energy-price-pass-through-lag');
+  assert.equal(plan.claimType, 'causal');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['cnmc-retail-gas-electricity-supervision-2025']);
+  assert.match(plan.shareableReply, /356 ofertas dom[eé]sticas y 81 para pymes/);
+  assert.match(plan.shareableReply, /ofertas p[uú]blicas, no todos los contratos firmados/);
+  assert.match(plan.shareableReply, /subidas del gas/);
+  assert.match(plan.shareableReply, /no prueban que muchos contratos retrasen las bajadas/);
+  assert.doesNotMatch(plan.shareableReply, /0,2739|0,1177|0,1559/);
+  const familyFacts = plan.evidenceSummary.families.filter((family) => family.familyId === 'energy-price-pass-through-lag');
+  assert.equal(familyFacts.length, 4);
+  assert.ok(familyFacts.every((family) => family.dataKind === 'context' && family.sourceIds.includes('cnmc-retail-gas-electricity-supervision-2025')));
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  if (energyPassThroughSourceIds) assert.deepEqual(sourceIds, energyPassThroughSourceIds, `An energy pass-through paraphrase changed evidence sources: ${query}`);
+  energyPassThroughSourceIds = sourceIds;
+  validateAnswerPlan(plan);
+}
+for (const nearby of [
+  'El precio mayorista de la electricidad sube y baja cada hora',
+  'El precio de la electricidad en España es menor que en la Unión Europea',
+  'Los peajes y los impuestos explican por qué la factura eléctrica difiere del precio mayorista',
+  'Las bajadas del precio mayorista tardan en llegar a los contratos de trigo y pan',
+  'Los contratos de alquiler tardan en reflejar la bajada de los precios mayoristas',
+  'El precio mayorista de la gasolina tarda en llegar a los contratos de los consumidores',
+]) assert.notEqual(claimFocusFor(nearby)?.id, 'energy-price-pass-through-lag', `A nearby non-energy or non-lag claim crossed into the energy pass-through family: ${nearby}`);
+const outOfTerritoryEnergyPassThrough = focusedEvidencePlan('En Francia, las bajadas del precio mayorista tardan en llegar a las facturas eléctricas', { now: Date.parse('2026-11-24') });
+assert.deepEqual(outOfTerritoryEnergyPassThrough.sourceLinks, [], 'Spanish CNMC evidence must not answer an out-of-territory pass-through claim');
 const marketTradingClaim = 'España puede exportar electricidad barata en horas solares y necesitar energía más cara en otros momentos';
 const marketTrading = focusedEvidencePlan(marketTradingClaim, { observations: allElectricityRows });
 assert.equal(marketTrading.answerScope.family, 'electricity-market-trading');

@@ -395,7 +395,6 @@ const metricHints = [
   { ids: ['temporary_employment_rate'], terms: ['temporalidad', 'contratos temporales', 'empleo temporal', 'precariedad laboral'] },
   { ids: ['median_equivalised_income'], terms: ['nivel de vida', 'capacidad de ahorro', 'ahorro de las familias', 'renta disponible'] },
   { ids: ['cpi_index'], terms: ['cesta de la compra', 'precio de servicios basicos', 'coste de vida'] },
-  { ids: ['household_electricity_price'], terms: ['precio mayorista', 'contratos de consumidores', 'precio de la luz'] },
   { ids: ['older_population_share'], terms: ['poblacion de 65 anos o mas', 'porcentaje de personas mayores', 'personas de mas de 65', 'proporcion de mayores', 'poblacion mayor'] },
   { ids: ['young_population_share'], terms: ['poblacion de 0 a 14 anos', 'menores de 15', 'poblacion infantil', 'porcentaje de ninos', 'proporcion de menores', 'poblacion menos anos', 'porcentaje poblacion menos anos', 'menos de quince anos'] },
   { ids: ['population_change_rate'], terms: ['crecimiento demografico', 'crecimiento poblacional', 'esta creciendo o bajando la poblacion', 'cambio anual de habitantes', 'tasa de variacion demografica', 'variacion de poblacion', 'variacion demografica', 'crecimiento de la poblacion', 'crece la poblacion', 'esta creciendo', 'la poblacion esta creciendo', 'poblacion creciendo', 'pierde poblacion', 'perdiendo poblacion', 'espana esta perdiendo poblacion', 'despoblacion', 'cambio demografico', 'cambio poblacional'] },

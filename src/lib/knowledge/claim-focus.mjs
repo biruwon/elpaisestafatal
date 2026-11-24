@@ -9,6 +9,7 @@ import { RAIL_PUNCTUALITY_EVIDENCE, railPunctualityShareableReply } from './rail
 import { GDP_HOUSEHOLD_WELFARE_SNAPSHOT } from './gdp-household-welfare-snapshot.mjs';
 import { HOUSEHOLD_BUDGET_SNAPSHOT, HOUSEHOLD_SAVING_SNAPSHOT } from './household-budget-snapshot.mjs';
 import { FOOD_CHAIN_PRICE_SPREAD_EVIDENCE } from './food-chain-price-spread-snapshot.mjs';
+import { ENERGY_PRICE_PASS_THROUGH_EVIDENCE } from './energy-price-pass-through-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -433,6 +434,18 @@ const electricityIndustryCosts = (t) => has(t, electricity)
 const electricityMarketTrading = (t) => has(t, electricity)
   && /\b(export\w*|import\w*|interconexi\w*|intercambios? (?:con|entre)|fronter\w*)\b/.test(t)
   && /\b(hor\w*|mediod[ií]a|noche|sol\w*|e[oó]lic\w*|renovabl\w*|moment\w*|barat\w*|car\w*|preci\w*)\b/.test(t);
+const energyPricePassThrough = (t) => {
+  const wholesaleReference = /\b(mayorist\w*|spot|cotizacion\w*)\b/.test(t)
+    && (/\b(preci\w*|cost\w*|tarif\w*)\b/.test(t) || /\bmercado mayorist\w*\b/.test(t));
+  const retailContract = /\b(contrat\w*|ofert\w*|factur\w*|recib\w*|consumidor\w*|cliente\w*|minorist\w*|precio final)\b/.test(t);
+  const lagOrPassThrough = /\b(tard\w*|demor\w*|retras\w*|desfas\w*|lent\w*|despaci\w*|traslad\w*|repercut\w*|ajust\w*|reflej\w*|transmit\w*|pas\w*)\b/.test(t);
+  const nonEnergyProduct = /\b(aliment\w*|agricultor\w*|productor\w*|campesin\w*|cosech\w*|trigo|harina|pan|leche|aceite|agroaliment\w*|supermercad\w*|ganader\w*|alquil\w*|arrendam\w*|viviend\w*|salari\w*|sueld\w*|nomina\w*|ropa|textil\w*|telecomunic\w*|telefon\w*|gasolin\w*|petrol\w*|diesel|carburant\w*|combustible\w*)\b/.test(t);
+  const energyNamed = /\b(electric\w*|luz|kwh|megavat\w*|mwh|gas natural|energi\w*)\b/.test(t);
+  const genericConsumerContract = /\b(contrat\w*|ofert\w*)\b[\s\w]{0,45}\b(consumidor\w*|cliente\w*|hogar\w*|famil\w*)\b/.test(t)
+    || /\b(consumidor\w*|cliente\w*|hogar\w*|famil\w*)\b[\s\w]{0,45}\b(contrat\w*|ofert\w*)\b/.test(t);
+  return wholesaleReference && retailContract && lagOrPassThrough && !nonEnergyProduct
+    && (energyNamed || genericConsumerContract);
+};
 const ruralUrbanAccess = (t) => /\b(rural\w*|pueblo\w*|campo|zonas? rurales?)\b/.test(t)
   && /\b(acceso|acceder|llegar|disponibilidad|servicios?)\b/.test(t)
   && [
@@ -2220,6 +2233,21 @@ const focuses = [
     needs: ['flujos de exportación e importación por hora y sentido de la interconexión', 'precios mayoristas horarios del mismo mercado y periodo', 'generación disponible, demanda y zona de intercambio para identificar las horas con renovables'],
     explanation: 'El precio medio que pagan los hogares no indica a qué horas España exporta o importa electricidad ni qué precio tuvo cada intercambio.',
     limitation: 'Sin flujos transfronterizos y precios mayoristas alineados por hora no se puede verificar si se exportó energía barata y se importó energía más cara en otros momentos.',
+  },
+  {
+    id: 'energy-price-pass-through-lag', label: 'traslado de precios mayoristas a ofertas y contratos de energía',
+    when: energyPricePassThrough,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['producto y tipo de suministro: electricidad o gas, y contrato fijo, indexado o tarifa regulada', 'precios mayoristas y precios realmente facturados al mismo grupo de consumidores durante el mismo periodo', 'número o proporción de contratos afectados para sostener que ocurre en «muchos» contratos', 'comparación separada de subidas y bajadas del precio mayorista'],
+    explanationHeadline: 'La CNMC observa desfases en algunas ofertas eléctricas y contratos de gas',
+    explanation: 'El traslado de precios mayoristas depende del producto y del contrato. Los precios medios de hogares muestran el coste final, pero no miden cuánto tarda un cambio mayorista en llegar a cada contrato.',
+    explanationEvidence: ENERGY_PRICE_PASS_THROUGH_EVIDENCE,
+    shareableReplyForContext: () => [
+      'En España, la CNMC observó que en 2025 las ofertas eléctricas de mercado libre del comparador seguían el precio mayorista spot con cierto desfase. Había 356 ofertas domésticas y 81 para pymes: ofertas públicas, no todos los contratos firmados.',
+      'En gas doméstico, la mayoría de las ofertas para consumidores con derecho a TUR mantenía fijo el precio contratado, normalmente por un año. La CNMC documenta un retraso en 2021–2022 ante subidas del gas.',
+      'Hay desfase en algunos productos, pero esos datos no prueban que muchos contratos retrasen las bajadas. ¿Electricidad o gas, y qué contrato y periodo?',
+    ].join('\n\n'),
+    limitation: 'La fuente estudia ofertas publicadas y tipos concretos de suministro en España. No cuenta qué proporción de todos los contratos retrasa las bajadas ni permite generalizar el desfase a cualquier producto, tarifa, consumidor o periodo.',
   },
   {
     id: 'electricity-price-transmission', label: 'precio mayorista y factura eléctrica',

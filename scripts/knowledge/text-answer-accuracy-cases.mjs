@@ -1378,4 +1378,33 @@ export const textAnswerAccuracyCases = [
       maxReplyWords: 150,
     },
   },
+  {
+    id: 'wholesale-energy-pass-through-generic',
+    equivalenceGroup: 'wholesale-energy-pass-through-context-spain',
+    input: 'Las bajadas del precio mayorista tardan en trasladarse a muchos contratos de consumidores',
+    expected: {
+      state: 'insufficient', family: 'energy-price-pass-through-lag', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['2025', '356 ofertas domésticas', '81 para pymes', 'ofertas públicas, no todos los contratos firmados', 'subidas del gas', 'electricidad o gas'],
+      replyExcludes: ['12 meses de retraso', 'todos los contratos de electricidad', 'el hogar medio paga'],
+      evidence: [
+        { familyId: 'energy-price-pass-through-lag', sourceIds: ['cnmc-retail-gas-electricity-supervision-2025'], dataIncludes: ['ofertas eléctricas publicadas en el comparador', 'con cierto desfase'], dimensions: { period: '2025', geography: 'España', denominator: 'media de ofertas disponibles', unit: 'no una duración fija' } },
+        { familyId: 'energy-price-pass-through-lag', sourceIds: ['cnmc-retail-gas-electricity-supervision-2025'], dataIncludes: ['356 de electricidad', '81 para pymes'], dimensions: { population: 'segmento doméstico y pymes', period: '2025', unit: 'no número de contratos ni hogares' } },
+        { familyId: 'energy-price-pass-through-lag', sourceIds: ['cnmc-retail-gas-electricity-supervision-2025'], dataIncludes: ['consumidores con derecho a TUR', 'suele durar un año'], dimensions: { period: 'informe de 2025', denominator: 'no todos los contratos de gas' } },
+        { familyId: 'energy-price-pass-through-lag', sourceIds: ['cnmc-retail-gas-electricity-supervision-2025'], dataIncludes: ['2021–2022', 'aumento extraordinario del precio mayorista spot', 'revisión anual'], dimensions: { period: '2021–2022', denominator: 'no una muestra de todos los contratos de consumidores', unit: 'episodio de subidas, no de bajadas' } },
+      ],
+      maxReplyWords: 115,
+    },
+  },
+  {
+    id: 'wholesale-energy-pass-through-electricity-paraphrase',
+    equivalenceGroup: 'wholesale-energy-pass-through-context-spain',
+    input: 'La electricidad tarda en reflejar en las facturas las variaciones del mercado mayorista',
+    expected: {
+      state: 'insufficient', family: 'energy-price-pass-through-lag', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['2025', '356 ofertas domésticas', '81 para pymes', 'ofertas públicas, no todos los contratos firmados', 'subidas del gas', 'electricidad o gas'],
+      replyExcludes: ['12 meses de retraso', 'todos los contratos de electricidad', 'el hogar medio paga'],
+      evidence: [],
+      maxReplyWords: 115,
+    },
+  },
 ];

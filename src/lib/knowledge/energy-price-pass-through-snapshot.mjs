@@ -1,0 +1,66 @@
+const source = {
+  id: 'cnmc-retail-gas-electricity-supervision-2025',
+  title: 'Informe de supervisión de los mercados minoristas de gas y electricidad · Año 2025',
+  publisher: 'CNMC',
+  url: 'https://www.cnmc.es/sites/default/files/6742152.pdf',
+  publishedAt: '2026-07-21',
+  retrievedAt: '2026-11-24',
+  role: 'primary',
+};
+
+export const ENERGY_PRICE_PASS_THROUGH_EVIDENCE = Object.freeze({
+  directClaimEvidence: false,
+  expiresAt: '2027-07-21',
+  territories: ['ES'],
+  evidenceLabel: 'Seguimiento de la CNMC sobre precios mayoristas y ofertas de electricidad y gas',
+  dimensions: {
+    subject: 'relación temporal entre precios mayoristas y ofertas o contratos de suministro de electricidad y gas',
+    population: 'ofertas públicas del comparador de la CNMC y tipos concretos de contratos; no todos los contratos firmados por consumidores',
+    period: 'ofertas eléctricas observadas en 2025; condiciones de gas descritas en 2025; episodio de subidas de gas de 2021–2022',
+    geography: 'España',
+    denominator: 'medias de ofertas disponibles en el comparador; el informe no calcula una proporción de todos los contratos que retrasa las bajadas',
+    unit: 'evolución temporal de precios y duración contractual; no mide un retraso universal en días o meses',
+  },
+  facts: [
+    'En 2025, los precios medios, con impuestos, de las ofertas eléctricas publicadas en el comparador de la CNMC siguieron la tendencia del mercado mayorista spot con cierto desfase.',
+    'La CNMC comparó ofertas públicas disponibles: 356 de electricidad para el segmento doméstico y 81 para pymes. Son ofertas del comparador, no un recuento de contratos firmados; las ofertas para pymes pueden no representar los productos finalmente contratados.',
+    'En gas, la CNMC señala que los comercializadores suelen revisar las ofertas libres según las cotizaciones del mercado. Una vez contratada una oferta, en la mayoría de las ofertas para consumidores con derecho a TUR el precio permanece fijo durante el contrato, que suele durar un año.',
+    'La CNMC documenta un caso concreto de retraso en 2021–2022: en contratos domésticos de gas a precio fijo, mayoritarios entonces, los comercializadores no pudieron repercutir el aumento extraordinario del precio mayorista spot hasta la revisión anual. Este episodio trata de subidas, no demuestra un retraso general de las bajadas.',
+  ],
+  factSourceIds: [[source.id], [source.id], [source.id], [source.id]],
+  factDimensions: [
+    {
+      subject: 'tendencia y desfase entre precio mayorista spot y precios de ofertas eléctricas',
+      population: 'precios medios de las ofertas eléctricas publicadas en el comparador de la CNMC',
+      period: '2025',
+      geography: 'España',
+      denominator: 'media de ofertas disponibles en cada momento; no contratos firmados',
+      unit: 'precios con impuestos incluidos; el informe describe el desfase, no una duración fija',
+    },
+    {
+      subject: 'ofertas eléctricas públicas incluidas en el comparador',
+      population: 'segmento doméstico y pymes',
+      period: '2025',
+      geography: 'España',
+      denominator: '356 ofertas domésticas y 81 ofertas para pymes',
+      unit: 'número de ofertas; no número de contratos ni hogares',
+    },
+    {
+      subject: 'revisión de precios de ofertas libres de gas y precio fijado tras contratar',
+      population: 'ofertas de suministro de gas para consumidores con derecho a TUR',
+      period: 'descripción publicada en el informe de 2025',
+      geography: 'España',
+      denominator: 'la mayoría de las ofertas del grupo descrito; no todos los contratos de gas',
+      unit: 'duración del contrato, normalmente un año; no una medida del retraso medio',
+    },
+    {
+      subject: 'repercusión de subidas del precio mayorista spot del gas',
+      population: 'contratos domésticos de gas a precio fijo, mayoritarios en ese segmento durante el episodio',
+      period: '2021–2022',
+      geography: 'España',
+      denominator: 'contratos de suministro a precio fijo analizados por la CNMC; no una muestra de todos los contratos de consumidores',
+      unit: 'hasta la revisión anual del contrato; episodio de subidas, no de bajadas',
+    },
+  ],
+  sources: [source],
+});
