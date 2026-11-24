@@ -1191,3 +1191,36 @@ are 272 insufficient and 28 limited. There are 80 compiler metric matches and
 118 focused-family routes, with 50 in both groups and 152 with neither route.
 All 300 discovery inputs remain unverified, and these routing counts do not
 estimate factual accuracy.
+
+## Household saving and budget text claims — 24 November 2026
+
+The text resolver now separates household saving claims from mortgage-entry
+affordability. The [INE's 2025 household-sector accounts](https://www.ine.es/dyngs/Prensa/CTNFSI4T25.pdf)
+put the aggregate saving rate at 12.0% of gross disposable income, 0.7
+percentage points below 2024. The [Banco de España's 2025 annual report](https://www.bde.es/f/webbe/SES/Secciones/Publicaciones/PublicacionesAnuales/InformesAnuales/25/InfAnual_2025.pdf)
+describes changes for groups by age, education, birthplace and housing tenure
+over 2017–2024, but its cited table does not break saving out by household
+income or number of earners. Those sources are context, so claims about
+middle-income families or two-earner households remain insufficient.
+
+For budget-share questions, the [INE's 2025 EPF](https://www.ine.es/dyngs/Prensa/EPF2025.htm)
+reports housing, water, electricity, gas and other fuels at 33.2% of average
+household spending and food at 16.0%; their combined share was 49.2%, compared
+with 48.2% in 2024 ([2024 EPF](https://www.ine.es/dyngs/Prensa/EPF2024.htm)).
+The 61.5% figure for the lowest expenditure-equivalent quintile is explicitly
+kept distinct from a low-income quintile. EPF amounts are in current euros and
+the housing category includes imputed rent for some owner-occupied or ceded
+homes, so the change does not isolate price increases or bills paid.
+
+The share trend is assessed against the two reported years. A mismatched
+percentage can be contradicted only within that measure and period; claims
+about other years or household groups remain insufficient. The observed
+discovery claims web-243 to web-245 now retrieve these families with visible
+sources, while their public verdicts remain insufficient where the claim
+requires a group split or causal measure.
+
+The held-out text benchmark passes 77/77 cases across 19 paraphrase groups,
+including wrong-value neighbours, an unsupported year and an income-group
+scope check. Claim-focus validation covers 271 paraphrase and scope checks.
+These are regression results for reviewed snapshots, not a population-wide
+accuracy estimate; the discovery claims remain unverified.

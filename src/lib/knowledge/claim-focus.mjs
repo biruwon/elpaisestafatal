@@ -7,6 +7,7 @@ import { EDUCATION_SOCIOECONOMIC_SNAPSHOT } from './education-socioeconomic-snap
 import { UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT } from './university-graduate-outcomes-snapshot.mjs';
 import { RAIL_PUNCTUALITY_EVIDENCE, railPunctualityShareableReply } from './rail-punctuality-snapshot.mjs';
 import { GDP_HOUSEHOLD_WELFARE_SNAPSHOT } from './gdp-household-welfare-snapshot.mjs';
+import { HOUSEHOLD_BUDGET_SNAPSHOT, HOUSEHOLD_SAVING_SNAPSHOT } from './household-budget-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -18,6 +19,19 @@ const householdInflationBasketComparison = (t) => /\b(ipc|hicp|inflacion\w*|prec
   && (/\b(hogar\w*|familia\w*|gast\w*|cesta\w*|reflej\w*|sient\w*|experienc\w*|pes\w*|coste\w*|precios?\w*)\b/.test(t)
     || /\b(mas que|menos que|mayor que|menor que|mas de lo que|menos de lo que|por encima (?:de|del)|por debajo (?:de|del)|superior a|inferior a|frente a|respecto a|compar\w*|no reflej\w*)\b/.test(t))
   && !/\bhipotec\w*\b|\b(?:compr\w*|adquir\w*)\b.{0,35}\b(?:viviend\w*|casas?)\b|\b(?:viviend\w*|casas?)\b.{0,35}\b(?:compr\w*|adquir\w*|propiedad|propietari\w*)\b/.test(t);
+const householdBudgetShareClaim = (t) => (
+  /\bpresupuest\w*\b/.test(t)
+  || /\b(gast\w*|consum\w*)\b.{0,35}\b(hogar\w*|famil\w*)\b/.test(t)
+  || /\b(hogar\w*|famil\w*)\b.{0,35}\b(gast\w*|consum\w*)\b/.test(t))
+  && /\b(viviend\w*|alquil\w*|alimentos?|comid\w*|electric\w*|gas|suministros?|servicios? basicos?|necesidades? basicas?|esenciales?)\b/.test(t)
+  && !regionalWageHousingCost(t)
+  && !/\b(presupuest\w*|gasto\w*) public\w*|\badministracion\w* public\w*|\bimpuest\w*\b/.test(t);
+const householdSavingsCapacity = (t) => {
+  const twoEarners = /\b(dos sueld\w*|dos ingres\w*|dos salari\w*|dos percept\w*|dos trabaj\w*|doble ingres\w*)\b/.test(t);
+  return /\b(ahorr\w*|ahorro\w*|capacidad de ahorro|margen para ahorrar)\b/.test(t)
+  && (twoEarners || /\b(hogar\w*|famil\w*|pareja\w*|ingres\w* medios?|renta media|salari\w* medios?)\b/.test(t))
+  && !/\b(hipotec\w*|entrada|compr\w*|adquir\w*|compra|deposit\w*|aval\w*|primera vivienda|vivienda habitual)\b/.test(t);
+};
 const rentalBurden = /\b(ingres\w*|salari\w*|sueld\w*|nomina\w*|mitad|por ciento|porcentaje|esfuerzo|asequib\w*|poder alquilar|puede alquilar|puede pagar|alquilar[^.]{0,35}sol[oa]|emancip\w*|independiz\w*)\b/;
 const absoluteRentAmount = /\b(cuant\w*|importe\w*|cantid\w*|cuant[ií]a\w*|euros?|eur|mensual\w*|al mes|por mes|€)\b/;
 const intergenerationalHousingDistribution = (t) => !/\b(pension\w*|jubilacion\w*|jubilad\w*)\b/.test(t)
@@ -1644,6 +1658,68 @@ const focuses = [
     limitation: 'Los subíndices no miden la inflación personal de un hogar. El alquiler efectivamente pagado no equivale al coste total de vivienda y el HICP no incluye el alquiler imputado de la vivienda en propiedad.',
   },
   {
+    id: 'household-budget-shares', label: 'distribución del gasto de los hogares por categorías',
+    when: householdBudgetShareClaim,
+    direct: [], context: [],
+    claimTypeFor: (t) => /\b(precio\w*|inflaci\w*|encarec\w*)\b/.test(t)
+      && /\b(caus\w*|provoc\w*|debido a|por culpa|ha convertid\w*|convirt\w*|hace que)\b/.test(t) ? 'causal'
+      : /\b(entre 20\d{2} y 20\d{2}|cada vez|antes|ahora|aument\w*|sub\w*|crec\w*|gan\w* peso|perdi\w* peso|baj\w*|disminu\w*)\b/.test(t) ? 'trend'
+        : 'descriptive',
+    needs: ['un índice de precios de la categoría para separar el cambio de precios del cambio de cantidades o composición', 'un dato de gasto y presupuesto por hogar si se afirma que afecta a todas las familias o a un grupo concreto'],
+    explanation: 'La Encuesta de Presupuestos Familiares mide cuánto gastan los hogares y qué parte del gasto asignan a cada categoría. Sus variaciones nominales no aíslan el efecto de los precios ni describen cada hogar.',
+    explanationHeadline: 'La EPF sitúa vivienda y alimentos cerca de la mitad del gasto medio en 2025',
+    explanationEvidence: HOUSEHOLD_BUDGET_SNAPSHOT,
+    shareableReplyForContext: ({ claim, facts }) => {
+      const text = normalize(claim);
+      const directBudgetShare = HOUSEHOLD_BUDGET_SNAPSHOT.directClaimEvidence(claim);
+      if (directBudgetShare) {
+        const comparison = /\b(?:entre 2024 y 2025|2024.*2025|2025.*2024|ganaron peso|perdieron peso|aument\w*|sub\w*|crec\w*)\b/.test(text);
+        return comparison
+          ? 'Entre 2024 y 2025, la vivienda y suministros pasaron del 32,4 % al 33,2 % del gasto medio; alimentos, del 15,8 % al 16,0 %. Juntos subieron del 48,2 % al 49,2 %. Son promedios nacionales de la EPF, expresados en euros corrientes; vivienda incluye alquiler imputado en algunas casas propias o cedidas.'
+          : 'En 2025, vivienda y suministros representaron el 33,2 % del gasto medio de los hogares y alimentos el 16,0 %; juntos, el 49,2 %. Son promedios nacionales de la EPF, expresados en euros corrientes; vivienda incluye alquiler imputado en algunas casas propias o cedidas.';
+      }
+      const groupSpecific = /\b(?:renta|ingresos?|salarios?|sueldos?|perceptores?|dos trabaj\w*|familias? con (?:hijos?|menores|dependientes)|hogares? (?:monoparentales?|unipersonales?))\b/.test(text);
+      const incomeGroup = /\b(?:renta|ingresos?)\b/.test(text);
+      const unsupportedYears = [...text.matchAll(/\b(20\d{2})\b/g)].map(([, year]) => year).filter((year) => !['2024', '2025'].includes(year));
+      if (groupSpecific && incomeGroup) return 'El 20 % de los hogares con menor gasto equivalente destinó el 61,5 % de su presupuesto a vivienda y alimentos en 2025. Ese quintil se ordena por gasto, no por renta; el dato no permite confirmar la proporción para hogares de ingresos bajos. En el promedio nacional, vivienda y suministros fueron el 33,2 % del gasto y alimentos el 16,0 %.';
+      if (groupSpecific) return 'En 2025, vivienda y suministros representaron el 33,2 % del gasto medio de los hogares y alimentos el 16,0 %; juntos, el 49,2 %. La EPF ofrece este promedio nacional, no un desglose para el grupo solicitado.';
+      if (unsupportedYears.length) return `La EPF disponible compara 2024 y 2025; no permite confirmar la cuota para ${unsupportedYears[0]}. En 2025, vivienda y suministros fueron el 33,2 % del gasto medio y alimentos el 16,0 %; juntos, el 49,2 %. Son promedios nacionales en euros corrientes; vivienda incluye alquiler imputado en algunas casas propias o cedidas.`;
+      if (/\b(cada hogar|todos los hogares|todas las familias|mi hogar|mi familia)\b/.test(text)) return [
+        facts[0],
+        facts[1],
+        'La EPF describe promedios nacionales; no muestra cuánto gastó cada familia.',
+      ].filter(Boolean).join('\n\n');
+      return 'En 2025, vivienda y suministros representaron el 33,2 % del gasto medio de los hogares y alimentos el 16,0 %; juntos, el 49,2 %. En 2024 ya sumaban el 48,2 %. La Encuesta de Presupuestos Familiares registra gasto en euros corrientes e incluye alquiler imputado en algunas viviendas propias o cedidas; no permite confirmar que una subida de precios convirtiera partidas secundarias en importantes.';
+    },
+    limitation: 'La EPF describe España en conjunto y registra gasto en euros corrientes; no permite atribuir el cambio a los precios por sí solos. La partida de vivienda incluye alquiler imputado para algunas viviendas ocupadas por sus propietarios o cedidas, y los quintiles se ordenan por gasto equivalente, no por renta.',
+  },
+  {
+    id: 'household-savings-capacity', label: 'ahorro de los hogares según renta y número de perceptores',
+    when: householdSavingsCapacity,
+    direct: [], context: [], claimType: 'comparative',
+    needsForClaim: (claim) => /\b(dos sueld\w*|dos ingres\w*|dos salari\w*|dos percept\w*|dos trabaj\w*|doble ingres\w*)\b/.test(normalize(claim))
+      ? ['tasa de ahorro o diferencia entre renta disponible y gasto para hogares separados por número de perceptores', 'mismo periodo, tipo de hogar y territorio']
+      : ['tasa de ahorro o diferencia entre renta disponible y gasto para hogares de ingresos medios, medida en dos periodos comparables', 'definición de renta media y composición de los hogares de cada grupo'],
+    explanation: 'El ahorro agregado del sector hogares no describe lo que puede ahorrar cada familia. Para comprobar esta afirmación hay que medir ingresos menos gastos en los hogares del grupo mencionado y en periodos comparables.',
+    explanationHeadline: 'La tasa agregada de ahorro no responde por sí sola qué familias pueden ahorrar',
+    explanationEvidence: HOUSEHOLD_SAVING_SNAPSHOT,
+    shareableReplyForContext: ({ claim, facts }) => {
+      const text = normalize(claim);
+      const twoEarners = /\b(dos sueld\w*|dos ingres\w*|dos salari\w*|dos percept\w*|dos trabaj\w*|doble ingres\w*)\b/.test(text);
+      if (twoEarners) return [
+        'En 2025, la tasa de ahorro del sector hogares fue el 12,0 % de su renta disponible bruta, 0,7 puntos porcentuales menos que en 2024; es un agregado, no una tasa por familia.',
+        'En la EPF 2025, vivienda y suministros fueron el 33,2 % del gasto medio y alimentos el 16,0 %. Ninguna de estas medidas separa el ahorro según cuántas personas cobran en cada hogar.',
+        'Estos promedios no permiten confirmar si una familia con dos sueldos consigue ahorrar. Harían falta ingresos, gastos y ahorro de hogares agrupados por número de perceptores y periodo.',
+      ].join('\n\n');
+      return [
+        'En 2025, la tasa de ahorro del sector hogares fue el 12,0 % de su renta disponible bruta, 0,7 puntos porcentuales menos que en 2024.',
+        'El Banco de España describe aumentos entre 2017 y 2024 en los grupos que analiza por edad, educación, país de nacimiento y vivienda; no publica un corte por renta.',
+        'Esos datos no permiten confirmar ni descartar que los hogares de ingresos medios ahorren menos que antes. Hace falta una serie de ahorro por nivel de ingresos y años comparables.',
+      ].join('\n\n');
+    },
+    limitation: 'La tasa de ahorro agregada puede cambiar aunque algunos grupos ahorren más y otros menos. El quintil de gasto de la EPF no equivale a un quintil de ingresos, y estos datos no aíslan hogares de renta media o con dos personas perceptoras.',
+  },
+  {
     id: 'real-wages', label: 'salarios y poder adquisitivo',
     when: (t) => has(t, wages) && /\b(poder (?:adquisitivo|de compra)|inflacion|coste de (?:la )?vida|precios|salari\w* real(?:es)?|perdi\w* poder)\b/.test(t)
       && !/\b(?:caus\w*|provoc\w*|gener\w*|traslad\w*|oblig\w*)\b/.test(t),
@@ -1751,7 +1827,7 @@ const focuses = [
   },
   {
     id: 'rental-affordability', label: 'alquiler e ingresos',
-    when: (t) => has(t, rents) && (has(t, rentalBurden) || has(t, wages) && !has(t, absoluteRentAmount)),
+    when: (t) => !householdSavingsCapacity(t) && has(t, rents) && (has(t, rentalBurden) || has(t, wages) && !has(t, absoluteRentAmount)),
     direct: [], context: ['rental_price_index', 'housing_cost_overburden_rate', 'median_equivalised_income'],
     needs: ['alquiler de vivienda completa y renta neta comparables', 'ciudad, tipo de hogar y periodo', 'porcentaje de ingresos destinado al alquiler'],
     explanationHeadline: 'El dato disponible no permite saber si un sueldo normal alcanza para alquilar solo',
@@ -1771,7 +1847,7 @@ const focuses = [
   },
   {
     id: 'purchase-affordability', label: 'acceso a la compra de vivienda',
-    when: (t) => /\b(viviend\w*|casas?|piso\w*|inmobiliari\w*)\b/.test(t)
+    when: (t) => !householdSavingsCapacity(t) && /\b(viviend\w*|casas?|piso\w*|inmobiliari\w*)\b/.test(t)
       && /\b(hipotec\w*|entrada|compr\w*|adquir\w*|compra|ahorr\w*|deposit\w*|aval\w*|acceso|acceder)\b/.test(t)
       && /\b(salari\w*|sueld\w*|ingres\w*|ahorr\w*|deposit\w*|aval\w*|familiar\w*|barrera|acceso|acceder|cuota)\b/.test(t),
     direct: [], context: ['house_price_index', 'median_equivalised_income'],

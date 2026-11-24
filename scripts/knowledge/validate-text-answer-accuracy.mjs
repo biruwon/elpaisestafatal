@@ -12,7 +12,7 @@ const errors = [];
 const outcomes = [];
 
 for (const item of textAnswerAccuracyCases) {
-  const raw = deterministicApiFallback({ text: item.input, inputType: 'text', now });
+  const raw = deterministicApiFallback({ text: item.input, inputType: 'text', now: item.now ? Date.parse(item.now) : now });
   const response = localPublicCheckResponse({ ...raw, requestId: `answer-accuracy-${item.id}` }, item.input);
   const result = response.result || {};
   const expected = item.expected;
@@ -30,10 +30,12 @@ for (const item of textAnswerAccuracyCases) {
     reply: true,
     digest: reply.trim().split(/\s+/).filter(Boolean).length <= expected.maxReplyWords,
   };
-  const familyMap = new Map((result.evidenceSummary?.families || []).map((family) => [family.familyId, family]));
+  const evidenceFamilies = result.evidenceSummary?.families || [];
 
   for (const wanted of expected.evidence) {
-    const family = familyMap.get(wanted.familyId);
+    const family = evidenceFamilies.find((item) => item.familyId === wanted.familyId
+      && (!wanted.sourceIds || JSON.stringify(sorted(item.sourceIds)) === JSON.stringify(sorted(wanted.sourceIds)))
+      && (wanted.dataIncludes || []).every((text) => normalize((item.data || []).join(' ')).includes(normalize(text))));
     if (!family) {
       checks.evidence = false;
       errors.push(`${item.id}: missing evidence family ${wanted.familyId}`);
@@ -77,7 +79,13 @@ for (const item of textAnswerAccuracyCases) {
     id: item.id,
     equivalenceGroup: item.equivalenceGroup,
     expected: { state: expected.state, family: expected.family, verdict: expected.verdict, directSourceIds: sorted(expected.directSourceIds) },
-    actual: { state: response.state, family: result.answerScope?.family, verdict: firstArgument?.verdict, directSourceIds },
+    actual: {
+      state: response.state,
+      family: result.answerScope?.family,
+      verdict: firstArgument?.verdict,
+      directSourceIds,
+      evidenceSources: [...new Set(evidenceFamilies.flatMap((family) => family.sourceIds || []))].sort(),
+    },
     checks: { ...checks, traceability: traceability.passed },
     replyWords: reply.trim().split(/\s+/).filter(Boolean).length,
   });
@@ -91,7 +99,11 @@ for (const outcome of outcomes.filter((item) => item.equivalenceGroup)) {
 }
 for (const [group, members] of equivalenceGroups) {
   if (members.length < 2) continue;
-  const signatures = new Set(members.map((item) => JSON.stringify({ family: item.actual.family, sourceIds: item.actual.directSourceIds })));
+  const signatures = new Set(members.map((item) => JSON.stringify({
+    family: item.actual.family,
+    directSourceIds: item.actual.directSourceIds,
+    evidenceSources: item.actual.evidenceSources,
+  })));
   if (signatures.size > 1) errors.push(`${group}: paraphrases selected different evidence families or sources`);
 }
 

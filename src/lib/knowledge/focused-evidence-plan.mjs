@@ -864,7 +864,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         ] : focus.id === 'future-pension-outlook' ? [
           ...focus.needs,
           ...(comparesLifetimePensionContributions ? ['cotizaciones y prestaciones futuras para la misma cohorte y ciclo laboral'] : []),
-        ] : focus.needs;
+        ] : typeof focus.needsForClaim === 'function' ? focus.needsForClaim(claim) : focus.needs;
   const directIds = asksAboutMakingEndsMeet || workingPovertyCountRequested ? [] : ids.filter((id) =>
     (!subjectiveHouseholdShareRequested || !['subjective_poverty_rate', ...Object.values(SUBJECTIVE_POVERTY_COMPONENT_METRICS)].includes(id))
       && (allowedDirect.includes(id) || allowedDirect.includes(id.replace(/_europe$/, ''))));

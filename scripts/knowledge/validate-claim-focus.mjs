@@ -26,6 +26,8 @@ const cases = [
   ['youth-housing-family-formation-costs', ['La combinación de vivienda cara y cotizaciones altas reduce la capacidad de los jóvenes para tener hijos y ahorrar', 'El alquiler y las contribuciones elevadas limitan que la juventud ahorre y forme una familia', 'La vivienda costosa y los impuestos reducen la capacidad económica de los jóvenes para ahorrar y tener hijos']],
   ['inflation-tax-bracket-creep', ['La inflación eleva la carga fiscal cuando los tramos y deducciones no se actualizan al mismo ritmo', 'Si el IRPF no actualiza sus tramos con los precios, la inflación aumenta la recaudación', 'La progresividad en frío hace subir el IRPF cuando las rentas nominales crecen por la inflación']],
   ['household-inflation-basket', ['El IPC general no refleja bien lo que notan los hogares que gastan mucho en comida y alquiler', '¿Cómo han cambiado desde 2020 los alimentos, el alquiler y la inflación general para las familias?', 'El índice general no describe toda la cesta de familias que destinan más dinero a alimentación y vivienda', 'La cesta de la compra ha subido más de lo que percibe quien mira solo el IPC general', 'Los precios de los alimentos han subido más que la inflación general', 'Los alimentos se encarecieron por encima del IPC general']],
+  ['household-budget-shares', ['El aumento del precio de servicios básicos ha convertido gastos antes secundarios en una parte importante del presupuesto', 'La vivienda y la comida ganaron peso en el presupuesto medio de los hogares entre 2024 y 2025', '¿Qué parte del gasto familiar se destina a vivienda, alimentos y suministros?']],
+  ['household-savings-capacity', ['Las familias de ingresos medios tienen menos capacidad de ahorro que antes', 'Cada vez cuesta más ahorrar a los hogares de renta media', 'Una familia con dos sueldos puede tener dificultades para ahorrar después de vivienda, comida y suministros', 'Con dos salarios puede no quedar margen para ahorrar después del alquiler y las facturas']],
   ['gdp-household-welfare', [
     'Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio',
     'Que el PIB crezca no se traduce directamente en una mejora de la vida de las familias',
@@ -248,6 +250,78 @@ for (const nearby of [
   'El IPC general no refleja cuánto subió el aceite de oliva',
   'El precio de la vivienda y los alimentos dificulta pagar la hipoteca',
 ]) assert.notEqual(claimFocusFor(nearby)?.id, 'household-inflation-basket', `A nearby claim crossed into household inflation basket evidence: ${nearby}`);
+for (const nearby of [
+  'El precio de la electricidad subió en España durante el último año',
+  'La inflación de los alimentos fue mayor que la inflación general en España',
+  'Las comunidades autónomas aumentaron el presupuesto público para servicios básicos',
+]) assert.notEqual(claimFocusFor(nearby)?.id, 'household-budget-shares', `A nearby claim crossed into household budget shares: ${nearby}`);
+for (const nearby of [
+  'Los hogares con dos salarios no consiguen reunir la entrada para comprar una vivienda',
+  'El alquiler y las cotizaciones elevadas limitan que los jóvenes ahorren y tengan hijos',
+  'Las empresas medianas tienen menos capacidad de ahorro que antes',
+]) assert.notEqual(claimFocusFor(nearby)?.id, 'household-savings-capacity', `A nearby claim crossed into household savings capacity: ${nearby}`);
+const householdSavingsClaim = 'Las familias de ingresos medios tienen menos capacidad de ahorro que antes';
+const householdSavingsPlan = focusedEvidencePlan(householdSavingsClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(householdSavingsPlan.answerScope.family, 'household-savings-capacity');
+assert.equal(householdSavingsPlan.evidenceLevel, 'limited', 'Aggregate savings data must be shown as context for income-group savings claims');
+assert.deepEqual(householdSavingsPlan.answerScope.directMetrics, [], 'National saving rates do not directly measure savings among middle-income families');
+assert.deepEqual(householdSavingsPlan.sourceIds, [
+  'ine-household-saving-rate-2025', 'bde-household-saving-rate-groups-2017-2024',
+  'ine-household-budget-shares-2025', 'ine-household-budget-shares-2024',
+]);
+assert.doesNotMatch(householdSavingsPlan.shareableReply, /house_price_index|median_equivalised_income/);
+assert.match(householdSavingsPlan.shareableReply, /12,0 %.*0,7 puntos porcentuales/);
+assert.match(householdSavingsPlan.shareableReply, /no publica un corte por renta/i);
+assert.match(householdSavingsPlan.shareableReply, /no permiten confirmar ni descartar/i);
+const twoEarnerSavingsClaim = 'Una familia con dos sueldos puede tener dificultades para ahorrar después de vivienda, comida y suministros';
+const twoEarnerSavingsPlan = focusedEvidencePlan(twoEarnerSavingsClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(twoEarnerSavingsPlan.answerScope.family, 'household-savings-capacity');
+assert.equal(twoEarnerSavingsPlan.evidenceLevel, 'limited');
+assert.deepEqual(twoEarnerSavingsPlan.answerScope.directMetrics, []);
+assert.match(twoEarnerSavingsPlan.shareableReply, /33,2 %.*16,0 %/);
+assert.match(twoEarnerSavingsPlan.shareableReply, /separa el ahorro seg[uú]n cu[aá]ntas personas cobran/i);
+assert.match(twoEarnerSavingsPlan.shareableReply, /no permiten confirmar si una familia con dos sueldos consigue ahorrar/i);
+assert.doesNotMatch(twoEarnerSavingsPlan.shareableReply, /capacidad de compra|cuota hipotecaria/);
+const householdBudgetClaim = 'El aumento del precio de servicios básicos ha convertido gastos antes secundarios en una parte importante del presupuesto';
+const householdBudgetPlan = focusedEvidencePlan(householdBudgetClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(householdBudgetPlan.answerScope.family, 'household-budget-shares');
+assert.equal(householdBudgetPlan.claimType, 'causal');
+assert.equal(householdBudgetPlan.evidenceLevel, 'limited');
+assert.equal(householdBudgetPlan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient', 'Spending shares do not prove a price-driven change from formerly secondary costs');
+assert.deepEqual(householdBudgetPlan.answerScope.directMetrics, []);
+assert.match(householdBudgetPlan.shareableReply, /33,2 %.*16,0 %.*49,2 %.*48,2 %/s);
+assert.match(householdBudgetPlan.shareableReply, /no permite confirmar que una subida de precios/i);
+assert.deepEqual(householdBudgetPlan.sourceIds, ['ine-household-budget-shares-2025', 'ine-household-budget-shares-2024']);
+const directHouseholdBudgetTrend = focusedEvidencePlan('La vivienda y la comida ganaron peso en el presupuesto medio de los hogares entre 2024 y 2025', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(directHouseholdBudgetTrend.answerScope.family, 'household-budget-shares');
+assert.equal(directHouseholdBudgetTrend.claimType, 'trend');
+assert.equal(directHouseholdBudgetTrend.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'supported');
+assert.deepEqual(directHouseholdBudgetTrend.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.sourceIds, ['ine-household-budget-shares-2025', 'ine-household-budget-shares-2024']);
+assert.match(directHouseholdBudgetTrend.shareableReply, /32,4 %.*33,2 %.*15,8 %.*16,0 %/s);
+assert.match(directHouseholdBudgetTrend.shareableReply, /48,2 %.*49,2 %/s);
+assert.doesNotMatch(directHouseholdBudgetTrend.shareableReply, /gasto medio en ese grupo aumentó un 5,8 %|gasto total medio por hogar creció un 3,1 %/i, 'A share trend should not add unrelated nominal spending changes');
+const directHouseholdBudgetQuestion = focusedEvidencePlan('¿Qué parte del gasto familiar se destina a vivienda, alimentos y suministros?', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(directHouseholdBudgetQuestion.answerScope.family, 'household-budget-shares');
+assert.equal(directHouseholdBudgetQuestion.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'supported');
+assert.deepEqual(directHouseholdBudgetQuestion.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.sourceIds, ['ine-household-budget-shares-2025', 'ine-household-budget-shares-2024']);
+assert.match(directHouseholdBudgetQuestion.shareableReply, /33,2 %.*16,0 %.*49,2 %/s);
+const lowIncomeBudgetQuestion = focusedEvidencePlan('¿Qué porcentaje del gasto de los hogares de ingresos bajos va a vivienda y comida?', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(lowIncomeBudgetQuestion.answerScope.family, 'household-budget-shares');
+assert.equal(lowIncomeBudgetQuestion.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient', 'The expenditure quintile must not be relabelled as a low-income group');
+assert.deepEqual(lowIncomeBudgetQuestion.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.sourceIds, []);
+assert.match(lowIncomeBudgetQuestion.shareableReply, /61,5 %.*se ordena por gasto, no por renta/s, 'An expenditure quintile may be shown only with its correct denominator and explicit income caveat');
+assert.match(lowIncomeBudgetQuestion.shareableReply, /no permite confirmar la proporci[oó]n para hogares de ingresos bajos/i);
+const householdBudgetExactValue = focusedEvidencePlan('La vivienda y suministros representaron el 33,2 % del gasto medio de los hogares en 2025', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(householdBudgetExactValue.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'supported');
+const householdBudgetWrongValue = focusedEvidencePlan('La vivienda y suministros representaron el 40 % del gasto medio de los hogares en 2025', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(householdBudgetWrongValue.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'contradicted', 'A mismatched percentage must not inherit support from the relevant family');
+const householdBudgetWrongYear = focusedEvidencePlan('La vivienda y suministros representaron el 33,2 % del gasto medio de los hogares en 2023', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(householdBudgetWrongYear.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient', 'The 2025 share must not be applied to a different year');
+assert.deepEqual(householdBudgetWrongYear.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.sourceIds, []);
+for (const plan of [householdSavingsPlan, twoEarnerSavingsPlan, householdBudgetPlan, directHouseholdBudgetTrend]) {
+  assert.ok(validateAnswerPlan(plan).ok, JSON.stringify(validateAnswerPlan(plan).errors));
+  assert.ok(plan.shareableReply.split(/\s+/).length < 180, 'Household saving and budget answers should remain concise');
+}
 const localSafetyParaphrases = [
   'En mi barrio ha subido la inseguridad este mes',
   'La delincuencia ha empeorado en mi calle estas semanas',

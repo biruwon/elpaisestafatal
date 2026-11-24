@@ -60,6 +60,18 @@ assert.equal(focusedEvidencePlan('¿Cuántos días tarda una cita con el médico
   observations: PRIMARY_CARE_WAIT_SNAPSHOT.observations, now: Date.parse('2026-11-23'),
 }).answerScope.family, 'primary-care-waits', 'A descriptive wait question must not inherit the urgent-care causal route');
 assert.equal(qualifyPublicClaimReply('No demuestra que el reconocimiento de títulos cause esas diferencias.'), 'No demuestra que el reconocimiento de títulos cause esas diferencias.');
+const causalReplyLimit = 'El Barómetro no mide si las esperas llevan a urgencias. Para establecer un efecto causal hacen falta datos de las mismas personas y una comparación que separe otros motivos.';
+assert.equal(qualifyPublicClaimReply(causalReplyLimit, [{ kind: 'causal', verdict: 'insufficient' }]), causalReplyLimit,
+  'A sentence that states what the survey does not measure must not be mistaken for a causal conclusion');
+const causalEvidenceNeed = 'Para demostrar desplazamiento hacen falta datos de quién se mudó y por qué. Los indicadores agregados no identifican a las personas que se fueron.';
+assert.match(qualifyPublicClaimReply(causalEvidenceNeed, [{ kind: 'causal', verdict: 'insufficient' }]), /qui[eé]n se mud[oó]/,
+  'A request for the evidence needed to demonstrate causation must not erase the scoped answer');
+assert.equal(qualifyPublicClaimReply('La espera obliga a algunos pacientes a ir a urgencias.', [{ kind: 'causal', verdict: 'insufficient' }]),
+  'La evidencia no basta para confirmar toda la afirmación.', 'An unsupported causal assertion must still be removed');
+const spendingContext = 'El gasto en vivienda aumentó un 5,8 % en términos corrientes. La encuesta no identifica por sí sola una subida de precios ni equivale a facturas pagadas.';
+const qualifiedSpendingContext = qualifyPublicClaimReply(spendingContext, [{ kind: 'causal', verdict: 'insufficient' }]);
+assert.match(qualifiedSpendingContext, /gasto en vivienda aumentó un 5,8 %/i, 'Relevant spending data must survive the causal-answer guard');
+assert.match(qualifiedSpendingContext, /no identifica por sí sola una subida de precios/i, 'The scope limitation must survive the causal-answer guard');
 assert.match(qualifyPublicClaimReply('La falta de pruebas no demuestra que la afirmación sea falsa.'), /^La evidencia no basta para confirmar toda la afirmación/);
 const contradictedReply = 'Datos de Eurostat: la tasa fue 83,2 % en 2025, por encima del 80 % indicado.';
 assert.equal(qualifyPublicClaimReply(contradictedReply, [{ verdict: 'contradicted', evidenceIds: ['employment-rate-2025'], sourceIds: ['eurostat-tertiary-employment'] }]),

@@ -26,8 +26,14 @@ const assertsUnsupportedCausalPart = (text, argumentsList) => {
   if (!(argumentsList || []).some((argument) => argument.kind === 'causal' && argument.verdict !== 'supported')) return false;
   const unqualified = text
     .replace(/\b(?:(?:no|ni|tampoco) (?:se puede|podemos|permite|permiten|mide|miden|indica|indican|demuestra|demuestran|acredita|acreditan|prueba|prueban|establece|establecen|identifica|identifican)\b|sin (?:datos|evidencia|una medici[oó]n)\b)[^.!?;,:]*(?:[.!?;,:]|$)/gi, ' ')
-    .replace(/\b(?:para (?:comprobar|saber|valorar|establecer)|hace falta|faltan|se necesita|necesitamos|hay que)\b[^.!?]*(?:[.!?]|$)/gi, ' ');
-  return /(?:^|[^\p{L}])(?:causa|causan|causó|causaron|causaba|causaban|causaría|causarían|provoca|provocan|provocó|provocaron|provocaba|provocarían|obliga|obligan|obligó|obligaron|empuja|empujan|empujó|empujaron|lleva|llevan|llevó|llevaron|llevaría|generan?|generó|generaron|determina|determinan|determinó|determinaron|explica|explican|explicó|explicaron|reduce|reducen|redujo|redujeron|aumenta|aumentan|aumentó|aumentaron|disminuye|disminuyen|disminuyó|disminuyeron|demuestra|demuestran|demostró|demostraron|confirma|confirman|confirmó|confirmaron|prueba|prueban|probó|probaron)(?=$|[^\p{L}])/iu.test(unqualified);
+    .replace(/\b(?:para (?:comprobar|saber|valorar|establecer|demostrar|probar)|hace falta|faltan|se necesita|necesitamos|hay que)\b[^.!?]*(?:[.!?]|$)/gi, ' ');
+  // Normalize accents before matching conjugations so Spanish forms ending in
+  // accented vowels still have reliable word boundaries. Avoid broad stems:
+  // “causal”, “explicación” and “problema” are not causal assertions.
+  const normalizedUnqualified = unqualified.normalize('NFD').replace(/[\u0300-\u036f]/g, '');
+  const explicitCausalVerb = /(?:^|[^a-z])(?:caus(?:a|an|o|aron|aba|aban|aria|arian|ar|ado|ada|ados|adas|e|en)|provoc(?:a|an|o|aron|aba|aban|aria|arian|ar|ado|ada|ados|adas|e|en)|oblig(?:a|an|o|aron|aba|aban|aria|arian|ar|ado|ada|ados|adas)|empuj(?:a|an|o|aron|aba|aban|aria|arian|ar|ado|ada|ados|adas)|llev(?:a|an|o|aron|aba|aban|aria|arian|ar|ado|ada|ados|adas)\s+a|gener(?:a|an|o|aron|aba|aban|aria|arian|ar|ado|ada|ados|adas)|determin(?:a|an|o|aron|aba|aban|aria|arian|ar|ado|ada|ados|adas)|explic(?:a|an|o|aron|aba|aban|aria|arian|ar|ado|ada|ados|adas)|demostr(?:a|an|o|aron|aba|aban|aria|arian|ar|ado|ada|ados|adas)|confirm(?:a|an|o|aron|aba|aban|aria|arian|ar|ado|ada|ados|adas)|(?:prueba|prueban|probo|probaron|probaba|probaban|probaria|probarian|probar|probado|probada))(?=$|[^a-z])/i.test(normalizedUnqualified);
+  const movementVerbLinkedToOutcome = /(?:^|[^a-z])(?:reduc(?:e|en|io|ieron|ia|ian|iria|irian|ir|ido|ida|idos|idas)|reduj(?:o|eron)|aument(?:a|an|o|aron|aba|aban|aria|arian|ar|ado|ada|ados|adas)|increment(?:a|an|o|aron|aba|aban|aria|arian|ar|ado|ada|ados|adas)|disminu(?:ye|yen|yo|yeron|ia|ian|iria|irian|ir|ido|ida|idos|idas)|elev(?:a|an|o|aron|aba|aban|aria|arian|ar|ado|ada|ados|adas))(?=$|[^a-z])[^.!?]{0,40}(?:ahorr\w*|pobrez\w*|paro|desemple\w*|natalidad|oferta|demanda|bienestar|emancip\w*|abandono|mortalidad|delincuenc\w*|acoso|vulnerabilidad)(?=$|[^a-z])/i.test(normalizedUnqualified);
+  return explicitCausalVerb || movementVerbLinkedToOutcome;
 };
 
 export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
@@ -45,17 +51,19 @@ export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
     const finding = String(argumentsList[0].finding || '').trim();
     const replyText = text.replace(/\s+/g, ' ').trim();
     const findingText = finding.replace(/\s+/g, ' ').trim();
-    const measuredFinding = findingText && !replyText.includes(findingText) ? `${finding}\n\n` : '';
+    const sourceMeasuresAlsoShown = [...findingText.matchAll(/\b\d+(?:[,.]\d+)?\s*%/g)]
+      .some(([measure]) => replyText.includes(measure));
+    const measuredFinding = findingText && !replyText.includes(findingText) && !sourceMeasuresAlsoShown ? `${finding}\n\n` : '';
     return `La fuente contradice la afirmación.\n\n${measuredFinding}${text}`;
   }
-  const alreadyStatesNonConclusion = /\bno (?:se puede|permite|podemos|alcanza a)\s+(?:confirmar|descartar|demostrar|sostener|afirmar|concluir|determinar|medir|calcular|contar|comparar|establecer|atribuir|saber|evaluar)\b/i.test(text);
+  const alreadyStatesNonConclusion = /\bno (?:se puede|permite|permiten|podemos|alcanza a)\s+(?:confirmar|descartar|demostrar|sostener|afirmar|concluir|determinar|medir|calcular|contar|comparar|establecer|atribuir|saber|evaluar)\b/i.test(text);
   const missingEvidenceAlreadyExplained = /\b(?:no se ha localizado|no hemos localizado|no hemos encontrado)\b[^.!?]{0,120}\b(?:medici[oó]n|evidencia|datos?|fuente|respaldo)\b[^.!?]{0,120}\b(?:no demuestra|no permite|no se puede|no podemos|no alcanza|falta|pendiente)\b/i.test(text)
     || /\b(?:no se ha localizado|no hemos localizado|no hemos encontrado)\b[^.!?]{0,160}\b(?:medici[oó]n|evidencia|datos?|fuente|respaldo)\b[^.!?]*[.!?]\s*(?:esto\s+)?no demuestra que la afirmaci[oó]n sea falsa\b/i.test(text)
     || /\bpara comprobar\b[^.!?]{0,100}\b(?:hay que indicar|hace falta|se necesita)\b[^.!?]{0,120}\b(?:periodo|periodos|a[nñ]o|serie|dato|medida)\b/i.test(text);
   const explicitCausalLimit = /\bno (?:demuestra|acredita|prueba|establece) que\b[^.!?]{0,180}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|determin\w*|explique\w*)\b/i.test(text)
     || /\bno mide\b[^.!?]{0,120}\bsi\b[^.!?]{0,100}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|urgencias?)\b/i.test(text);
   const explicitlyBoundsWholeClaim = /\b(?:no (?:permite|basta para) confirmar toda la afirmaci[oó]n|no demuestra toda la afirmaci[oó]n)\b/i.test(text);
-  const contextualLimit = /\bno (?:confirma|confirman|demuestra|demuestran|prueba|prueban|mide|miden|indica|indican|informa|informan|muestra|muestran|publica|publican|compara|comparan|cuenta|identifica|identifican|incluye|desglosa|estima|representa|establece|define)\b|\bsolo incluye\b|\bexcluye\b|\bexcluyen\b/i.test(text)
+  const contextualLimit = /\bno (?:confirma|confirman|demuestra|demuestran|prueba|prueban|mide|miden|indica|indican|informa|informan|muestra|muestran|publica|publican|compara|comparan|cuenta|identifica|identifican|incluye|desglosa|estima|representa|establece|define|separa|separan)\b|\bsolo incluye\b|\bexcluye\b|\bexcluyen\b/i.test(text)
     || /\bno (?:define|fija|establece)\b[^.!?]{0,100}\b(?:umbral|criterio|regla|est[aá]ndar|una tendencia)\b/i.test(text)
     || /\bsolo (?:es|son|resulta|resultan) comparables? si\b/i.test(text)
     || /\bno demuestra\b[^.!?]{0,120}\b(?:universal|a todas las personas|para todo el mundo)\b/i.test(text);
