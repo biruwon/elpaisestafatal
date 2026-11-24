@@ -602,6 +602,15 @@ for (const [family, claim] of crossTopicClaims) {
     ]);
     assert.doesNotMatch(plan.shareableReply, /17 €/);
     assert.equal(localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim).state, 'limited');
+  } else if (family === 'public-private-pay-comparison') {
+    assert.equal(plan.evidenceLevel, 'limited', 'The reviewed sector-wide wage snapshot may inform the answer without measuring equivalent jobs');
+    assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['ine-ees-public-private-pay-2022']);
+    assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown').items.map((item) => item.verdict), ['insufficient']);
+    assert.match(plan.shareableReply, /no permiten confirmar que el sector público pague más en puestos de baja cualificación/);
+    const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim);
+    assert.equal(publicResponse.state, 'insufficient', 'Aggregate context must not confirm the low-qualification claim');
+    assert.equal(publicResponse.result.arguments[0].verdict, 'insufficient');
+    assert.deepEqual(publicResponse.result.sources.map((source) => source.id), ['ine-ees-public-private-pay-2022']);
   } else {
     assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should leave this claim unsupported: ${claim}`);
     assert.equal(plan.sourceLinks.length, 0, `An unrelated wage survey was attached to this claim: ${claim}`);

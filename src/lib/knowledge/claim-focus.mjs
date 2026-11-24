@@ -18,6 +18,7 @@ import { FOOD_CHAIN_PRICE_SPREAD_EVIDENCE } from './food-chain-price-spread-snap
 import { ENERGY_PRICE_PASS_THROUGH_EVIDENCE } from './energy-price-pass-through-snapshot.mjs';
 import { FIXED_DISCONTINUOUS_STATUS_EVIDENCE } from './fixed-discontinuous-snapshot.mjs';
 import { EUROPEAN_PRICE_WAGE_CONVERGENCE_EVIDENCE } from './european-price-wage-convergence-snapshot.mjs';
+import { PUBLIC_PRIVATE_PAY_SNAPSHOT } from './public-private-pay-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -700,9 +701,23 @@ const publicPrivateJobConditions = (t) => /\b(emple\w*|trabaj\w*|puesto\w*|secto
   && /\b(conciliaci[oó]n|equilibrio entre vida|horario\w*|compatib\w*|vida familiar|flexibilidad|estabilidad|condiciones? laborales|calidad de vida)\b/.test(t)
   && /\b(empuj\w*|busc\w*|prefer\w*|atra\w*|eleg\w*|decant\w*|pas\w*|cambi\w*|dej\w*|opt\w*|interes\w*)\b/.test(t)
   && !/\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|cobra\w*|pag\w*)\b/.test(t);
-const publicPrivatePayComparison = (t) => /\b(sector publico|sector privado|empleos? public\w*|empleos? privad\w*|administraci[oó]n publica|funcionari\w*|sector\w* public\w*|sector\w* privad\w*)\b/.test(t)
-  && /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|pag\w*|cobr\w*)\b/.test(t)
-  && /\b(compar\w*|frente a(?:l| la| los| las)?|que en|que el|que la|mayor\w*|menor\w*|mas|menos|superior\w*|inferior\w*|brecha\w*|diferenc\w*)\b/.test(t);
+const publicSectorPayTerm = /\b(sector public\w*|empleos? public\w*|emplead\w* public\w*|empresas? (?:de )?control public\w*|empresas? public\w*|administraci[oó]n publica|funcionari\w*)\b/;
+const privateSectorPayTerm = /\b(sector privad\w*|empleos? privad\w*|emplead\w* privad\w*|empresas? (?:de )?control privad\w*|empresas? privad\w*|privad\w*)\b/;
+const publicPrivatePayComparison = (t) => publicSectorPayTerm.test(t) && privateSectorPayTerm.test(t)
+  && /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|gananc\w*|pag\w*|cobr\w*)\b/.test(t)
+  && /\b(compar\w*|frente a(?:l| la| los| las)?|que en|que el|que la|mayor\w*|menor\w*|mas|menos|super\w*|inferior\w*|brecha\w*|diferenc\w*)\b/.test(t);
+const publicPrivatePayAggregateClaim = (claim) => {
+  const t = normalize(claim);
+  return /\b(media|medio|promedio|mediana|ganancia media|salario medio|sueldo medio)\b/.test(t)
+    && !/\b(baja cualificacion|ocupaci[oó]n concreta|por ocupaci[oó]n|misma ocupaci[oó]n|mismo puesto|equivalente\w*|comparable\w*|mismo trabajo|misma jornada|antig[uü]edad)\b/.test(t);
+};
+const publicPrivatePayReply = ({ claim, facts }) => {
+  const aggregateClaim = publicPrivatePayAggregateClaim(claim);
+  const findings = facts.slice(0, 2).join(' ');
+  return aggregateClaim
+    ? `${findings} La media agregada fue mayor en el grupo público, pero el dato no compara puestos equivalentes.`
+    : `Como contexto agregado, la EES registró ${facts[0]?.replace(/^En 2022, /, 'en 2022 ') || ''} ${facts[1] || ''} Estos datos no permiten confirmar que el sector público pague más en puestos de baja cualificación o equivalentes.`;
+};
 const retireeHousingCostComparison = (t) => /\b(jubilad\w*|pensionist\w*|pension\w*|jubilaci[oó]n)\b/.test(t)
   && /\b(viviend\w*|alquil\w*|arrendam\w*|hipotec\w*|propietari\w*|pagad\w*|pagada\w*)\b/.test(t)
   && /\b(renta\w*|ingres\w*|salari\w*|sueld\w*|remuner\w*|trabajador\w*|emplead\w*|ocupad\w*)\b/.test(t)
@@ -2147,6 +2162,13 @@ const focuses = [
     direct: [], context: [], claimType: 'comparative',
     needs: ['salarios brutos y netos por ocupación, cualificación, antigüedad y jornada', 'complementos, estabilidad y horas trabajadas en ambos sectores', 'misma población, territorio y periodo'],
     explanation: 'Comparar salarios públicos y privados exige igualar ocupación, cualificación, jornada y antigüedad. Las medias generales de cada sector pueden reflejar que sus plantillas realizan trabajos distintos.',
+    explanationHeadline: 'La media agregada fue mayor en el grupo de control público, pero no compara puestos equivalentes',
+    explanationEvidence: {
+      ...PUBLIC_PRIVATE_PAY_SNAPSHOT,
+      directClaimEvidence: publicPrivatePayAggregateClaim,
+      claimVerdictFor: () => 'supported',
+    },
+    shareableReplyForContext: publicPrivatePayReply,
     limitation: 'Sin perfiles laborales comparables no se puede afirmar qué sector paga más en puestos de baja cualificación ni trasladar una media sectorial a cada trabajador.',
   },
   {

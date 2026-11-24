@@ -1933,4 +1933,85 @@ export const textAnswerAccuracyCases = [
       maxReplyWords: 115,
     },
   },
+  {
+    id: 'public-private-pay-aggregate-mean-2022',
+    equivalenceGroup: 'public-private-pay-aggregate-spain-2022',
+    input: 'En 2022, el salario bruto medio anual fue mayor en las empresas de control público que en las empresas de control privado.',
+    expected: {
+      state: 'limited', family: 'public-private-pay-comparison', verdict: 'supported',
+      directSourceIds: ['ine-ees-public-private-pay-2022'],
+      replyIncludes: ['35.212,32 euros por trabajador', '24.751,40 euros', '32.544,96', '20.475,36', 'no compara puestos equivalentes'],
+      evidence: [{
+        familyId: 'public-private-pay-comparison', sourceIds: ['ine-ees-public-private-pay-2022'],
+        dataIncludes: ['35.212,32 euros', '24.751,40 euros', '32.544,96 euros', '20.475,36 euros'],
+        dimensions: { period: '2022', geography: 'España', denominator: 'promedios agregados, no salarios por puesto equivalente', unit: 'euros brutos por trabajador y año' },
+      }],
+      maxReplyWords: 125,
+    },
+  },
+  {
+    id: 'public-private-pay-aggregate-mean-paraphrase',
+    equivalenceGroup: 'public-private-pay-aggregate-spain-2022',
+    input: 'La media salarial anual del sector público superó a la del sector privado en 2022.',
+    expected: {
+      state: 'limited', family: 'public-private-pay-comparison', verdict: 'supported',
+      directSourceIds: ['ine-ees-public-private-pay-2022'],
+      replyIncludes: ['35.212,32 euros por trabajador', '24.751,40 euros', 'no compara puestos equivalentes'],
+      evidence: [], maxReplyWords: 125,
+    },
+  },
+  {
+    id: 'public-private-low-qualification-pay-not-equivalent-jobs',
+    input: 'El sector público paga salarios relativamente altos en puestos de baja cualificación comparado con el sector privado.',
+    expected: {
+      state: 'insufficient', family: 'public-private-pay-comparison', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['Como contexto agregado', '35.212,32 euros por trabajador', '24.751,40 euros', 'ocupaciones y actividades difieren entre grupos', 'no permiten confirmar que el sector público pague más en puestos de baja cualificación'],
+      replyExcludes: ['la afirmación queda confirmada', 'el sector público paga más por el mismo puesto'],
+      evidence: [{
+        familyId: 'public-private-pay-comparison', sourceIds: ['ine-ees-public-private-pay-2022'],
+        dataIncludes: ['35.212,32 euros', '24.751,40 euros'],
+        dimensions: { period: '2022', geography: 'España', unit: 'euros brutos por trabajador y año' },
+      }],
+      maxReplyWords: 145,
+    },
+  },
+  {
+    id: 'public-private-pay-average-does-not-compare-equivalent-jobs',
+    input: 'En España, el salario medio es mayor en el sector público que en el privado para trabajos equivalentes.',
+    expected: {
+      state: 'insufficient', family: 'public-private-pay-comparison', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['Como contexto agregado', '35.212,32 euros por trabajador', 'no permiten confirmar'],
+      replyExcludes: ['la media agregada fue mayor', 'la afirmación queda confirmada'],
+      evidence: [{
+        familyId: 'public-private-pay-comparison', sourceIds: ['ine-ees-public-private-pay-2022'],
+        dataIncludes: ['35.212,32 euros', '24.751,40 euros'],
+        dimensions: { period: '2022', geography: 'España', denominator: 'no se igualan puestos' },
+      }],
+      maxReplyWords: 145,
+    },
+  },
+  {
+    id: 'public-private-pay-wrong-year',
+    input: 'En 2025, el salario bruto medio anual fue mayor en el sector público que en el sector privado.',
+    expected: {
+      state: 'insufficient', family: 'public-private-pay-comparison', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['35.212,32', '24.751,40'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'public-private-pay-wrong-territory',
+    input: 'En Madrid, el salario bruto medio anual fue mayor en el sector público que en el sector privado.',
+    expected: {
+      state: 'insufficient', family: 'public-private-pay-comparison', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['35.212,32', '24.751,40'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'public-private-conditions-do-not-use-wage-evidence',
+    input: 'El empleo público ofrece mejores condiciones que empleos privados equivalentes.',
+    expected: {
+      state: 'insufficient', family: undefined, verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['35.212,32', '24.751,40'], evidence: [], maxReplyWords: 120,
+    },
+  },
 ];
