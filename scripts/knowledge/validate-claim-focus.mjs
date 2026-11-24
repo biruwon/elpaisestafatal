@@ -2294,6 +2294,73 @@ assert.ok(nonYouthRent.sourceLinks.some((source) => source.id === 'bank-spain-ho
 assert.match(nonYouthRent.shareableReply, /26,7 %/);
 assert.doesNotMatch(nonYouthRent.shareableReply, /27,4 %|34,2 %|36,3 %/, 'Youth-only measures crossed into a nearby all-household claim');
 assert.ok(nonYouthRent.shareableReply.trim().split(/\s+/).length <= 160, 'Rental-affordability context should be concise enough to read and share');
+
+const intergenerationalHousingParaphrases = [
+  'La vivienda se ha convertido en una transferencia de renta de jóvenes inquilinos hacia propietarios de más edad',
+  'Los jóvenes pagan alquileres altos a generaciones que compraron vivienda mucho más barata',
+  'La desigualdad entre jóvenes propietarios e inquilinos pesa más que la diferencia salarial entre ellos',
+  'Los jóvenes transfieren renta a generaciones que además concentran gran parte de la vivienda',
+  'Los jóvenes transfieren parte del alquiler a propietarios de generaciones mayores',
+];
+let intergenerationalSourceIds;
+let intergenerationalFacts;
+for (const claim of intergenerationalHousingParaphrases) {
+  assert.equal(claimFocusFor(claim)?.id, 'intergenerational-housing-distribution', `An intergenerational housing paraphrase changed family: ${claim}`);
+  const focused = focusedEvidencePlan(claim);
+  assert.equal(focused.answerScope.family, 'intergenerational-housing-distribution');
+  assert.equal(focused.evidenceLevel, 'insufficient', 'Context about tenure and age must not be direct evidence of rent transfers between generations');
+  assert.equal(focused.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+
+  const plan = answerPlanForBroadDomains(claim);
+  assert.equal(plan.id, 'broad-youth-living-housing');
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.deepEqual(plan.sourceIds, ['bank-spain-housing-annual-2025']);
+  const families = plan.evidenceSummary.families;
+  assert.deepEqual(families.map((family) => family.criterionId), [
+    'intergenerational-young-renting-trend',
+    'intergenerational-young-home-purchases',
+    'intergenerational-individual-landlord-concentration',
+  ]);
+  assert.match(plan.shareableReply, /54,7 %.*15,4 puntos/);
+  assert.match(plan.shareableReply, /22,4 %.*20 puntos/);
+  assert.match(plan.shareableReply, /medidas distintas, con edades y denominadores diferentes/);
+  if (claim.includes('concentran')) {
+    assert.match(plan.shareableReply, /76,1 %.*50,7 %.*0,2 %.*2,4 %/);
+    assert.match(plan.shareableReply, /no clasifica a los propietarios por edad/);
+  }
+  if (claim.includes('transfieren') || claim.includes('transferencia') || claim.includes('pagan')) {
+    assert.match(plan.shareableReply, /La transferencia generacional concreta no queda demostrada/);
+  }
+  if (claim.includes('diferencia salarial')) assert.match(plan.shareableReply, /no compara la brecha patrimonial.*con la diferencia salarial/);
+
+  const fallback = deterministicApiFallback({ text: claim, inputType: 'text' });
+  assert.equal(fallback.status, 'complete');
+  assert.equal(fallback.result.id, 'broad-youth-living-housing');
+  const publicAnswer = localPublicCheckResponse(fallback, claim);
+  assert.equal(publicAnswer.state, 'limited');
+  assert.ok(publicAnswer.result.sources.some((source) => source.id === 'bank-spain-housing-annual-2025'));
+  if (claim.includes('transfieren') || claim.includes('transferencia') || claim.includes('pagan')) {
+    assert.match(publicAnswer.result.reply, /La transferencia generacional concreta no queda demostrada/);
+  }
+  assert.ok(!publicAnswer.result.arguments?.some((argument) => argument.verdict === 'supported'), 'Contextual housing data must not become a supported verdict on a generational transfer');
+
+  const sourceIds = publicAnswer.result.sources.map((source) => source.id);
+  const factRows = families.map((family) => family.data);
+  if (intergenerationalSourceIds) assert.deepEqual(sourceIds, intergenerationalSourceIds, `A paraphrase changed sources: ${claim}`);
+  if (intergenerationalFacts) assert.deepEqual(factRows, intergenerationalFacts, `A paraphrase changed the evidence: ${claim}`);
+  intergenerationalSourceIds = sourceIds;
+  intergenerationalFacts = factRows;
+}
+assert.equal(claimFocusFor('El alquiler se lleva más de la mitad del sueldo de muchos jóvenes')?.id, 'rental-affordability', 'Ordinary youth rent burden must not route to an intergenerational transfer family');
+const ordinaryYouthRent = answerPlanForBroadDomains('El alquiler se lleva más de la mitad del sueldo de muchos jóvenes');
+assert.ok(!ordinaryYouthRent.evidenceSummary.families.some((family) => family.criterionId.startsWith('intergenerational-')));
+assert.doesNotMatch(ordinaryYouthRent.shareableReply, /transferencia generacional|propietarios por edad/);
+assert.equal(claimFocusFor('Las generaciones anteriores compraron vivienda más barata, pero tendrán peores pensiones que los jóvenes')?.id, 'intergenerational-housing-pension-comparison', 'Housing plus pension comparisons must keep the separate pension family');
+const localGenerationalClaim = 'En Madrid, los jóvenes pagan alquiler a generaciones que compraron casas mucho más baratas';
+assert.equal(claimFocusFor(localGenerationalClaim)?.id, 'intergenerational-housing-distribution');
+assert.deepEqual(broadDomainPacketsFor(localGenerationalClaim), [], 'Spain-wide housing evidence must not be presented as a Madrid-specific owner-renter comparison');
+assert.deepEqual(deterministicApiFallback({ text: localGenerationalClaim }).result?.sourceIds || [], [], 'National cohort evidence must not be used as direct evidence for a city-specific transfer claim');
+
 const security = answerPlanForBroadDomains('No se puede salir a la calle de cómo está la seguridad');
 assert.doesNotMatch(security.shareableReply, /extranj|nacionaliz|wokismo/i);
 assert.ok(!security.evidenceSummary.families.some((family) => family.criterionId === 'group-causality'));

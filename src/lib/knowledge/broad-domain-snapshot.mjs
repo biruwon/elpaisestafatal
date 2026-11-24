@@ -780,7 +780,7 @@ export const broadDomainPacketsFor = (text) => {
   const domainProfile = domainProfileFor(text, compiledClaim);
   const taxSignal = /\b(impuestos?|irpf|iva|carga fiscal|presi[oó]n fiscal|recaudaci[oó]n|subir impuestos|subida de impuestos|progresividad en frio|deflactar)\b/i.test(value);
   const taxBroadSignal = taxSignal && /inflaci[oó]n|coste de vida|poder (?:de compra|adquisitivo)|salari|sueldo|baby boom|gasto p[uú]blico|pensiones?/i.test(value);
-  const youthSignal = /j[oó]ven|juventud|poblaci[oó]n joven|menores? de (?:30|treinta)|emancip/i.test(value) && /viviend|alquil|piso|casa|hipotec|emancip/i.test(value);
+  const youthSignal = focusedFamily === 'intergenerational-housing-distribution' || (/j[oó]ven|juventud|poblaci[oó]n joven|menores? de (?:30|treinta)|emancip/i.test(value) && /viviend|alquil|piso|casa|hipotec|emancip|propietari|inquilin/i.test(value));
   const focusedHousingFamily = focusedFamily;
   const reviewedYouthPurchaseContext = youthSignal && focusedHousingFamily === 'purchase-affordability'
     && /compr|entrada|hipotec|ahorr|deposit|aval/i.test(value);
@@ -858,7 +858,7 @@ export const broadDomainPacketsFor = (text) => {
   if (replacementSignal) return [packetById('broad-population-replacement')].filter(Boolean);
   if (securityGroupAttribution && /\b(inmigr\w*|migrant\w*|extranj\w*|migrator\w*)\b/i.test(value)) return [packetById('broad-immigration-security')].filter(Boolean);
   if (securityGroupAttribution) return [packetById('broad-security')].filter(Boolean);
-  if (needsScopedMeasurement(text) && !broadHousingAccess && !broadYouthAccess && !reviewedYouthPurchaseContext && !taxBroadSignal && !reviewedCompoundRoute && !publicAdministrationPerformanceSignal) return [];
+  if (needsScopedMeasurement(text) && focusedFamily !== 'intergenerational-housing-distribution' && !broadHousingAccess && !broadYouthAccess && !reviewedYouthPurchaseContext && !taxBroadSignal && !reviewedCompoundRoute && !publicAdministrationPerformanceSignal) return [];
   if (administrationSignal) return [packetById('broad-public-administration')].filter(Boolean);
   if ((demographyPensionSignal || pensionFinanceSignal) && !taxSignal) return [packetById('broad-demography-pension-finance')].filter(Boolean);
   if (taxBroadSignal) return [packetById('broad-tax-burden-purchasing-power')].filter(Boolean);
@@ -1138,18 +1138,22 @@ export const composeFamilyReply = (plan, { compact = false } = {}) => {
 // those concerns; otherwise the answer invents a proposition to rebut.
 const scopeReviewedPacket = (packet, claim) => {
   const text = normalise(claim);
+  let interpretation = packet.interpretation;
   let criteria = packet.criteria;
   let visuals = packet.visuals;
   let headline = packet.headline;
   let summary = packet.summary;
   let limitations = packet.limitations;
   if (packet.id === 'broad-youth-living-housing') {
+    const intergenerational = claimFocusFor(text)?.id === 'intergenerational-housing-distribution';
     const rent = /alquil|arrendam|inquilin/.test(text);
     const purchase = /compr|adquir|hipotec|propiedad|entrada|precio.*casa/.test(text);
     const family = /padres|progenitor|familia|herenc|patrimonio/.test(text);
     const emigrationCounterfactual = /emigr|marchar|se irian|irse|se van/.test(text) && /sin|si no|de no|herenc/.test(text);
     const wageTrend = /salari|sueldo|ingreso/.test(text) && /sub|baj|crec|caid|estanc|evoluc|\banos?\b/.test(text);
     criteria = criteria.filter((criterion) => {
+      if (intergenerational) return ['intergenerational-young-renting-trend', 'intergenerational-young-home-purchases', 'intergenerational-individual-landlord-concentration'].includes(criterion.id);
+      if (criterion.id.startsWith('intergenerational-')) return false;
       if (criterion.id === 'family-support-counterfactual') return emigrationCounterfactual;
       if (criterion.id === 'family-co-residence' || criterion.id === 'family-housing-barrier') return family;
       if (criterion.id === 'youth-purchase-effort' || criterion.id === 'youth-housing-access') return purchase || !rent;
@@ -1168,7 +1172,24 @@ const scopeReviewedPacket = (packet, claim) => {
       : criterion.id === 'youth-rental-effort' ? { ...criterion, finding: 'En España, el alquiler mensual medio de una vivienda completa se compara con el salario individual mensual medio de referencia de la juventud en el Observatorio 2025. Compartir vivienda u otros ingresos cambian el esfuerzo de cada hogar.' }
       : criterion.id === 'family-co-residence' ? { ...criterion, finding: 'La ECV 2025 muestra diferencias de convivencia por renta personal; describe una asociación, no mide transferencias familiares ni demuestra qué causó esa convivencia.' } : criterion);
     if (!emigrationCounterfactual) {
-      if (purchase && !rent) {
+      if (intergenerational) {
+        const comparesWages = /salari|sueldo/.test(text);
+        const allegesConcentration = /concentr|acumul/.test(text);
+        const allegesTransfer = /transfer\w*|transfier\w*|transfi\w*|pag\w*|entreg\w*/.test(text);
+        headline = comparesWages
+          ? 'El informe muestra una brecha de acceso residencial, pero no la compara con la salarial'
+          : allegesConcentration
+            ? 'El informe documenta brechas de acceso, pero no clasifica la propiedad por generación'
+            : allegesTransfer
+              ? 'El informe documenta brechas de acceso, pero no mide transferencias de alquiler entre generaciones'
+              : 'El informe documenta brechas de acceso, pero no cuantifica su reparto entre generaciones';
+        summary = 'Los datos muestran más hogares jóvenes en alquiler, menos compras residenciales por jóvenes y una menor acumulación de riqueza neta de los hogares jóvenes frente a generaciones anteriores. No identifican la edad de quienes reciben el alquiler, calculan cuánto dinero pasa de una cohorte a otra ni comparan la magnitud de la brecha patrimonial y la salarial.';
+        limitations = [
+          'El informe no vincula los alquileres pagados por hogares jóvenes con la edad de sus arrendadores ni compara los precios pagados por distintas cohortes por viviendas comparables.',
+          'El cuadro de carteras de arrendadores cubre viviendas habituales en alquiler propiedad de personas físicas en el territorio fiscal común; no clasifica propietarios por edad ni incluye viviendas de sociedades.',
+        ];
+        interpretation = { kind: 'comparative', subject: 'acceso y patrimonio residencial entre generaciones', subjectType: 'groups', predicate: 'requires_cohort_linked_measurement', object: 'alquileres, propiedad, salarios y precios de adquisición por edad', normalizedClaim: text, interpretation: 'El aumento del alquiler entre hogares jóvenes y la caída de su cuota de compras describen diferencias de acceso. Para probar una transferencia entre generaciones o comparar la magnitud de brechas hace falta vincular arrendatarios con arrendadores y medir flujos, salarios y patrimonio por cohorte.' };
+      } else if (purchase && !rent) {
         const asksAboutFamilySupport = /padres|progenitor|familia|herenc|patrimoni/.test(text);
         headline = 'La entrada media equivale a 4,7 años del salario joven íntegro de referencia';
         summary = 'El Observatorio de Emancipación estima una entrada para comprar vivienda libre en España y la compara con el salario anual individual de referencia de la juventud. La equivalencia supone dedicar el salario íntegro; no mide el tiempo real de ahorro ni cuántos hogares consiguen comprar.';
@@ -1220,7 +1241,7 @@ const scopeReviewedPacket = (packet, claim) => {
   const changed = criteria.length !== packet.criteria.length || headline !== packet.headline || criteria.some((criterion, index) => criterion !== packet.criteria[index]);
   if (!changed) return packet;
   const sourceIds = new Set(criteria.flatMap((criterion) => criterion.sourceIds || []));
-  return { ...packet, criteria, visuals, headline, summary, limitations, scopedReply: true,
+  return { ...packet, criteria, visuals, headline, summary, limitations, interpretation, scopedReply: true,
     sources: packet.sources.filter((source) => sourceIds.has(source.id)) };
 };
 
@@ -1236,8 +1257,30 @@ const composeScopedReply = (plan) => {
     const housingBarrier = dataFor('family-housing-barrier');
     const familyTransferGap = families.some((family) => family.criterionId === 'family-housing-barrier'
       && family.missingDimensions?.includes('efecto causal de transferencias familiares'));
+    const generationalRenting = dataFor('intergenerational-young-renting-trend');
+    const generationalPurchases = dataFor('intergenerational-young-home-purchases');
+    const individualLandlordConcentration = dataFor('intergenerational-individual-landlord-concentration');
+    const generationalClaim = normalise(plan.interpretation?.normalizedClaim || '');
+    const allegesTransfer = /transfer\w*|transfier\w*|transfi\w*|pag\w*|entreg\w*/.test(generationalClaim);
+    const allegesConcentration = /concentr|acumul/.test(generationalClaim);
+    const comparesWages = /salari|sueldo/.test(generationalClaim);
     const migration = families.find((family) => family.criterionId === 'family-support-counterfactual');
     const parts = [plan.headline.replace(/[.]$/, '') + '.'];
+    if (generationalRenting && generationalPurchases && individualLandlordConcentration) {
+      parts.push(`Banco de España: ${generationalRenting}. ${generationalPurchases}. Son medidas distintas, con edades y denominadores diferentes. El informe también señala que, en las últimas décadas, los hogares jóvenes han acumulado menos riqueza neta que generaciones anteriores.`);
+      if (allegesConcentration) parts.push(`Sobre la concentración de carteras: ${individualLandlordConcentration}. El dato cubre viviendas habituales en alquiler de personas físicas en el territorio fiscal común; no clasifica a los propietarios por edad ni incluye viviendas de sociedades.`);
+      if (comparesWages) {
+        parts.push('El informe no compara la brecha patrimonial entre propietarios e inquilinos con la diferencia salarial. Para saber cuál pesa más hacen falta datos de riqueza neta y salarios de ambos grupos con edades y periodos comparables.');
+      } else if (allegesTransfer) {
+        parts.push('Estos datos no vinculan los alquileres pagados por hogares jóvenes con la edad de quienes los reciben ni comparan los precios pagados por distintas cohortes. La transferencia generacional concreta no queda demostrada.');
+        if (allegesConcentration) parts.push('La tabla de carteras describe el número de viviendas por arrendador, no la distribución por edad; no demuestra que las generaciones mayores concentren la propiedad.');
+      } else if (allegesConcentration) {
+        parts.push('La tabla describe el tamaño de las carteras de arrendadores, no la distribución de la propiedad por edad; no demuestra que las generaciones mayores concentren la vivienda.');
+      } else {
+        parts.push('Las medidas disponibles describen acceso y patrimonio, pero no cuantifican por sí solas cómo se distribuye la riqueza residencial entre cohortes.');
+      }
+      return parts.join('\n\n');
+    }
     const rentAmount = rental?.match(/alquiler medio mensual de una vivienda completa,\s*([\d.]+ €)/i)?.[1];
     const rentShare = rental?.match(/equivale al\s*([\d,]+ %)/i)?.[1];
     const deposit = purchase?.match(/entrada estimada para comprar vivienda libre,\s*([\d.]+ €)/i)?.[1];
@@ -1408,7 +1451,7 @@ const answerPlanForPacket = (packet, { now = Date.now(), observations = [], clai
           : 'Los indicadores mostrados son datos de referencia revisados y fechados; cada uno conserva su alcance.' } : {}),
     },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
-    knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-11-17',
+    knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-11-24',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan);
   if (packet.id === 'broad-youth-living-housing') {
@@ -1504,7 +1547,7 @@ export const answerPlanForBroadDomains = (text, { now = Date.now(), observations
     asOf: '2026-09-25',
     evidenceSummary: { mode: families.some((family) => family.data?.length) ? 'mixed' : 'snapshot', families, ...(gaps.length ? { missingDimensions: gaps } : {}) },
     snapshotPolicy: BROAD_SNAPSHOT_POLICY,
-    knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-11-17',
+    knowledgeVersion: 'broad-domain-snapshot-semantic-evidence-2026-11-24',
   };
   plan.blocks.find((block) => block.type === 'conversation_reply').text = composeFamilyReply(plan, { compact: true });
   plan.shareableReply = plan.blocks.find((block) => block.type === 'conversation_reply').text;

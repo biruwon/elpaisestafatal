@@ -19,6 +19,12 @@ const householdInflationBasketComparison = (t) => /\b(ipc|hicp|inflacion\w*|prec
   && !/\bhipotec\w*\b|\b(?:compr\w*|adquir\w*)\b.{0,35}\b(?:viviend\w*|casas?)\b|\b(?:viviend\w*|casas?)\b.{0,35}\b(?:compr\w*|adquir\w*|propiedad|propietari\w*)\b/.test(t);
 const rentalBurden = /\b(ingres\w*|salari\w*|sueld\w*|nomina\w*|mitad|por ciento|porcentaje|esfuerzo|asequib\w*|poder alquilar|puede alquilar|puede pagar|alquilar[^.]{0,35}sol[oa]|emancip\w*|independiz\w*)\b/;
 const absoluteRentAmount = /\b(cuant\w*|importe\w*|cantid\w*|cuant[ií]a\w*|euros?|eur|mensual\w*|al mes|por mes|€)\b/;
+const intergenerationalHousingDistribution = (t) => !/\b(pension\w*|jubilacion\w*|jubilad\w*)\b/.test(t)
+  && /\b(j[oó]ven\w*|juventud|generaci[oó]n\w*|boomers?|mayor(?:es)?|nacid\w* entre)\b/.test(t)
+  && /\b(viviend\w*|casas?|pisos?|alquil\w*|arrendam\w*|inquilin\w*|propietari\w*|arrendador\w*|casero\w*)\b/.test(t)
+  && (/\b(transfer\w*|transfier\w*|transfi\w*|desigual\w*|concentr\w*|distribu\w*|acumul\w*|patrimoni\w*|riqueza|repart\w*)\b/.test(t)
+    || /\b(pag\w*|entreg\w*)\b[\s\S]{0,80}\b(a|hacia)\b[\s\S]{0,40}\b(generaci[oó]n\w*|propietari\w*|arrendador\w*|casero\w*|due[nñ]o\w*|mayor(?:es)?)\b/.test(t)
+    || /\b(compr\w*|adquir\w*)\b[\s\S]{0,60}\b(barat\w*|car\w*)\b/.test(t));
 const mortgageEntryVsPayment = (t) => /\b(entrada|ahorro previo|ahorro inicial|pago inicial|aportacion inicial|recursos iniciales|riqueza disponible)\b/.test(t)
   && /\b(cuota\w*|mensualidad\w*|pago mensual|capacidad de pago|pagos regulares)\b/.test(t)
   && /\b(viviend\w*|hipotec\w*|compr\w*|adquir\w*)\b/.test(t)
@@ -1607,6 +1613,20 @@ const focuses = [
     needs: ['salarios de entrada y su evolución para las mismas ocupaciones y cohortes', 'antigüedad, jornada, sector y tipo de contrato', 'salarios reales o nominales identificados y periodo de seguimiento'],
     explanation: 'Un salario de entrada describe el comienzo de una carrera laboral, no cómo evoluciona el sueldo de las mismas personas con los años. Para medir progresión hace falta seguir cohortes u ocupaciones comparables.',
     limitation: 'La mediana salarial actual no permite saber si trabajadores jóvenes permanecen años en salarios iniciales ni si su sueldo progresa en términos reales.',
+  },
+  {
+    id: 'intergenerational-housing-distribution', label: 'acceso a vivienda y riqueza residencial entre generaciones',
+    when: intergenerationalHousingDistribution,
+    direct: [], context: [], claimType: 'comparative',
+    needs: [
+      'edad o cohorte de los hogares inquilinos y de quienes reciben sus alquileres, vinculadas en el mismo periodo',
+      'rentas pagadas y recibidas, costes de mantenimiento, impuestos y otros flujos por cohorte',
+      'precios de adquisición, fechas, vivienda y territorio comparables para las generaciones mencionadas',
+      'propiedad de vivienda por edad, incluyendo personas físicas y sociedades, si se afirma concentración generacional',
+      'riqueza e ingresos por edad y régimen de tenencia, con una comparación equivalente si se afirma que la brecha patrimonial supera la salarial',
+    ],
+    explanation: 'Los datos de alquiler juvenil, acceso a la compra y patrimonio por edad pueden describir una brecha residencial, pero no identifican por sí solos quién recibe el alquiler, cuánto dinero pasa entre generaciones ni si la brecha patrimonial supera la salarial.',
+    limitation: 'Sin vincular el gasto de los hogares jóvenes con la edad y los ingresos de sus arrendadores, y comparar patrimonio, salarios y precios de compra por cohortes y periodos compatibles, no se puede cuantificar una transferencia de renta entre generaciones, ordenar las brechas ni afirmar que las generaciones mayores concentren la propiedad.',
   },
   {
     id: 'rental-affordability', label: 'alquiler e ingresos',

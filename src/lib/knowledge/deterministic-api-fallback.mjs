@@ -41,6 +41,23 @@ const topicReference = (text) => {
 // has no observations. Keep these bridges explicit so related context cannot
 // replace a claim-specific measurement or its scope.
 const reviewedContextForFocusedGap = {
+  'measurement-intergenerational-housing-distribution': {
+    packetId: 'broad-youth-living-housing',
+    criterionId: 'intergenerational-young-renting-trend',
+    evidenceGap: () => ({
+      missing: [
+        'vinculación entre el alquiler pagado por hogares jóvenes y la edad de quienes lo reciben',
+        'precios de compra por cohorte, periodo, territorio y vivienda comparables',
+        'propiedad residencial desglosada por edad que incluya personas y sociedades',
+        'comparación equivalente de patrimonio, ingresos y salarios por edad y régimen de tenencia',
+      ],
+      needed: [
+        'datos emparejados de hogares arrendatarios, arrendadores e importes netos del alquiler',
+        'precios de adquisición, patrimonio residencial e ingresos laborales por cohorte y periodo',
+      ],
+      nextAction: 'Buscar una fuente que cruce pagos de alquiler y propiedad por edades y compare precios de compra entre cohortes; los datos de acceso juvenil no miden por sí solos transferencias entre generaciones.',
+    }),
+  },
   'measurement-rental-affordability': {
     packetId: 'broad-youth-living-housing',
     criterionId: 'youth-rental-effort',
