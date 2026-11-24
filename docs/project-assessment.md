@@ -1012,3 +1012,28 @@ job-count feed is included in the INE refresh configuration; the reviewed share
 snapshot expires on 21 December 2026 unless refreshed. The text route returns a
 limited, sourced explanation and keeps unsupported regional, causal and
 normative claims unverified.
+
+## Education and pay claims — 24 November 2026
+
+The text fallback now preserves Eurostat's reviewed 2022 gross hourly earnings
+means by employees' attained education when a successful D1 lookup has no rows.
+For Spain, the figures are €10.04 for ISCED 0–2, €11.48 for ISCED 3–4 and
+€17.71 for ISCED 5–8. Coverage is employees of all sexes in enterprises with
+at least 10 employees in NACE Rev. 2 B–S excluding O. Eurostat describes this
+four-yearly survey and its measure in the [2022 survey metadata](https://ec.europa.eu/eurostat/cache/metadata/en/earn_ses2022_esms.htm); Spain's method is in its [quality report](https://ec.europa.eu/eurostat/cache/metadata/EN/earn_ses2022_esqrs_es.htm).
+
+These observations group people by education attained, not by education
+required for their jobs. They are context for claims that pay does not match
+qualification; they cannot establish occupation-matched pay, individual or net
+earnings, within-group distributions, or whether compensation is adequate. The
+public verdict therefore remains insufficient. A successful empty lookup can
+use the complete reviewed snapshot; failed lookups stay unavailable, and
+partial warehouse results are not completed with snapshot values. Both tested
+paraphrases retain the same three source rows.
+
+The current deterministic audit of the 300-item discovery set reports 3
+complete, 40 limited and 257 uncovered responses; 90 have a compiler metric
+match, 114 a focused-family route and 50 both, leaving 146 with neither. The
+items remain unverified inputs, and routing counts are not factual-accuracy
+scores. The held-out text benchmark passes 49/49 cases across 12 paraphrase
+groups; this regression set also does not estimate population-wide accuracy.

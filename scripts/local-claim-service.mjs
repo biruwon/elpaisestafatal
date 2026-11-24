@@ -46,6 +46,7 @@ import { detectCurrentEvent, buildNeutralQueries, classifyEventSearchLeads, even
 import { latestGovernmentPeriod, scorecardMetrics, makeScorecard, makePopulationScorecard } from './knowledge/scorecard.mjs';
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../src/lib/knowledge/scorecard-snapshot.mjs';
 import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/tourism-employment-snapshot.mjs';
+import { EDUCATION_EARNINGS_SNAPSHOT } from '../src/lib/knowledge/education-earnings-snapshot.mjs';
 import { governmentScorecardGapPlan, isBroadGovernmentScorecardClaim } from '../src/lib/knowledge/scorecard-interpretation.mjs';
 import { answerPlanForBroadDomains, broadDomainPacketsFor, broadMetricIdsFor } from '../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { researchFamilyGaps } from './knowledge/research-family-gaps.mjs';
@@ -2182,6 +2183,9 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         .filter((item) => !observedPeriods.has(`${item.metricId}|${item.period}`));
       return [...observations, ...missingSnapshotObservations];
     })()
+    : focus?.id === 'education-pay-comparison' && snapshotLifecycle(EDUCATION_EARNINGS_SNAPSHOT).usable
+      && !observations.some((item) => item.metricId === 'mean_hourly_earnings_by_education')
+      ? [...observations, ...EDUCATION_EARNINGS_SNAPSHOT.observations]
     : observations;
   const focusedPlan = !classified.primary && !householdArrangementContrast ? focusedEvidencePlan(text, { observations: focusedObservations, propositions: classified.compiler?.explicitPropositions || [], allowReviewedSnapshotFallback: true }) : undefined;
   if (focusedPlan) return { status: 'complete', requestId: resultRequestId, result: focusedPlan, relatedClaims: [] };

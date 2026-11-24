@@ -13,6 +13,7 @@ import { parsePrimaryCareBarometerWorkbook } from './domain-connectors.mjs';
 import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care-wait-snapshot.mjs';
 import { WORKING_POVERTY_SNAPSHOT } from '../../src/lib/knowledge/working-poverty-snapshot.mjs';
 import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/tourism-employment-snapshot.mjs';
+import { EDUCATION_EARNINGS_SNAPSHOT } from '../../src/lib/knowledge/education-earnings-snapshot.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { validateAnswerPlan } from './answer-plan-validation.mjs';
 import { alignPropositionOutcomes, comparableObservationGroups, composePropositionFindings, evidenceForProposition } from '../lib/compound-evidence.mjs';
@@ -558,6 +559,35 @@ assert.deepEqual(tourismEmploymentFallback.result.sourceIds, tourismEmploymentPl
 const expiredTourismEmploymentFallback = deterministicApiFallback({ text: tourismEmploymentParaphrases[0], inputType: 'text', now: Date.parse('2027-01-01') });
 assert.equal(expiredTourismEmploymentFallback.status, 'uncovered');
 assert.doesNotMatch(expiredTourismEmploymentFallback.result.shareableReply, /12,3 %|2,78 millones/, 'Expired reviewed figures must not be returned as current data');
+const educationPayQueries = [
+  'Los sueldos de muchos trabajos cualificados son demasiado parecidos a los de puestos que exigen mucha menos formación',
+  'Tener un máster o un doctorado no garantiza un salario acorde con la cualificación',
+];
+let educationPayFallbackEvidenceIds;
+for (const query of educationPayQueries) {
+  const result = deterministicApiFallback({ text: query, inputType: 'text', now: Date.parse('2026-11-24') });
+  assert.equal(result.status, 'partial', 'Sourced context should be available during processing while the public claim verdict stays insufficient');
+  assert.equal(result.result.answerScope.family, 'education-pay-comparison');
+  assert.deepEqual(result.result.answerScope.directMetrics, []);
+  assert.deepEqual(result.result.answerScope.contextMetrics, ['mean_hourly_earnings_by_education']);
+  assert.match(result.result.shareableReply, /10,04 €\/hora.*11,48 €\/hora.*17,71 €\/hora/s);
+  assert.match(result.result.shareableReply, /estudios alcanzados.*no los exigidos por el puesto/);
+  assert.match(result.result.shareableReply, /empresas con al menos 10 empleados/);
+  assert.match(result.result.shareableReply, /falta comparar salarios con los requisitos de cada puesto/);
+  assert.equal(localPublicCheckResponse(result, query).state, 'insufficient', 'Contextual education earnings cannot settle a qualification-to-pay claim');
+  const pending = localPublicCheckResponse({ status: 'processing', requestId: 'education-pay-preview' }, query);
+  assert.equal(pending.state, 'processing');
+  assert.equal(pending.preview?.state, 'insufficient', 'A processing preview must retain the insufficient claim verdict');
+  assert.ok(pending.preview?.result?.sources.some((source) => source.id === 'eurostat-spain-ses-2022-education'));
+  const evidenceIds = result.result.evidenceSummary.families.find((family) => family.familyId === 'mean_hourly_earnings_by_education')?.evidenceIds || [];
+  assert.equal(evidenceIds.length, 3, 'All educational attainment groups must be retained in the context snapshot');
+  if (educationPayFallbackEvidenceIds) assert.deepEqual(evidenceIds, educationPayFallbackEvidenceIds, `Education-pay paraphrase changed evidence rows: ${query}`);
+  educationPayFallbackEvidenceIds = evidenceIds;
+}
+assert.ok(EDUCATION_EARNINGS_SNAPSHOT.observations.every((item) => item.period === '2022' && item.unit === 'Euro'));
+const expiredEducationPayFallback = deterministicApiFallback({ text: educationPayQueries[0], inputType: 'text', now: Date.parse('2028-07-01') });
+assert.equal(expiredEducationPayFallback.status, 'uncovered');
+assert.doesNotMatch(expiredEducationPayFallback.result.shareableReply, /10,04|11,48|17,71/, 'Expired earnings context must not be returned');
 const touristNeighbourhoodClaim = 'Los pisos turísticos reducen la oferta para residentes en los barrios céntricos de Barcelona';
 const touristNeighbourhoodPlan = focusedEvidencePlan(touristNeighbourhoodClaim, { observations: touristHousingObservations });
 assert.equal(touristNeighbourhoodPlan.sourceLinks.length, 0, 'A provincial or national aggregate cannot answer a neighbourhood-level claim');

@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import { build } from 'esbuild';
 import { LABOUR_PRODUCTIVITY_SNAPSHOT } from '../src/lib/knowledge/labour-productivity-snapshot.mjs';
 import { HICP_BASKET_SNAPSHOT } from '../src/lib/knowledge/hicp-basket-snapshot.mjs';
+import { EDUCATION_EARNINGS_SNAPSHOT } from '../src/lib/knowledge/education-earnings-snapshot.mjs';
 
 const compiled = await build({ entryPoints: ['functions/api/check.ts'], bundle: true, platform: 'node', format: 'esm', write: false, logLevel: 'silent' });
 const api = await import(`data:text/javascript;base64,${Buffer.from(compiled.outputFiles[0].contents).toString('base64')}`);
@@ -135,6 +136,57 @@ assert.deepEqual(tourismEmploymentRegional.body.result.answerScope.contextMetric
 assert.deepEqual(tourismEmploymentRegional.body.result.sources, [], 'National figures must not settle a regional cross-sector comparison');
 assert.doesNotMatch(tourismEmploymentRegional.body.result.reply, /12,3 %|2,78 millones/);
 assert.match(tourismEmploymentRegional.body.result.reply, /recuentos comparables de empleo en turismo y agricultura/);
+
+const educationPayQueries = [
+  'Los sueldos de muchos trabajos cualificados son demasiado parecidos a los de puestos que exigen mucha menos formación',
+  'Tener un máster o un doctorado no garantiza un salario acorde con la cualificación',
+];
+let educationPaySourceIds;
+for (const query of educationPayQueries) {
+  const result = await check(query);
+  assert.equal(result.httpStatus, 200);
+  assert.equal(result.body.state, 'insufficient');
+  assert.equal(result.body.result.answerScope.family, 'education-pay-comparison');
+  assert.deepEqual(result.body.result.answerScope.directMetrics, []);
+  assert.deepEqual(result.body.result.answerScope.contextMetrics, ['mean_hourly_earnings_by_education']);
+  assert.equal(result.body.result.evidenceSummary.mode, 'snapshot');
+  assert.match(result.body.result.reply, /10,04 €\/hora.*11,48 €\/hora.*17,71 €\/hora/s);
+  assert.match(result.body.result.reply, /estudios alcanzados.*no los exigidos por el puesto/);
+  assert.match(result.body.result.reply, /empresas con al menos 10 empleados/);
+  assert.match(result.body.result.reply, /falta comparar salarios con los requisitos de cada puesto/);
+  assert.equal(result.body.result.arguments[0].verdict, 'insufficient');
+  const sourceIds = result.body.result.sources.map((source) => source.id);
+  assert.deepEqual(sourceIds, ['eurostat-spain-ses-2022-education']);
+  if (educationPaySourceIds) assert.deepEqual(sourceIds, educationPaySourceIds, `Education-pay paraphrase changed source selection: ${query}`);
+  educationPaySourceIds = sourceIds;
+}
+
+const educationRows = EDUCATION_EARNINGS_SNAPSHOT.observations.map((item) => ({
+  id: item.id, kind: 'observation', dataset_id: item.source.title, metric: item.metric,
+  metric_id: item.metricId, value: item.value, unit: item.unit, period: item.period,
+  geography: item.geography, population: item.population, dimensions_json: JSON.stringify(item.dimensions),
+  dimension_labels_json: '{}', url: null, excerpt: null,
+  payload_json: JSON.stringify({ dataKind: 'observed' }), source_id: item.source.id,
+  publisher: item.source.publisher, title: item.source.title, source_url: item.source.url,
+  published_at: null, retrieved_at: item.source.retrievedAt, trust_tier: 'primary', aliases_json: '[]',
+}));
+const partialEducationDatabase = {
+  prepare() {
+    let metricId;
+    return {
+      bind(value) { metricId = value; return this; },
+      async all() { return { results: educationRows.filter((row) => row.metric_id === metricId).slice(0, 1) }; },
+      async run() { return {}; },
+    };
+  },
+};
+const partialEducationPay = await check(educationPayQueries[0], partialEducationDatabase);
+assert.equal(partialEducationPay.body.state, 'insufficient');
+assert.deepEqual(partialEducationPay.body.result.sources, [], 'A partial D1 series must not be completed with the full reviewed snapshot');
+assert.doesNotMatch(partialEducationPay.body.result.reply, /10,04|11,48|17,71/);
+const unavailableEducationPay = await check(educationPayQueries[0], brokenDatabase);
+assert.equal(unavailableEducationPay.body.state, 'unavailable', 'A D1 failure must remain distinguishable from an empty read');
+assert.doesNotMatch(unavailableEducationPay.body.result?.reply || '', /10,04|11,48|17,71/);
 
 const fullTime = await check('Trabajar a jornada completa no impide estar en riesgo de pobreza');
 assert.equal(fullTime.httpStatus, 200);
@@ -474,10 +526,12 @@ assert.doesNotMatch(primaryCareUnavailable.body.result?.reply || '', /9,71|72 %/
 
 const graduatePay = await check('Tener un máster o un doctorado no garantiza cobrar un salario acorde con la cualificación');
 assert.equal(graduatePay.body.state, 'insufficient');
-assert.deepEqual(graduatePay.body.result.sources, []);
-assert.match(graduatePay.body.result.reply, /salarios comparables por ocupación y por formación o cualificación exigida para el puesto/);
-assert.match(graduatePay.body.result.reply, /distribuciones salariales y una definición medible de «acorde»/);
-assert.doesNotMatch(graduatePay.body.result.reply, /80,2 %|34 %|17 € por hora/);
+assert.deepEqual(graduatePay.body.result.answerScope.contextMetrics, ['mean_hourly_earnings_by_education']);
+assert.match(graduatePay.body.result.reply, /10,04 €\/hora.*11,48 €\/hora.*17,71 €\/hora/s);
+assert.match(graduatePay.body.result.reply, /falta comparar salarios con los requisitos de cada puesto.*ocupación, jornada, experiencia, sector, territorio y periodo comparables/s);
+assert.match(graduatePay.body.result.reply, /media bruta por hora no muestra la distribución salarial/);
+assert.ok(graduatePay.body.result.sources.some((source) => source.id === 'eurostat-spain-ses-2022-education'));
+assert.doesNotMatch(graduatePay.body.result.reply, /80,2 %|34 %/);
 
 const regionalPayHousing = await check('El coste de vivienda ha eliminado la ventaja salarial de trabajar en Madrid o Barcelona');
 assert.equal(regionalPayHousing.body.state, 'insufficient');
