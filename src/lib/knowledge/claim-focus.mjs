@@ -500,8 +500,38 @@ const rentalRegulationContractShift = (t) => rentalSubject(t)
 const rentalLandlordMotives = (t) => rentalSubject(t)
   && (/\b(propietari\w*|arrendador\w*|caser\w*|due[nñ]os?|anfitri[oó]n\w*)\b/.test(t)
     || /\b(viviend\w*|piso\w*|casas?|apartament\w*)\b[\w\s]{0,40}\b(vac[ií]a\w*|desocupad\w*|retirad\w*)\b/.test(t))
-  && /\b(mied\w*|temor\w*|riesg\w*|problem\w* legal\w*|flexibil\w*|prefier\w*|prefer\w*|rentabil\w*|seguridad jur[ií]dica)\b/.test(t)
+  && /\b(mied\w*|temor\w*|riesg\w*|preocup\w*|problem\w* legal\w*|flexibil\w*|prefier\w*|prefer\w*|rentabil\w*|seguridad jur[ií]dica)\b/.test(t)
   && /\b(alquil\w*|arrendam\w*|vac[ií]a\w*|desocupad\w*|retir\w*|dej\w*|temporad\w*|temporal(?:es)?|contrat\w*)\b/.test(t);
+const rentalLandlordConcernEvidence = {
+  directClaimEvidence: false,
+  expiresAt: '2029-03-01', territories: ['ES'],
+  when: (claim) => /\b(mied\w*|temor\w*|riesg\w*|preocup\w*|problem\w* legal\w*|okup\w*|impag\w*|morosidad)\b/.test(claim),
+  evidenceLabel: 'Preocupaciones declaradas por arrendadores encuestados por Alquiler Seguro',
+  dimensions: {
+    subject: 'principal preocupación declarada al alquilar una vivienda',
+    population: '4.780 propietarios encuestados por Alquiler Seguro, vinculados a viviendas gestionadas por la empresa; no se acredita representatividad nacional',
+    period: 'estudio elaborado entre enero y marzo de 2023; no se detalla por separado la fecha de campo de la encuesta',
+    geography: 'España, según el alcance del informe; distribución territorial de la muestra no detallada',
+    denominator: '4.780 propietarios encuestados; diseño de muestreo no descrito como probabilístico',
+    unit: 'porcentaje de personas encuestadas que indicaron cada preocupación principal',
+  },
+  facts: [
+    'En la encuesta de Alquiler Seguro, el 33 % de los 4.780 propietarios encuestados señaló el impago como principal preocupación al alquilar; el 32 % mencionó posibles daños a la vivienda.',
+    'El informe también recoge problemas legales en general para el 9 %. La ficha técnica describe una encuesta a propietarios vinculados a viviendas gestionadas por la empresa.',
+  ],
+  sources: [{ id: 'observatorio-alquiler-landlord-profile-2025', title: 'Perfil del propietario de viviendas en alquiler en España · marzo de 2025', publisher: 'Observatorio del Alquiler · Fundación Alquiler Seguro', url: 'https://observatoriodelalquiler.org/wp-content/uploads/2025/03/Perfil-del-prop-de-viviendas-alq.pdf', publishedAt: '2025-03', retrievedAt: '2026-11-24', role: 'secondary' }],
+};
+const rentalLandlordConcernReply = ({ claim, facts }) => {
+  const text = normalize(claim);
+  const mentionsIllegalOccupation = /\b(okup\w*|ocupacion ilegal)\b/.test(text);
+  const allegesWithdrawal = /\b(retir\w*|dej\w*|sac\w* del mercado|vaci\w*|desocup\w*|fuera del alquiler)\b/.test(text);
+  return [
+    facts.join(' '),
+    'La ficha no acredita que la muestra represente a todos los arrendadores de España.',
+    mentionsIllegalOccupation ? 'Los problemas legales no se desglosan como ocupación ilegal.' : '',
+    allegesWithdrawal ? 'No sigue viviendas retiradas ni vincula preocupaciones con decisiones de dejar de alquilar, así que no demuestra que esos temores reduzcan la oferta.' : '',
+  ].filter(Boolean).join('\n\n');
+};
 const foreignHousingPriceCause = (t) => /\b(viviend\w*|alquil\w*|renta\w*|piso\w*|casas?|mercado inmobiliario|precios? inmobiliarios?)\b/.test(t)
   && /\b(inmigr\w*|migrant\w*|extranjer\w*|no residentes?|comprador\w*|inversor\w*)\b/.test(t)
   && /\b(caus\w*|provoc\w*|encarec\w*|aument\w*|sub\w*|elev\w*|dispar\w*|presion\w*|retir\w*)\b/.test(t);
@@ -1195,6 +1225,8 @@ const focuses = [
     direct: [], context: [], claimType: 'causal',
     needs: ['cambios observados en viviendas retiradas, vacías o pasadas a contratos temporales', 'motivos declarados por una muestra representativa de propietarios que tomó esa decisión', 'si se alega flexibilidad, una medida concreta como duración, preaviso o disponibilidad de uso', 'territorio, periodo y comparación que permita separar el motivo alegado de otros cambios del mercado'],
     explanation: 'El miedo o la preferencia que se atribuye a los propietarios debe contrastarse con sus decisiones y motivos declarados.',
+    explanationEvidence: rentalLandlordConcernEvidence,
+    shareableReplyForContext: rentalLandlordConcernReply,
     limitation: 'Contar viviendas vacías no indica si estaban disponibles para alquilar ni por qué; las opiniones generales tampoco demuestran qué decisión tomó cada propietario.',
   },
   {

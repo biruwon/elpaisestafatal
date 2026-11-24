@@ -95,7 +95,7 @@ const cases = [
   ['work-housing-independence', ['Tener un trabajo a jornada completa ya no garantiza poder independizarse', 'Un empleo a tiempo completo no basta para vivir por cuenta propia', 'Trabajar a jornada completa no asegura poder emanciparse']],
   ['rental-tenant-screening-exclusion', ['Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares', 'Los avales y requisitos de solvencia dejan fuera a inquilinos con ingresos variables', 'Personas con nóminas inestables son rechazadas para alquilar por no cumplir las garantías', 'El mercado del alquiler penaliza a autónomos y personas sin nómina indefinida']],
   ['rental-regulation-contract-shift', ['La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales', 'Los topes de alquiler hacen que parte de la oferta desaparezca del mercado regulado', 'El control de precios provoca que viviendas pasen del alquiler habitual al de temporada']],
-  ['rental-landlord-motives', ['El miedo a la okupación y al impago hace que propietarios retiren pisos del alquiler', 'Hay viviendas vacías que no se alquilan por miedo a problemas legales con inquilinos', 'Los propietarios prefieren el alquiler de temporada porque les da más flexibilidad que el alquiler habitual']],
+  ['rental-landlord-motives', ['El miedo a la okupación y al impago hace que propietarios retiren pisos del alquiler', 'Hay viviendas vacías que no se alquilan por miedo a problemas legales con inquilinos', 'Los propietarios prefieren el alquiler de temporada porque les da más flexibilidad que el alquiler habitual', '¿Qué preocupa a los arrendadores cuando alquilan una vivienda?', 'El temor a los impagos lleva a algunos propietarios a dejar casas fuera del mercado de alquiler']],
   ['sector-wage-comparison', ['El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', 'Los sueldos turísticos son más bajos que en las industrias más productivas', 'En hostelería se pagan menos salarios altos que en otros sectores', 'El empleo aumenta más en sectores de baja productividad que en sectores con salarios elevados', 'La hostelería arrastra hacia abajo el promedio de los sueldos en España', 'La actividad turística reduce la media de los salarios']],
   ['nominal-wages', ['Los salarios españoles son más bajos que los europeos', 'El sueldo ha bajado durante años', 'Las remuneraciones aumentan en España']],
   ['rural-urban-service-access', ['La España rural tiene vivienda más barata, pero peor acceso a empleo, sanidad, educación y transporte', 'En los pueblos cuesta menos la vivienda, aunque quienes viven allí tienen menos acceso a servicios y trabajo que en las ciudades', 'La población rural tiene peor acceso a vivienda, salud y transporte que la población urbana']],
@@ -104,6 +104,35 @@ for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
   assert.equal(claimFocusFor(claim)?.id, family, claim);
   assert.equal(broadDomainPacketsFor(claim).length, 0, `A precise claim inherited a broad packet: ${claim}`);
 }
+const landlordConcernQueries = [
+  'El miedo a la okupación y al impago hace que propietarios retiren pisos del alquiler',
+  'Hay viviendas vacías que no se alquilan por miedo a problemas legales con inquilinos',
+  '¿Qué preocupa a los arrendadores cuando alquilan una vivienda?',
+];
+for (const query of landlordConcernQueries) {
+  const plan = focusedEvidencePlan(query, { now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.equal(plan.answerScope.family, 'rental-landlord-motives');
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['observatorio-alquiler-landlord-profile-2025']);
+  assert.match(plan.shareableReply, /4\.780 propietarios/);
+  assert.match(plan.shareableReply, /33 %.*impago/);
+  assert.match(plan.shareableReply, /no acredita que la muestra represente a todos/i);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient',
+    'A landlord survey about stated concerns must not be treated as evidence that owners withdrew homes because of fear');
+  validateAnswerPlan(plan);
+}
+const seasonalFlexibilityOnly = focusedEvidencePlan('Los propietarios prefieren el alquiler de temporada porque les da más flexibilidad que el alquiler habitual', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(seasonalFlexibilityOnly.answerScope.family, 'rental-landlord-motives');
+assert.ok(!seasonalFlexibilityOnly.sourceLinks.some((source) => source.id === 'observatorio-alquiler-landlord-profile-2025'),
+  'A survey of fears about non-payment must not be reused as evidence for owners preferring temporary contracts');
+const localLandlordFear = focusedEvidencePlan('En Barcelona, el miedo a los impagos hace que propietarios retiren viviendas del alquiler', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(localLandlordFear.answerScope.family, 'rental-landlord-motives');
+assert.ok(!localLandlordFear.sourceLinks.some((source) => source.id === 'observatorio-alquiler-landlord-profile-2025'),
+  'A national landlord survey cannot substantiate a Barcelona-specific claim');
+const arrearsTrendOnly = focusedEvidencePlan('La morosidad del alquiler aumentó durante el año', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.notEqual(claimFocusFor('La morosidad del alquiler aumentó durante el año')?.id, 'rental-landlord-motives',
+  'An arrears trend is not a claim about landlord motives');
+assert.equal(arrearsTrendOnly, undefined, 'A tenant-arrears trend should not enter the landlord-motives evidence plan');
 const railPunctualityParaphrases = [
   'Los retrasos de Cercanías se han normalizado como parte del viaje diario',
   'En Madrid, nueve de cada diez líneas de Cercanías perdieron puntualidad de 2024 a 2025',
