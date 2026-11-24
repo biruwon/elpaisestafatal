@@ -1218,6 +1218,85 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'pension-transfer-concealment-2024',
+    equivalenceGroup: 'pension-transfer-concealment-2024',
+    input: 'El déficit de la Seguridad Social se disimula mediante transferencias desde los Presupuestos del Estado',
+    expected: {
+      state: 'insufficient', family: 'pension-transfer-concealment', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['48.151,75', '43.082,32', '7.928,50', '21.380,00', '9.310,15', 'no demuestra intención de ocultar'],
+      evidence: [
+        {
+          familyId: 'pension-transfer-concealment', sourceIds: ['social-security-general-account-memory-2024'],
+          dataIncludes: ['48.151,75', '43.082,32', '5.017,62'],
+          dimensions: { period: '2024', geography: 'España', population: 'entidades gestoras y servicios comunes', unit: 'millones de euros' },
+        },
+        {
+          familyId: 'pension-transfer-concealment', sourceIds: ['social-security-general-account-memory-2024'],
+          dataIncludes: ['7.928,50', '3.447,78', '21.380,00'],
+          dimensions: { period: '2024', geography: 'España', denominator: 'derechos reconocidos netos', unit: 'millones de euros' },
+        },
+        {
+          familyId: 'pension-transfer-concealment', sourceIds: ['social-security-general-account-memory-2024'],
+          dataIncludes: ['195.891,23', '205.201,38', '−9.310,15'],
+          dimensions: { period: '2024', geography: 'España', denominator: 'ingresos corrientes menos obligaciones corrientes reconocidas', unit: 'millones de euros' },
+        },
+        {
+          familyId: 'pension-transfer-concealment', sourceIds: ['social-security-general-account-memory-2024'],
+          dataIncludes: ['−9.099,07', '−2.900,90', '6.198,17'],
+          dimensions: { period: '2024', geography: 'España', unit: 'millones de euros' },
+        },
+      ],
+      maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'pension-transfer-concealment-paraphrase',
+    equivalenceGroup: 'pension-transfer-concealment-2024',
+    input: 'El Estado oculta el déficit del sistema de pensiones usando transferencias presupuestarias',
+    expected: {
+      state: 'insufficient', family: 'pension-transfer-concealment', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['48.151,75', '43.082,32', '7.928,50', '21.380,00', '9.310,15', 'no demuestra intención de ocultar'],
+      evidence: [{
+        familyId: 'pension-transfer-concealment', sourceIds: ['social-security-general-account-memory-2024'],
+        dataIncludes: ['48.151,75', '43.082,32', '5.017,62'],
+        dimensions: { period: '2024', geography: 'España', population: 'entidades gestoras y servicios comunes', unit: 'millones de euros' },
+      }],
+      maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'pension-transfer-concealment-wrong-year',
+    input: 'El déficit de la Seguridad Social se disimuló mediante transferencias estatales en 2023',
+    expected: {
+      state: 'insufficient', family: 'pension-transfer-concealment', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['48.151,75', '43.082,32', '21.380,00', '−9.310,15', '2024'],
+      evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'pension-transfer-concealment-foreign-scope',
+    input: 'En Francia, el Estado oculta el déficit del sistema de pensiones usando transferencias presupuestarias',
+    expected: {
+      state: 'insufficient', family: 'pension-transfer-concealment', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['48.151,75', '43.082,32', '21.380,00', '−9.310,15'],
+      evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'pension-transfer-concealment-nearby-financing',
+    input: 'Las cotizaciones actuales financian las pensiones de reparto',
+    expected: {
+      state: 'limited', family: 'pension-financing', verdict: 'mixed', directSourceIds: ['social-security-pay-as-you-go'],
+      replyIncludes: ['cotizaciones y otros ingresos corrientes financian las prestaciones actuales', 'financiación de reparto'],
+      replyExcludes: ['48.151,75', '43.082,32', '−9.310,15'],
+      evidence: [{
+        familyId: 'pension-financing', sourceIds: ['social-security-pay-as-you-go'],
+        dataIncludes: ['cotizaciones y otros ingresos corrientes financian las prestaciones actuales'],
+      }],
+      maxReplyWords: 100,
+    },
+  },
+  {
     id: 'pension-private-saving-necessity',
     equivalenceGroup: 'pension-private-saving-sufficiency-context-spain',
     input: 'Ahorrar de forma privada será imprescindible aunque se siga cotizando al sistema público',

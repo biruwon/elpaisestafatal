@@ -5,6 +5,7 @@ import { UNPAID_OVERTIME_SNAPSHOT } from './unpaid-overtime-snapshot.mjs';
 import { PENSION_CONTRIBUTOR_RATIO_SNAPSHOT } from './pension-contributor-ratio-snapshot.mjs';
 import { RETIREMENT_AGE_SNAPSHOT } from './retirement-age-snapshot.mjs';
 import { PENSION_PRIVATE_SAVINGS_SNAPSHOT } from './pension-private-savings-snapshot.mjs';
+import { PENSION_TRANSFER_ACCOUNT_SNAPSHOT } from './pension-transfer-account-snapshot.mjs';
 import { EDUCATION_SOCIOECONOMIC_SNAPSHOT } from './education-socioeconomic-snapshot.mjs';
 import { UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT } from './university-graduate-outcomes-snapshot.mjs';
 import { RAIL_PUNCTUALITY_EVIDENCE, railPunctualityShareableReply } from './rail-punctuality-snapshot.mjs';
@@ -758,6 +759,34 @@ const pensionPrivateSavingsNeed = (t) => pensionDoublePaymentClaim(t) || (
   && /\b(pension\w*|jubilaci[oó]n|cotiz\w*|seguridad social|sistema p[uú]blic\w*|pension\w* p[uú]blic\w*)\b/.test(t)
   && /\b(imprescindible|necesari\w*|oblig\w*|exig\w*|tendr\w* que|habr\w* que|deber\w*|har\w* falta|necesit\w*|no bast\w*|no alcanz\w*)\b/.test(t)
 );
+const pensionTransferConcealment = (t) => /\b(pension\w*|jubil\w*|seguridad social)\b/.test(t)
+  && /\b(transfer\w*|traspas\w*|presupuestos? (?:generales? )?(?:del )?estado|presupuest\w* estatales?|fondos? (?:del )?estado)\b/.test(t)
+  && /\b(estado|estatales?|presupuest\w*)\b/.test(t)
+  && /\b(deficit\w*|saldo negativo|agujero|desequilibrio)\b/.test(t)
+  && /\b(disimul\w*|ocult\w*|tap\w*|maquill\w*|camufl\w*|enmascar\w*|escond\w*)\b/.test(t);
+const pensionTransferAccountEvidence = (() => {
+  const snapshot = PENSION_TRANSFER_ACCOUNT_SNAPSHOT;
+  const only2024OrUnspecified = (claim) => [...normalize(claim).matchAll(/\b20\d{2}\b/g)]
+    .every(([year]) => year === '2024');
+  return {
+    expiresAt: snapshot.expiresAt,
+    territories: ['ES'],
+    when: only2024OrUnspecified,
+    evidenceLabel: 'Transferencias y resultados publicados en la Cuenta General de la Seguridad Social',
+    dimensions: snapshot.dimensions,
+    facts: snapshot.facts,
+    factSourceIds: snapshot.facts.map(() => [snapshot.source.id]),
+    factDimensions: snapshot.factDimensions,
+    sources: [snapshot.source],
+    directClaimEvidence: false,
+    claimVerdict: 'insufficient',
+  };
+})();
+const pensionTransferConcealmentReply = () => [
+  'La Memoria de la Cuenta General de la Seguridad Social de España publica, para 2024, 48.151,75 millones de euros en transferencias corrientes: 43.082,32 del Estado y 5.017,62 de otras entidades de la Seguridad Social. Entre los destinos estatales detalla 7.928,50 para complementos a mínimos, 3.447,78 para pensiones no contributivas y 21.380,00 para el Pacto de Toledo.',
+  'En el perímetro de las entidades gestoras y servicios comunes, el saldo corriente fue −9.310,15 millones. El resultado presupuestario total fue −2.900,90: combina −9.099,07 millones de resultado no financiero con +6.198,17 millones de operaciones financieras.',
+  'Así, el informe desglosa las transferencias y registra un saldo corriente aún negativo. No demuestra intención de ocultar ni mide el saldo consolidado de todas las administraciones o un déficit exclusivo de pensiones contributivas.',
+].join('\n\n');
 const pensionPrivatePlanLegalClaim = (t) => /\b(legal\w*|ley|oblig\w*|exig\w*)\b/.test(t)
   && /\b(ahorr\w* privad\w*|plan(?:es)? (?:de )?pensiones? privad\w*|plan(?:es)? privad\w*|pension\w* privad\w*|prevision social complementaria)\b/.test(t)
   && /\b(pension\w*|jubilaci\w*|cotiz\w*|seguridad social|sistema p[uú]blic\w*)\b/.test(t);
@@ -1269,6 +1298,17 @@ const focuses = [
         'Estos datos no demuestran que toda persona necesite ahorrar en privado ni cuánto. Para valorarlo hacen falta la pensión neta prevista, la carrera laboral y los ingresos, gastos y otros recursos del hogar.',
       ].join('\n\n'),
     limitation: 'La ley distingue cotizaciones públicas y planes privados, y permite una regla de adhesión automática por convenio colectivo con exclusión expresa. La proyección agregada de reemplazo no determina si una persona u hogar necesita ahorrar, ni cuánto.',
+  },
+  {
+    id: 'pension-transfer-concealment', label: 'transferencias estatales y saldo presupuestario de la Seguridad Social',
+    when: pensionTransferConcealment,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['saldo de pensiones contributivas antes y después de las transferencias, con perímetro contable definido', 'cuentas consolidadas de las administraciones públicas para medir el efecto de las transferencias internas', 'evidencia directa de intención si se afirma que se oculta o disimula el déficit'],
+    explanation: 'Las transferencias públicas pueden formar parte de los ingresos contabilizados, pero una cuenta con ese perímetro no demuestra por sí sola intención de ocultar un déficit. Hay que distinguir el saldo corriente de la Seguridad Social, el resultado presupuestario total y el saldo consolidado de las administraciones públicas.',
+    explanationHeadline: 'La Cuenta General desglosa transferencias y publica por separado los saldos de 2024',
+    explanationEvidence: pensionTransferAccountEvidence,
+    shareableReplyForContext: pensionTransferConcealmentReply,
+    limitation: 'La fuente cubre 2024 y el perímetro consolidado de las entidades gestoras y servicios comunes de la Seguridad Social. Sus saldos no son un saldo exclusivo de pensiones contributivas ni el saldo consolidado de todas las administraciones; las partidas publicadas no permiten inferir intención de ocultar.',
   },
   {
     id: 'pension-worker-beneficiary-ratio', label: 'personas cotizantes por pensionista y financiación del sistema',
