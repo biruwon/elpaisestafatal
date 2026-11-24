@@ -5,6 +5,7 @@ import { UNPAID_OVERTIME_SNAPSHOT } from './unpaid-overtime-snapshot.mjs';
 import { PENSION_CONTRIBUTOR_RATIO_SNAPSHOT } from './pension-contributor-ratio-snapshot.mjs';
 import { EDUCATION_SOCIOECONOMIC_SNAPSHOT } from './education-socioeconomic-snapshot.mjs';
 import { UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT } from './university-graduate-outcomes-snapshot.mjs';
+import { RAIL_PUNCTUALITY_EVIDENCE, railPunctualityShareableReply } from './rail-punctuality-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -1915,8 +1916,12 @@ const focuses = [
     id: 'rail-punctuality', label: 'puntualidad y retrasos ferroviarios',
     when: (t) => /\b(tren\w*|ferroviar\w*|renfe|adif|cercanias|ave)\b/.test(t) && /\b(retras\w*|puntual\w*|demor\w*|cancel\w*|compens\w*)\b/.test(t),
     direct: [], context: [],
+    claimTypeFor: (text) => RAIL_PUNCTUALITY_EVIDENCE.when(normalize(text)) && RAIL_PUNCTUALITY_EVIDENCE.directClaimEvidence(text) ? 'trend' : 'descriptive',
     needs: ['línea, operador y tipo de servicio', 'definición y duración del retraso', 'periodo y viajes o pasajeros afectados'],
+    explanationHeadline: 'Los datos publicados muestran diferencias entre líneas de Cercanías Madrid',
     explanation: 'La puntualidad se mide por servicio y umbral de retraso. Los trenes afectados, los pasajeros y las horas perdidas tienen denominadores distintos.',
+    explanationEvidence: RAIL_PUNCTUALITY_EVIDENCE,
+    shareableReplyForContext: railPunctualityShareableReply,
     limitation: 'El volumen total de viajeros o la inversión ferroviaria no mide las demoras ni las compensaciones pagadas.',
   },
   {

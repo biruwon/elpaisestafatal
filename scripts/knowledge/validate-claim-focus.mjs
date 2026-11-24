@@ -104,6 +104,95 @@ for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
   assert.equal(claimFocusFor(claim)?.id, family, claim);
   assert.equal(broadDomainPacketsFor(claim).length, 0, `A precise claim inherited a broad packet: ${claim}`);
 }
+const railPunctualityParaphrases = [
+  'Los retrasos de Cercanías se han normalizado como parte del viaje diario',
+  'En Madrid, nueve de cada diez líneas de Cercanías perdieron puntualidad de 2024 a 2025',
+  'La puntualidad del Cercanías madrileño cayó en la mayoría de sus líneas entre 2024 y 2025',
+];
+let railPunctualitySourceIds;
+let railPunctualityData;
+for (const query of railPunctualityParaphrases) {
+  const plan = focusedEvidencePlan(query, { now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.equal(claimFocusFor(query)?.id, 'rail-punctuality');
+  assert.equal(plan.answerScope.family, 'rail-punctuality');
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.match(plan.shareableReply, /9 de las 10 l[ií]neas/);
+  assert.match(plan.shareableReply, /Cercan[ií]as Madrid/);
+  assert.match(plan.shareableReply, /no de minutos perdidos por pasajeros/);
+  if (query === railPunctualityParaphrases[0]) {
+    assert.equal(plan.claimType, 'descriptive');
+    assert.match(plan.shareableReply, /no permite confirmar toda la afirmaci[oó]n/);
+    assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+  } else {
+    assert.equal(plan.claimType, 'trend');
+    assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported',
+      'An explicit Madrid line-level majority trend for 2024–2025 is directly measured by the matched Renfe data');
+  }
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  assert.deepEqual(sourceIds, ['renfe-cercanias-madrid-punctuality-2024', 'renfe-cercanias-madrid-punctuality-2025']);
+  if (railPunctualitySourceIds) assert.deepEqual(sourceIds, railPunctualitySourceIds, `A rail-punctuality paraphrase changed its sources: ${query}`);
+  railPunctualitySourceIds = sourceIds;
+  const families = plan.evidenceSummary.families.filter((item) => item.familyId === 'rail-punctuality');
+  assert.equal(families.length, query === railPunctualityParaphrases[0] ? 3 : 1,
+    'Context-only rail facts stay separately attributed; a directly assessed line trend may compose them in one family');
+  const data = families.flatMap((item) => item.data || []);
+  assert.equal(data.length, 3, 'Rail punctuality summary should preserve aggregate, line detail, and method as separate sourced facts');
+  assert.match(data.join(' '), /C10: 96,14 % → 90,75 %/);
+  assert.ok(families.every((item) => /2024 y 2025/.test(item.dimensions?.period || '')));
+  if (railPunctualityData) assert.deepEqual(data, railPunctualityData, `A rail-punctuality paraphrase changed its facts: ${query}`);
+  railPunctualityData = data;
+  validateAnswerPlan(plan);
+}
+for (const query of [
+  'Los retrasos de Cercanías en Barcelona empeoraron entre 2024 y 2025',
+  'Las compensaciones por retrasos de Cercanías Madrid no cubren el tiempo perdido',
+  'Los retrasos de Cercanías Madrid hacen perder muchas horas a los pasajeros',
+  'La demora media de Cercanías Madrid superó cinco minutos en 2025',
+  'Los trenes AVE fueron menos puntuales en Madrid durante 2025',
+  'La puntualidad de Cercanías Madrid cayó entre 2023 y 2024',
+  'La puntualidad de Cercanías empeoró en toda España entre 2024 y 2025',
+]) {
+  const plan = focusedEvidencePlan(query, { now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.ok(!plan.sourceLinks.some((source) => source.id.startsWith('renfe-cercanias-madrid-punctuality-')), `Madrid commuter punctuality data crossed into a different service, measure, place, or period: ${query}`);
+}
+for (const [query, verdict] of [
+  ['La puntualidad de Cercanías Madrid mejoró en la mayoría de sus líneas entre 2024 y 2025', 'contradicted'],
+  ['La puntualidad de Cercanías Madrid cayó en todas sus líneas entre 2024 y 2025', 'contradicted'],
+]) {
+  const plan = focusedEvidencePlan(query, { now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['renfe-cercanias-madrid-punctuality-2024', 'renfe-cercanias-madrid-punctuality-2025']);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, verdict,
+    `Matched annual line data should assess a directly testable neighboring claim: ${query}`);
+  assert.match(plan.shareableReply, /La serie no respalda esa direcci[oó]n/);
+}
+const railFallback = deterministicApiFallback({ text: railPunctualityParaphrases[0], now: Date.parse('2026-11-24T12:00:00Z') });
+const railUngroundedModelPlan = {
+  ...railFallback.result,
+  evidenceLevel: 'insufficient',
+  evidenceIds: [],
+  sourceIds: [],
+  sourceLinks: [],
+  evidenceSummary: { mode: 'none', families: [] },
+  blocks: [{ type: 'conversation_reply', evidenceIds: [], text: 'La puntualidad se mide por servicio y umbral de retraso.' }],
+  shareableReply: undefined,
+  shareableSourceIds: [],
+};
+const railSourcedFallback = localPublicCheckResponse({ status: 'uncovered', requestId: 'rail-ungrounded-model', result: railUngroundedModelPlan }, railPunctualityParaphrases[0]);
+assert.equal(railSourcedFallback.state, 'insufficient', 'Contextual figures must not turn a broad travel-experience claim into a verified verdict');
+assert.equal(railSourcedFallback.result.sources.length, 2);
+assert.match(railSourcedFallback.result.reply, /9 de las 10 l[ií]neas/);
+assert.match(railSourcedFallback.result.reply, /no permite confirmar toda la afirmaci[oó]n/,
+  'The user-facing answer should preserve the measured context and clearly state its limit');
+const railSourcedModelPlan = {
+  ...railFallback.result,
+  shareableReply: 'Esta serie no permite confirmar toda la afirmación y sirve como contexto de la puntualidad por línea en Cercanías Madrid.',
+};
+const railSourcedModel = localPublicCheckResponse({ status: 'partial', requestId: 'rail-sourced-model', result: railSourcedModelPlan }, railPunctualityParaphrases[0]);
+assert.equal(railSourcedModel.result.shareableReply, railSourcedModelPlan.shareableReply,
+  'A same-family provider answer with data linked to visible sources may still enrich reviewed context');
+const railBarcelonaFallback = localPublicCheckResponse({ status: 'uncovered', requestId: 'rail-barcelona-neighbour', result: railUngroundedModelPlan }, 'Los retrasos de Cercanías en Barcelona empeoraron entre 2024 y 2025');
+assert.ok(!railBarcelonaFallback.result.sources.some((source) => source.id.startsWith('renfe-cercanias-madrid-punctuality-')),
+  'Reviewed Madrid data must not cross into an unsupported Barcelona claim');
 assert.deepEqual([...focusedMetricIdsFor('El IPC general no refleja bien lo que notan los hogares que gastan mucho en comida y alquiler')].sort(), [
   'annual_hicp_actual_rent_index', 'annual_hicp_food_index', 'annual_hicp_index',
 ], 'A household basket comparison must retrieve the general, food, and actual-rent HICP indices');

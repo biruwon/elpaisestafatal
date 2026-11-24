@@ -9,6 +9,12 @@ import { publicResolveResponse } from '../../src/lib/knowledge/public-response.m
 import { publicEvidenceGapReply } from '../../src/lib/knowledge/public-answer-composition.mjs';
 
 const normalizedClaim = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/[^a-z0-9]+/g, ' ').trim();
+const hasSourcedFamilyData = (plan) => {
+  const visibleSourceIds = new Set((plan?.sourceLinks || []).map((source) => source.id));
+  return visibleSourceIds.size > 0 && (plan?.evidenceSummary?.families || []).some((family) => family.data?.length
+    && family.evidenceIds?.length
+    && family.sourceIds?.some((sourceId) => visibleSourceIds.has(sourceId)));
+};
 const exactPublishedSlugFor = (payload, claim) => {
   const references = [...(Array.isArray(payload?.relatedClaims) ? payload.relatedClaims : []), ...(payload?.primary ? [payload.primary] : [])];
   for (const reference of references) {
@@ -68,6 +74,29 @@ export const localPublicCheckResponse = (payload, claim = '') => {
 
   const plan = safePayload && ['complete', 'partial', 'uncovered', 'draft'].includes(safePayload.status) ? safePayload.result : undefined;
   if (!plan || typeof plan !== 'object') return attachExtraction({ state: 'unavailable', id: `local-${Date.now().toString(36)}`, claim, message: extraction?.warnings[0] || 'La comprobación local no pudo completarse.', retryable: true }, extraction);
+
+  // The local gateway and Pages function share the same evidence contract.
+  // A provider can identify the right family yet return no sourced findings;
+  // in that case retain the reviewed family context instead of flattening it
+  // into a generic unsupported verdict.
+  const focusedFamily = claimFocusFor(claim)?.id;
+  const reviewedFallback = focusedFamily ? deterministicApiFallback({ text: claim, inputType: 'text' }) : undefined;
+  const reviewedPlan = reviewedFallback?.result;
+  const reviewedMatchesClaim = reviewedPlan?.answerScope?.kind === 'measurement'
+    && reviewedPlan.answerScope.family === focusedFamily;
+  const modelMatchesClaim = plan.answerScope?.kind === 'measurement'
+    && plan.answerScope.family === focusedFamily;
+  const modelCarriesEvidence = Boolean(plan.sourceLinks?.length || plan.evidenceIds?.length
+    || plan.blocks?.some((block) => block.evidenceIds?.length)
+    || plan.evidenceSummary?.families?.some((family) => family.data?.length || family.evidenceIds?.length));
+  if (reviewedMatchesClaim && modelMatchesClaim && hasSourcedFamilyData(reviewedPlan)
+    && !modelCarriesEvidence) {
+    return localPublicCheckResponse({
+      status: reviewedFallback.status,
+      requestId: safePayload.requestId,
+      result: reviewedPlan,
+    }, claim);
+  }
 
   const blocks = Array.isArray(plan.blocks) ? plan.blocks : [];
   const claimBreakdown = blocks.find((block) => block?.type === 'claim_breakdown');

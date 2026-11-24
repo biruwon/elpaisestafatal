@@ -36,8 +36,18 @@ const sameFamilyModel = {
   ...genericModel,
   result: { ...genericModel.result, answerScope: { kind: 'measurement', family: 'pension-price-indexation', directMetrics: [], contextMetrics: [] } },
 };
-assert.equal(api.chooseResponse('Las pensiones contributivas se revalorizan según el IPC', sameFamilyModel, focusedContext), sameFamilyModel,
-  'A model answer scoped to the same reviewed measurement family may enrich the focused answer');
+assert.equal(api.chooseResponse('Las pensiones contributivas se revalorizan según el IPC', sameFamilyModel, focusedContext), focusedContext,
+  'A same-family label without source-backed findings must not replace reviewed measurement evidence');
+const sourcedSameFamilyModel = {
+  state: 'limited',
+  result: {
+    ...sameFamilyModel.result,
+    sources: [{ id: 'model-source', url: 'https://www.ine.es/' }],
+    evidenceSummary: { families: [{ data: ['2026: 2,7 %'], evidenceIds: ['observation-1'], sourceIds: ['model-source'] }] },
+  },
+};
+assert.equal(api.chooseResponse('Las pensiones contributivas se revalorizan según el IPC', sourcedSameFamilyModel, focusedContext), sourcedSameFamilyModel,
+  'A source-backed answer scoped to the same measurement family may replace contextual evidence');
 const post = async (body, type = 'application/json') => {
   const request = new Request('https://site.test/api/check', { method: 'POST', ...(type ? { headers: { 'content-type': type } } : {}), body: type ? JSON.stringify(body) : body });
   const response = await api.onRequestPost({ request, env, waitUntil });

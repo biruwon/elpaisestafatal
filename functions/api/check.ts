@@ -26,7 +26,7 @@ import { vacancyMeasurementClarificationMetricIdsForQuery, vacancyMeasurementMet
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-education-earnings-tourist-housing-snapshots-49-2026-11';
+const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-education-earnings-tourist-housing-snapshots-rail-punctuality-sourced-family-selection-51-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -167,8 +167,6 @@ export const chooseResponse = (claim: string, model: PublicCheckResponse | undef
     && ['supported', 'limited', 'insufficient'].includes(model.state)
     && modelResult.sources.length > 0
     && modelResult.evidenceSummary?.families.some((family) => family.evidenceIds.length > 0)) return model;
-  if ((model?.state === 'supported' || model?.state === 'limited' || model?.state === 'insufficient')
-    && model.result.answerScope?.kind === 'measurement' && claimFocusFor(claim)?.id === model.result.answerScope.family) return model;
   const reviewed = reviewedContextualAnswer(model, contextual);
   if (reviewed) return reviewed as PublicCheckResponse;
   const contextualPlan = (contextual as PublicCheckResponse & { result?: AnswerPlan }).result;
@@ -178,9 +176,19 @@ export const chooseResponse = (claim: string, model: PublicCheckResponse | undef
     && contextualPlan.answerScope.family === focusedFamily;
   const modelFocusMatchesClaim = modelPlan?.answerScope?.kind === 'measurement'
     && modelPlan.answerScope.family === focusedFamily;
-  // A model response without the same reviewed measurement contract cannot
-  // replace a focused source-backed explanation with a generic summary.
-  if (contextualFocusMatchesClaim && !modelFocusMatchesClaim) return contextual;
+  const contextualSourceIds = (contextual as PublicCheckResponse & { result?: { sources?: Array<{ id: string }> } }).result?.sources?.map((source) => source.id) || [];
+  const modelSourceIds = modelResult?.sources?.map((source) => source.id) || [];
+  const hasSourcedFamilyData = (plan: AnswerPlan | undefined, sourceIds: string[]): boolean => sourceIds.length > 0
+    && Boolean(plan?.evidenceSummary?.families?.some((family) => family.data?.length
+      && family.evidenceIds.length
+      && family.sourceIds?.some((sourceId) => sourceIds.includes(sourceId))));
+  const contextualHasSourcedFamilyData = hasSourcedFamilyData(contextualPlan, contextualSourceIds);
+  const modelHasSourcedFamilyData = hasSourcedFamilyData(modelPlan, modelSourceIds);
+  // A matching family label is not enough to replace scoped context: the
+  // candidate must carry findings with evidence IDs linked to visible sources.
+  if (contextualFocusMatchesClaim && (!modelFocusMatchesClaim
+    || contextualHasSourcedFamilyData && !modelHasSourcedFamilyData)) return contextual;
+  if (model && modelFocusMatchesClaim && modelHasSourcedFamilyData) return model;
   const modelHasFamilyData = Boolean(modelPlan?.evidenceSummary?.families?.some((family) => family.data?.length));
   const dataCount = (plan: AnswerPlan | undefined): number => plan?.evidenceSummary?.families?.reduce((total, family) => total + (family.data?.length || 0), 0) || 0;
   const criterionDataCount = (plan: AnswerPlan | undefined): Map<string, number> => new Map((plan?.evidenceSummary?.families || []).map((family) => {

@@ -992,7 +992,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     : undefined;
   const evidenceIds = [...new Set([...facts.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanation?.sources || []).map((source) => source.id)].filter(Boolean))];
   const explanationSourceIds = (explanation?.sources || []).map((source) => source.id);
-  const explanationSupportsClaim = Boolean(explanation?.directClaimEvidence);
+  const explanationSupportsClaim = typeof explanation?.directClaimEvidence === 'function'
+    ? Boolean(explanation.directClaimEvidence(claim))
+    : Boolean(explanation?.directClaimEvidence);
   const explanationBlocks = !explanation ? [] : Array.isArray(explanation.factSourceIds)
     && explanation.factSourceIds.length === explanationFacts.length
     ? explanationFacts.map((point, index) => ({

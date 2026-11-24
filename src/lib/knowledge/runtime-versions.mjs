@@ -5,7 +5,7 @@ export const RUNTIME_VERSIONS = Object.freeze({
   evidencePacketSchema: '1',
   compilerContract: '2',
   knowledge: '2026-08-04.2',
-  fallbackKnowledge: 'deterministic-fallback-56-tourist-housing-2026-11',
+  fallbackKnowledge: 'deterministic-fallback-57-rail-punctuality-2026-11',
   warehouseKnowledge: 'warehouse-2026-11-23.23-subjective-poverty',
   indexKnowledge: 'index-only-2026-08-05.9',
 });
