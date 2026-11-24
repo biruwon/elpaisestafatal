@@ -5,7 +5,7 @@ export const RUNTIME_VERSIONS = Object.freeze({
   evidencePacketSchema: '1',
   compilerContract: '2',
   knowledge: '2026-08-04.2',
-  fallbackKnowledge: 'deterministic-fallback-66-price-wage-eu-and-living-standard-2026-11',
-  warehouseKnowledge: 'warehouse-2026-11-24.30-price-wage-eu-and-living-standard',
+  fallbackKnowledge: 'deterministic-fallback-67-price-wage-hours-and-living-standard-2026-11',
+  warehouseKnowledge: 'warehouse-2026-11-24.31-price-wage-hours-and-living-standard',
   indexKnowledge: 'index-only-2026-08-05.9',
 });

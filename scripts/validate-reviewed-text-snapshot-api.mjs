@@ -204,6 +204,39 @@ assert.equal(priceWageConvergenceParaphrase.body.result.answerScope.family, pric
 assert.deepEqual(priceWageConvergenceParaphrase.body.result.sources.map((source) => source.id), priceWageConvergence.body.result.sources.map((source) => source.id));
 assert.match(priceWageConvergenceParaphrase.body.result.reply, /no representa a todos los pa[ií]ses m[aá]s ricos/);
 
+const reportedWorkedHoursQueries = [
+  'En hostelería se declaran menos horas de las que realmente se trabajan',
+  'Los empleados de hostelería trabajan más horas de las que constan oficialmente',
+  'En hostelería, las jornadas oficiales omiten parte de las horas efectivamente trabajadas',
+];
+let reportedWorkedHoursSourceIds;
+for (const query of reportedWorkedHoursQueries) {
+  const result = await check(query);
+  assert.equal(result.httpStatus, 200);
+  assert.equal(result.body.state, 'insufficient', 'Reported overtime context cannot settle unrecorded working hours');
+  assert.equal(result.body.result.answerScope.family, 'reported-vs-worked-hours');
+  assert.deepEqual(result.body.result.answerScope.directMetrics, []);
+  assert.deepEqual(result.body.result.arguments[0].verdict, 'insufficient');
+  assert.match(result.body.result.reply, /27\.700 personas/);
+  assert.match(result.body.result.reply, /30,8 % de quienes hicieron horas extra/);
+  assert.match(result.body.result.reply, /no coteja lo declarado con el registro horario o el contrato/);
+  assert.match(result.body.result.reply, /no confirma que se trabajen m[aá]s horas de las registradas/);
+  const sourceIds = result.body.result.sources.map((source) => source.id);
+  assert.deepEqual(sourceIds, ['ine-epa-unpaid-overtime-2026', 'ine-epa-questionnaire-2021']);
+  if (reportedWorkedHoursSourceIds) assert.deepEqual(sourceIds, reportedWorkedHoursSourceIds, `Unreported-hours paraphrase changed source selection: ${query}`);
+  reportedWorkedHoursSourceIds = sourceIds;
+}
+const contractHoursGap = await check('La jornada laboral real supera la jornada que figura en contrato');
+assert.equal(contractHoursGap.body.state, 'insufficient');
+assert.equal(contractHoursGap.body.result.answerScope.family, 'reported-vs-worked-hours');
+assert.deepEqual(contractHoursGap.body.result.sources, [], 'Hospitality context must not be attached without that sector');
+assert.match(contractHoursGap.body.result.reply, /horas efectivamente trabajadas y registradas para las mismas personas/);
+assert.match(contractHoursGap.body.result.reply, /horas extra no pagadas separadas de horas que no se registraron/);
+const unpaidOvertimeNeighbour = await check('Las horas extra sin pagar son habituales en hostelería');
+assert.equal(unpaidOvertimeNeighbour.body.result.answerScope.family, 'unpaid-overtime');
+const tourismEmploymentNeighbour = await check('Las ramas características del turismo concentran demasiados puestos de trabajo');
+assert.equal(tourismEmploymentNeighbour.body.result.answerScope.family, 'tourism-employment-contribution');
+
 const educationPayQueries = [
   'Los sueldos de muchos trabajos cualificados son demasiado parecidos a los de puestos que exigen mucha menos formación',
   'Tener un máster o un doctorado no garantiza un salario acorde con la cualificación',

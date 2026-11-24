@@ -1258,19 +1258,32 @@ threshold and comparison years are vague, the fallback asks for those details
 and for gross or net pay and a comparable population; it does not substitute
 household median income or invent a trend.
 
-The held-out benchmark now passes 105/105 cases across 32 paraphrase groups,
+The held-out benchmark now passes 109/109 cases across 33 paraphrase groups,
 checking verdict, source links, evidence values, scope, concise answers and
-public traceability. The full claim-focus suite covers 287 paraphrase and
+public traceability. The full claim-focus suite covers 291 paraphrase and
 boundary checks. These are reviewed regressions, not a guarantee about every
 possible submission or a population-wide accuracy estimate.
 
 On the 300-item web-observed discovery corpus, the deterministic fallback
-returns 7 complete, 71 limited and 222 uncovered responses. A metric or family
-route exists for 159 claims (71 metric matches and 135 family matches, with 47
-overlapping); 141 have neither. Public results are 268 insufficient and 32
-limited; 78 attach a consultable source, and none contains an untraceable
+returns 7 complete, 72 limited and 221 uncovered responses. A metric or family
+route exists for 161 claims (71 metric matches and 137 family matches, with 47
+overlapping); 139 have neither. Public results are 268 insufficient and 32
+limited; 79 attach a consultable source, and none contains an untraceable
 non-insufficient argument. No copyable answer in this run exceeds 160 words.
 The inputs remain explicitly unverified, so these counts measure routing,
 source attachment and reply length—not truth or factual accuracy. Unsupported
 and city-specific claims continue to receive evidence gaps rather than adjacent
 national figures.
+
+The text pass adds a separate family for claims that recorded or contracted
+hours fall short of hours actually worked. Three paraphrases for hospitality
+share a route and the same evidence, while ordinary unpaid-overtime claims and
+tourism employment-share claims stay in their own families. The EPA estimates
+27,700 hospitality employees declared at least some unpaid overtime in the
+reference week of 2026 Q3, 30.8% of hospitality employees who reported any
+overtime that quarter. This is context only: the survey records reported paid
+and unpaid overtime; it does not compare actual hours with timesheets or
+contracts, or count omitted hours. The answers therefore remain insufficient.
+A contract-hours claim without a named sector receives no hospitality data.
+Sources: [INE EPA overtime table](https://www.ine.es/jaxiT3/Tabla.htm?L=0&t=79313) and
+[EPA questionnaire](https://www.ine.es/inebaseDYN/epa30308/docs/epacues21.pdf).

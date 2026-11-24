@@ -42,6 +42,7 @@ const cases = [
   ['working-poverty', ['En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes', 'Tener trabajo a tiempo completo no impide ser pobre', 'La pobreza también alcanza a personas ocupadas']],
   ['price-wage-european-convergence', ['El coste de vida español se ha acercado al de países más ricos sin que los salarios hayan convergido igual', 'Los precios en España ya se parecen a los de Europa, pero los sueldos siguen sin alcanzar a los europeos', 'España tiene precios como países ricos, pero los salarios no han convergido']],
   ['real-wages', ['Los salarios pierden poder adquisitivo frente al coste de la vida', 'Los sueldos no siguen el ritmo de los precios', 'La inflación se come la nómina', 'Un sueldo considerado bueno hace pocos años ya no permite el mismo nivel de vida', 'Lo que antes era un buen salario ya no da para mantener el mismo nivel de vida']],
+  ['reported-vs-worked-hours', ['En hostelería se declaran menos horas de las que realmente se trabajan', 'Los empleados de hostelería trabajan más horas de las que constan oficialmente', 'En hostelería, las jornadas oficiales omiten parte de las horas efectivamente trabajadas', 'La jornada laboral real supera la jornada que figura en contrato']],
   ['wage-price-margin-pass-through', ['Subir mucho los salarios de hostelería obligaría a subir precios o reducir márgenes en muchos negocios', 'Un aumento de sueldo en las empresas se acaba trasladando a los precios o reduce sus márgenes', 'Si suben los salarios, los negocios tienen que encarecer sus productos o ganar menos']],
   ['food-chain-price-spread', [
     'Los agricultores reciben precios demasiado bajos en origen comparados con el precio final de los alimentos',
@@ -1145,7 +1146,6 @@ assert.equal(secondQuarterOvertime.answerScope.family, 'unpaid-overtime');
 assert.equal(secondQuarterOvertime.evidenceLevel, 'limited');
 assert.match(secondQuarterOvertime.shareableReply, /En el segundo trimestre de 2026, 30\.700.*39\.200 personas\. Es el 42,9 %.*91\.400.*2,3 %.*1\.672\.300/s);
 for (const unmatched of [
-  'En hostelería se declaran menos horas de las que realmente se trabajan',
   'En educación se hacen horas extra sin pagar',
   'En hostelería se hacen horas extra sin pagar en 2025',
   'En Madrid se hacen horas extra sin pagar en hostelería',
@@ -2704,6 +2704,35 @@ for (const neighbour of [
   assert.ok(!plan?.sourceLinks?.some((source) => europeanPriceWageSources.includes(source.id)), `Price/wage convergence sources were attached to an incompatible claim: ${neighbour}`);
 }
 assert.equal(claimFocusFor('Los salarios españoles pierden poder adquisitivo frente al coste de la vida')?.id, 'real-wages', 'Purchasing-power claims must keep the aligned wage and price series');
+assert.equal(claimFocusFor('Las horas extra sin pagar son habituales en hostelería')?.id, 'unpaid-overtime', 'Unpaid overtime must not be treated as unrecorded working time');
+assert.equal(claimFocusFor('Las ramas características del turismo concentran demasiados puestos de trabajo')?.id, 'tourism-employment-contribution', 'Tourism employment-share claims must keep their own measure');
+const reportedWorkedHoursClaims = [
+  'En hostelería se declaran menos horas de las que realmente se trabajan',
+  'Los empleados de hostelería trabajan más horas de las que constan oficialmente',
+  'En hostelería, las jornadas oficiales omiten parte de las horas efectivamente trabajadas',
+];
+let reportedWorkedHoursSources;
+for (const claim of reportedWorkedHoursClaims) {
+  const plan = focusedEvidencePlan(claim, { observations: [], now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.equal(claimFocusFor(claim)?.id, 'reported-vs-worked-hours');
+  assert.equal(plan.answerScope.family, 'reported-vs-worked-hours');
+  assert.deepEqual(plan.answerScope.directMetrics, [], 'Declared unpaid overtime must not directly prove unrecorded hours');
+  assert.equal(plan.evidenceLevel, 'limited', 'Hospitality overtime data is contextual, not a direct measure');
+  assert.match(plan.shareableReply, /no coteja lo declarado con el registro horario o el contrato/);
+  assert.match(plan.shareableReply, /no confirma que se trabajen m[aá]s horas de las registradas/);
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  assert.deepEqual(sourceIds, ['ine-epa-unpaid-overtime-2026', 'ine-epa-questionnaire-2021']);
+  if (reportedWorkedHoursSources) assert.deepEqual(sourceIds, reportedWorkedHoursSources, 'Paraphrases must use the same scoped EPA context');
+  reportedWorkedHoursSources = sourceIds;
+  const response = localPublicCheckResponse({ status: 'partial', requestId: 'reported-vs-worked-hours', result: plan }, claim);
+  assert.equal(response.state, 'insufficient', 'Context on unpaid overtime cannot settle underreporting of hours');
+  assert.deepEqual(response.result.arguments[0].verdict, 'insufficient');
+}
+const contractedHoursClaim = 'La jornada laboral real supera la jornada que figura en contrato';
+const contractedHoursPlan = focusedEvidencePlan(contractedHoursClaim, { observations: [], now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(contractedHoursPlan.answerScope.family, 'reported-vs-worked-hours');
+assert.deepEqual(contractedHoursPlan.sourceLinks, [], 'Hospitality data must not be attached to a claim without that sector');
+assert.equal(localPublicCheckResponse({ status: 'uncovered', requestId: 'contracted-hours-gap', result: contractedHoursPlan }, contractedHoursClaim).state, 'insufficient');
 const goodSalaryClaims = [
   'Un sueldo considerado bueno hace pocos años ya no permite el mismo nivel de vida',
   'Lo que antes era un buen salario ya no da para mantener el mismo nivel de vida',

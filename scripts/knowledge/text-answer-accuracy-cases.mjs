@@ -696,6 +696,50 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'unreported-hours-vs-unpaid-overtime',
+    equivalenceGroup: 'unreported-hours-vs-unpaid-overtime-hospitality',
+    input: 'En hostelería se declaran menos horas de las que realmente se trabajan',
+    expected: {
+      state: 'insufficient', family: 'reported-vs-worked-hours', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['27.700 personas', '30,8 % de quienes hicieron horas extra', 'no coteja lo declarado con el registro horario o el contrato', 'no confirma que se trabajen más horas de las registradas'],
+      replyExcludes: ['la EPA demuestra que se ocultan horas', 'horas no pagadas equivalen a horas no declaradas'],
+      evidence: [
+        { familyId: 'reported-vs-worked-hours', sourceIds: ['ine-epa-unpaid-overtime-2026'], dataIncludes: ['2026-T3', '27.700 en total'], dimensions: { population: 'asalariados de hostelería de ambos sexos', period: '2026-T1, 2026-T2 y 2026-T3', geography: 'España', unit: 'personas estimadas por trimestre, no acumulables' } },
+        { familyId: 'reported-vs-worked-hours', sourceIds: ['ine-epa-questionnaire-2021'], dataIncludes: ['horas extraordinarias pagadas y no pagadas en el empleo principal durante la semana de referencia'], dimensions: { subject: 'horas extra pagadas y no pagadas en el empleo principal', period: 'semana de referencia de cada entrevista', geography: 'España' } },
+      ],
+      maxReplyWords: 155,
+    },
+  },
+  {
+    id: 'unreported-hours-vs-unpaid-overtime-paraphrase',
+    equivalenceGroup: 'unreported-hours-vs-unpaid-overtime-hospitality',
+    input: 'Los empleados de hostelería trabajan más horas de las que constan oficialmente',
+    expected: {
+      state: 'insufficient', family: 'reported-vs-worked-hours', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['27.700 personas', 'no coteja lo declarado con el registro horario o el contrato', 'no confirma que se trabajen más horas de las registradas'],
+      replyExcludes: ['la EPA demuestra que se ocultan horas'], evidence: [], maxReplyWords: 155,
+    },
+  },
+  {
+    id: 'unreported-hours-vs-unpaid-overtime-paraphrase-2',
+    equivalenceGroup: 'unreported-hours-vs-unpaid-overtime-hospitality',
+    input: 'En hostelería, las jornadas oficiales omiten parte de las horas efectivamente trabajadas',
+    expected: {
+      state: 'insufficient', family: 'reported-vs-worked-hours', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['27.700 personas', 'no coteja lo declarado con el registro horario o el contrato', 'no confirma que se trabajen más horas de las registradas'],
+      replyExcludes: ['la EPA demuestra que se ocultan horas'], evidence: [], maxReplyWords: 155,
+    },
+  },
+  {
+    id: 'actual-hours-above-contract-without-sector',
+    input: 'La jornada laboral real supera la jornada que figura en contrato',
+    expected: {
+      state: 'insufficient', family: 'reported-vs-worked-hours', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['horas efectivamente trabajadas y registradas para las mismas personas', 'jornada contratada, sector, territorio y periodo comparables', 'horas extra no pagadas separadas de horas que no se registraron'],
+      replyExcludes: ['un dato de hostelería demuestra'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
     id: 'nominal-wages-and-purchasing-power-claim',
     equivalenceGroup: 'nominal-wages-and-purchasing-power-spain-2020-2025',
     input: 'Los salarios nominales han subido pero no lo suficiente para recuperar todo el poder adquisitivo perdido',

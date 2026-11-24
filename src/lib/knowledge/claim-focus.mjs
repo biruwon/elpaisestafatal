@@ -850,6 +850,9 @@ const businessSizeProductivityConstraint = (t) => /\b(empresas? peque[nñ]as?|pe
     || /\b(menos|menor\w*)[\s\w]{0,25}\b(capacidad|posibilidad|acceso)\b/.test(t));
 const unpaidOvertime = (t) => /\b(horas? extra\w*|horas? extraordinari\w*)\b/.test(t)
   && /\b(no pag\w*|sin pag\w*|impag\w*|sin cobr\w*|no cobr\w*|gratis|no remuner\w*|sin remuner\w*|trabaj\w* gratis)\b/.test(t);
+const reportedVsWorkedHours = (t) => /\b(?:horas?|jornad\w*|horari\w*|turn\w*)\b/.test(t)
+  && /\b(trabaj\w*|hac\w*|cumpl\w*|real\w*|realiz\w*|efectiv\w*)\b/.test(t)
+  && /\b(declar\w*|registr\w*|const\w*|fich\w*|contrat\w*|figur\w*|oficial\w*|anotad\w*|computad\w*)\b/.test(t);
 const unpaidOvertimeEvidence = (() => {
   const number = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 1 });
   const people = (thousands) => new Intl.NumberFormat('es-ES', { maximumFractionDigits: 0, useGrouping: 'always' }).format(thousands * 1000);
@@ -993,7 +996,7 @@ const tourismEmploymentContribution = (t) => {
     && /\b(que|a|al|frente a|respecto a)\b/.test(t)
     && !/\b(crec\w*|aument\w*|increment\w*|evoluc\w*|variac\w*)\b/.test(t);
   const differentFamily = /\b(viviend\w*|alquil\w*|arrendam\w*|salari\w*|sueld\w*|productiv\w*|pernoctacion\w*|noches? de hotel)\b/.test(t);
-  return !unpaidOvertime(t) && tourism && employment && (contributionOrDependence || regionalSectorComparison)
+  return !unpaidOvertime(t) && !reportedVsWorkedHours(t) && tourism && employment && (contributionOrDependence || regionalSectorComparison)
     && (!sectorEmploymentComparison(t) || regionalSectorComparison) && !differentFamily;
 };
 const selfEmploymentCostViability = (t) => {
@@ -1909,6 +1912,29 @@ const focuses = [
     needs: ['productividad, beneficios y salarios por tamaño, sector y ocupación', 'evolución de salarios y productividad para las mismas empresas', 'evidencia sobre negociación y decisiones salariales que permita comprobar una contención deliberada'],
     explanation: 'Una empresa puede tener productividad o beneficios altos sin que eso determine cuánto paga a cada trabajador. Para afirmar que contiene salarios hacen falta datos de productividad, remuneración y decisiones de pago en las mismas empresas.',
     limitation: 'Una mediana salarial nacional o sectorial no demuestra que grandes empresas puedan pagar más ni que estén frenando los salarios.',
+  },
+  {
+    id: 'reported-vs-worked-hours', label: 'horas trabajadas frente a horas registradas o contratadas',
+    when: reportedVsWorkedHours, claimType: 'descriptive',
+    direct: [], context: [],
+    needsForClaim: () => [
+      'horas efectivamente trabajadas y registradas para las mismas personas',
+      'jornada contratada, sector, territorio y periodo comparables',
+      'horas extra no pagadas separadas de horas que no se registraron',
+    ],
+    explanationHeadline: 'Las horas extra no pagadas no miden el trabajo que queda sin registrar',
+    explanation: 'Las horas efectivas, las horas que figuran en el contrato y las horas extra declaradas son medidas distintas. Un recuento de horas extra no pagadas no indica cuántas horas trabajadas faltan en los registros.',
+    explanationEvidence: {
+      ...unpaidOvertimeEvidence,
+      directClaimEvidence: false,
+      when: (claim) => /\bhosteler\w*\b/.test(claim),
+      evidenceLabel: 'Contexto EPA: horas extra declaradas y remuneración en hostelería',
+    },
+    shareableReplyForContext: ({ claim }) => [
+      unpaidOvertimeEvidence.shareableReplyForContext({ claim }),
+      'Este cuestionario no coteja lo declarado con el registro horario o el contrato ni cuenta las horas omitidas; por eso no confirma que se trabajen más horas de las registradas.',
+    ].filter(Boolean).join('\n\n'),
+    limitation: 'La EPA registra respuestas sobre horas extra pagadas o no pagadas; no coteja fichajes, contratos y horas realmente trabajadas. La cifra disponible cubre hostelería en España, no cada sector ni cada empresa.',
   },
   {
     id: 'unpaid-overtime', label: 'horas extraordinarias trabajadas y remuneradas',
