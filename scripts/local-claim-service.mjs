@@ -710,10 +710,10 @@ const findWarehouseSource = async (query) => {
     const available = entry.tokenSet || new Set(warehouseTokens(entry.text));
     const matched = wanted.filter((token) => available.has(token)).length;
     const matchedSubject = subjectWanted.filter((token) => available.has(token)).length;
-    return { entry, score: matched / wanted.length, matched, matchedSubject };
+    return { entry, score: matched / wanted.length, matched, matchedSubject, matchedTerms: subjectWanted.filter((token) => available.has(token)) };
   }).filter(({ score, matched, matchedSubject }) => score >= 0.34 && matched >= 2 && matchedSubject >= 1).sort((left, right) => right.score - left.score);
   const top = ranked[0];
-  return top ? { id: top.entry.id, title: top.entry.title, url: top.entry.url, score: top.score } : null;
+  return top ? { id: top.entry.id, title: top.entry.title, url: top.entry.url, score: top.score, matchedTerms: top.matchedTerms } : null;
 };
 
 const findBestWarehouseSource = async (queries = []) => {
@@ -3451,30 +3451,40 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
   const indexedSourceCandidate = allowDiscovery && !retrievalClassified.primary && !suppressUnrelatedContext && !warehouse.observations.length && !sourceOverride
     ? await findBestWarehouseSource([retrievalText, ...propositionQueries])
     : null;
+  const claimScopedIndexedSource = indexedSourceCandidate
+    && hasSufficientClaimTermOverlap(text, indexedSourceCandidate.matchedTerms, 3)
+    && filterObservationsForRequestedGroup(text, [indexedSourceCandidate]).length
+    ? indexedSourceCandidate
+    : null;
   // A loose keyword overlap is not enough to put an official excerpt in the
   // answer. This prevents a claim such as “there are ministers in prison”
   // from receiving an unrelated tax or broad politics publication merely
   // because both documents mention government institutions.
-  const indexedSource = indexedSourceCandidate?.score >= 0.5 ? indexedSourceCandidate : null;
+  const indexedSource = claimScopedIndexedSource?.score >= 0.5 ? claimScopedIndexedSource : null;
   // Official discovery is useful for new measurable or definitional claims,
   // but generic documents are not evidence for causal, group, legal,
   // predictive, or normative conclusions. Those handlers must either find a
   // typed record or explain what is missing instead of attaching a topical
   // publication.
-  const discovered = allowDiscovery && discoveryEligible.has(handlerId) && !suppressUnrelatedContext && !warehouse.observations.length && !indexedSource && !sourceOverride
+  const discoveredCandidates = allowDiscovery && discoveryEligible.has(handlerId) && !suppressUnrelatedContext && !warehouse.observations.length && !indexedSource && !sourceOverride
     ? (await discoverOfficialDocuments(discoveryText || retrievalText, 3)).map(discoveryObservation)
     : [];
+  const claimRelevantDiscovered = discoveredCandidates.filter((item) => hasSufficientClaimTermOverlap(text, item.matchedTerms, 3));
+  const discovered = filterObservationsForRequestedGroup(text, claimRelevantDiscovered);
   const trustedWebLeads = process.env.GENERAL_WEB_RESEARCH !== '0' && allowDiscovery && !suppressUnrelatedContext && !warehouse.observations.length && !indexedSource && !discovered.length && !sourceOverride
     ? await searchTrustedWeb({ queries: [discoveryText || retrievalText, ...propositionQueries], token: process.env.BRAVE_SEARCH_TOKEN || process.env.CURRENT_SEARCH_TOKEN, limit: 6 })
     : [];
-  const trustedWeb = trustedWebLeads.length
+  const trustedWebCandidates = trustedWebLeads.length
     ? (await enrichTrustedWebResults(trustedWebLeads, { query: discoveryText || retrievalText, max: 6 })).map(trustedWebObservation)
     : [];
+  const claimRelevantTrustedWeb = trustedWebCandidates.filter((item) => hasSufficientClaimTermOverlap(text, tokens(`${item.metric || ''} ${item.excerpt || ''}`), 3));
+  const trustedWeb = filterObservationsForRequestedGroup(text, claimRelevantTrustedWeb);
   const source = sourceOverride || warehouse.source || liveLegal[0]?.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source || trustedWeb[0]?.source;
   const broadComplaint = broadComplaintText(text) || /\b(?:espana|pais|este pais)\b[\s\w]{0,48}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible|fatal|desastre|ruina|peor|mal)\b/.test(normalise(text));
-  const observations = broadComplaint
+  const selectedObservations = broadComplaint
     ? [...new Map([...(broadPacketAvailable ? warehouse.observations : scorecardObservations), ...(broadPacketAvailable ? scorecardObservations : warehouse.observations)].map((item) => [item.id, item])).values()].slice(0, broadPacketAvailable ? broadPacketEvidenceRowLimit : 96)
     : warehouse.observations.length ? warehouse.observations : liveLegal.length ? liveLegal : discovered.length ? discovered : trustedWeb;
+  const observations = filterObservationsForRequestedGroup(text, selectedObservations);
   const deterministic = toResolveResult(text, retrievalClassified, source, resultRequestId, observations);
   // Broad rhetorical claims need a reviewed multi-family context packet when
   // the warehouse only found a narrow or unrelated series. Dynamic evidence

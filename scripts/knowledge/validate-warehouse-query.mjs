@@ -399,6 +399,10 @@ const foreignBenefitRows = filterObservationsForRequestedGroup('¿Cuántas perso
 if (foreignBenefitRows.length !== 1 || foreignBenefitRows[0].id !== 'foreign-benefit-count') throw new Error('A single-group benefit count mixed foreign and total recipients');
 const spanishBenefitRows = filterObservationsForRequestedGroup('¿Cuántas personas españolas cobran prestaciones por desempleo?', benefitGroups);
 if (spanishBenefitRows.length !== 1 || spanishBenefitRows[0].id !== 'spanish-benefit-count') throw new Error('A nearby Spanish-recipient question crossed into foreign-recipient counts');
+const unstratifiedBenefitSource = filterObservationsForRequestedGroup('¿Cuántas personas españolas cobran prestaciones por desempleo?', [
+  { id: 'generic-official-source', kind: 'official_publication', dimensions: { department: 'Consejo de Ministros' }, matchedTerms: ['prestaciones', 'desempleo'] },
+]);
+if (unstratifiedBenefitSource.length) throw new Error('A general official source without the requested nationality breakdown was attached to a group count');
 const benefitComparisonRows = filterObservationsForRequestedGroup('Compara beneficiarios extranjeros y españoles', benefitGroups);
 if (benefitComparisonRows.length !== benefitGroups.length) throw new Error('A multi-group comparison prematurely discarded comparison groups');
 if (!preferredMetricIdsForQuery('En España cuesta cada vez más encontrar trabajo que en Europa').has('unemployment_rate_europe')) throw new Error('Metric hints did not resolve conversational job-finding difficulty to European unemployment');

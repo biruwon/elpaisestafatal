@@ -3135,6 +3135,8 @@ assert.deepEqual(evidenceForProposition({ text: 'Los ciudadanos no notan mejoras
 const pensionReformClaim = 'Las reformas de pensiones suben cotizaciones porque recortar prestaciones es políticamente más difícil';
 assert.equal(hasSufficientClaimTermOverlap(pensionReformClaim, ['prestaciones']), false, 'A single broad benefits term must not attach IMV or unemployment series to a pension-reform claim');
 assert.equal(hasSufficientClaimTermOverlap(pensionReformClaim, ['prestaciones', 'cotizaciones']), true, 'Two claim-specific terms may retain directly related pension-finance context');
+assert.equal(hasSufficientClaimTermOverlap('Hay ministros en prisión', ['ministros', 'impuestos'], 3), false, 'A discovery query expansion must not make an unrelated tax publication relevant through one shared institution term');
+assert.equal(hasSufficientClaimTermOverlap('Personas españolas cobran prestaciones por desempleo', ['prestaciones', 'desempleo'], 3), false, 'Two broad topic terms do not establish a source match for the requested nationality group');
 assert.equal(hasSufficientClaimTermOverlap('Las prestaciones por desempleo aumentan entre los trabajadores extranjeros', ['prestaciones', 'desempleo', 'extranjeros']), true, 'A same-family benefits claim should retain its matching evidence');
 const electricityTariffClaim = 'Los impuestos, peajes y cargos hacen que la factura final se mueva de forma distinta al precio mayorista';
 assert.equal(hasSufficientClaimTermOverlap(electricityTariffClaim, ['impuestos']), false, 'A shared tax word must not attach public-finance data to a household electricity-bill claim');

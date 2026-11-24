@@ -1432,7 +1432,10 @@ price-per-kWh series, with the wholesale-price clause left unconfirmed. Two
 count phrasings resolved to the same SEPE series: 231,920 foreign recipients
 in November 2025 and 239,124 in December 2025. The separate share series was
 13.0% and 13.39% of all unemployment-benefit recipients in those months. A
-nearby question about Spanish recipients did not receive the foreign count.
+nearby question about Spanish recipients did not receive the foreign count or
+generic Moncloa documents; it remains an explicit evidence gap. Discovered
+sources are checked against the original claim terms and subgroup dimensions,
+so words introduced only by an expanded search query cannot qualify a source.
 The SEPE snapshots in the local warehouse were retrieved in August 2026 and
 end in December 2025, so these answers remain limited and explicitly need an
 update; they are not current November 2026 totals. The sources measure the
