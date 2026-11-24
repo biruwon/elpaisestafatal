@@ -1174,6 +1174,42 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       !findings.length ? gapForReply : '',
     ].filter(Boolean).join('\n\n');
   })();
+  const workingPovertyEndsMeetReply = (() => {
+    if (focus.id !== 'working-poverty' || !asksAboutMakingEndsMeet) return undefined;
+    const povertyFact = primaryFacts.find((fact) => /^in_work_poverty_/.test(fact.id));
+    const strainFact = primaryFacts.find((fact) => fact.id === 'subjective_poverty_rate');
+    if (!povertyFact || !strainFact) return undefined;
+    const conciseStrain = factFinding(strainFact)
+      .replace('de la población vivía en un hogar cuya persona encuestada declaró dificultad o gran dificultad para cubrir los gastos habituales', 'de la población en hogares privados vivía en hogares cuyo encuestado declaró dificultades para gastos habituales')
+      .replace(' % respondió «con dificultad» y ', ' % dificultad; ')
+      .replace(' % respondió «con gran dificultad»', ' % gran dificultad');
+    return [
+      'Eurostat mide pobreza laboral con la renta disponible equivalente del hogar bajo el 60 % de la mediana nacional tras transferencias; no mide directamente llegar a fin de mes.',
+      factFinding(povertyFact),
+      conciseStrain,
+      'La ECV no cruza esta dificultad con las horas trabajadas, así que no permite confirmar ni descartar el enunciado. La renta usada para el umbral puede ser del año previo a la encuesta.',
+    ].join('\n\n');
+  })();
+  const touristHousingReply = (() => {
+    if (focus.id !== 'tourist-housing-supply') return undefined;
+    const count = primaryFacts.find((fact) => fact.id === 'tourist_housing_count');
+    const share = primaryFacts.find((fact) => fact.id === 'tourist_housing_share');
+    if (!count || !share || count.latest.period !== share.latest.period || count.latest.geography !== share.latest.geography) return undefined;
+    return [
+      `INE (${count.latest.geography}, ${periodLabel(count.latest.period)}): ${number(count.latest.value, count.id)} viviendas turísticas estimadas; ${number(share.latest.value, share.id)} % del parque total. La cuota usa el parque del Censo de 2021 como denominador, no las viviendas disponibles para alquilar.`,
+      'La estimación experimental usa anuncios deduplicados de tres plataformas. No mide viviendas que dejaron el alquiler residencial ni demuestra un efecto causal, y tampoco fija qué reducción sería «demasiada». Para comprobarlo hacen falta cambios de uso y oferta residencial comparables por territorio y periodo.',
+      'El dato nacional no describe barrios o municipios.',
+    ].join('\n\n');
+  })();
+  const educationPayReply = (() => {
+    if (focus.id !== 'education-pay-comparison') return undefined;
+    const earnings = primaryFacts.find((fact) => fact.id === 'mean_hourly_earnings_by_education');
+    if (!earnings) return undefined;
+    return [
+      factFinding(earnings),
+      'Son medias brutas, no una distribución salarial ni una comparación entre el salario y los requisitos del puesto. Para comprobar ese ajuste hacen falta salarios y cualificaciones exigidas comparables por ocupación, jornada, experiencia, sector, territorio y periodo.',
+    ].join('\n\n');
+  })();
   const tourismEmploymentHeadline = focus.id === 'tourism-employment-contribution'
     ? (() => {
       const share = facts.find((fact) => fact.id === 'tourism_characteristic_employment_share');
@@ -1192,7 +1228,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       return `El dato (${number(directThresholdAssessment.actual, fact.id)}${suffix}) ${position}; ${directThresholdAssessment.verdict === 'supported' ? 'respalda' : 'contradice'} esa parte.`;
     })()
     : '';
-  const reply = primaryCareCausalityReply || tourismEmploymentReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+  const reply = primaryCareCausalityReply || tourismEmploymentReply || workingPovertyEndsMeetReply || touristHousingReply || educationPayReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
     directThresholdComparisonNote,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length ? 'limited' : 'insufficient';

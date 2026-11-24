@@ -1171,4 +1171,184 @@ export const textAnswerAccuracyCases = [
       replyExcludes: ['2,51', 'octubre de 2026'], evidence: [], maxReplyWords: 100,
     },
   },
+  {
+    id: 'collective-wage-prices-comparison-2020-2025',
+    equivalenceGroup: 'collective-wage-prices-spain-2020-2025',
+    input: 'Entre 2020 y 2025, las subidas salariales pactadas en convenios españoles quedaron por debajo de los precios',
+    expected: {
+      state: 'limited', family: 'collective-agreement-wages', verdict: 'supported',
+      directSourceIds: ['mites-collective-agreements-2026-10', 'eurostat-annual-hicp-spain-2026-11-23'],
+      replyIncludes: ['15,7 %', '21,9 %', '5 % por debajo', '3.162 convenios', '2025 es provisional', 'no prueba causalidad'],
+      replyExcludes: ['Variación anual pactada / variación calculada', '2021: pactada', '2024: pactada'],
+      evidence: [
+        {
+          familyId: 'collective_agreement_wage_settlement_rate', sourceIds: ['mites-collective-agreements-2026-10'],
+          dataIncludes: ['2021: 1,5 %', '2025: 3,5 % (provisional)'],
+          dimensions: { geography: 'España', period: '2021–2025', population: 'Personas trabajadoras afectadas por convenios', unit: 'Variación salarial anual pactada (%)' },
+        },
+        {
+          familyId: 'annual_hicp_index', sourceIds: ['eurostat-annual-hicp-spain-2026-11-23'],
+          dataIncludes: ['2020: 82,05', '2025: 100'],
+          dimensions: { geography: 'España', period: '2020–2025', population: 'Cesta armonizada de consumo', unit: 'Índice HICP' },
+        },
+      ],
+      maxReplyWords: 130,
+    },
+  },
+  {
+    id: 'collective-wage-prices-paraphrase',
+    equivalenceGroup: 'collective-wage-prices-spain-2020-2025',
+    input: 'La negociación colectiva aumentó los sueldos menos que los precios',
+    expected: {
+      state: 'limited', family: 'collective-agreement-wages', verdict: 'supported',
+      directSourceIds: ['mites-collective-agreements-2026-10', 'eurostat-annual-hicp-spain-2026-11-23'],
+      replyIncludes: ['15,7 %', '21,9 %', '5 % por debajo'],
+      replyExcludes: ['2021: pactada', '2024: pactada'], evidence: [], maxReplyWords: 130,
+    },
+  },
+  {
+    id: 'collective-wage-sector-neighbour-out-of-scope',
+    input: 'En hostelería, las subidas salariales pactadas en convenios quedaron por debajo de los precios entre 2020 y 2025',
+    expected: {
+      state: 'insufficient', family: 'collective-agreement-wages', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['15,7 %', '21,9 %', '5 % por debajo'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'gdp-growth-and-household-difficulty',
+    equivalenceGroup: 'gdp-household-welfare-spain-2024-2025',
+    input: 'Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio',
+    expected: {
+      state: 'limited', family: 'gdp-household-welfare', verdict: 'mixed',
+      directSourceIds: ['eurostat-gdp-wellbeing-indicator', 'eurostat-income-living-conditions-metadata', 'ine-national-accounts-2025', 'ine-ecv-2025'],
+      replyIncludes: ['2,6 %', '8,5 %', '9,1 %', '36,4 %', '35,8 %', 'no permiten confirmar una mejora general', 'cómo se repartió el crecimiento'],
+      replyExcludes: ['una única medida de sensación económica'],
+      evidence: [{
+        familyId: 'gdp-household-welfare',
+        sourceIds: ['eurostat-gdp-wellbeing-indicator', 'eurostat-income-living-conditions-metadata', 'ine-national-accounts-2025', 'ine-ecv-2025'],
+        dataIncludes: ['PIB real de España creció un 2,6 % en 2025 respecto a 2024', '8,5 % de la población llegó a fin de mes', '36,4 % no podía afrontar gastos imprevistos'],
+      }],
+      maxReplyWords: 110,
+    },
+  },
+  {
+    id: 'gdp-growth-and-household-difficulty-paraphrase',
+    equivalenceGroup: 'gdp-household-welfare-spain-2024-2025',
+    input: 'Los buenos datos macroeconómicos conviven con una sensación de empeoramiento económico entre hogares',
+    expected: {
+      state: 'limited', family: 'gdp-household-welfare', verdict: 'mixed',
+      directSourceIds: ['eurostat-gdp-wellbeing-indicator', 'eurostat-income-living-conditions-metadata', 'ine-national-accounts-2025', 'ine-ecv-2025'],
+      replyIncludes: ['2,6 %', '8,5 %', '36,4 %', 'Son preguntas distintas'],
+      replyExcludes: ['el PIB no refleja cómo vive el hogar medio'], evidence: [], maxReplyWords: 110,
+    },
+  },
+  {
+    id: 'intergenerational-rent-transfer-paraphrase',
+    equivalenceGroup: 'intergenerational-housing-transfer-context',
+    input: 'Los jóvenes transfieren renta de alquiler a propietarios de más edad',
+    expected: {
+      state: 'limited', directSourceIds: [],
+      replyIncludes: ['54,7 %', '15,4 puntos porcentuales', '22,4 %', 'no vinculan el alquiler pagado con la edad', 'No demuestran una transferencia'],
+      replyExcludes: ['76,1 %', '50,7 %', '11 o más viviendas'],
+      evidence: [
+        { familyId: 'intergenerational-housing-distribution', sourceIds: ['bank-spain-housing-annual-2025'], dataIncludes: ['54,7 %'] },
+        { familyId: 'intergenerational-housing-distribution', sourceIds: ['bank-spain-housing-annual-2025'], dataIncludes: ['22,4 %'] },
+      ],
+      maxReplyWords: 125,
+    },
+  },
+  {
+    id: 'intergenerational-property-age-concentration-neighbour',
+    equivalenceGroup: 'intergenerational-housing-transfer-context',
+    input: 'Las generaciones mayores concentran la propiedad de vivienda en España',
+    expected: {
+      state: 'limited', directSourceIds: [],
+      replyIncludes: ['54,7 %', '22,4 %', 'no demuestra que las generaciones mayores concentren la propiedad'],
+      replyExcludes: ['76,1 %', '50,7 %', '11 o más viviendas'], evidence: [], maxReplyWords: 125,
+    },
+  },
+  {
+    id: 'full-time-work-and-making-ends-meet',
+    equivalenceGroup: 'full-time-work-and-subjective-financial-strain-2025',
+    input: 'En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes',
+    expected: {
+      state: 'insufficient', family: 'working-poverty', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['9,5 %', 'riesgo de pobreza', '20,6 %', '12,1 %', '8,5 %', 'la ECV no cruza esta dificultad con las horas trabajadas'],
+      replyExcludes: ['no demuestra que el tipo de jornada cause el riesgo'],
+      evidence: [
+        { familyId: 'in_work_poverty_full_time_rate', sourceIds: ['eurostat-in-work-poverty-full-time-2026-11'], dataIncludes: ['9,5 %', '2025'], dimensions: { geography: 'España', population: 'jornada completa', unit: '%' } },
+        { familyId: 'subjective_poverty_rate', sourceIds: ['eurostat-subjective-poverty-2026-11'], dataIncludes: ['20,6 %', '12,1 %', '8,5 %'], dimensions: { geography: 'España', period: '2025', denominator: 'población residente en hogares privados', unit: '%' } },
+      ],
+      maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'full-time-work-and-household-expenses-paraphrase',
+    equivalenceGroup: 'full-time-work-and-subjective-financial-strain-2025',
+    input: 'Una jornada completa puede dejarte sin llegar a fin de mes',
+    expected: {
+      state: 'insufficient', family: 'working-poverty', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['9,5 %', '20,6 %', 'dificultad', 'la ECV no cruza esta dificultad con las horas trabajadas'],
+      replyExcludes: ['no demuestra que el tipo de jornada cause el riesgo'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'tourist-housing-displacement-claim',
+    equivalenceGroup: 'tourist-housing-displacement-spain-2026',
+    input: 'Los pisos turísticos están retirando demasiada vivienda del alquiler residencial',
+    expected: {
+      state: 'insufficient', family: 'tourist-housing-supply', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['341.001 viviendas turísticas estimadas', '1,28 % del parque total', 'Censo de 2021', 'no mide viviendas que dejaron el alquiler residencial', 'demuestra un efecto causal', 'demasiada'],
+      evidence: [
+        { familyId: 'tourist_housing_count', sourceIds: ['ine-tourist-count'], dataIncludes: ['341.001 viviendas (mayo de 2026)'], dimensions: { geography: 'España', period: '2026M05', population: 'viviendas turísticas estimadas', unit: 'viviendas' } },
+        { familyId: 'tourist_housing_share', sourceIds: ['ine-tourist-share'], dataIncludes: ['1,28 % (mayo de 2026)'], dimensions: { geography: 'España', period: '2026M05', denominator: 'Censo de Población y Viviendas 2021', unit: '%' } },
+      ],
+      maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'tourist-housing-displacement-paraphrase',
+    equivalenceGroup: 'tourist-housing-displacement-spain-2026',
+    input: 'Los pisos turísticos reducen la oferta de alquiler residencial en España',
+    expected: {
+      state: 'insufficient', family: 'tourist-housing-supply', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['341.001 viviendas turísticas estimadas', '1,28 % del parque total', 'Censo de 2021', 'no mide viviendas que dejaron el alquiler residencial'],
+      evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'tourist-housing-city-scope-neighbour',
+    input: 'Los apartamentos turísticos reducen la oferta para quienes viven en las ciudades',
+    expected: {
+      state: 'insufficient', family: 'tourist-housing-supply', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['no demuestra que la afirmación sea falsa', 'oferta de alquiler residencial', 'mismo territorio y periodo'],
+      replyExcludes: ['341.001', '1,28 %'],
+      evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'education-attainment-pay-vs-job-requirements',
+    equivalenceGroup: 'education-attainment-pay-context-spain-2022',
+    input: 'Los sueldos de muchos trabajos cualificados son demasiado parecidos a los de puestos que exigen mucha menos formación',
+    expected: {
+      state: 'insufficient', family: 'education-pay-comparison', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['10,04 €/hora', '11,48 €/hora', '17,71 €/hora', 'estudios alcanzados (no los exigidos por el puesto)', 'cualificaciones exigidas comparables'],
+      evidence: [{
+        familyId: 'mean_hourly_earnings_by_education', sourceIds: ['eurostat-spain-ses-2022-education'],
+        dataIncludes: ['10,04 €/hora', '11,48 €/hora', '17,71 €/hora'],
+        dimensions: { geography: 'España', period: '2022', unit: '€/hora' },
+      }],
+      maxReplyWords: 130,
+    },
+  },
+  {
+    id: 'education-attainment-pay-paraphrase',
+    equivalenceGroup: 'education-attainment-pay-context-spain-2022',
+    input: 'Los empleos que requieren estudios superiores no pagan mucho más que los que exigen menos estudios',
+    expected: {
+      state: 'insufficient', family: 'education-pay-comparison', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['10,04 €/hora', '11,48 €/hora', '17,71 €/hora', 'no los exigidos por el puesto', 'requisitos del puesto'],
+      evidence: [], maxReplyWords: 130,
+    },
+  },
 ];

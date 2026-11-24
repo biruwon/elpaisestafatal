@@ -1224,3 +1224,32 @@ including wrong-value neighbours, an unsupported year and an income-group
 scope check. Claim-focus validation covers 271 paraphrase and scope checks.
 These are regression results for reviewed snapshots, not a population-wide
 accuracy estimate; the discovery claims remain unverified.
+
+## Text reply accuracy and readability — 24 November 2026
+
+The text-first pass tightened the copyable answers for collective-agreement
+wages versus consumer prices, GDP growth versus household conditions,
+full-time work and reported financial strain, generational housing claims,
+tourist-housing supply and education-level pay. It keeps annual wage detail in
+the evidence panel; distinguishes total output from household income and
+separate ECV questions; and does not treat national housing estimates as proof
+of local displacement, owner age or a causal effect. Education pay context is
+labelled by attained education, not job requirements. Paraphrases share a
+family only when their population and territory are compatible; nearby city
+claims keep the national snapshot out.
+
+The held-out benchmark now passes 91/91 cases across 25 paraphrase groups,
+checking verdict, source links, evidence values, scope, concise answers and
+public traceability. The full claim-focus suite covers 271 paraphrase and
+boundary checks. These are reviewed regressions, not a guarantee about every
+possible submission or a population-wide accuracy estimate.
+
+On the 300-item web-observed discovery corpus, the deterministic fallback
+returns 7 complete, 65 limited and 228 uncovered responses. A metric or family
+route exists for 157 claims; 143 have neither. Public results are 267
+insufficient and 33 limited, 72 attach a consultable source, and none contains
+an untraceable non-insufficient argument. No copyable answer in this run
+exceeds 160 words. The inputs remain explicitly unverified, so these counts
+measure routing, source attachment and reply length—not truth or factual
+accuracy. Unsupported and city-specific claims continue to receive evidence
+gaps rather than adjacent national figures.

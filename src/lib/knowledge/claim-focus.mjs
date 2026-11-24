@@ -1075,11 +1075,21 @@ const focuses = [
     explanationHeadline: 'El PIB creció en 2025, mientras que dos indicadores de dificultades de los hogares evolucionaron en direcciones distintas',
     explanation: 'El PIB mide producción agregada, no la renta disponible ni la experiencia económica de cada hogar. La ECV recoge dificultades declaradas mediante preguntas concretas; no ofrece una única medida de “sensación económica general”.',
     explanationEvidence: GDP_HOUSEHOLD_WELFARE_SNAPSHOT,
-    shareableReplyForContext: ({ facts }) => [
-      facts[2],
-      facts[3],
-      'El PIB total mide producción agregada; Eurostat considera el PIB real por habitante, un indicador distinto, solo una aproximación al nivel material de vida. EU-SILC publica por separado ingresos y condiciones de vida, incluida la renta disponible equivalente ajustada al tamaño y composición del hogar. La ECV pregunta por dificultades concretas. Estas cifras muestran que el crecimiento y las dificultades pueden coexistir, pero no prueban un empeoramiento general de la percepción económica, cómo se repartió el crecimiento ni las causas de los cambios.',
-    ].filter(Boolean).join('\n\n'),
+    shareableReplyForContext: ({ facts }) => {
+      const estimate = facts[2]?.match(/PIB real de España creció un ([\d,]+ %) en (\d{4}) respecto a (\d{4})/);
+      const conciseGrowth = estimate
+        ? `El INE estimó que el PIB real de España creció ${estimate[1]} en ${estimate[2]} frente a ${estimate[3]}.`
+        : facts[2];
+      const conditions = facts[3]?.match(/En la ECV de España, el ([\d,]+) % de la población llegó a fin de mes con mucha dificultad en (\d{4}), frente al ([\d,]+) % en (\d{4})\. A la vez, el ([\d,]+) % no podía afrontar gastos imprevistos, frente al ([\d,]+) % en (\d{4})\./);
+      const conciseConditions = conditions
+        ? `En la ECV de España, la proporción de población con mucha dificultad para llegar a fin de mes bajó de ${conditions[3]} % (${conditions[4]}) a ${conditions[1]} % (${conditions[2]}); la que no podía afrontar gastos imprevistos subió de ${conditions[6]} % a ${conditions[5]} %. Son preguntas distintas.`
+        : facts[3];
+      return [
+        conciseGrowth,
+        conciseConditions,
+        'El PIB total mide producción, no renta de los hogares; el PIB por habitante solo aproxima el nivel material de vida. Estas cifras no permiten confirmar una mejora general ni cómo se repartió el crecimiento.',
+      ].filter(Boolean).join('\n\n');
+    },
     limitation: 'Esta comparación de datos de España cubre 2024–2025. El PIB no mide el ingreso de cada hogar y los porcentajes de la ECV son respuestas de la población, no tasas por hogar ni una medición de la experiencia de cada persona.',
   },
   {

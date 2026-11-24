@@ -1208,6 +1208,7 @@ const scopeReviewedPacket = (packet, claim) => {
       }
     }
     visuals = (visuals || []).filter((visual) => {
+      if (intergenerational) return false;
       if (/Tasa de paro juvenil/.test(visual.title)) return /paro|desemple/.test(text);
       if (/Índice de precios de vivienda/.test(visual.title)) return purchase || !rent;
       // Regional percentages were approximated from a graphic, rather than
@@ -1266,18 +1267,18 @@ const composeScopedReply = (plan) => {
     const comparesWages = /salari|sueldo/.test(generationalClaim);
     const migration = families.find((family) => family.criterionId === 'family-support-counterfactual');
     const parts = [plan.headline.replace(/[.]$/, '') + '.'];
-    if (generationalRenting && generationalPurchases && individualLandlordConcentration) {
-      parts.push(`Banco de España: ${generationalRenting}. ${generationalPurchases}. Son medidas distintas, con edades y denominadores diferentes. El informe también señala que, en las últimas décadas, los hogares jóvenes han acumulado menos riqueza neta que generaciones anteriores.`);
-      if (allegesConcentration) parts.push(`Sobre la concentración de carteras: ${individualLandlordConcentration}. El dato cubre viviendas habituales en alquiler de personas físicas en el territorio fiscal común; no clasifica a los propietarios por edad ni incluye viviendas de sociedades.`);
+    if (generationalRenting && generationalPurchases) {
+      parts.push(`Banco de España: ${generationalRenting}. ${generationalPurchases}. Son grupos y denominadores distintos.`);
       if (comparesWages) {
         parts.push('El informe no compara la brecha patrimonial entre propietarios e inquilinos con la diferencia salarial. Para saber cuál pesa más hacen falta datos de riqueza neta y salarios de ambos grupos con edades y periodos comparables.');
       } else if (allegesTransfer) {
-        parts.push('Estos datos no vinculan los alquileres pagados por hogares jóvenes con la edad de quienes los reciben ni comparan los precios pagados por distintas cohortes. La transferencia generacional concreta no queda demostrada.');
-        if (allegesConcentration) parts.push('La tabla de carteras describe el número de viviendas por arrendador, no la distribución por edad; no demuestra que las generaciones mayores concentren la propiedad.');
+        parts.push(`Los datos no vinculan el alquiler pagado con la edad de quien lo recibe. ${allegesConcentration && individualLandlordConcentration ? 'La tabla de carteras clasifica a los arrendadores por número de viviendas, no por edad.' : ''} No demuestran una transferencia de renta entre generaciones.`.replace(/\s+/g, ' ').trim());
       } else if (allegesConcentration) {
-        parts.push('La tabla describe el tamaño de las carteras de arrendadores, no la distribución de la propiedad por edad; no demuestra que las generaciones mayores concentren la vivienda.');
+        parts.push(individualLandlordConcentration
+          ? 'La tabla de carteras clasifica a los arrendadores por número de viviendas, no por edad; no demuestra que las generaciones mayores concentren la propiedad.'
+          : 'Los datos disponibles no desglosan la propiedad por edad y no demuestran que las generaciones mayores concentren la vivienda.');
       } else {
-        parts.push('Las medidas disponibles describen acceso y patrimonio, pero no cuantifican por sí solas cómo se distribuye la riqueza residencial entre cohortes.');
+        parts.push('Estas medidas describen acceso a la vivienda, pero no muestran cómo se distribuye la propiedad por generación.');
       }
       return parts.join('\n\n');
     }

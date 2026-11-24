@@ -154,7 +154,7 @@ for (const query of educationPayQueries) {
   assert.match(result.body.result.reply, /10,04 €\/hora.*11,48 €\/hora.*17,71 €\/hora/s);
   assert.match(result.body.result.reply, /estudios alcanzados.*no los exigidos por el puesto/);
   assert.match(result.body.result.reply, /empresas con al menos 10 empleados/);
-  assert.match(result.body.result.reply, /falta comparar salarios con los requisitos de cada puesto/);
+  assert.match(result.body.result.reply, /cualificaciones exigidas comparables por ocupaci[oó]n, jornada, experiencia, sector, territorio y periodo/);
   assert.equal(result.body.result.arguments[0].verdict, 'insufficient');
   const sourceIds = result.body.result.sources.map((source) => source.id);
   assert.deepEqual(sourceIds, ['eurostat-spain-ses-2022-education']);
@@ -201,8 +201,8 @@ for (const query of touristHousingQueries) {
   assert.deepEqual(result.body.result.answerScope.directMetrics, []);
   assert.deepEqual(result.body.result.answerScope.contextMetrics, ['tourist_housing_count', 'tourist_housing_share']);
   assert.equal(result.body.result.evidenceSummary.mode, 'snapshot');
-  assert.match(result.body.result.reply, /341\.001 viviendas.*1,28 %.*mayo de 2026/s);
-  assert.match(result.body.result.reply, /no indican cu[aá]ntas viviendas dejaron el alquiler residencial/);
+  assert.match(result.body.result.reply, /mayo de 2026.*341\.001 viviendas.*1,28 % del parque total/s);
+  assert.match(result.body.result.reply, /no mide viviendas que dejaron el alquiler residencial/i);
   assert.match(result.body.result.reply, /Censo.*2021/);
   assert.equal(result.body.result.arguments[0].verdict, 'insufficient');
   const sourceIds = result.body.result.sources.map((source) => source.id);
@@ -654,8 +654,8 @@ const graduatePay = await check('Tener un máster o un doctorado no garantiza co
 assert.equal(graduatePay.body.state, 'insufficient');
 assert.deepEqual(graduatePay.body.result.answerScope.contextMetrics, ['mean_hourly_earnings_by_education']);
 assert.match(graduatePay.body.result.reply, /10,04 €\/hora.*11,48 €\/hora.*17,71 €\/hora/s);
-assert.match(graduatePay.body.result.reply, /falta comparar salarios con los requisitos de cada puesto.*ocupación, jornada, experiencia, sector, territorio y periodo comparables/s);
-assert.match(graduatePay.body.result.reply, /media bruta por hora no muestra la distribución salarial/);
+assert.match(graduatePay.body.result.reply, /cualificaciones exigidas comparables por ocupaci[oó]n, jornada, experiencia, sector, territorio y periodo/);
+assert.match(graduatePay.body.result.reply, /no una distribuci[oó]n salarial/);
 assert.ok(graduatePay.body.result.sources.some((source) => source.id === 'eurostat-spain-ses-2022-education'));
 assert.doesNotMatch(graduatePay.body.result.reply, /80,2 %|34 %/);
 

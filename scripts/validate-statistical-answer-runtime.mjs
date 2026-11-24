@@ -285,7 +285,7 @@ try {
     assert.ok(result.result.reply.includes('17,71 €/hora'));
     assert.match(result.result.reply, /estudios alcanzados.*no los exigidos por el puesto/);
     assert.match(result.result.reply, /empresas con al menos 10 empleados/);
-    assert.match(result.result.reply, /falta comparar salarios con los requisitos de cada puesto/);
+    assert.match(result.result.reply, /cualificaciones exigidas comparables por ocupaci[oó]n, jornada, experiencia, sector, territorio y periodo/);
     assert.deepEqual(result.result.sources.map((source) => source.url), [educationPayUrl]);
     assert.equal(result.result.arguments?.[0]?.verdict, 'insufficient');
     const evidenceIds = result.result.evidenceSummary.families.find((family) => family.familyId === 'mean_hourly_earnings_by_education')?.evidenceIds || [];
@@ -392,9 +392,9 @@ try {
     assert.deepEqual(result.result.answerScope.directMetrics, []);
     assert.deepEqual(result.result.answerScope.contextMetrics, ['tourist_housing_count', 'tourist_housing_share']);
     assert.ok(['snapshot', 'dynamic'].includes(result.result.evidenceSummary.mode));
-    assert.match(result.result.reply, /341\.001 viviendas.*1,28 %.*mayo de 2026/s);
-    assert.match(result.result.reply, /denominador las viviendas del Censo de 2021/);
-    assert.match(result.result.reply, /no indican cu[aá]ntas viviendas dejaron el alquiler residencial/);
+    assert.match(result.result.reply, /mayo de 2026.*341\.001 viviendas.*1,28 % del parque total/s);
+    assert.match(result.result.reply, /Censo de 2021 como denominador/);
+    assert.match(result.result.reply, /no mide viviendas que dejaron el alquiler residencial/i);
     assert.equal(result.result.sources.length, 2);
     assert.ok(result.result.sources.every((source) => /(^|\.)ine\.es$/i.test(new URL(source.url).hostname)));
     assert.equal(result.result.arguments?.[0]?.verdict, 'insufficient');

@@ -152,7 +152,7 @@ assert.equal(fullTime.result.answerScope.family, 'working-poverty');
 assert.equal(fullTime.result.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
 assert.ok(fullTime.result.shareableReply.includes('9,5 % de las personas ocupadas a jornada completa'));
 assert.ok(fullTime.result.shareableReply.includes('20,6 % de la población'));
-assert.ok(fullTime.result.shareableReply.includes('cruce de la dificultad declarada con la situación laboral y la jornada'));
+assert.ok(fullTime.result.shareableReply.includes('La ECV no cruza esta dificultad con las horas trabajadas'));
 assert.ok(fullTime.result.sourceIds.includes('eurostat-subjective-poverty-2026-11'));
 assert.ok(!fullTime.result.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds.includes('eurostat-subjective-poverty-spain-2025'));
 

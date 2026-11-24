@@ -629,8 +629,8 @@ for (const claim of educationPayParaphrases) {
   assert.ok(answer.shareableReply.includes('17,71 €/hora'));
   assert.match(answer.shareableReply, /estudios alcanzados \(no los exigidos por el puesto\)/);
   assert.match(answer.shareableReply, /empresas con al menos 10 empleados/);
-  assert.match(answer.shareableReply, /falta comparar salarios con los requisitos de cada puesto/);
-  assert.match(answer.shareableReply, /no determina si un empleo paga «acorde»/);
+  assert.match(answer.shareableReply, /no una distribuci[oó]n salarial ni una comparaci[oó]n entre el salario y los requisitos del puesto/);
+  assert.match(answer.shareableReply, /cualificaciones exigidas comparables por ocupaci[oó]n, jornada, experiencia, sector, territorio y periodo/);
   assert.deepEqual(answer.sourceLinks.map((source) => source.id), [educationPaySource.id], claim);
   assert.equal(answer.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient', claim);
   const evidence = answer.evidenceSummary.families.find((family) => family.familyId === 'mean_hourly_earnings_by_education');
@@ -699,8 +699,8 @@ const touristDisplacementClaim = 'Los pisos turísticos están retirando viviend
 const touristDisplacementPlan = focusedEvidencePlan(touristDisplacementClaim, { observations: touristHousingObservations });
 assert.equal(touristDisplacementPlan.answerScope.family, 'tourist-housing-supply');
 assert.deepEqual(touristDisplacementPlan.answerScope.directMetrics, [], 'The INE tourist-housing counts do not directly measure homes lost from residential rent');
-assert.match(touristDisplacementPlan.shareableReply, /Como contexto:/);
-assert.match(touristDisplacementPlan.shareableReply, /no indican cu[aá]ntas viviendas dejaron el alquiler residencial/);
+assert.match(touristDisplacementPlan.shareableReply, /INE \(Espa[nñ]a, mayo de 2026\)/);
+assert.match(touristDisplacementPlan.shareableReply, /no mide viviendas que dejaron el alquiler residencial/i);
 assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'tourist-displacement', result: touristDisplacementPlan }, touristDisplacementClaim).state, 'insufficient');
 const tourismHousingCostClaim = 'El turismo encarece el coste de la vivienda en España';
 const tourismHousingCostPlan = focusedEvidencePlan(tourismHousingCostClaim, { observations: touristHousingObservations });
@@ -800,7 +800,7 @@ for (const query of educationPayQueries) {
   assert.match(result.result.shareableReply, /10,04 €\/hora.*11,48 €\/hora.*17,71 €\/hora/s);
   assert.match(result.result.shareableReply, /estudios alcanzados.*no los exigidos por el puesto/);
   assert.match(result.result.shareableReply, /empresas con al menos 10 empleados/);
-  assert.match(result.result.shareableReply, /falta comparar salarios con los requisitos de cada puesto/);
+  assert.match(result.result.shareableReply, /cualificaciones exigidas comparables por ocupaci[oó]n, jornada, experiencia, sector, territorio y periodo/);
   assert.equal(localPublicCheckResponse(result, query).state, 'insufficient', 'Contextual education earnings cannot settle a qualification-to-pay claim');
   const pending = localPublicCheckResponse({ status: 'processing', requestId: 'education-pay-preview' }, query);
   assert.equal(pending.state, 'processing');
@@ -878,8 +878,8 @@ for (const query of touristHousingFallbackQueries) {
   assert.equal(result.result.answerScope.family, 'tourist-housing-supply');
   assert.deepEqual(result.result.answerScope.directMetrics, []);
   assert.deepEqual(result.result.answerScope.contextMetrics, ['tourist_housing_count', 'tourist_housing_share']);
-  assert.match(result.result.shareableReply, /341\.001 viviendas.*1,28 %.*mayo de 2026/s);
-  assert.match(result.result.shareableReply, /no indican cu[aá]ntas viviendas dejaron el alquiler residencial/);
+  assert.match(result.result.shareableReply, /341\.001 viviendas.*1,28 %.*parque total/s);
+  assert.match(result.result.shareableReply, /no mide viviendas que dejaron el alquiler residencial/i);
   assert.match(result.result.shareableReply, /Censo.*2021/);
   assert.equal(localPublicCheckResponse(result, query).state, 'insufficient', 'Tourist-dwelling counts cannot establish homes removed from residential rent');
   const pending = localPublicCheckResponse({ status: 'processing', requestId: 'tourist-housing-preview' }, query);
@@ -950,11 +950,11 @@ const gdpHousehold = focusedEvidencePlan('Las cifras de crecimiento del PIB no r
 assert.equal(gdpHousehold.answerScope.family, 'gdp-household-welfare');
 assert.equal(gdpHousehold.evidenceLevel, 'limited', 'Definitions explain the scope but do not establish household outcomes');
 assert.equal(gdpHousehold.sourceLinks.length, 4, 'The GDP and household context needs official statistical definitions and current INE sources');
-assert.match(gdpHousehold.shareableReply, /aproximaci[oó]n al nivel material de vida/);
-assert.match(gdpHousehold.shareableReply, /renta disponible equivalente/);
-assert.match(gdpHousehold.shareableReply, /PIB real de Espa[nñ]a creci[oó] un 2,6 % en 2025/);
-assert.match(gdpHousehold.shareableReply, /8,5 %.*9,1 %.*36,4 %.*35,8 %/s);
-assert.match(gdpHousehold.shareableReply, /no prueban un empeoramiento general/);
+assert.match(gdpHousehold.shareableReply, /solo aproxima el nivel material de vida/);
+assert.match(gdpHousehold.shareableReply, /no renta de los hogares/);
+assert.match(gdpHousehold.shareableReply, /INE estim[oó] que el PIB real de Espa[nñ]a creci[oó] 2,6 % en 2025 frente a 2024/);
+assert.match(gdpHousehold.shareableReply, /9,1 %.*8,5 %.*35,8 %.*36,4 %/s);
+assert.match(gdpHousehold.shareableReply, /no permiten confirmar una mejora general ni c[oó]mo se reparti[oó] el crecimiento/);
 const gdpHouseholdPublic = localPublicCheckResponse({ status: 'complete', requestId: 'gdp-households', result: gdpHousehold }, 'Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio');
 assert.equal(gdpHouseholdPublic.state, 'limited');
 assert.equal(gdpHouseholdPublic.result.sources.length, 4, 'The public response must retain the definitions and both INE data sources');
@@ -964,7 +964,7 @@ assert.equal(gdpHouseholdCoexistence.status, 'partial');
 assert.equal(gdpHouseholdCoexistence.result.answerScope.family, 'gdp-household-welfare');
 assert.equal(gdpHouseholdCoexistence.result.claimType, 'comparative');
 assert.match(gdpHouseholdCoexistence.result.shareableReply, /2,6 % en 2025/);
-assert.match(gdpHouseholdCoexistence.result.shareableReply, /una baj[oó] y la otra subi[oó]/);
+assert.match(gdpHouseholdCoexistence.result.shareableReply, /baj[oó].*subi[oó]/s);
 assert.equal(claimFocusFor('El PIB crece, pero aumenta el desempleo juvenil')?.id, undefined, 'A labor-market trend without household outcomes must not enter the household-welfare family');
 assert.equal(claimFocusFor('Los hogares dicen que su situación empeora, aunque no se menciona el PIB ni los datos macroeconómicos')?.id, undefined, 'A household-only trend must not inherit GDP comparison evidence');
 const selfEmploymentCosts = focusedEvidencePlan('La cuota y los costes fijos hacen inviable ser autónomo con ingresos bajos o irregulares', { observations: [
@@ -2565,13 +2565,13 @@ for (const claim of intergenerationalHousingParaphrases) {
   ]);
   assert.match(plan.shareableReply, /54,7 %.*15,4 puntos/);
   assert.match(plan.shareableReply, /22,4 %.*20 puntos/);
-  assert.match(plan.shareableReply, /medidas distintas, con edades y denominadores diferentes/);
+  assert.match(plan.shareableReply, /grupos y denominadores distintos/);
   if (claim.includes('concentran')) {
-    assert.match(plan.shareableReply, /76,1 %.*50,7 %.*0,2 %.*2,4 %/);
-    assert.match(plan.shareableReply, /no clasifica a los propietarios por edad/);
+    assert.match(plan.shareableReply, /clasifica a los arrendadores por n[uú]mero de viviendas, no por edad/);
+    assert.doesNotMatch(plan.shareableReply, /76,1 %|50,7 %|11 o m[aá]s viviendas/);
   }
   if (claim.includes('transfieren') || claim.includes('transferencia') || claim.includes('pagan')) {
-    assert.match(plan.shareableReply, /La transferencia generacional concreta no queda demostrada/);
+    assert.match(plan.shareableReply, /No demuestran una transferencia de renta entre generaciones/);
   }
   if (claim.includes('diferencia salarial')) assert.match(plan.shareableReply, /no compara la brecha patrimonial.*con la diferencia salarial/);
 
@@ -2582,7 +2582,7 @@ for (const claim of intergenerationalHousingParaphrases) {
   assert.equal(publicAnswer.state, 'limited');
   assert.ok(publicAnswer.result.sources.some((source) => source.id === 'bank-spain-housing-annual-2025'));
   if (claim.includes('transfieren') || claim.includes('transferencia') || claim.includes('pagan')) {
-    assert.match(publicAnswer.result.reply, /La transferencia generacional concreta no queda demostrada/);
+    assert.match(publicAnswer.result.reply, /No demuestran una transferencia de renta entre generaciones/);
   }
   assert.ok(!publicAnswer.result.arguments?.some((argument) => argument.verdict === 'supported'), 'Contextual housing data must not become a supported verdict on a generational transfer');
 

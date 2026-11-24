@@ -182,12 +182,13 @@ if (scopedRateTrend.result?.headline !== 'El riesgo de pobreza entre personas oc
   || !scopedRateTrend.result?.shareableReply?.includes('2019 (12,7 %) y 2020 (11,8 %)')) {
   throw new Error('A year-range trend answer included endpoints outside the requested period.');
 }
-const subjectivePoverty = deterministicApiFallback({ text: 'En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes', inputType: 'text', now: Date.parse('2026-11-23T16:00:00Z') });
+const subjectivePoverty = deterministicApiFallback({ text: 'En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes', inputType: 'text', now: Date.parse('2026-11-24T12:00:00Z') });
 const subjectiveArgument = subjectivePoverty.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0];
 if (subjectivePoverty.status !== 'partial' || subjectivePoverty.result?.evidenceLevel !== 'insufficient'
-  || !subjectivePoverty.result?.shareableReply?.includes('Como contexto:')
+  || !subjectivePoverty.result?.shareableReply?.includes('Eurostat mide pobreza laboral')
+  || !subjectivePoverty.result?.shareableReply?.includes('9,5 % de las personas ocupadas a jornada completa')
   || !subjectivePoverty.result?.shareableReply?.includes('20,6 % de la población')
-  || !subjectivePoverty.result?.shareableReply?.includes('cruce de la dificultad declarada con la situación laboral y la jornada')
+  || !subjectivePoverty.result?.shareableReply?.includes('no cruza esta dificultad con las horas trabajadas')
   || subjectiveArgument?.sourceIds?.length || subjectiveArgument?.evidenceIds?.length) {
   throw new Error('Household poverty context must leave the full-time-claim verdict insufficient.');
 }

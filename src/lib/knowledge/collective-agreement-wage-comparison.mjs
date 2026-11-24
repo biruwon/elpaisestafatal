@@ -123,16 +123,20 @@ export const collectiveAgreementWagePlan = (claim, { observations = [], now = Da
   const yearBreakdown = annual.map(({ year, settlement, priceChange: annualPrice }) => `${year}: pactada ${number(settlement.value)} % / precios ${number(annualPrice)} %`).join('; ');
   const latestSettlementDimensions = annual.at(-1).settlement.dimensions || {};
   const coverageNote = latestSettlementDimensions.registeredCutoff === '2026-10'
-    ? `El avance del Ministerio registrado hasta octubre de 2026 incluye ${number(latestSettlementDimensions.agreementsCount)} convenios con efectos económicos conocidos y cuantificados, que afectan a ${number(latestSettlementDimensions.affectedWorkers)} trabajadores.`
+    ? `Avance ministerial (octubre de 2026): ${number(latestSettlementDimensions.agreementsCount)} convenios registrados y ${number(latestSettlementDimensions.affectedWorkers)} trabajadores afectados.`
     : '';
   const finding = `Entre ${start} y ${end}, las subidas salariales pactadas en convenios ${settlementPeriod} se acumularon aproximadamente un ${number(settlementChange)} %. En el mismo tramo, el índice armonizado medio de precios pasó de ${number(priceStart.value, 2)} a ${number(priceEnd.value, 2)} (${number(priceChange)} %); al descontar esa variación, la subida pactada acumulada quedó aproximadamente un ${number(Math.abs(realChange))} % ${realChange < 0 ? 'por debajo' : 'por encima'} de los precios.`;
+  const publicFinding = `En España, el índice armonizado de precios subió ${number(priceChange)} % entre ${start} y ${end}; las subidas pactadas en convenios acumularon ${number(settlementChange)} % entre ${start + 1} y ${end}. Ajustada por precios, la subida pactada quedó aproximadamente un ${number(Math.abs(realChange))} % ${realChange < 0 ? 'por debajo' : 'por encima'} de los precios.`;
   const annualFinding = `Variación anual pactada / variación calculada del HICP medio: ${yearBreakdown}.`;
   const allFlags = annual.flatMap(({ settlement, year }) => [settlement.status, prices.get(year)?.status, prices.get(year - 1)?.status]).map((status) => String(status || '').toLowerCase()).join('');
   const provisional2025 = String(agreements.get(2025)?.status || '').toLowerCase().includes('p');
   const flagNote = [provisional2025 ? 'El dato de 2025 es provisional.' : allFlags.includes('p') ? 'La comparación incluye datos provisionales.' : '', allFlags.includes('e') ? 'La comparación incluye datos estimados.' : ''].filter(Boolean).join(' ');
   const limitation = 'La variación pactada es el promedio de convenios registrados con efectos económicos conocidos y cuantificados; no mide cuánto cobró cada trabajador ni incluye necesariamente a todas las personas asalariadas. La subida puede aplicarse en fechas distintas o con efectos retroactivos. El HICP es una cesta de consumo agregada y no el coste de vida de cada hogar. La comparación no prueba que los convenios causen la inflación.';
-  const method = 'Cálculo propio: se acumulan las variaciones salariales pactadas de cada año entre los dos extremos y se comparan con el cambio del índice HICP medio anual en las mismas fechas.';
-  const reply = [coverageNote, finding, annualFinding, method, flagNote, limitation].filter(Boolean).join('\n\n');
+  const method = 'Cálculo propio: acumula las subidas pactadas anuales y las compara con el HICP medio anual entre los mismos extremos.';
+  const conciseLimitation = 'Es el promedio de convenios registrados con efectos económicos cuantificados, no lo cobrado por cada persona ni todos los salarios. El índice general no mide el coste de vida de cada hogar y la comparación no prueba causalidad.';
+  // Keep annual rows in the evidence panel. The copyable answer needs the
+  // aligned result and its coverage limits, not a second table of every year.
+  const reply = [coverageNote, publicFinding, method, flagNote, conciseLimitation].filter(Boolean).join('\n\n');
   const agreementRows = annual.map(({ settlement }) => settlement), priceRows = [priceStart, priceEnd];
   const evidenceIds = [...agreementRows, ...priceRows].map((item) => item.id);
   const sources = [...new Map([...agreementRows, ...priceRows].map((item) => [item.source.id, item.source])).values()];

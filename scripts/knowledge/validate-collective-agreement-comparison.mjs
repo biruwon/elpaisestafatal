@@ -5,7 +5,7 @@ import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-
 import { validateAnswerPlan } from './answer-plan-validation.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 
-const now = Date.parse('2026-11-23T20:00:00Z');
+const now = Date.parse('2026-11-24T12:00:00Z');
 const answer = (claim) => focusedEvidencePlan(claim, { now, allowReviewedSnapshotFallback: true });
 const realWageParaphrases = [
   'Los salarios españoles llevan años perdiendo poder adquisitivo frente al coste de la vida',
@@ -40,13 +40,15 @@ for (const claim of collectiveParaphrases) {
   assert.equal(plan?.answerScope?.family, 'collective-agreement-wages', claim);
   assert.equal(plan.evidenceLevel, 'limited');
   assert.deepEqual(new Set(plan.sourceIds), new Set(['mites-collective-agreements-2026-10', 'eurostat-annual-hicp-spain-2026-11-23']));
-  assert.match(plan.shareableReply, /Entre 2020 y 2025/);
+  assert.match(plan.shareableReply, /21,9 % entre 2020 y 2025/);
+  assert.match(plan.shareableReply, /15,7 % entre 2021 y 2025/);
+  assert.match(plan.shareableReply, /5 % por debajo de los precios/);
   assert.match(plan.shareableReply, /3\.162 convenios/);
   assert.match(plan.shareableReply, /9\.578\.780 trabajadores/);
-  assert.match(plan.shareableReply, /15,7 %/);
-  assert.match(plan.shareableReply, /21,9 %/);
-  assert.match(plan.shareableReply, /2022: pactada 3 % \/ precios 8,3 %/);
-  assert.match(plan.shareableReply, /2023: pactada 3,6 % \/ precios 3,4 %/);
+  assert.doesNotMatch(plan.shareableReply, /2022: pactada|2023: pactada/);
+  const agreementData = plan.evidenceSummary.families.find((family) => family.familyId === 'collective_agreement_wage_settlement_rate').data.join(' ');
+  assert.match(agreementData, /2022: 3 %/);
+  assert.match(agreementData, /2023: 3,6 %/);
   assert.match(plan.shareableReply, /2025 es provisional/);
   assert.match(plan.limitation, /no mide cuánto cobró cada trabajador/);
   assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported');
@@ -59,7 +61,7 @@ for (const claim of collectiveParaphrases) {
 const claim2023 = 'Los convenios colectivos actualizan los salarios más lentamente que los precios en 2023';
 const plan2023 = answer(claim2023);
 assert.equal(plan2023.blocks[0].items[0].verdict, 'contradicted', 'For 2023, pact increases were slightly higher than annual HICP inflation');
-assert.match(plan2023.shareableReply, /Entre 2022 y 2023/);
+assert.match(plan2023.shareableReply, /entre 2022 y 2023/);
 
 const claim2025 = 'Los salarios pactados subieron más que los precios en 2025';
 const plan2025 = answer(claim2025);
