@@ -1360,13 +1360,19 @@ office complies. Its exceptions—including sanction and inspection proceedings
 and the case where a document cannot exceptionally be retrieved—stay in the
 answer.
 
-The expanded held-out text-answer benchmark passes 187/187 cases across 52
+The held-out benchmark now passes 190/190 cases across 52
 paraphrase groups. Claim-focus validation covers 318 paraphrases and boundary
 checks. The full classifier suite and `npm run check` pass; Astro reports no
 errors or warnings and five existing hints. A cross-family regression found
 that “cuarto trimestre” could be read as “room”; room matching now requires
 rental or shared-housing context, and a job-vacancy-rate runtime case protects
 that boundary.
+
+The legal-answer composer now distinguishes a claim that the law denies the
+right to reuse documents from one that says resubmission is mandatory, and
+from the correctly negated claim that resubmission is normally unnecessary.
+New wording cases protect those opposite verdicts and keep ambiguous legal
+claims mixed until the applicable rule is clear.
 
 The 300-item unverified discovery corpus currently has a metric or focused
 family route for 169 claims (66 metric matches and 150 family matches, with 47
