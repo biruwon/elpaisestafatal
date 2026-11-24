@@ -390,7 +390,7 @@ const gdpTotalPerCapitaComparison = (t) => {
 const labourProductivityTrend = (t) => /\bproductividad\b/.test(t)
   && /\b(?:laboral|pib|gdp|crecimiento|crece|crecio|poblacion|empleo|por trabajador|por persona ocupada|por empleado|por hora|horas trabajadas|estanc\w*|lent\w*|avanz\w*|tendencia|lleva anos|desde hace anos)\b/.test(t)
   && !/\b(?:empres\w*|negocio\w*|sector\w*|industr\w*|productividad total de los factores|salari\w*|sueld\w*|antiguedad|premia\w*)\b/.test(t);
-const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios? superiores?|educacion (?:superior|terciaria)|cualific\w*|sobrecualific\w*|formacion profesional|fp)\b/.test(t)
+const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios?|formaci\w*|preparaci\w*|educacion (?:superior|terciaria)|cualific\w*|sobrecualific\w*|fp)\b/.test(t)
   && !migrationPopulation.test(t) && !healthcareWorkforceCausality(t)
   && !/\b(estigma|estereotip\w*|prestigio|percepcion\w*|reputacion\w*)\b/.test(t)
   && (/\b(emple\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*|salida laboral|salidas laborales|empleabilidad|perspectivas laborales)\b/.test(t) || /\bsobrecualific\w*\b/.test(t));
@@ -398,10 +398,10 @@ const educationSkillsVsCurriculum = (t) => /\b(idiom\w*|competenci\w*|habilidad\
   && /\b(asignatur\w*|materia\w*|curr[ií]cul\w*|contenid\w*|plan de estudios|grado\w*|t[ií]tul\w*|carrer\w*|universidad\w*|formaci[oó]n)\b/.test(t)
   && /\b(emple\w*|trabaj\w*|mercado laboral|puesto\w*|empresas?|empleador\w*|contrataci[oó]n|vacantes?|ofertas?)\b/.test(t)
   && /\b(pes\w*|val\w*|prioriz\w*|import\w*|exig\w*|demand\w*|busc\w*|necesit\w*|prefer\w*|prepar\w*|ensen\w*|sirv\w*|cuent\w*|m[aá]s|menos|mejor|peor)\b/.test(t);
-const educationJobFit = (t) => /\b(cualific\w*|acorde\w*|relacionad\w*|adecuad\w*|sobrecualific\w*|desajust\w*|desencaj\w*|nivel de estudios|campo de estudios)\b/.test(t)
+const educationJobFit = (t) => /\b(cualific\w*|acorde\w*|relacionad\w*|adecuad\w*|sobrecualific\w*|desajust\w*|desencaj\w*|nivel de estudios|campo de estudios|preparaci\w*)\b/.test(t)
   || /\b(?:puesto\w*|empleo\w*|trabajo\w*|ocupaci\w*)\b[\s\w]{0,55}\b(?:no requier\w*|no exig\w*|requiere? menos|exige menos)\b/.test(t)
   || /\b(?:no requier\w*|no exig\w*|requiere? menos|exige menos)\b[\s\w]{0,55}\b(?:nivel|estudios|titulaci\w*|formaci\w*|cualificaci\w*)\b/.test(t)
-  || /\b(?:por debajo|inferior|menor)\b[\s\w]{0,35}\b(?:formaci\w*|cualificaci\w*|nivel de estudios)\b/.test(t);
+  || /\b(?:por debajo|inferior|menor)\b[\s\w]{0,35}\b(?:formaci\w*|preparaci\w*|cualificaci\w*|nivel de estudios|estudios?)\b/.test(t);
 const educationJobRequirement = (t) => /\b(master\w*|maestr\w*|posgrado\w*|postgrado\w*)\b/.test(t)
   && /\b(exig\w*|requier\w*|necesit\w*|ped\w*|solicit\w*|ofert\w*)\b/.test(t)
   && /\b(emple\w*|trabaj\w*|puesto\w*)\b/.test(t);

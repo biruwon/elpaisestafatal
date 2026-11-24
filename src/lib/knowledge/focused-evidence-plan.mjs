@@ -576,17 +576,19 @@ const educationOutcomeLimitForQuestion = (question) => {
   if (question.asksEmploymentProspects) return 'La tasa de empleo terciaria no mide las salidas laborales de FP ni garantiza la contratación de una persona. Para valorar la empleabilidad hace falta una tasa de empleo de titulados con edad, tiempo desde la graduación y denominador definidos.';
   return '';
 };
-const educationOutcomeLimitation = (ids, fallback, question) => {
+const educationOutcomeLimitation = (ids, fallback, question, causalClaim = false) => {
   const employment = ids.includes('employment_rate_tertiary_education');
   const unemployment = ids.includes('unemployment_rate_tertiary_education');
   const overqualification = ids.includes('tertiary_overqualification_rate');
   const youthOverqualification = ids.includes('tertiary_overqualification_rate_age_20_34');
-  if (youthOverqualification) return 'Aquí, «jóvenes» se interpreta con el grupo estadístico de Eurostat de 20 a 34 años. El denominador son solo las personas ocupadas de ese grupo con educación terciaria: no equivale a recién graduados, no cuenta a quienes siguen desempleados y no mide si el puesto coincide con el campo de estudios ni qué titulación piden los anuncios.';
-  if (employment && overqualification) return 'Estas tasas describen grupos, no garantizan el resultado de cada persona. La tasa de empleo abarca a residentes de 20 a 64 años, no solo a recién graduados; la de sobrecualificación solo cuenta a quienes ya trabajan y no mide si el puesto coincide con el campo de estudios.';
-  if (unemployment) return 'La tasa de paro usa como denominador a la población activa de 20 a 64 años con educación terciaria, no a todas las personas tituladas. No se limita a recién graduados ni predice el resultado de una persona.';
-  if (overqualification) return 'La tasa de sobrecualificación solo cuenta a personas ocupadas de 20 a 64 años con educación terciaria. No mide a quienes siguen desempleados, el ajuste del campo de estudios ni las titulaciones exigidas en anuncios de empleo.';
-  if (employment) return 'La tasa de empleo usa como denominador a todas las personas residentes de 20 a 64 años con educación terciaria. No se limita a recién graduados ni mide si el puesto coincide con sus estudios.';
-  return educationOutcomeLimitForQuestion(question) || fallback;
+  const scope = youthOverqualification ? 'Aquí, «jóvenes» se interpreta con el grupo estadístico de Eurostat de 20 a 34 años. El denominador son solo las personas ocupadas de ese grupo con educación terciaria: no equivale a recién graduados, no cuenta a quienes siguen desempleados y no mide si el puesto coincide con el campo de estudios ni qué titulación piden los anuncios.'
+    : employment && overqualification ? 'Estas tasas describen grupos, no garantizan el resultado de cada persona. La tasa de empleo abarca a residentes de 20 a 64 años, no solo a recién graduados; la de sobrecualificación solo cuenta a quienes ya trabajan y no mide si el puesto coincide con el campo de estudios.'
+      : unemployment ? 'La tasa de paro usa como denominador a la población activa de 20 a 64 años con educación terciaria, no a todas las personas tituladas. No se limita a recién graduados ni predice el resultado de una persona.'
+        : overqualification ? 'La tasa de sobrecualificación solo cuenta a personas ocupadas de 20 a 64 años con educación terciaria. No mide a quienes siguen desempleados, el ajuste del campo de estudios ni las titulaciones exigidas en anuncios de empleo.'
+          : employment ? 'La tasa de empleo usa como denominador a todas las personas residentes de 20 a 64 años con educación terciaria. No se limita a recién graduados ni mide si el puesto coincide con sus estudios.'
+            : educationOutcomeLimitForQuestion(question) || fallback;
+  const causalLimit = 'Este dato no mide si la falta de oportunidades acordes llevó a aceptar esos puestos. Para establecer esa causa harían falta datos sobre las oportunidades disponibles, los empleos y las razones de las decisiones en la misma población y periodo.';
+  return [scope, causalClaim ? causalLimit : ''].filter(Boolean).join(' ');
 };
 const educationOutcomeNeedsForClaim = (claim, fallback) => {
   const question = educationOutcomeQuestion(claim);
@@ -615,6 +617,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const focus = claimFocusFor(claim);
   if (!focus) return undefined;
   const normalizedClaim = normalize(claim);
+  const educationOutcome = focus.id === 'education-employment-outcomes';
+  const educationOutcomeCausalClaim = educationOutcome
+    && /\b(?:caus\w*|provoc\w*|porque|ya que|debido a|por culpa|empuj\w*|oblig\w* a|conduc\w* a|llev\w* a|por falta de|ante la falta de|por no (?:encontr\w*|hall\w*|consegu\w*))\b/.test(normalizedClaim);
   const tourismRegionalSectorComparison = focus.id === 'tourism-employment-contribution'
     && requestedGeographyScopes(claim).some((scope) => scope.type === 'region')
     && /\b(mas|menos|mayor|menor|super\w*|inferior\w*)\b/.test(normalizedClaim)
@@ -624,6 +629,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     const clauseFocus = claimFocusFor(item.text);
     if (clauseFocus?.id === focus.id) return true;
     const clauseText = normalize(item.text);
+    const educationOutcomeCauseClause = educationOutcomeCausalClaim
+      && propositions.length === 2
+      && propositions.some((proposition) => claimFocusFor(proposition.text)?.id === focus.id)
+      && /\b(?:oportunidad\w*|vacante\w*|estudi\w*|formaci\w*|titulaci\w*|cualific\w*|acord\w*)\b/.test(clauseText);
     const sameSectorOutput = focus.id === 'sector-wage-comparison'
       && /\b(pib|producto interior bruto|valor anadido|produccion|aport\w*)\b/.test(clauseText)
       && sectorNames.some((pattern) => pattern.test(normalizedClaim) && pattern.test(clauseText));
@@ -683,6 +692,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       || sameProductivityComparison && /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(clauseText)) return true;
     if (sameLandlordMotive) return true;
     if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism || unemploymentSupplyExplanation) return true;
+    if (educationOutcomeCauseClause) return true;
     if (clauseFocus) return false;
     // A clause such as “una parte se produce más barata” can refer back to
     // the preceding subject. A new named subject must remain a separate
@@ -759,7 +769,6 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const fullTime = /\b(?:jornada completa|tiempo completo)\b/i.test(claim);
   const partTime = /\b(?:jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)\b/i.test(claim);
   const asksAboutTeachers = /\b(?:por (?:profesor\w*|docent\w*)|alumn\w* (?:por|entre) (?:profesor\w*|docent\w*))\b/.test(normalize(claim));
-  const educationOutcome = focus.id === 'education-employment-outcomes';
   const workingPovertyTrendRequested = focus.id === 'working-poverty'
     && /\b(cada vez|evoluci\w*|tendencia|desde|entre \d{4}|\d{4}\s+(?:a|hasta|y)\s+\d{4}|a lo largo|ultim\w* a[nñ]os?|cada a[nñ]o|estable|se mantiene|(?:ha|han)\s+(?:sub\w*|aument\w*|crec\w*|increment\w*|descend\w*|baj\w*|disminu\w*))\b/.test(normalizedClaim);
   const workingPovertyCountRequested = focus.id === 'working-poverty'
@@ -856,7 +865,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && specialistOutpatientMagnitudeNotAssessed(claim);
   const limitation = tourismRegionalSectorComparison
     ? 'La serie disponible describe el conjunto de España; no compara empleo turístico y agrícola en el territorio solicitado.'
-    : educationOutcome ? educationOutcomeLimitation(ids, focus.limitation, educationQuestion)
+    : educationOutcome ? educationOutcomeLimitation(ids, focus.limitation, educationQuestion, educationOutcomeCausalClaim)
     : focus.id === 'working-poverty' ? 'El umbral relativo de pobreza y la respuesta subjetiva del hogar son medidas distintas. EU-SILC no cruza la dificultad declarada con la jornada laboral; el desglose por jornada tampoco incluye la edad. El dato no demuestra que el tipo de jornada cause el riesgo. El periodo es el año de la encuesta EU-SILC y los ingresos del umbral de pobreza pueden referirse a un año anterior.'
     : focus.id === 'sector-wage-comparison' ? [
       comparesSectorEmployment
@@ -893,6 +902,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && /\b(ya no|cada vez|se ha vuelto|antes|ahora|desde (?:19|20)\d{2}|en (?:19|20)\d{2}|entre (?:19|20)\d{2} y (?:19|20)\d{2}|ultimos a[nñ]os)\b/.test(normalizedClaim);
   const claimType = tourismRegionalSectorComparison ? 'comparative'
     : typeof focus.claimTypeFor === 'function' ? focus.claimTypeFor(normalizedClaim)
+    : educationOutcomeCausalClaim ? 'causal'
     : focus.id === 'working-poverty' && workingPovertyWorktimeComparisonRequested ? 'comparative'
     : focus.id === 'working-poverty' && workingPovertyTrendRequested ? 'trend'
     : focus.id === 'private-healthcare-access'
@@ -996,7 +1006,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && !tourismRegionalSectorComparison
     && /\b(depende\w*|dependencia|dependient\w*|demasiad\w*|excesiv\w*|caus\w*|crea\w*|genera\w*)\b/.test(normalizedClaim);
   const missing = educationOutcome
-    ? ids.length ? ids.filter((id) => !facts.some((fact) => fact.id === id)).map(educationNeedForMetric) : needs
+    ? [
+      ...(ids.length ? ids.filter((id) => !facts.some((fact) => fact.id === id)).map(educationNeedForMetric) : needs),
+      ...(educationOutcomeCausalClaim ? ['datos que relacionen las oportunidades disponibles, los puestos aceptados y los motivos de esa decisión para la misma población y periodo'] : []),
+    ]
     : tourismDependencyClaim ? needs
       : direct.length || explanationMeasuresClaim ? [] : needs;
   const primaryFacts = (direct.length ? direct : context).slice(0, educationOutcome ? 4 : 2);
@@ -1040,6 +1053,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     ? 'La fuente nacional disponible no ofrece recuentos comparables de empleo turístico y agrícola para el territorio solicitado.'
     : focus.id === 'working-poverty' && workingPovertyCountRequested
     ? 'La serie disponible mide un porcentaje, no el número de personas. Falta un recuento comparable de personas ocupadas bajo el umbral de riesgo de pobreza.'
+    : educationOutcomeCausalClaim ? 'La tasa de sobrecualificación describe qué ocupaciones tienen las personas tituladas que ya trabajan; no mide por qué aceptaron esos puestos ni las oportunidades que tenían.'
     : focus.evidenceGap || `Falta una medición directa de ${missing.join('; ')}.` : '';
   const gapForReply = educationOutcome && !ids.length && educationOutcomeLimitForQuestion(educationQuestion) ? ''
     : focus.id === 'education-pay-comparison' && facts.length
@@ -1144,15 +1158,16 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     const matching = facts.filter((fact) => fact.id === id);
     return {
       familyId: id, label: labels[id] || vocabulary.get(id)?.name || id, direction: 'qualifies',
-      status: matching.length ? matching.some((fact) => direct.includes(fact)) ? 'available' : 'partial' : 'missing',
-      dataKind: matching.length && matching.every((fact) => fact.items.every((item) => item.dataKind === 'snapshot')) ? 'snapshot' : matching.some((fact) => direct.includes(fact)) ? 'observed' : 'context',
+      status: educationOutcomeCausalClaim ? matching.length ? 'partial' : 'missing'
+        : matching.length ? matching.some((fact) => direct.includes(fact)) ? 'available' : 'partial' : 'missing',
+      dataKind: educationOutcomeCausalClaim ? 'context' : matching.length && matching.every((fact) => fact.items.every((item) => item.dataKind === 'snapshot')) ? 'snapshot' : matching.some((fact) => direct.includes(fact)) ? 'observed' : 'context',
       finding: matching.map(factFinding).join(' ') || 'No se ha localizado una medición compatible.',
       data: matching.map(factFinding),
       evidenceIds: matching.flatMap((fact) => fact.items.map((item) => item.id)).filter(Boolean),
       sourceIds: [...new Set(matching.flatMap((fact) => fact.sourceIds))],
       dimensions: matching.length === 1 ? { subject: focus.label, period: matching[0].latest.period, geography: matching[0].latest.geography || matching[0].latest.dimensionLabels?.geo,
         population: matching[0].latest.population || vocabulary.get(id)?.population, denominator: matching[0].latest.denominator, unit: unitFor(matching[0].latest) } : undefined,
-      ...(matching.some((fact) => direct.includes(fact)) ? {} : { missingDimensions: needs }),
+      ...(matching.some((fact) => direct.includes(fact)) && !educationOutcomeCausalClaim ? {} : { missingDimensions: missing }),
     };
   });
   if (explanationMeasuresClaim) families.push({
@@ -1216,13 +1231,13 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     summary: focus.explanation, shareableReply: reply, shareableSourceIds: sources.map((source) => source.id),
     interpretation: { kind: claimType === 'causal' ? 'causal' : claimType === 'comparative' ? 'comparative' : 'quantitative', subject: focus.label, predicate: claimType === 'causal' ? 'requires_causal_design' : 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
     blocks: [
-      { type: 'claim_breakdown', items: [{ text: claim, type: claimType, explicit: true, evidenceIds: directEvidenceIds, sourceIds: directSourceIds,
+      { type: 'claim_breakdown', items: [{ text: claim, type: claimType, explicit: true, evidenceIds: educationOutcomeCausalClaim ? [] : directEvidenceIds, sourceIds: educationOutcomeCausalClaim ? [] : directSourceIds,
         verdict: explanationMeasuresClaim ? explanation.claimVerdictFor?.(claim) || explanation.claimVerdict || specialistOutpatientComparison?.verdict || 'mixed'
           : educationOutcome ? directThresholdAssessment?.verdict || 'insufficient'
-            : directThresholdAssessment?.verdict || (focus.id === 'working-poverty' ? workingPovertyVerdict : 'insufficient'), evidenceLevel: directEvidenceIds.length ? 'limited' : 'none',
-        finding: explanationMeasuresClaim ? explanationFacts.join(' ') : workingPovertyComparison?.finding || (direct.length ? direct.slice(0, 2).map(factFinding).join(' ') : undefined) }], propositionIds: ['submitted-claim'] },
+            : directThresholdAssessment?.verdict || (focus.id === 'working-poverty' ? workingPovertyVerdict : 'insufficient'), evidenceLevel: directEvidenceIds.length && !educationOutcomeCausalClaim ? 'limited' : 'none',
+        finding: educationOutcomeCausalClaim ? undefined : explanationMeasuresClaim ? explanationFacts.join(' ') : workingPovertyComparison?.finding || (direct.length ? direct.slice(0, 2).map(factFinding).join(' ') : undefined) }], propositionIds: ['submitted-claim'] },
       ...explanationBlocks,
-      ...facts.map((fact) => ({ type: 'data_finding', evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [factFinding(fact)] })),
+      ...facts.map((fact) => ({ type: 'data_finding', ...(educationOutcomeCausalClaim ? { dataKind: 'context' } : {}), evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [factFinding(fact)] })),
       ...(missing.length ? [{ type: 'evidence_gap', missing, needed: missing, nextAction: tourismRegionalSectorComparison
         ? 'Buscar una fuente regional con recuentos comparables de empleo en turismo y agricultura para el mismo año.'
         : `Buscar una fuente primaria que mida ${focus.label} con ese ámbito.` }] : []),
@@ -1232,8 +1247,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     limitation, evidenceIds, sourceIds: sources.map((source) => source.id), sourceLinks: sources,
     evidenceSummary: { mode: facts.length ? facts.every((fact) => fact.items.every((item) => item.dataKind === 'snapshot')) ? 'snapshot' : 'dynamic' : explanation ? 'snapshot' : 'none', families, ...(missing.length ? { missingDimensions: missing } : {}) },
     answerScope: { kind: 'measurement', family: focus.id,
-      directMetrics: focus.id === 'working-poverty' ? direct.map((fact) => fact.id) : directIds,
-      contextMetrics: focus.id === 'working-poverty' ? displayIds.filter((id) => !direct.some((fact) => fact.id === id)) : displayIds.filter((id) => !directIds.includes(id)) },
+      directMetrics: educationOutcomeCausalClaim ? [] : focus.id === 'working-poverty' ? direct.map((fact) => fact.id) : directIds,
+      contextMetrics: educationOutcomeCausalClaim ? displayIds : focus.id === 'working-poverty' ? displayIds.filter((id) => !direct.some((fact) => fact.id === id)) : displayIds.filter((id) => !directIds.includes(id)) },
     knowledgeVersion: RUNTIME_VERSIONS.warehouseKnowledge,
   };
 };

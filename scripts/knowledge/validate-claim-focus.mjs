@@ -13,6 +13,7 @@ import { parsePrimaryCareBarometerWorkbook } from './domain-connectors.mjs';
 import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care-wait-snapshot.mjs';
 import { WORKING_POVERTY_SNAPSHOT } from '../../src/lib/knowledge/working-poverty-snapshot.mjs';
 import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/tourism-employment-snapshot.mjs';
+import { EDUCATION_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/education-employment-snapshot.mjs';
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../../src/lib/knowledge/education-earnings-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from '../../src/lib/knowledge/tourist-housing-snapshot.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
@@ -1402,6 +1403,81 @@ for (const claim of youngOverqualificationParaphrases) {
   assert.match(answer.shareableReply, /no equivale a reci[eé]n graduados/);
   assert.match(answer.shareableReply, /definici[oó]n de este dato difiere/);
 }
+const youthEmploymentCauseParaphrases = [
+  'Los jóvenes aceptan empleos por debajo de su cualificación porque no encuentran oportunidades acordes a sus estudios',
+  'Jóvenes titulados trabajan en puestos de menor cualificación porque no hay ofertas que encajen con sus estudios',
+  'La falta de puestos acordes lleva a jóvenes titulados a aceptar empleos por debajo de su preparación',
+  'Por no hallar un empleo de su nivel, los jóvenes titulados acaban aceptando trabajos de menor cualificación',
+  'Los jóvenes ocupan empleos por debajo de sus estudios debido a que hay pocas oportunidades acordes',
+];
+let youthEmploymentCauseSources;
+for (const claim of youthEmploymentCauseParaphrases) {
+  const compiled = deterministicFallbackCompiler(claim);
+  const plan = focusedEvidencePlan(claim, {
+    observations: EDUCATION_EMPLOYMENT_SNAPSHOT.observations,
+    propositions: compiled.explicitPropositions || [],
+    now: Date.parse('2026-11-24'),
+  });
+  assert.equal(plan.answerScope.family, 'education-employment-outcomes', claim);
+  assert.equal(plan.claimType, 'causal', claim);
+  assert.equal(plan.evidenceLevel, 'limited', claim);
+  assert.deepEqual(plan.answerScope.directMetrics, [], 'Overqualification is context for the full causal claim, not proof of its cause');
+  assert.deepEqual(plan.answerScope.contextMetrics, ['tertiary_overqualification_rate_age_20_34'], claim);
+  assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], claim);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient', claim);
+  assert.ok(plan.blocks.some((block) => block.type === 'data_finding' && block.dataKind === 'context'), claim);
+  assert.ok(plan.blocks.find((block) => block.type === 'evidence_gap')?.missing.some((item) => /oportunidades disponibles.*puestos aceptados.*motivos/.test(item)), claim);
+  assert.match(plan.shareableReply, /34,4 % de las personas ocupadas de 20 a 34 a[nñ]os/);
+  assert.match(plan.shareableReply, /no mide si la falta de oportunidades acordes llev[oó] a aceptar esos puestos/);
+  assert.match(plan.shareableReply, /denominador son solo las personas ocupadas de ese grupo/);
+  assert.match(plan.shareableReply, /definici[oó]n de este dato difiere/);
+  assert.ok(plan.shareableReply.split(/\s+/).length < 180, 'The causal qualification should remain short enough to digest');
+  assert.ok(validateAnswerPlan(plan).ok, JSON.stringify(validateAnswerPlan(plan).errors));
+  const publicAnswer = localPublicCheckResponse({ status: 'partial', requestId: 'youth-employment-cause', result: plan }, claim);
+  assert.equal(publicAnswer.state, 'insufficient', 'A contextual percentage must not verify the causal claim');
+  assert.equal(publicAnswer.result.arguments[0].verdict, 'insufficient');
+  assert.deepEqual(publicAnswer.result.arguments[0].evidenceIds, []);
+  assert.deepEqual(publicAnswer.result.criteria.map((item) => item.label), ['Contexto']);
+  assert.deepEqual(publicAnswer.result.sources.map((source) => source.id), ['eurostat-tertiary-overqualification']);
+  if (youthEmploymentCauseSources) assert.deepEqual(plan.sourceIds, youthEmploymentCauseSources, `A causal paraphrase changed its evidence source: ${claim}`);
+  youthEmploymentCauseSources = plan.sourceIds;
+}
+const youthUnemploymentWithSnapshot = focusedEvidencePlan('Los jóvenes con estudios superiores tienen más paro que antes', {
+  observations: EDUCATION_EMPLOYMENT_SNAPSHOT.observations,
+});
+assert.equal(youthUnemploymentWithSnapshot.evidenceLevel, 'insufficient');
+assert.deepEqual(youthUnemploymentWithSnapshot.sourceLinks, [], 'Youth overqualification must not stand in for youth unemployment');
+assert.doesNotMatch(youthUnemploymentWithSnapshot.shareableReply, /34,4 %/);
+const unsupportedMastersRequirement = focusedEvidencePlan('Cada vez se exige un máster para trabajos que antes pedían solo una carrera', {
+  observations: EDUCATION_EMPLOYMENT_SNAPSHOT.observations,
+});
+assert.equal(unsupportedMastersRequirement.evidenceLevel, 'insufficient');
+assert.deepEqual(unsupportedMastersRequirement.sourceLinks, [], 'Employment outcomes must not stand in for job-ad credential requirements');
+assert.doesNotMatch(unsupportedMastersRequirement.shareableReply, /83,2 %|34 %/);
+const unrelatedYouthUnemploymentCause = 'Los jóvenes con estudios superiores tienen más paro porque no encuentran empleo';
+const unrelatedYouthUnemploymentCompilation = deterministicFallbackCompiler(unrelatedYouthUnemploymentCause);
+assert.equal(focusedEvidencePlan(unrelatedYouthUnemploymentCause, {
+  observations: EDUCATION_EMPLOYMENT_SNAPSHOT.observations,
+  propositions: unrelatedYouthUnemploymentCompilation.explicitPropositions || [],
+}), undefined, 'Youth unemployment causality must not borrow an overqualification statistic');
+const unrelatedEducationCause = 'Los jóvenes titulados acaban en empleos por debajo de su formación porque el transporte público empeora';
+const unrelatedEducationCauseCompilation = deterministicFallbackCompiler(unrelatedEducationCause);
+assert.equal(focusedEvidencePlan(unrelatedEducationCause, {
+  observations: EDUCATION_EMPLOYMENT_SNAPSHOT.observations,
+  propositions: unrelatedEducationCauseCompilation.explicitPropositions || [],
+}), undefined, 'An unrelated second clause must not inherit education-employment context');
+assert.notEqual(claimFocusFor('Los jóvenes no encuentran empleo porque hay pocas vacantes')?.id,
+  'education-employment-outcomes', 'A general youth vacancy claim must not be routed to overqualification data');
+const youthEmploymentCauseFallback = deterministicApiFallback({
+  text: youthEmploymentCauseParaphrases[0], inputType: 'text', now: Date.parse('2026-11-24'),
+});
+assert.equal(youthEmploymentCauseFallback.status, 'partial');
+assert.equal(youthEmploymentCauseFallback.result.answerScope.family, 'education-employment-outcomes');
+assert.equal(youthEmploymentCauseFallback.result.evidenceLevel, 'limited');
+assert.match(youthEmploymentCauseFallback.result.shareableReply, /34,4 %/);
+const youthEmploymentCauseFallbackPublic = localPublicCheckResponse(youthEmploymentCauseFallback, youthEmploymentCauseParaphrases[0]);
+assert.equal(youthEmploymentCauseFallbackPublic.state, 'insufficient');
+assert.deepEqual(youthEmploymentCauseFallbackPublic.result.criteria.map((item) => item.label), ['Contexto']);
 const wrongAgeYouthObservation = { ...youngOverqualificationObservation, dimensions: { ...youngOverqualificationObservation.dimensions, age: 'Y20-64' } };
 const wrongCountryYouthObservation = { ...youngOverqualificationObservation, dimensions: { ...youngOverqualificationObservation.dimensions, geo: 'FR' }, geography: 'Francia' };
 for (const invalidObservation of [wrongAgeYouthObservation, wrongCountryYouthObservation]) {

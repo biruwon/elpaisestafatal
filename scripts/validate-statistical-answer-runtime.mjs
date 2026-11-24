@@ -9,6 +9,7 @@ import { DatabaseSync } from 'node:sqlite';
 import { build } from 'esbuild';
 import { normalizeJsonPayload } from './knowledge/normalize-json.mjs';
 import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/tourism-employment-snapshot.mjs';
+import { EDUCATION_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/education-employment-snapshot.mjs';
 
 // Exercise the real Pages handler, D1 hydration, local resolver and public
 // response together; nullable dates and source flags cross all four boundaries.
@@ -297,6 +298,42 @@ try {
   assert.equal(educationOverqualificationNeighbour.result.answerScope?.family, 'education-employment-outcomes');
   assert.ok(!educationOverqualificationNeighbour.result.sources.some((source) => source.url === educationPayUrl), 'Education-level earnings must not be attributed to an overqualification claim');
   assert.doesNotMatch(educationOverqualificationNeighbour.result.reply, /10,04|11,48|17,71/, 'A nearby overqualification claim must not inherit salary figures');
+  const youthEmploymentCauseQueries = [
+    'Los jóvenes aceptan empleos por debajo de su cualificación porque no encuentran oportunidades acordes a sus estudios',
+    'Jóvenes titulados trabajan en puestos de menor cualificación porque no hay ofertas que encajen con sus estudios',
+    'La falta de puestos acordes lleva a jóvenes titulados a aceptar empleos por debajo de su preparación',
+    'Por no hallar un empleo de su nivel, los jóvenes titulados acaban aceptando trabajos de menor cualificación',
+    'Los jóvenes ocupan empleos por debajo de sus estudios debido a que hay pocas oportunidades acordes',
+  ];
+  const youthOverqualificationSourceId = EDUCATION_EMPLOYMENT_SNAPSHOT.observations
+    .find((item) => item.metricId === 'tertiary_overqualification_rate_age_20_34')?.source.id;
+  let youthEmploymentCauseSourceIds;
+  for (const query of youthEmploymentCauseQueries) {
+    const result = await check(query, undefined, { DB: emptyD1 });
+    assert.equal(result.state, 'insufficient', JSON.stringify(result));
+    assert.equal(result.result.answerScope?.family, 'education-employment-outcomes');
+    assert.deepEqual(result.result.answerScope.directMetrics, []);
+    assert.deepEqual(result.result.answerScope.contextMetrics, ['tertiary_overqualification_rate_age_20_34']);
+    assert.equal(result.result.arguments?.[0]?.verdict, 'insufficient');
+    assert.deepEqual(result.result.arguments?.[0]?.evidenceIds, []);
+    assert.match(result.result.reply, /34,4 % de las personas ocupadas de 20 a 34 a[nñ]os/);
+    assert.match(result.result.reply, /no mide si la falta de oportunidades acordes llev[oó] a aceptar esos puestos/);
+    assert.match(result.result.reply, /denominador son solo las personas ocupadas de ese grupo/);
+    assert.match(result.result.reply, /definici[oó]n de este dato difiere/);
+    assert.deepEqual(result.result.criteria.map((criterion) => criterion.label), ['Contexto']);
+    assert.deepEqual(result.result.sources.map((source) => source.id), [youthOverqualificationSourceId]);
+    const sourceIds = result.result.sources.map((source) => source.id);
+    if (youthEmploymentCauseSourceIds) assert.deepEqual(sourceIds, youthEmploymentCauseSourceIds, `A causal paraphrase changed its evidence source: ${query}`);
+    youthEmploymentCauseSourceIds = sourceIds;
+  }
+  const youthUnemploymentNeighbour = await check('Los jóvenes con estudios superiores tienen más paro que antes', undefined, { DB: emptyD1 });
+  assert.equal(youthUnemploymentNeighbour.result.answerScope?.family, 'education-employment-outcomes');
+  assert.deepEqual(youthUnemploymentNeighbour.result.sources, [], 'Youth overqualification must not stand in for youth unemployment');
+  assert.doesNotMatch(youthUnemploymentNeighbour.result.reply, /34,4 %/);
+  const mastersRequirementNeighbour = await check('Cada vez se exige un máster para trabajos que antes pedían solo una carrera', undefined, { DB: emptyD1 });
+  assert.equal(mastersRequirementNeighbour.result.answerScope?.family, 'education-employment-outcomes');
+  assert.deepEqual(mastersRequirementNeighbour.result.sources, [], 'Overqualification data must not stand in for changing job-ad requirements');
+  assert.doesNotMatch(mastersRequirementNeighbour.result.reply, /83,2 %|34 %/);
   const touristHousingQueries = [
     'Los pisos turísticos están retirando demasiada vivienda del alquiler residencial',
     'El alquiler turístico es solo una parte del problema y la escasez estructural de oferta pesa más',
