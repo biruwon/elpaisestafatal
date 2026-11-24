@@ -4,6 +4,7 @@ import { MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE } from './mortgage-entry-snapshot.mj
 import { UNPAID_OVERTIME_SNAPSHOT } from './unpaid-overtime-snapshot.mjs';
 import { PENSION_CONTRIBUTOR_RATIO_SNAPSHOT } from './pension-contributor-ratio-snapshot.mjs';
 import { RETIREMENT_AGE_SNAPSHOT } from './retirement-age-snapshot.mjs';
+import { PENSION_PRIVATE_SAVINGS_SNAPSHOT } from './pension-private-savings-snapshot.mjs';
 import { EDUCATION_SOCIOECONOMIC_SNAPSHOT } from './education-socioeconomic-snapshot.mjs';
 import { UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT } from './university-graduate-outcomes-snapshot.mjs';
 import { RAIL_PUNCTUALITY_EVIDENCE, railPunctualityShareableReply } from './rail-punctuality-snapshot.mjs';
@@ -752,6 +753,24 @@ const pensionDoublePaymentClaim = (t) => /\b(pension\w*|jubilaci[oó]n)\b/.test(
   && /\b(cotiz\w*|seguridad social|contribuci\w*|pension\w* public\w*)\b/.test(t)
   && /\b(ahorro privad\w*|plan(?:es)? privad\w*|plan(?:es)? de pensiones? privad\w*|pension\w* privad\w*|pension\w* complementar\w*|fondo de pensiones? privad\w*|otra privad\w*)\b/.test(t)
   && /\b(dos veces|doble|por duplicado|adem[aá]s|tener que|tendr\w* que|obligad\w*|pagar)\b/.test(t);
+const pensionPrivateSavingsNeed = (t) => pensionDoublePaymentClaim(t) || (
+  /\b(ahorr\w* (?:de forma )?(?:privad\w*|por su cuenta|por cuenta propia|aparte|complementari\w*)|plan(?:es)? (?:de )?pensiones? privad\w*|plan(?:es)? privad\w*|pension\w* privad\w*|prevision social complementaria)\b/.test(t)
+  && /\b(pension\w*|jubilaci[oó]n|cotiz\w*|seguridad social|sistema p[uú]blic\w*|pension\w* p[uú]blic\w*)\b/.test(t)
+  && /\b(imprescindible|necesari\w*|oblig\w*|exig\w*|tendr\w* que|habr\w* que|deber\w*|har\w* falta|necesit\w*|no bast\w*|no alcanz\w*)\b/.test(t)
+);
+const pensionPrivatePlanLegalClaim = (t) => /\b(legal\w*|ley|oblig\w*|exig\w*)\b/.test(t)
+  && /\b(ahorr\w* privad\w*|plan(?:es)? (?:de )?pensiones? privad\w*|plan(?:es)? privad\w*|pension\w* privad\w*|prevision social complementaria)\b/.test(t)
+  && /\b(pension\w*|jubilaci\w*|cotiz\w*|seguridad social|sistema p[uú]blic\w*)\b/.test(t);
+const pensionPrivateReplacementRateSummary = (() => {
+  const [firstProjection, longRunProjection] = PENSION_PRIVATE_SAVINGS_SNAPSHOT.replacementRateProjection;
+  const percentage = (value) => new Intl.NumberFormat('es-ES', { maximumFractionDigits: 1 }).format(value);
+  const approximate = longRunProjection.qualifier === 'around' ? 'alrededor del ' : '';
+  const longRunPeriod = String(longRunProjection.period).replace(/^from\s+/i, 'desde ');
+  return {
+    fact: `En su modelo, AIReF proyecta una tasa de reemplazo del ${percentage(firstProjection.value)} % en ${firstProjection.period} y ${approximate}${percentage(longRunProjection.value)} % ${longRunPeriod}. La define como la pensión inicial dividida por el salario al jubilarse; es un resultado modelado agregado, no una estimación neta ni una medida de ahorro suficiente para cada persona.`,
+    reply: `En su modelo agregado basado en registros de 2023, AIReF proyecta una tasa de reemplazo —pensión inicial dividida por el salario al jubilarse— del ${percentage(firstProjection.value)} % en ${firstProjection.period} y de ${approximate}${percentage(longRunProjection.value)} % ${longRunPeriod}. No es una pensión neta ni una medida de los gastos de cada hogar.`,
+  };
+})();
 const pensionWorkerSupportRatio = (t) => {
   const pensioner = /\b(pension\w*|jubilad\w*)\b/.test(t);
   const contributorCount = /\b(cotiz\w*|afiliad\w*)\b/.test(t);
@@ -1183,11 +1202,73 @@ const focuses = [
   },
   {
     id: 'pension-private-savings-requirement', label: 'cotizaciones públicas y ahorro privado para la jubilación',
-    when: pensionDoublePaymentClaim,
+    when: pensionPrivateSavingsNeed,
     direct: [], context: [], claimType: 'comparative',
-    needs: ['obligaciones legales de cotización y de ahorro privado vigentes para el grupo mencionado', 'prestación pública proyectada para la cohorte bajo reglas y carrera laboral explícitas', 'motivo y población a la que se atribuye una necesidad de ahorro adicional'],
+    claimTypeFor: (claim) => pensionPrivatePlanLegalClaim(claim) ? 'legal' : 'comparative',
+    needsForClaim: (claim) => {
+      const text = normalize(claim);
+      const needs = ['distinguir una obligación legal general de una valoración económica de suficiencia personal'];
+      if (!/\b(legal\w*|ley|obligatori\w*|obligad\w*)\b/.test(text)) {
+        needs.push('estimación neta de pensión pública para una carrera laboral y una edad de jubilación concretas');
+        needs.push('ingresos, gastos previstos y otros recursos de la persona u hogar al jubilarse');
+      }
+      if (/\b(j[oó]ven\w*|generaci\w*|cohorte|futur\w*|hoy|actual\w*)\b/.test(text)) needs.push('proyección explícita para la cohorte y el horizonte temporal mencionados');
+      return needs;
+    },
     explanation: 'Las cotizaciones a la Seguridad Social y el ahorro privado son mecanismos distintos. Que las cotizaciones financien prestaciones actuales no demuestra por sí solo que una persona vaya a tener que aportar también a un plan privado.',
-    limitation: 'Sin una obligación legal o una proyección compatible de prestaciones e ingresos no se puede afirmar que los jóvenes deban pagar dos veces o que el ahorro privado sea obligatorio.',
+    explanationHeadline: 'La ley y una tasa media de reemplazo no determinan si cada persona necesita ahorro privado',
+    explanationEvidence: {
+      ...PENSION_PRIVATE_SAVINGS_SNAPSHOT,
+      selectForClaim: ({ normalizedClaim }) => pensionPrivatePlanLegalClaim(normalizedClaim) ? {
+        directClaimEvidence: true,
+        evidenceLabel: 'Obligaciones legales sobre cotización pública y planes privados de pensiones en España',
+        claimVerdict: 'mixed',
+        dimensions: { subject: 'obligación de cotizar a la Seguridad Social y carácter voluntario de los planes privados', population: 'personas incluidas en cada régimen legal y personas cubiertas por un plan de empleo', period: 'normativa vigente', geography: 'España', denominator: 'supuestos y plazo de exclusión definidos por la norma y el convenio colectivo', unit: 'reglas legales' },
+        facts: [
+          'En España, cotizar a la Seguridad Social es obligatorio en los regímenes y supuestos que define la ley; esa cotización pública no equivale a contratar un plan de pensiones privado.',
+          'La ley configura los planes privados de pensiones como voluntarios. Si un convenio colectivo establece la incorporación directa a un plan de empleo, la persona se considera adherida salvo que comunique por escrito que no desea entrar dentro del plazo acordado.',
+        ],
+        factSourceIds: [
+          [PENSION_PRIVATE_SAVINGS_SNAPSHOT.publicContributionsSource.id],
+          [PENSION_PRIVATE_SAVINGS_SNAPSHOT.privatePlansLawSource.id],
+        ],
+        factDimensions: [
+          { subject: 'obligación de cotización a la Seguridad Social', population: 'personas incluidas en cada régimen y supuesto legal', period: 'normativa vigente', geography: 'España', unit: 'obligación legal pública' },
+          { subject: 'carácter voluntario de los planes privados y adhesión de empleo', population: 'personas cubiertas por un plan; adhesión automática solo si la prevé el convenio colectivo', period: 'normativa vigente', geography: 'España', denominator: 'plazo de exclusión establecido para el plan', unit: 'regla legal' },
+        ],
+        sources: [PENSION_PRIVATE_SAVINGS_SNAPSHOT.publicContributionsSource, PENSION_PRIVATE_SAVINGS_SNAPSHOT.privatePlansLawSource],
+      } : undefined,
+      directClaimEvidence: false,
+      evidenceLabel: 'Contexto legal y proyección agregada de pensiones en España',
+      claimVerdict: 'insufficient',
+      dimensions: { subject: 'obligación pública de cotizar, planes privados y tasa de reemplazo modelada', population: 'personas sujetas a cotización pública; afiliados y pensionistas contributivos modelados por AIReF', period: 'normativa vigente y proyección 2027–2050', geography: 'España', denominator: 'cotizaciones obligatorias según régimen; pensión inicial respecto al salario al jubilarse', unit: 'reglas legales y porcentaje modelado' },
+      facts: [
+        'En España, cotizar a la Seguridad Social es obligatorio en los regímenes y supuestos que define la ley; esa cotización pública no equivale a contratar un plan de pensiones privado.',
+        'La ley configura los planes privados de pensiones como voluntarios. Si un convenio colectivo establece la incorporación directa a un plan de empleo, la persona se considera adherida salvo que comunique por escrito que no desea entrar dentro del plazo acordado.',
+        pensionPrivateReplacementRateSummary.fact,
+      ],
+      factSourceIds: [
+        [PENSION_PRIVATE_SAVINGS_SNAPSHOT.publicContributionsSource.id],
+        [PENSION_PRIVATE_SAVINGS_SNAPSHOT.privatePlansLawSource.id],
+        [PENSION_PRIVATE_SAVINGS_SNAPSHOT.airefProjectionSource.id],
+      ],
+      factDimensions: [
+        { subject: 'obligación de cotización a la Seguridad Social', population: 'personas incluidas en cada régimen y supuesto legal', period: 'normativa vigente', geography: 'España', unit: 'obligación legal pública' },
+        { subject: 'carácter voluntario de los planes privados y adhesión de empleo', population: 'personas cubiertas por un plan; adhesión automática solo si la prevé el convenio colectivo', period: 'normativa vigente', geography: 'España', denominator: 'plazo de exclusión establecido para el plan', unit: 'regla legal' },
+        { subject: 'tasa de reemplazo modelada', population: 'altas de jubilación contributiva representadas por la MCVL 2023 en el escenario de AIReF', period: '2027–2050 y posteriores', geography: 'España', denominator: 'pensión inicial / salario percibido al jubilarse', unit: 'porcentaje modelado' },
+      ],
+    },
+    shareableReplyForContext: ({ claim }) => pensionPrivatePlanLegalClaim(normalize(claim))
+      ? [
+        'En España, cotizar a la Seguridad Social no obliga por sí solo a contratar un plan privado: la ley configura esos planes como voluntarios.',
+        'Un convenio colectivo puede prever la adhesión automática a un plan de empleo, pero la persona puede excluirse por escrito dentro del plazo acordado. La respuesta se refiere a la obligación legal, no a si ahorrar conviene en cada hogar.',
+      ].join('\n\n')
+      : [
+        'En España, cotizar a la Seguridad Social es obligatorio en los regímenes y supuestos que marca la ley. Los planes privados son voluntarios; un convenio colectivo puede establecer la adhesión automática a un plan de empleo, con opción de excluirse por escrito dentro del plazo acordado.',
+        pensionPrivateReplacementRateSummary.reply,
+        'Estos datos no demuestran que toda persona necesite ahorrar en privado ni cuánto. Para valorarlo hacen falta la pensión neta prevista, la carrera laboral y los ingresos, gastos y otros recursos del hogar.',
+      ].join('\n\n'),
+    limitation: 'La ley distingue cotizaciones públicas y planes privados, y permite una regla de adhesión automática por convenio colectivo con exclusión expresa. La proyección agregada de reemplazo no determina si una persona u hogar necesita ahorrar, ni cuánto.',
   },
   {
     id: 'pension-worker-beneficiary-ratio', label: 'personas cotizantes por pensionista y financiación del sistema',

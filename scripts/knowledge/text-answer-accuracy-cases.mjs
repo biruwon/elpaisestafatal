@@ -1218,6 +1218,80 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'pension-private-saving-necessity',
+    equivalenceGroup: 'pension-private-saving-sufficiency-context-spain',
+    input: 'Ahorrar de forma privada será imprescindible aunque se siga cotizando al sistema público',
+    expected: {
+      state: 'insufficient', family: 'pension-private-savings-requirement', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['cotizar a la Seguridad Social es obligatorio', 'planes privados son voluntarios', 'convenio colectivo', 'adhesión automática', 'excluirse por escrito', '72,4 % en 2027', 'alrededor del 70 % desde 2050', 'no es una pensión neta', 'no demuestran que toda persona necesite ahorrar'],
+      evidence: [
+        { familyId: 'pension-private-savings-requirement', sourceIds: ['boe-social-security-contribution-obligation'], dataIncludes: ['cotizar a la Seguridad Social es obligatorio'], dimensions: { geography: 'España', period: 'normativa vigente', unit: 'obligación legal pública' } },
+        { familyId: 'pension-private-savings-requirement', sourceIds: ['boe-private-pension-plans-voluntary'], dataIncludes: ['planes privados de pensiones como voluntarios', 'convenio colectivo'], dimensions: { geography: 'España', period: 'normativa vigente', denominator: 'plazo de exclusión establecido para el plan', unit: 'regla legal' } },
+        { familyId: 'pension-private-savings-requirement', sourceIds: ['airef-pension-replacement-rate-projection-2025'], dataIncludes: ['72,4 % en 2027', 'alrededor del 70 % desde 2050'], dimensions: { geography: 'España', period: '2027–2050 y posteriores', population: 'altas de jubilación contributiva representadas por la MCVL 2023', denominator: 'pensión inicial / salario percibido al jubilarse', unit: 'porcentaje modelado' } },
+      ],
+      maxReplyWords: 160,
+    },
+  },
+  {
+    id: 'pension-private-saving-legal-paraphrase',
+    equivalenceGroup: 'pension-private-plan-legal-requirement-spain',
+    input: '¿Es obligatorio contratar un plan privado además de cotizar a la Seguridad Social?',
+    expected: {
+      state: 'limited', family: 'pension-private-savings-requirement', verdict: 'mixed',
+      directSourceIds: ['boe-social-security-contribution-obligation', 'boe-private-pension-plans-voluntary'],
+      replyIncludes: ['no obliga por sí solo a contratar un plan privado', 'planes como voluntarios', 'adhesión automática', 'excluirse por escrito'],
+      replyExcludes: ['72,4 %', 'AIReF', 'no demuestran que toda persona necesite ahorrar'],
+      evidence: [{
+        familyId: 'pension-private-savings-requirement',
+        sourceIds: ['boe-social-security-contribution-obligation', 'boe-private-pension-plans-voluntary'],
+        dataIncludes: ['cotizar a la Seguridad Social es obligatorio', 'planes privados de pensiones como voluntarios', 'convenio colectivo'],
+        dimensions: { geography: 'España', period: 'normativa vigente', unit: 'reglas legales' },
+      }],
+      maxReplyWords: 110,
+    },
+  },
+  {
+    id: 'pension-private-saving-legal-paraphrase-cotizers',
+    equivalenceGroup: 'pension-private-plan-legal-requirement-spain',
+    input: '¿La ley obliga a sus cotizantes a contratar pensiones privadas?',
+    expected: {
+      state: 'limited', family: 'pension-private-savings-requirement', verdict: 'mixed',
+      directSourceIds: ['boe-social-security-contribution-obligation', 'boe-private-pension-plans-voluntary'],
+      replyIncludes: ['no obliga por sí solo a contratar un plan privado', 'adhesión automática', 'excluirse por escrito'],
+      replyExcludes: ['72,4 %', 'AIReF'],
+      evidence: [{
+        familyId: 'pension-private-savings-requirement',
+        sourceIds: ['boe-social-security-contribution-obligation', 'boe-private-pension-plans-voluntary'],
+        dataIncludes: ['cotizar a la Seguridad Social es obligatorio', 'planes privados de pensiones como voluntarios', 'convenio colectivo'],
+        dimensions: { geography: 'España', period: 'normativa vigente', unit: 'reglas legales' },
+      }],
+      maxReplyWords: 110,
+    },
+  },
+  {
+    id: 'pension-private-saving-sufficiency-paraphrase',
+    equivalenceGroup: 'pension-private-saving-sufficiency-context-spain',
+    input: 'La pensión pública quizá no alcance para mantener el nivel de vida y habrá que ahorrar por cuenta propia',
+    expected: {
+      state: 'insufficient', family: 'pension-private-savings-requirement', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['planes privados son voluntarios', '72,4 % en 2027', 'alrededor del 70 % desde 2050', 'no es una pensión neta', 'hacen falta la pensión neta prevista'],
+      evidence: [
+        { familyId: 'pension-private-savings-requirement', sourceIds: ['boe-social-security-contribution-obligation'], dataIncludes: ['cotizar a la Seguridad Social es obligatorio'], dimensions: { geography: 'España', period: 'normativa vigente' } },
+        { familyId: 'pension-private-savings-requirement', sourceIds: ['boe-private-pension-plans-voluntary'], dataIncludes: ['planes privados de pensiones como voluntarios', 'convenio colectivo'], dimensions: { geography: 'España', period: 'normativa vigente' } },
+        { familyId: 'pension-private-savings-requirement', sourceIds: ['airef-pension-replacement-rate-projection-2025'], dataIncludes: ['72,4 % en 2027', 'alrededor del 70 % desde 2050'], dimensions: { geography: 'España', period: '2027–2050 y posteriores', denominator: 'pensión inicial / salario percibido al jubilarse' } },
+      ],
+      maxReplyWords: 160,
+    },
+  },
+  {
+    id: 'pension-private-saving-wrong-territory',
+    input: '¿Es obligatorio contratar un plan privado de pensiones además de cotizar a la Seguridad Social en Francia?',
+    expected: {
+      state: 'insufficient', family: 'pension-private-savings-requirement', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['72,4 %', 'AIReF', 'España'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
     id: 'pension-worker-ratio-sufficiency',
     equivalenceGroup: 'pension-worker-ratio-current',
     input: 'El sistema de reparto depende de que haya suficientes trabajadores por cada pensionista',

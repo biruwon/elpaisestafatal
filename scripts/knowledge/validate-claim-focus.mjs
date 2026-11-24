@@ -67,7 +67,14 @@ const cases = [
   ['pension-price-indexation', ['Las pensiones contributivas se revalorizan con el IPC', '¿Las pensiones conservan poder adquisitivo al actualizarse con los precios?', '¿Cuánto subieron las pensiones públicas en 2026 según la inflación?']],
   ['pension-indexation-comparison', ['Las pensiones se actualizan mejor con la inflación que muchos salarios', 'Las revalorizaciones de las pensiones superan el crecimiento salarial en algunos periodos', 'Los salarios han seguido peor la inflación que las pensiones']],
   ['pension-wage-contribution-base', ['Los salarios bajos debilitan el sistema de pensiones aunque aumente el empleo', 'La creación de empleo no compensa unas bases de cotización demasiado bajas para financiar las pensiones', 'Las remuneraciones reducidas limitan la financiación contributiva de las pensiones']],
-  ['pension-private-savings-requirement', ['Los jóvenes tendrán que pagar dos veces para la jubilación: cotizaciones y ahorro privado', 'Quienes trabajan deberán aportar a un plan privado además de cotizar para tener pensión', 'La jubilación exige pagar una pensión pública y otra privada']],
+  ['pension-private-savings-requirement', [
+    'Los jóvenes tendrán que pagar dos veces para la jubilación: cotizaciones y ahorro privado',
+    'Quienes trabajan deberán aportar a un plan privado además de cotizar para tener pensión',
+    'La jubilación exige pagar una pensión pública y otra privada',
+    'Ahorrar de forma privada será imprescindible aunque se siga cotizando al sistema público',
+    '¿Es obligatorio contratar un plan privado además de cotizar a la Seguridad Social?',
+    'La pensión pública quizá no alcance para mantener el nivel de vida y habrá que ahorrar por cuenta propia',
+  ]],
   ['pension-worker-beneficiary-ratio', ['El sistema de reparto depende de que haya suficientes trabajadores por cada pensionista', 'Cada vez hay menos cotizantes por jubilado y eso condiciona la financiación de las pensiones', 'La relación entre afiliados y pensionistas determina los recursos disponibles para prestaciones']],
   ['intergenerational-housing-pension-comparison', ['Los boomers tuvieron acceso a vivienda y jubilación en condiciones que las generaciones posteriores no tendrán', 'Las generaciones futuras se enfrentan a peores condiciones de vivienda y pensión', 'El acceso a la vivienda y a una jubilación suficiente ha cambiado entre generaciones']],
   ['matched-pay', ['Las empresas españolas pagan mucho menos que las de otros países europeos por el mismo perfil profesional', 'Los salarios difieren entre países aun desempeñando el mismo puesto', 'Mismo trabajo y sueldo distinto según el país']],
@@ -575,6 +582,17 @@ for (const [family, claim] of crossTopicClaims) {
     assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['social-security-affiliation-source', 'social-security-pay-as-you-go']);
     assert.doesNotMatch(plan.shareableReply, /17 €/);
     assert.equal(localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim).state, 'limited');
+  } else if (family === 'pension-private-savings-requirement') {
+    assert.equal(plan.evidenceLevel, 'limited', 'Scoped legal and projection context should remain available without turning a salary observation into pension evidence');
+    assert.deepEqual(plan.sourceLinks.map((source) => source.id), [
+      'boe-social-security-contribution-obligation',
+      'boe-private-pension-plans-voluntary',
+      'airef-pension-replacement-rate-projection-2025',
+    ]);
+    assert.doesNotMatch(plan.shareableReply, /17 €/);
+    const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim);
+    assert.equal(publicResponse.state, 'insufficient', 'Aggregate context must not confirm a universal private-saving requirement');
+    assert.equal(publicResponse.result.arguments[0].verdict, 'insufficient');
   } else {
     assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should leave this claim unsupported: ${claim}`);
     assert.equal(plan.sourceLinks.length, 0, `An unrelated wage survey was attached to this claim: ${claim}`);
@@ -958,12 +976,79 @@ for (const claim of [
 assert.equal(claimFocusFor('Las cotizaciones actuales financian las pensiones vigentes')?.id, 'pension-financing', 'Current pension financing must stay separate from future benefit projections');
 const pensionFinancingClaim = 'El trabajador no ahorra sus cotizaciones para su propia pensión sino que financia a los jubilados actuales';
 const pensionFinancingAnswer = focusedEvidencePlan(pensionFinancingClaim);
+assert.equal(claimFocusFor(pensionFinancingClaim)?.id, 'pension-financing', 'Current pay-as-you-go financing must not cross-route into private-saving claims');
 const pensionFinancingPublic = localPublicCheckResponse({ status: 'partial', requestId: 'pension-financing-readable', result: pensionFinancingAnswer }, pensionFinancingClaim);
 assert.equal(pensionFinancingPublic.state, 'limited');
 assert.match(pensionFinancingPublic.result.reply, /cotizaciones y otros ingresos corrientes financian las prestaciones actuales/);
 assert.match(pensionFinancingPublic.result.reply, /financiaci[oó]n de reparto, distinta de acumular capital en una cuenta individual/);
 assert.match(pensionFinancingPublic.result.reply, /no permite confirmar por s[ií] sola la sostenibilidad/i);
 assert.ok(pensionFinancingPublic.result.sources.some((source) => source.id === 'social-security-pay-as-you-go'));
+const pensionPrivateClaims = [
+  'Ahorrar de forma privada será imprescindible aunque se siga cotizando al sistema público',
+  'La pensión pública quizá no alcance para mantener el nivel de vida y habrá que ahorrar por cuenta propia',
+];
+let pensionPrivateSourceIds;
+for (const [index, claim] of pensionPrivateClaims.entries()) {
+  const plan = focusedEvidencePlan(claim);
+  assert.equal(claimFocusFor(claim)?.id, 'pension-private-savings-requirement', `A private-saving paraphrase did not reach its reusable family: ${claim}`);
+  assert.equal(plan.answerScope.family, 'pension-private-savings-requirement');
+  assert.equal(plan.evidenceLevel, 'limited', 'Legal and aggregate projection context should be available without becoming direct claim evidence');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  if (index === 0) pensionPrivateSourceIds = sourceIds;
+  else assert.deepEqual(sourceIds, pensionPrivateSourceIds, 'Equivalent private-saving wording must select the same scoped sources');
+  assert.deepEqual(sourceIds, [
+    'boe-social-security-contribution-obligation',
+    'boe-private-pension-plans-voluntary',
+    'airef-pension-replacement-rate-projection-2025',
+  ]);
+  assert.match(plan.shareableReply, /cotizar a la Seguridad Social es obligatorio/);
+  assert.match(plan.shareableReply, /planes privados son voluntarios/);
+  assert.match(plan.shareableReply, /adhesi[oó]n autom[aá]tica.*excluirse por escrito/);
+  assert.match(plan.shareableReply, /72,4 % en 2027.*70 % desde 2050/s);
+  assert.match(plan.shareableReply, /[Nn]o es una pensi[oó]n neta/);
+  assert.match(plan.shareableReply, /no demuestran que toda persona necesite ahorrar/);
+  assert.ok(plan.shareableReply.trim().split(/\s+/).length <= 160, 'Public answer should remain digestible');
+  const response = localPublicCheckResponse({ status: 'partial', requestId: `pension-private-${index}`, result: plan }, claim);
+  assert.equal(response.state, 'insufficient');
+  assert.equal(response.result.arguments[0].verdict, 'insufficient');
+  assert.deepEqual(response.result.sources.map((source) => source.id), pensionPrivateSourceIds);
+}
+const pensionPrivateLegalClaims = [
+  '¿Es obligatorio contratar un plan privado además de cotizar a la Seguridad Social?',
+  '¿La ley obliga a sus cotizantes a contratar pensiones privadas?',
+];
+let pensionPrivateLegalSourceIds;
+for (const [index, claim] of pensionPrivateLegalClaims.entries()) {
+  const plan = focusedEvidencePlan(claim);
+  assert.equal(claimFocusFor(claim)?.id, 'pension-private-savings-requirement');
+  assert.equal(plan.claimType, 'legal');
+  assert.equal(plan.interpretation.kind, 'legal');
+  assert.equal(plan.interpretation.predicate, 'requires_legal_basis');
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  if (index === 0) pensionPrivateLegalSourceIds = sourceIds;
+  else assert.deepEqual(sourceIds, pensionPrivateLegalSourceIds, 'Legal paraphrases must share their two law sources');
+  assert.deepEqual(sourceIds, ['boe-social-security-contribution-obligation', 'boe-private-pension-plans-voluntary']);
+  assert.match(plan.shareableReply, /no obliga por s[ií] solo a contratar un plan privado/);
+  assert.match(plan.shareableReply, /adhesi[oó]n autom[aá]tica.*excluirse por escrito/);
+  assert.doesNotMatch(plan.shareableReply, /AIReF|72,4 %|70 %/);
+  const response = localPublicCheckResponse({ status: 'partial', requestId: `pension-private-legal-${index}`, result: plan }, claim);
+  assert.equal(response.state, 'limited');
+  assert.equal(response.result.arguments[0].verdict, 'mixed');
+  assert.deepEqual(response.result.sources.map((source) => source.id), pensionPrivateLegalSourceIds);
+}
+const pensionPrivateFranceClaim = '¿Es obligatorio contratar un plan privado de pensiones además de cotizar a la Seguridad Social en Francia?';
+const pensionPrivateFrancePlan = focusedEvidencePlan(pensionPrivateFranceClaim);
+assert.equal(pensionPrivateFrancePlan.answerScope.family, 'pension-private-savings-requirement');
+assert.deepEqual(pensionPrivateFrancePlan.answerScope.directMetrics, []);
+assert.deepEqual(pensionPrivateFrancePlan.answerScope.contextMetrics, []);
+assert.deepEqual(pensionPrivateFrancePlan.sourceLinks, [], 'Spanish pension law and AIReF data must not answer a France-scoped claim');
+assert.doesNotMatch(pensionPrivateFrancePlan.shareableReply, /72,4 %|AIReF|Espa[nñ]a/);
+assert.equal(localPublicCheckResponse({ status: 'partial', requestId: 'pension-private-france', result: pensionPrivateFrancePlan }, pensionPrivateFranceClaim).state, 'insufficient');
 const specificButUncovered = [
   'La cita previa obligatoria ha convertido trámites básicos en una barrera',
   'Muchos autónomos necesitan pagar una gestoría solo para cumplir con Hacienda y Seguridad Social',

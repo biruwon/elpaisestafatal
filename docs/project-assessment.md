@@ -1311,3 +1311,39 @@ the retirement age of today's young cohorts or the share who would work until
 near 70. Future-cohort answers show these figures as context, keep the verdict
 insufficient, and ask for cohort-specific projections and age distributions.
 Observed-average claims and migration-causality claims stay on separate routes.
+
+## Private retirement-saving claims — 24 November 2026
+
+The existing family for “paying twice” now also recognizes equivalent wording
+that says private saving is essential, asks whether a private plan is legally
+mandatory, or says the public pension may not maintain a person's living
+standard. Related clauses about private saving and public contributions can
+stay in one answer; unrelated propositions remain separate. The two
+sufficiency paraphrases share legal and AIReF context; two legal-question
+paraphrases share only the two law sources. A France-scoped claim receives no
+Spanish law or AIReF evidence. Current pay-as-you-go financing claims stay on
+their own route.
+
+The answer separates the statutory obligation to contribute to Social
+Security from private pension plans. It includes the legal exception for a
+collective agreement that automatically enrolls workers in an employment plan,
+with a written opt-out within the agreed period. For context, AIReF's model
+projects an aggregate replacement rate of 72.4% in 2027 and around 70% from
+2050. The denominator is the initial pension divided by salary at retirement;
+the model uses 2023 administrative microdata and is not a net pension estimate
+or a household-budget measure. These sources do not show that every person
+needs private saving or how much; those answers keep that verdict insufficient.
+The legal questions receive a limited verdict because the law includes the
+collective-agreement enrolment rule and opt-out.
+Sources: [Social Security Act, Article 18](https://www.boe.es/buscar/act.php?id=BOE-A-2015-11724&p=20250430&tn=0),
+[Pension Plans Act, Articles 1 and 4](https://www.boe.es/buscar/act.php?id=BOE-A-2002-24252&p=20221224&tn=1), and
+[AIReF's 2025 pension microsimulation](https://www.airef.es/wp-content/uploads/2025/04/Documentos-tecnicos-segunda-opinion-sostenibilidad-a-largo-plazo-AAPP/250212_DT_microsimulacion_pensiones.pdf).
+
+The held-out text-answer benchmark now passes 118/118 cases across 37
+paraphrase groups; claim-focus validation covers 301 paraphrase and boundary
+checks. The 300 unverified web-observed claims now have a metric or family route
+for 165 (71 metric matches, 141 family matches, 47 overlapping), leaving 135
+with neither. The deterministic fallback returns 7 complete, 76 limited and
+217 uncovered responses; the public states remain 268 insufficient and 32
+limited. These figures measure reviewed routing, sourcing and answer scope,
+not truth or accuracy across all possible text submissions.

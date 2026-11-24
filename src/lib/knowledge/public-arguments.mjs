@@ -57,6 +57,13 @@ export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
     return `La fuente contradice la afirmación.\n\n${measuredFinding}${text}`;
   }
   const alreadyStatesNonConclusion = /\bno (?:se puede|permite|permiten|podemos|alcanza a)\s+(?:confirmar|descartar|demostrar|sostener|afirmar|concluir|determinar|medir|calcular|contar|comparar|establecer|atribuir|saber|evaluar)\b/i.test(text);
+  const sourcedLegalExceptionAlreadyExplained = argumentsList.length === 1
+    && argumentsList[0].kind === 'legal'
+    && argumentsList[0].verdict === 'mixed'
+    && argumentsList[0].evidenceIds?.length > 0
+    && argumentsList[0].sourceIds?.length > 0
+    && /\b(?:ley|norma)\b[^.!?]{0,180}\b(?:voluntari\w*|no obliga|no establece|no exige)\b/i.test(text)
+    && /\b(?:convenio|excepci[oó]n|salvo que)\b/i.test(text);
   const missingEvidenceAlreadyExplained = /\b(?:no se ha localizado|no hemos localizado|no hemos encontrado)\b[^.!?]{0,120}\b(?:medici[oó]n|evidencia|datos?|fuente|respaldo)\b[^.!?]{0,120}\b(?:no demuestra|no permite|no se puede|no podemos|no alcanza|falta|pendiente)\b/i.test(text)
     || /\b(?:no se ha localizado|no hemos localizado|no hemos encontrado)\b[^.!?]{0,160}\b(?:medici[oó]n|evidencia|datos?|fuente|respaldo)\b[^.!?]*[.!?]\s*(?:esto\s+)?no demuestra que la afirmaci[oó]n sea falsa\b/i.test(text)
     || /\bpara comprobar\b[^.!?]{0,100}\b(?:hay que indicar|hace falta|se necesita)\b[^.!?]{0,120}\b(?:periodo|periodos|a[nñ]o|serie|dato|medida)\b/i.test(text);
@@ -69,7 +76,7 @@ export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
     || /\bno (?:define|fija|establece)\b[^.!?]{0,100}\b(?:umbral|criterio|regla|est[aá]ndar|una tendencia)\b/i.test(text)
     || /\bsolo (?:es|son|resulta|resultan) comparables? si\b/i.test(text)
     || /\bno demuestra\b[^.!?]{0,120}\b(?:universal|a todas las personas|para todo el mundo)\b/i.test(text);
-  if (alreadyStatesNonConclusion || missingEvidenceAlreadyExplained || explicitCausalLimit || explicitlyBoundsWholeClaim) return text;
+  if (alreadyStatesNonConclusion || sourcedLegalExceptionAlreadyExplained || missingEvidenceAlreadyExplained || explicitCausalLimit || explicitlyBoundsWholeClaim) return text;
   if (contextualLimit) return `${publicClaimQualification}\n\n${text}`;
   return publicClaimQualification;
 };

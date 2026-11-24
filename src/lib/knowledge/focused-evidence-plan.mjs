@@ -647,6 +647,11 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && !tourismRegionalSectorComparison
     && /\b(demasiad\w*|excesiv\w*|sobredepend\w*|desproporcionad\w*)\b/.test(normalizedClaim);
   const sectorNames = [/\bturis\w*\b/, /\bhosteler\w*\b/, /\bhotel\w*\b/, /\bagricultur\w*\b/, /\bsector primario\b/, /\bconstrucci\w*\b/, /\bindustri\w*\b/, /\bmanufactur\w*\b/, /\bcomerci\w*\b/, /\btransporte\b/, /\bfinancier\w*\b/, /\btecnolog\w*\b/];
+  const samePensionPrivateSavingsCompound = focus.id === 'pension-private-savings-requirement'
+    && propositions.length >= 2 && propositions.length <= 3
+    && propositions.some((proposition) => /\b(ahorr\w*|plan(?:es)? privad\w*|pension\w* privad\w*)\b/.test(normalize(proposition.text)))
+    && propositions.some((proposition) => /\b(pension\w*|jubilaci\w*|cotiz\w*|seguridad social|sistema p[uú]blic\w*)\b/.test(normalize(proposition.text)))
+    && propositions.every((proposition) => /\b(ahorr\w*|plan(?:es)? privad\w*|pension\w* privad\w*|pension\w*|jubilaci\w*|cotiz\w*|seguridad social|sistema p[uú]blic\w*)\b/.test(normalize(proposition.text)));
   const continuesSameSubject = (item) => {
     const clauseFocus = claimFocusFor(item.text);
     if (clauseFocus?.id === focus.id) return true;
@@ -729,6 +734,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       || sameHicpBasketComparison
       || sameProductivityComparison && /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(clauseText)) return true;
     if (sameLandlordMotive) return true;
+    if (samePensionPrivateSavingsCompound) return true;
     if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism || unemploymentSupplyExplanation || sameEmployerContributionVisibility) return true;
     if (educationOutcomeCauseClause) return true;
     if (clauseFocus) return false;
@@ -931,9 +937,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       ? `${focus.limitation} La tabla no evalúa la magnitud adicional de la afirmación, como un número de días o «mucho mayor».`
       : focus.limitation;
   const territories = requestedGeographyScopes(claim);
-  const explanation = focus.explanationEvidence && now < Date.parse(focus.explanationEvidence.expiresAt)
+  const reviewedExplanation = focus.explanationEvidence && now < Date.parse(focus.explanationEvidence.expiresAt)
     && territories.every(({ id }) => focus.explanationEvidence.territories?.includes(id))
     && (!focus.explanationEvidence.when || focus.explanationEvidence.when(normalize(claim))) ? focus.explanationEvidence : undefined;
+  const explanation = reviewedExplanation?.selectForClaim?.({ claim, normalizedClaim }) || reviewedExplanation;
   if (explanation?.limitation) limitation = [limitation, explanation.limitation].filter(Boolean).join(' ');
   const explanationDimensions = explanation
     ? explanation.dimensionsForClaim?.(normalize(claim)) || explanation.dimensions
@@ -1333,7 +1340,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
             : 'El riesgo de pobreza también afecta a personas ocupadas'
         : explanationMeasuresClaim ? focus.explanationHeadline || `Datos sobre ${focus.label}` : explanation ? focus.explanationHeadline || `Contexto relacionado con ${focus.label}` : direct.length ? `Datos sobre ${focus.label}` : facts.length ? `Hay contexto, pero falta medir ${focus.label}` : `Faltan datos compatibles sobre ${focus.label}`),
     summary: focus.explanation, shareableReply: reply, shareableSourceIds: sources.map((source) => source.id),
-    interpretation: { kind: claimType === 'causal' ? 'causal' : claimType === 'comparative' ? 'comparative' : 'quantitative', subject: focus.label, predicate: claimType === 'causal' ? 'requires_causal_design' : 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
+    interpretation: { kind: claimType === 'causal' ? 'causal' : claimType === 'comparative' ? 'comparative' : claimType === 'legal' ? 'legal' : 'quantitative', subject: focus.label, predicate: claimType === 'causal' ? 'requires_causal_design' : claimType === 'legal' ? 'requires_legal_basis' : 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
     blocks: [
       { type: 'claim_breakdown', items: [{ text: claim, type: claimType, explicit: true, evidenceIds: educationOutcomeCausalClaim ? [] : directEvidenceIds, sourceIds: educationOutcomeCausalClaim ? [] : directSourceIds,
         verdict: explanationMeasuresClaim ? explanation.claimVerdictFor?.(claim) || explanation.claimVerdict || specialistOutpatientComparison?.verdict || 'mixed'

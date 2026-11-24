@@ -161,6 +161,54 @@ assert.match(pensionFinancing.body.result.reply, /financiaci[oó]n de reparto, d
 assert.match(pensionFinancing.body.result.reply, /no permite confirmar por s[ií] sola la sostenibilidad del sistema/i);
 assert.deepEqual(pensionFinancing.body.result.sources.map((source) => source.id), ['social-security-pay-as-you-go']);
 
+const pensionPrivateClaims = [
+  'Ahorrar de forma privada será imprescindible aunque se siga cotizando al sistema público',
+  'La pensión pública quizá no alcance para mantener el nivel de vida y habrá que ahorrar por cuenta propia',
+];
+let pensionPrivateSourceIds;
+for (const claim of pensionPrivateClaims) {
+  const response = await check(claim);
+  assert.equal(response.body.state, 'insufficient', 'Legal and aggregate context cannot prove that everyone needs private pension saving');
+  assert.equal(response.body.result.answerScope.family, 'pension-private-savings-requirement');
+  assert.equal(response.body.result.arguments[0].verdict, 'insufficient');
+  assert.deepEqual(response.body.result.answerScope.directMetrics, []);
+  assert.deepEqual(response.body.result.answerScope.contextMetrics, []);
+  const sourceIds = response.body.result.sources.map((source) => source.id);
+  if (!pensionPrivateSourceIds) pensionPrivateSourceIds = sourceIds;
+  else assert.deepEqual(sourceIds, pensionPrivateSourceIds, 'Equivalent wording must reuse the same legal and projection sources');
+  assert.deepEqual(sourceIds, [
+    'boe-social-security-contribution-obligation',
+    'boe-private-pension-plans-voluntary',
+    'airef-pension-replacement-rate-projection-2025',
+  ]);
+  assert.match(response.body.result.reply, /cotizar a la Seguridad Social es obligatorio/);
+  assert.match(response.body.result.reply, /planes privados son voluntarios/);
+  assert.match(response.body.result.reply, /72,4 % en 2027.*70 % desde 2050/s);
+  assert.match(response.body.result.reply, /no demuestran que toda persona necesite ahorrar/);
+}
+for (const claim of [
+  '¿Es obligatorio contratar un plan privado además de cotizar a la Seguridad Social?',
+  '¿La ley obliga a sus cotizantes a contratar pensiones privadas?',
+]) {
+  const response = await check(claim);
+  assert.equal(response.body.state, 'limited');
+  assert.equal(response.body.result.answerScope.family, 'pension-private-savings-requirement');
+  assert.equal(response.body.result.interpretation.kind, 'legal');
+  assert.equal(response.body.result.arguments[0].verdict, 'mixed');
+  assert.deepEqual(response.body.result.arguments[0].sourceIds, [
+    'boe-social-security-contribution-obligation',
+    'boe-private-pension-plans-voluntary',
+  ]);
+  assert.match(response.body.result.reply, /no obliga por s[ií] solo a contratar un plan privado/);
+  assert.match(response.body.result.reply, /adhesi[oó]n autom[aá]tica.*excluirse por escrito/);
+  assert.doesNotMatch(response.body.result.reply, /AIReF|72,4 %|70 %/);
+}
+const pensionPrivateFrance = await check('¿Es obligatorio contratar un plan privado de pensiones además de cotizar a la Seguridad Social en Francia?');
+assert.equal(pensionPrivateFrance.body.state, 'insufficient');
+assert.equal(pensionPrivateFrance.body.result.answerScope.family, 'pension-private-savings-requirement');
+assert.deepEqual(pensionPrivateFrance.body.result.sources, [], 'Spanish pension sources must not leak into a France-scoped answer');
+assert.doesNotMatch(pensionPrivateFrance.body.result.reply, /72,4 %|AIReF|Espa[nñ]a/);
+
 const fixedDiscontinuousClaim = 'Los contratos fijos discontinuos esconden parte del desempleo estacional';
 const fixedDiscontinuous = await check(fixedDiscontinuousClaim);
 assert.equal(fixedDiscontinuous.body.state, 'insufficient');
