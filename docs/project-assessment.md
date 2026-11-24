@@ -1082,7 +1082,7 @@ retain an insufficient verdict. The national plan is withheld for claims about
 regional bottlenecks. Their copyable answers now fit in two paragraphs, while
 the evidence explorer retains the detailed scope and measurement gaps.
 
-The current deterministic audit reports 3 complete, 47 limited and 250
+The current deterministic audit reports 3 complete, 49 limited and 248
 uncovered responses in the 300-item unverified discovery set. Of these claims,
 89 have a compiler metric match and 119 a focused-family route, with 50 in both;
 142 have neither route. The public states are 275 insufficient and 25 limited.
@@ -1120,3 +1120,18 @@ delays to construction output. This context therefore leaves the causal claim
 insufficient. Explicit residential supply claims keep their existing housing
 evidence family, and regional permit-delay claims do not receive national
 context as if it measured local waits.
+
+## Low-income self-employment costs — 24 November 2026
+
+Claims that mandatory costs make self-employment unviable now receive a
+bounded 2026 contribution example from the [BOE contribution order](https://www.boe.es/buscar/act.php?id=BOE-A-2026-7296).
+For net monthly returns up to €670, the reduced RETA table allows a contribution
+base from €653.59 to €718.94. Choosing the minimum base and applying the listed
+general rates gives an estimated €206.88 monthly contribution before any
+applicable reductions or bonuses.
+
+This is one statutory band and chosen base, not a business-survival study. It
+does not compare a specific worker's irregular net income with the full set of
+business costs or show that the contribution caused an activity to close, so
+the claim remains insufficient. The copyable answer keeps that limit next to
+the example rather than treating the monthly contribution as a universal fee.

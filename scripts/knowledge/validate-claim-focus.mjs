@@ -692,12 +692,29 @@ const selfEmploymentCosts = focusedEvidencePlan('La cuota y los costes fijos hac
   { id: 'general-contributions', metricId: 'social_security_contributions', value: 180000, period: '2025', unit: 'million EUR', source: { id: 'contributions-source', title: 'Social security contributions', url: 'https://example.org/contributions' } },
 ] });
 assert.equal(selfEmploymentCosts.answerScope.family, 'self-employment-cost-viability');
-assert.equal(selfEmploymentCosts.evidenceLevel, 'insufficient');
-assert.deepEqual(selfEmploymentCosts.evidenceIds, [], 'General income, wage and aggregate contribution totals cannot measure self-employment viability');
-assert.deepEqual(selfEmploymentCosts.sourceLinks, [], 'Irrelevant adjacent financial series must not appear as supporting sources');
+assert.equal(selfEmploymentCosts.evidenceLevel, 'limited');
+assert.deepEqual(selfEmploymentCosts.answerScope.directMetrics, [], 'The legal schedule is not a direct measure of business viability');
+assert.deepEqual(selfEmploymentCosts.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], 'General income, wage and aggregate contribution totals cannot prove self-employment viability');
+assert.deepEqual(selfEmploymentCosts.sourceLinks.map((source) => source.id), ['boe-reta-contributions-2026'], 'Only the 2026 RETA schedule may appear as contextual evidence');
+assert.match(selfEmploymentCosts.shareableReply, /hasta 670 €.*653,59 € a 718,94 €.*206,88 € al mes/s);
+assert.match(selfEmploymentCosts.shareableReply, /antes de reducciones o bonificaciones/);
+assert.match(selfEmploymentCosts.shareableReply, /no permite confirmar que la actividad sea inviable/);
+assert.equal(selfEmploymentCosts.shareableReply.split(/\n{2,}/).length, 2);
 assert.match(selfEmploymentCosts.shareableReply, /facturación neta|ingresos netos/i);
-assert.match(selfEmploymentCosts.shareableReply, /prueban por qu[eé] cerr[oó] una actividad/);
+assert.match(selfEmploymentCosts.shareableReply, /datos de continuidad o cierre/);
 assert.doesNotMatch(selfEmploymentCosts.shareableReply, /20[,.]?367|11[,.]?02|180[,.]?000/);
+assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'self-employment-costs', result: selfEmploymentCosts }, 'La cuota y los costes fijos hacen inviable ser autónomo con ingresos bajos o irregulares').state, 'insufficient', 'A statutory contribution example cannot settle a business-viability claim');
+for (const query of [
+  'Los gastos obligatorios de los autónomos impiden sostener una actividad con ingresos irregulares',
+  'Ser autónomo deja de compensar cuando la cuota fija supera los ingresos bajos',
+]) {
+  const plan = focusedEvidencePlan(query, { now: Date.parse('2026-11-24') });
+  assert.equal(plan.answerScope.family, 'self-employment-cost-viability');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['boe-reta-contributions-2026'], `A self-employment paraphrase changed evidence source: ${query}`);
+  assert.match(plan.shareableReply, /206,88 € al mes/);
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'self-employment-paraphrase', result: plan }, query).state, 'insufficient');
+}
+assert.notEqual(claimFocusFor('Las cuotas empresariales elevadas hacen inviable que una empresa mantenga su plantilla')?.id, 'self-employment-cost-viability', 'Employer payroll costs must not inherit the individual RETA schedule');
 assert.equal(focusedEvidencePlan('El PIB de Francia no refleja cómo viven los hogares')?.sourceLinks.length, 0, 'Spain-scoped evidence must not be attached to an explicitly French claim');
 assert.equal(focusedEvidencePlan('Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', { now: Date.parse('2027-11-17') })?.sourceLinks.length, 0, 'Expired definition evidence must not appear as current');
 for (const claim of ['Las listas de espera sanitarias son muy largas', 'La temporalidad laboral ha bajado, pero no resume toda la precariedad']) {

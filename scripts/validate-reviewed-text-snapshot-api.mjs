@@ -303,6 +303,17 @@ assert.equal(urbanPlanningDelayRegion.body.state, 'insufficient');
 assert.deepEqual(urbanPlanningDelayRegion.body.result.sources, [], 'National permit methodology must not be presented as regional evidence about delays');
 assert.doesNotMatch(urbanPlanningDelayRegion.body.result.reply, /licencias de obra mayor concedidas/);
 
+const selfEmploymentCostClaim = 'La cuota y los costes fijos hacen inviable ser autónomo con ingresos bajos o irregulares';
+const selfEmploymentCost = await check(selfEmploymentCostClaim);
+assert.equal(selfEmploymentCost.body.state, 'insufficient');
+assert.equal(selfEmploymentCost.body.result.answerScope.family, 'self-employment-cost-viability');
+assert.deepEqual(selfEmploymentCost.body.result.answerScope.directMetrics, []);
+assert.match(selfEmploymentCost.body.result.reply, /hasta 670 €.*653,59 € a 718,94 €.*206,88 € al mes/s);
+assert.match(selfEmploymentCost.body.result.reply, /antes de reducciones o bonificaciones/);
+assert.match(selfEmploymentCost.body.result.reply, /no permite confirmar que la actividad sea inviable/);
+assert.equal(selfEmploymentCost.body.result.shareableReply?.split(/\n{2,}/).length, 2);
+assert.deepEqual(selfEmploymentCost.body.result.sources.map((source) => source.id), ['boe-reta-contributions-2026']);
+
 const fullTime = await check('Trabajar a jornada completa no impide estar en riesgo de pobreza');
 assert.equal(fullTime.httpStatus, 200);
 assert.equal(fullTime.body.state, 'limited');

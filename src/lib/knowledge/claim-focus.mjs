@@ -1418,7 +1418,26 @@ const focuses = [
     direct: [], context: [], claimType: 'causal',
     needs: ['ingresos netos, cuotas y gastos fijos de autónomos con ingresos bajos o irregulares, para el mismo periodo', 'altas, continuidad y bajas de esas actividades, con motivo de cierre si se atribuye a los costes'],
     explanation: 'Para comprobarlo hay que comparar los ingresos netos con las cuotas y demás gastos fijos de los mismos autónomos, y observar si sus actividades continúan o cierran.',
-    limitation: 'Los totales de cotizaciones, la renta mediana y los salarios medios no muestran ese balance por autónomo ni prueban por qué cerró una actividad.',
+    shareableReplyForContext: ({ facts }) => [
+      facts.join(' '),
+      'Esta cotización no permite confirmar que la actividad sea inviable. Para comprobarlo faltan los ingresos netos y demás gastos de cada actividad, las reducciones aplicables y datos de continuidad o cierre que permitan medir el efecto de esos costes.',
+    ].join('\n\n'),
+    explanationEvidence: {
+      directClaimEvidence: false,
+      expiresAt: '2027-01-01', territories: ['ES'],
+      dimensions: {
+        subject: 'base y cotización mensual de personas trabajadoras por cuenta propia acogidas al RETA',
+        population: 'personas en el tramo reducido de rendimientos netos mensuales de hasta 670 euros que eligen la base mínima general',
+        geography: 'España', period: 'ejercicio 2026',
+        denominator: 'rendimiento neto mensual declarado para el tramo; no representa a todas las personas autónomas',
+        unit: 'euros de base y cotización al mes',
+      },
+      facts: [
+        'En 2026, para rendimientos netos mensuales de hasta 670 €, la base del tramo reducido va de 653,59 € a 718,94 €. Si se elige la base mínima, los tipos generales suman 31,5 % —28,3 % por contingencias comunes, 1,3 % por profesionales, 0,9 % de MEI, 0,9 % por cese y 0,1 % por formación—: unos 206,88 € al mes antes de reducciones o bonificaciones.',
+      ],
+      sources: [{ id: 'boe-reta-contributions-2026', title: 'Orden PJC/297/2026, de cotización a la Seguridad Social para 2026', publisher: 'Boletín Oficial del Estado', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2026-7296', publishedAt: '2026-03-31', retrievedAt: '2026-11-24', role: 'primary' }],
+    },
+    limitation: 'El cálculo usa la base mínima de un tramo concreto y los tipos generales de 2026 antes de reducciones; no es la cuota de cada autónomo ni calcula la rentabilidad de un negocio. Los totales de cotizaciones, la renta mediana y los salarios medios tampoco muestran ese balance ni prueban por qué cerró una actividad.',
   },
   {
     id: 'matched-pay', label: 'salarios de perfiles profesionales comparables',
