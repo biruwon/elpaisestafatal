@@ -27,7 +27,7 @@ const cases = [
   ['inflation-tax-bracket-creep', ['La inflación eleva la carga fiscal cuando los tramos y deducciones no se actualizan al mismo ritmo', 'Si el IRPF no actualiza sus tramos con los precios, la inflación aumenta la recaudación', 'La progresividad en frío hace subir el IRPF cuando las rentas nominales crecen por la inflación']],
   ['household-inflation-basket', ['El IPC general no refleja bien lo que notan los hogares que gastan mucho en comida y alquiler', '¿Cómo han cambiado desde 2020 los alimentos, el alquiler y la inflación general para las familias?', 'El índice general no describe toda la cesta de familias que destinan más dinero a alimentación y vivienda', 'La cesta de la compra ha subido más de lo que percibe quien mira solo el IPC general', 'Los precios de los alimentos han subido más que la inflación general', 'Los alimentos se encarecieron por encima del IPC general']],
   ['gdp-household-welfare', ['Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', 'Que el PIB crezca no se traduce directamente en una mejora de la vida de las familias', 'El PIB por habitante no refleja cómo se reparte la prosperidad entre los hogares']],
-  ['education-employment-outcomes', ['Un título universitario ya no garantiza encontrar un empleo cualificado', 'Tener estudios superiores no asegura trabajar en un puesto acorde con la titulación', 'La universidad ya no asegura encontrar trabajo acorde con sus estudios', 'La tasa de paro de titulados universitarios ha subido', 'Los graduados tienen menos empleo que quienes cursan formación profesional']],
+  ['education-employment-outcomes', ['Un título universitario ya no garantiza encontrar un empleo cualificado', 'Tener estudios superiores no asegura trabajar en un puesto acorde con la titulación', 'La universidad ya no asegura encontrar trabajo acorde con sus estudios', 'La tasa de paro de titulados universitarios ha subido', 'Los graduados tienen menos empleo que quienes cursan formación profesional', 'La cohorte universitaria 2019–2020 encontró empleos que no se correspondían con su nivel de estudios', '¿Qué parte de los graduados universitarios trabaja en puestos acordes a su formación?', 'Hay demasiadas carreras con poca demanda laboral']],
   ['education-socioeconomic-performance', ['El rendimiento escolar depende demasiado de los recursos económicos de la familia', 'Las notas del alumnado están relacionadas con el nivel socioeconómico de sus hogares', 'El origen social condiciona los resultados académicos en ciencias', 'Los estudiantes de familias de bajos ingresos sacan peores notas']],
   ['job-opportunities', ['No hay trabajo', 'Aquí hay pocas ofertas de empleo', 'Es difícil encontrar trabajo en España', 'Los jóvenes no encuentran empleo', 'Empleo no hay', 'No hay empleo temporal', 'Hay pocos trabajos bien pagados']],
   ['working-poverty', ['En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes', 'Tener trabajo a tiempo completo no impide ser pobre', 'La pobreza también alcanza a personas ocupadas']],
@@ -1101,23 +1101,63 @@ assert.equal(graduateMatch.answerScope.family, 'education-employment-outcomes');
 assert.equal(graduateMatch.evidenceLevel, 'limited', 'The official overqualification measure supplies context but does not settle guarantees or unemployment');
 assert.deepEqual(graduateMatch.answerScope.directMetrics, ['employment_rate_tertiary_education', 'tertiary_overqualification_rate']);
 assert.deepEqual(graduateMatch.answerScope.contextMetrics, []);
-assert.equal(graduateMatch.sourceLinks.length, 2);
+assert.equal(graduateMatch.sourceLinks.length, 4);
 assert.match(graduateMatch.shareableReply, /sobrecualificaci[oó]n/);
-assert.match(graduateMatch.shareableReply, /83,2 % de las personas residentes de 20 a 64 a[nñ]os/);
 assert.match(graduateMatch.shareableReply, /34 % de las personas ocupadas de 20 a 64 a[nñ]os/);
 assert.match(graduateMatch.shareableReply, /ocupaciones ISCO 4–9/);
-assert.match(graduateMatch.shareableReply, /no garantizan el resultado de cada persona/);
-assert.doesNotMatch(graduateMatch.shareableReply, /no compara dos periodos/, 'A rhetorical claim that a degree no longer guarantees work is not itself a time-series claim');
-assert.match(graduateMatch.shareableReply, /definici[oó]n de este dato difiere/);
+assert.match(graduateMatch.shareableReply, /grupo de cotizaci[oó]n solo aproxima el nivel laboral/);
+assert.match(graduateMatch.shareableReply, /cohorte universitaria de Grado y Ciclo 2019–2020/);
+assert.match(graduateMatch.shareableReply, /no confirma requisitos ni ajuste por campo/);
+assert.ok(graduateMatch.shareableReply.trim().split(/\s+/).length < 150, 'The recent-cohort context and Eurostat measure should remain concise together');
+assert.match(graduateMatch.shareableReply, /No compara cohortes previas, as[ií] que no muestra un cambio temporal/);
+assert.match(graduateMatch.shareableReply, /diferencia de definici[oó]n; compara a[nñ]os con cautela/);
 assert.doesNotMatch(graduateMatch.shareableReply, /50 %|10 %|17 €/);
 const graduatePublic = localPublicCheckResponse({ status: 'complete', requestId: 'graduate-employment', result: graduateMatch }, 'Un título universitario ya no garantiza encontrar un empleo cualificado');
 assert.equal(graduatePublic.state, 'limited');
 assert.deepEqual(graduatePublic.result.sources.map((source) => source.url), graduateMatch.sourceLinks.map((source) => source.url));
 assert.match(graduatePublic.result.reply, /34 %/);
 assert.equal(focusedEvidencePlan('Un título universitario ya no garantiza encontrar un empleo cualificado en Francia')?.sourceLinks.length, 0, 'Spain-specific overqualification data must not appear for France');
+const siiuGraduateFitParaphrases = [
+  'Un título universitario ya no garantiza encontrar un empleo cualificado',
+  'Tener estudios superiores no asegura trabajar en un puesto acorde con la titulación',
+  'La cohorte universitaria 2019–2020 encontró empleos que no se correspondían con su nivel de estudios',
+];
+for (const claim of siiuGraduateFitParaphrases) {
+  const plan = focusedEvidencePlan(claim);
+  assert.equal(plan.answerScope.family, 'education-employment-outcomes', `Graduate outcome paraphrase crossed families: ${claim}`);
+  assert.equal(plan.evidenceLevel, 'limited', `SIIU context must remain limited: ${claim}`);
+  assert.ok(plan.sourceLinks.some((source) => source.id === 'siiu-graduate-contribution-groups-2019-2020'), `Missing SIIU outcome source for: ${claim}`);
+  assert.ok(plan.sourceLinks.some((source) => source.id === 'siiu-graduate-employment-methodology-2019-2020'), `Missing SIIU scope methodology for: ${claim}`);
+  assert.match(plan.shareableReply, /cohorte universitaria de Grado y Ciclo 2019–2020/);
+  assert.match(plan.shareableReply, /61,29 % de afiliados por cuenta ajena a la Seguridad Social en marzo/);
+  assert.doesNotMatch(plan.shareableReply, /46,96 %|74,15 %|89,09 %/, 'Do not select field examples when the claim asks about graduate outcomes in general');
+  assert.match(plan.shareableReply, /no confirma requisitos ni ajuste por campo/);
+  assert.match(plan.shareableReply, /Medir el ajuste requiere vincular estudios y tareas del puesto/);
+  assert.ok(plan.shareableReply.trim().split(/\s+/).length < 150, `SIIU context should stay readable: ${claim}`);
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'siiu-graduate-outcomes', result: plan }, claim).state, 'insufficient', 'Contextual contribution-group data must not support a claim about exact job requirements or degree demand');
+}
+for (const neighbor of [
+  'Cada vez se exige un máster para trabajos que antes pedían solo una carrera',
+  'La Formación Profesional permite entrar antes al mercado laboral que muchas carreras',
+  'La tasa de paro de titulados universitarios ha subido',
+  'Un título universitario ya no garantiza encontrar un empleo cualificado en Francia',
+  'El rendimiento escolar depende demasiado de los recursos económicos de la familia',
+  'Hay demasiadas carreras con poca demanda laboral',
+]) {
+  const plan = focusedEvidencePlan(neighbor);
+  assert.ok(!plan.sourceLinks?.some((source) => source.id === 'siiu-graduate-contribution-groups-2019-2020'), `A nearby claim inherited SIIU graduate-fit context: ${neighbor}`);
+}
+const weakDegreeDemandEvidence = focusedEvidencePlan('Hay demasiadas carreras con poca demanda laboral');
+assert.equal(weakDegreeDemandEvidence.evidenceLevel, 'insufficient');
+assert.deepEqual(weakDegreeDemandEvidence.sourceLinks, [], 'A contribution-group proxy must not be presented as evidence of degree-level labour demand');
+assert.ok(weakDegreeDemandEvidence.blocks.find((block) => block.type === 'evidence_gap')?.missing.some((item) => /egresados, vacantes y contrataciones.*demanda laboral/.test(item)));
+const weakDegreeDemandPublic = localPublicCheckResponse({ status: 'uncovered', requestId: 'degree-demand-gap', result: weakDegreeDemandEvidence }, 'Hay demasiadas carreras con poca demanda laboral');
+assert.equal(weakDegreeDemandPublic.state, 'insufficient');
+assert.match(weakDegreeDemandPublic.result.reply, /Buscar datos oficiales comparables de egresados, vacantes y contrataciones por campo de estudio, territorio y periodo/);
+assert.doesNotMatch(weakDegreeDemandPublic.result.reply, /medir empleo y adecuaci[oó]n al nivel de estudios/);
 const graduateGap = focusedEvidencePlan('Un título universitario ya no garantiza encontrar un empleo cualificado');
-assert.equal(graduateGap.evidenceLevel, 'insufficient');
-assert.equal(graduateGap.sourceLinks.length, 0);
+assert.equal(graduateGap.evidenceLevel, 'limited', 'The reviewed SIIU cohort supplies limited context even without live warehouse observations');
+assert.equal(graduateGap.sourceLinks.length, 2);
 assert.doesNotMatch(graduateGap.shareableReply, /34 %|83,2 %/, 'A missing warehouse observation must not be replaced with a hard-coded percentage');
 const educationOutcomeObservations = [
   { id: 'tertiary-employment-2025', metricId: 'employment_rate_tertiary_education', value: 83.2, period: '2025', unit: 'Percentage', geography: 'España', population: 'residents aged 20 to 64 with tertiary education', dimensions: { geo: 'ES', age: 'Y20-64', isced11: 'ED5-8' }, status: 'd', freshness: 'fresh', source: employmentSource },
@@ -1479,10 +1519,12 @@ for (const claim of youthEmploymentCauseParaphrases) {
   assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], claim);
   assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient', claim);
   assert.ok(plan.blocks.some((block) => block.type === 'data_finding' && block.dataKind === 'context'), claim);
-  assert.ok(plan.blocks.find((block) => block.type === 'evidence_gap')?.missing.some((item) => /oportunidades disponibles.*puestos aceptados.*motivos/.test(item)), claim);
+  const causalGap = plan.blocks.find((block) => block.type === 'evidence_gap');
+  assert.ok(causalGap?.missing.some((item) => /oportunidades disponibles.*puestos aceptados.*motivos/.test(item)), claim);
+  assert.match(causalGap?.nextAction || '', /Relacionar oportunidades laborales, puestos aceptados y motivos de la decisi[oó]n/);
   assert.match(plan.shareableReply, /34,4 % de las personas ocupadas de 20 a 34 a[nñ]os/);
   assert.match(plan.shareableReply, /no mide si la falta de oportunidades acordes llev[oó] a aceptar esos puestos/);
-  assert.match(plan.shareableReply, /denominador son solo las personas ocupadas de ese grupo/);
+  assert.match(plan.shareableReply, /el 34,4 % de las personas ocupadas de 20 a 34 a[nñ]os con educaci[oó]n terciaria/);
   assert.match(plan.shareableReply, /definici[oó]n de este dato difiere/);
   assert.ok(plan.shareableReply.split(/\s+/).length < 180, 'The causal qualification should remain short enough to digest');
   assert.ok(validateAnswerPlan(plan).ok, JSON.stringify(validateAnswerPlan(plan).errors));
@@ -1491,7 +1533,7 @@ for (const claim of youthEmploymentCauseParaphrases) {
   assert.equal(publicAnswer.result.arguments[0].verdict, 'insufficient');
   assert.deepEqual(publicAnswer.result.arguments[0].evidenceIds, []);
   assert.deepEqual(publicAnswer.result.criteria.map((item) => item.label), ['Contexto']);
-  assert.deepEqual(publicAnswer.result.sources.map((source) => source.id), ['eurostat-tertiary-overqualification']);
+  assert.deepEqual(publicAnswer.result.sources.map((source) => source.id), ['eurostat-tertiary-overqualification'], 'A youth-wide causal claim should use the youth Eurostat measure; the new-graduate cohort is a different population');
   if (youthEmploymentCauseSources) assert.deepEqual(plan.sourceIds, youthEmploymentCauseSources, `A causal paraphrase changed its evidence source: ${claim}`);
   youthEmploymentCauseSources = plan.sourceIds;
 }

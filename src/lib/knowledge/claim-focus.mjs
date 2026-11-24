@@ -4,6 +4,7 @@ import { MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE } from './mortgage-entry-snapshot.mj
 import { UNPAID_OVERTIME_SNAPSHOT } from './unpaid-overtime-snapshot.mjs';
 import { PENSION_CONTRIBUTOR_RATIO_SNAPSHOT } from './pension-contributor-ratio-snapshot.mjs';
 import { EDUCATION_SOCIOECONOMIC_SNAPSHOT } from './education-socioeconomic-snapshot.mjs';
+import { UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT } from './university-graduate-outcomes-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -394,7 +395,7 @@ const labourProductivityTrend = (t) => /\bproductividad\b/.test(t)
 const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios?|formaci\w*|preparaci\w*|educacion (?:superior|terciaria)|cualific\w*|sobrecualific\w*|fp)\b/.test(t)
   && !migrationPopulation.test(t) && !healthcareWorkforceCausality(t)
   && !/\b(estigma|estereotip\w*|prestigio|percepcion\w*|reputacion\w*)\b/.test(t)
-  && (/\b(emple\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*|salida laboral|salidas laborales|empleabilidad|perspectivas laborales)\b/.test(t) || /\bsobrecualific\w*\b/.test(t));
+  && (/\b(emple\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*|salida laboral|salidas laborales|empleabilidad|perspectivas laborales|demanda laboral)\b/.test(t) || /\bsobrecualific\w*\b/.test(t));
 const educationSocioeconomicPerformance = (t) => /\b(recursos? (?:economicos?|materiales?) (?:de la familia|familiares?|del hogar|del entorno familiar)|ingresos? (?:familiares?|del hogar|bajos?)|nivel socioeconomico|estatus socioeconomico|origen socioeconomico|origen social|situacion socioeconomica|situacion economica familiar|posicion socioeconomica|contexto socioeconomico|riqueza (?:familiar|del hogar)|renta (?:familiar|del hogar|baja)|familias? (?:pobres?|de bajos? ingresos|con bajos? ingresos|con rentas? bajas|con pocos recursos|con escasos recursos|con dinero|con mas recursos|con menos recursos)|hogares? (?:pobres?|de bajos? ingresos|con bajos? ingresos|con pocos recursos)|(?:estudiantes?|alumn\w*) en situacion de pobreza)\b/.test(t)
   && /\b(rendimient\w*|resultados? academ\w*|notas?|calificacion\w*|puntuacion\w*|aprendizaje|desempeno academ\w*|desempeno escolar|resultados? escolares?|pruebas? pisa|rendimiento en ciencias)\b/.test(t)
   && !/\b(emple\w*|trabaj\w*|ocupaci\w*|salari\w*|sueld\w*|mercado laboral|universidad\w*|universitari\w*|formacion profesional|\bfp\b)\b/.test(t);
@@ -413,6 +414,18 @@ const educationJobFit = (t) => /\b(cualific\w*|acorde\w*|relacionad\w*|adecuad\w
   || /\b(?:puesto\w*|empleo\w*|trabajo\w*|ocupaci\w*)\b[\s\w]{0,55}\b(?:no requier\w*|no exig\w*|requiere? menos|exige menos)\b/.test(t)
   || /\b(?:no requier\w*|no exig\w*|requiere? menos|exige menos)\b[\s\w]{0,55}\b(?:nivel|estudios|titulaci\w*|formaci\w*|cualificaci\w*)\b/.test(t)
   || /\b(?:por debajo|inferior|menor)\b[\s\w]{0,35}\b(?:formaci\w*|preparaci\w*|cualificaci\w*|nivel de estudios|estudios?)\b/.test(t);
+const educationSiiuGraduateOutcomes = (t) => {
+  const asksExactOverqualificationRate = /\b(tasa|porcentaje|proporcion|cuota)\b.{0,45}\bsobrecualific\w*\b/.test(t)
+    || /\bsobrecualific\w*\b.{0,45}\b(tasa|porcentaje|proporcion|cuota)\b/.test(t);
+  const asksForGraduateCount = /\b(cuantos|cuantas|numero de|recuento de)\b/.test(t);
+  const asksUniversityOutcomes = /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios? universitarios|grado universitario)\b/.test(t);
+  const asksQualificationFit = educationJobFit(t);
+  const youthOrCausalClaim = /\b(joven\w*|juvenil|caus\w*|provoc\w*|porque|ya que|debido a|por culpa|empuj\w*|oblig\w* a|conduc\w* a|llev\w* a|por falta de|ante la falta de|por no (?:encontr\w*|hall\w*|consegu\w*))\b/.test(t);
+  const comparesEducationPaths = /\b(fp|formacion profesional|grado medio|grado superior|ciclo formativo)\b/.test(t)
+    && /\b(compar\w*|frente a|versus|vs\.?|que la universidad|que una carrera|universidad y fp|fp y universidad)\b/.test(t);
+  return asksUniversityOutcomes && asksQualificationFit && !asksExactOverqualificationRate && !asksForGraduateCount
+    && !educationJobRequirement(t) && !comparesEducationPaths && !youthOrCausalClaim;
+};
 const educationJobRequirement = (t) => /\b(master\w*|maestr\w*|posgrado\w*|postgrado\w*)\b/.test(t)
   && /\b(exig\w*|requier\w*|necesit\w*|ped\w*|solicit\w*|ofert\w*)\b/.test(t)
   && /\b(emple\w*|trabaj\w*|puesto\w*)\b/.test(t);
@@ -423,13 +436,14 @@ const educationCrossGroupComparison = (t) => /\b(?:mas|menos|mayor|menor|mejor|p
 const educationOutcomeMetrics = (claim) => {
   const t = normalize(claim);
   const unsupportedEducationOrTerritory = /\b(formacion profesional|fp|grado medio|grado superior|ciclo formativo|recien titulad\w*|recien graduad\w*|primer empleo|europa|europe[oa]s?|ue|union europea)\b/.test(t);
+  const degreeDemandClaim = /\b(demanda laboral|salidas? laborales|empleabilidad)\b/.test(t);
   const youthReference = /\b(joven\w*|juvenil)\b/.test(t);
   const belowThirty = /\bmenores? de \d+\b/.test(t);
   const requestedAges = [...String(claim).matchAll(/\b(\d{2})\s*(?:[-–—]|a|hasta|to|y)\s*(\d{2})\b/gi)];
   const qualificationFit = educationJobFit(t);
   const age20To34Requested = requestedAges.length === 1 && requestedAges[0][1] === '20' && requestedAges[0][2] === '34';
   const age20To64Requested = requestedAges.length === 1 && requestedAges[0][1] === '20' && requestedAges[0][2] === '64';
-  if (educationJobRequirement(t) || educationLevelComparison(t) || unsupportedEducationOrTerritory
+  if (educationJobRequirement(t) || educationLevelComparison(t) || unsupportedEducationOrTerritory || degreeDemandClaim
     || educationCrossGroupComparison(t) || belowThirty || requestedAges.length > 1
     || requestedAges.length > 0 && !age20To34Requested && !age20To64Requested
     || age20To34Requested && !qualificationFit
@@ -1439,6 +1453,27 @@ const focuses = [
     direct: [], context: [],
     needs: ['tasa de empleo o paro del nivel educativo y la población comparados, con el mismo periodo y territorio', 'ocupaciones que requieren educación terciaria y nivel educativo de quienes las ocupan', 'para afirmar qué titulación exigen las ofertas, requisitos de anuncios de empleo comparables en el tiempo'],
     explanation: 'Las tasas de empleo o paro por nivel educativo muestran si las personas tituladas trabajan; no indican por sí solas si el puesto corresponde a sus estudios. Acceso al empleo y ajuste entre formación y ocupación son resultados distintos.',
+    explanationHeadline: 'Los datos de inserción laboral describen grupos, no garantizan el ajuste de cada empleo',
+    explanationEvidence: {
+      ...UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT,
+      when: educationSiiuGraduateOutcomes,
+    },
+    shareableReplyForContext: ({ claim, facts, metricFacts, scopeNotes = [] }) => {
+      const overqualification = metricFacts?.find((fact) => ['tertiary_overqualification_rate', 'tertiary_overqualification_rate_age_20_34'].includes(fact.id));
+      const conciseScopeNotes = scopeNotes.map((note) => note.startsWith('La fuente señala que la definición de este dato difiere')
+        ? 'La fuente señala una diferencia de definición; compara años con cautela.'
+        : note);
+      const normalizedClaim = normalize(claim);
+      const individualGuaranteeLimit = /\bgarant\w*\b/.test(normalizedClaim) ? 'Son resultados de grupo, no una garantía individual.' : '';
+      const temporalLimit = /\b(ya no|antes|ahora|cada vez|ha aumentado|ha subido|ha bajado|evoluci\w*)\b/.test(normalizedClaim)
+        ? 'No compara cohortes previas, así que no muestra un cambio temporal.'
+        : '';
+      return [overqualification?.text, ...conciseScopeNotes, ...facts,
+        'El grupo de cotización solo aproxima el nivel laboral; no confirma requisitos ni ajuste por campo. El SIIU solo recoge asalariados afiliados en España; excluye empleo exterior y parte de mutualidades. Medir el ajuste requiere vincular estudios y tareas del puesto.',
+        individualGuaranteeLimit,
+        temporalLimit,
+      ].filter(Boolean).join(' ');
+    },
     limitation: 'Las tasas de empleo, paro y sobrecualificación tienen denominadores distintos: residentes con estudios terciarios, personas activas con esos estudios y personas ocupadas con esos estudios. Las series no prueban una garantía individual, no se limitan a recién titulados y no miden anuncios que exigen un máster ni el campo de estudios.',
   },
   {

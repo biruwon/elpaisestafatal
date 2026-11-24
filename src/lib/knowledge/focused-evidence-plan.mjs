@@ -371,10 +371,10 @@ const educationOutcomeFinding = (fact) => {
   const period = periodLabel(item.period);
   const place = placeLabel(item) || 'el territorio consultado';
   const source = item.source?.publisher || 'Eurostat';
-  if (fact.id === 'employment_rate_tertiary_education') return `${source}: en ${place}, el ${value} de las personas residentes de 20 a 64 años con educación terciaria (ISCED 5–8) estaba ocupada en ${period}.`;
+  if (fact.id === 'employment_rate_tertiary_education') return `${source}: en ${place}, el ${value} de las personas residentes de 20 a 64 años con educación terciaria estaba ocupada en ${period}.`;
   if (fact.id === 'unemployment_rate_tertiary_education') return `${source}: en ${place}, el ${value} de la población activa de 20 a 64 años con educación terciaria (ISCED 5–8) estaba en paro en ${period}.`;
-  if (fact.id === 'tertiary_overqualification_rate') return `${source}: en ${place}, el ${value} de las personas ocupadas de 20 a 64 años con educación terciaria (ISCED 5–8) trabajaba en ocupaciones ISCO 4–9 que no requieren ese nivel en ${period}.`;
-  if (fact.id === 'tertiary_overqualification_rate_age_20_34') return `${source}: en ${place}, el ${value} de las personas ocupadas de 20 a 34 años con educación terciaria (ISCED 5–8) trabajaba en ocupaciones ISCO 4–9, que no requieren ese nivel, en ${period}.`;
+  if (fact.id === 'tertiary_overqualification_rate') return `${source} (${place}, ${period}), sobrecualificación: el ${value} de las personas ocupadas de 20 a 64 años con educación terciaria trabajaba en ocupaciones ISCO 4–9, que no requieren ese nivel.`;
+  if (fact.id === 'tertiary_overqualification_rate_age_20_34') return `${source}: tasa de sobrecualificación en ${place}, ${period}: el ${value} de las personas ocupadas de 20 a 34 años con educación terciaria trabajaba en ocupaciones ISCO 4–9, que no requieren ese nivel.`;
   return fact.finding;
 };
 const specialistOutpatientMagnitudeNotAssessed = (claim) => {
@@ -558,18 +558,21 @@ const educationOutcomeQuestion = (claim) => {
   const text = normalize(claim);
   return {
     text,
-    recentGraduates: /\b(recien titulad\w*|recien graduad\w*|primer empleo)\b/.test(text),
-    asksQualificationFit: /\b(sobrecualific\w*|desajust\w*|desencaj\w*|no requier\w*|no exig\w*|acorde\w*|adecuad\w*|relacionad\w*|por debajo)\b/.test(text),
+    recentGraduates: /\b(recien titulad\w*|recien graduad\w*|primer empleo|cohorte universitaria)\b/.test(text),
+    asksDegreeDemand: /\b(demanda laboral|demanda de titulaciones|salidas? laborales|empleabilidad)\b/.test(text),
+    asksQualificationFit: /\b(sobrecualific\w*|desajust\w*|desencaj\w*|no requier\w*|no exig\w*|acorde\w*|adecuad\w*|relacionad\w*|correspond\w*|encaj\w*|ajust\w*|por debajo|nivel de estudios|campo de estudios)\b/.test(text),
     asksCredentialRequirements: /\b(master|maestria|doctorad\w*)\b/.test(text)
       && /\b(exig\w*|requier\w*|pid\w*|ped\w*|anunci\w*|ofert\w*)\b/.test(text),
     asksFirstJobTiming: /\b(entr\w* antes|antes al mercado laboral|primer empleo|tiempo.{0,24}empleo|tard\w*.{0,24}empleo|mas rapido|rapidamente)\b/.test(text),
     asksEmploymentProspects: /\b(salida laboral|salidas laborales|empleabilidad|perspectivas laborales)\b/.test(text),
+    asksTrend: /\b(ya no|antes|ahora|cada vez|ha aumentado|ha subido|ha bajado|desde \d{4}|evoluci\w*)\b/.test(text),
     comparesEducationPaths: /\b(formacion profesional|fp)\b/.test(text)
       && /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|estudios superiores)\b/.test(text)
       && /\b(mas|menos|mejor|peor|mayor|menor|frente|compar\w*|diferenc\w*|que|y)\b/.test(text),
   };
 };
 const educationOutcomeLimitForQuestion = (question) => {
+  if (question.asksDegreeDemand && !question.comparesEducationPaths) return 'La afiliación de una cohorte describe algunos resultados laborales, pero no mide cuántas vacantes existen por titulación ni si hay «demasiadas» carreras. Para comprobar demanda hacen falta egresados, vacantes y contrataciones por campo, territorio y periodo comparables.';
   if (question.asksCredentialRequirements) return 'Las tasas de empleo y sobrecualificación no muestran qué titulación piden las ofertas. Para saber si ahora se exige más formación hay que comparar anuncios de las mismas ocupaciones, territorios y periodos.';
   if (question.asksFirstJobTiming) return 'Una tasa de empleo no indica cuánto tardan las personas tituladas en encontrar su primer trabajo. Hace falta medir el tiempo desde la graduación y comparar cohortes de FP y universidad en el mismo territorio y periodo.';
   if (question.comparesEducationPaths) return 'La tasa de empleo disponible describe solo a residentes de 20 a 64 años con educación terciaria; no compara por sí sola los grupos que menciona la afirmación. Hace falta medirlos con el mismo resultado, territorio, periodo y criterios de graduación.';
@@ -593,6 +596,7 @@ const educationOutcomeLimitation = (ids, fallback, question, causalClaim = false
 const educationOutcomeNeedsForClaim = (claim, fallback) => {
   const question = educationOutcomeQuestion(claim);
   const { text, recentGraduates, asksQualificationFit } = question;
+  if (question.asksDegreeDemand && !question.comparesEducationPaths) return ['egresados, vacantes y contrataciones por titulación o campo de estudio en el mismo territorio y periodo para medir demanda laboral'];
   if (question.asksCredentialRequirements) return ['anuncios de las mismas ocupaciones en periodos comparables, contando qué proporción exige un máster'];
   if (question.asksFirstJobTiming) return ['tiempo desde terminar FP o universidad hasta el primer empleo, por cohorte, territorio y periodo comparables'];
   if (recentGraduates) return ['medición de sobrecualificación o ajuste laboral entre recién graduados, con el tiempo transcurrido desde que terminaron los estudios y un denominador definido'];
@@ -608,6 +612,17 @@ const educationOutcomeNeedsForClaim = (claim, fallback) => {
     return [`medición directa de ${measure} para la franja de edad a la que se refiere «jóvenes», con titulación, periodo y denominador explícitos`];
   }
   return fallback;
+};
+const educationOutcomeNextAction = (question, causalClaim = false) => {
+  if (causalClaim) return 'Relacionar oportunidades laborales, puestos aceptados y motivos de la decisión para la misma población y periodo.';
+  if (question.asksTrend) return 'Comparar la misma medida y población en varios periodos, con territorio y nivel educativo constantes.';
+  if (question.asksDegreeDemand && !question.comparesEducationPaths) return 'Buscar datos oficiales comparables de egresados, vacantes y contrataciones por campo de estudio, territorio y periodo.';
+  if (question.asksCredentialRequirements) return 'Comparar anuncios de las mismas ocupaciones en varios periodos y contar los requisitos formativos.';
+  if (question.asksFirstJobTiming) return 'Medir el tiempo desde la graduación hasta el primer empleo por cohorte y tipo de estudios.';
+  if (question.comparesEducationPaths) return 'Comparar ambos itinerarios con la misma población, territorio, periodo y resultado laboral.';
+  if (question.recentGraduates) return 'Medir ajuste y empleo desde la graduación, con cohorte y denominador definidos.';
+  if (question.asksQualificationFit) return 'Vincular los estudios de las personas con el nivel, tareas o requisitos de sus puestos.';
+  return 'Buscar datos de empleo o paro para la población y el nivel educativo solicitados.';
 };
 
 // This composer reports only the supplied observations. It cannot turn a
@@ -863,7 +878,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const educationQuestion = educationOutcome ? educationOutcomeQuestion(claim) : undefined;
   const specialistMagnitudeNotAssessed = focus.id === 'specialist-outpatient-regional-waits'
     && specialistOutpatientMagnitudeNotAssessed(claim);
-  const limitation = tourismRegionalSectorComparison
+  let limitation = tourismRegionalSectorComparison
     ? 'La serie disponible describe el conjunto de España; no compara empleo turístico y agrícola en el territorio solicitado.'
     : educationOutcome ? educationOutcomeLimitation(ids, focus.limitation, educationQuestion, educationOutcomeCausalClaim)
     : focus.id === 'working-poverty' ? 'El umbral relativo de pobreza y la respuesta subjetiva del hogar son medidas distintas. EU-SILC no cruza la dificultad declarada con la jornada laboral; el desglose por jornada tampoco incluye la edad. El dato no demuestra que el tipo de jornada cause el riesgo. El periodo es el año de la encuesta EU-SILC y los ingresos del umbral de pobreza pueden referirse a un año anterior.'
@@ -883,6 +898,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const explanation = focus.explanationEvidence && now < Date.parse(focus.explanationEvidence.expiresAt)
     && territories.every(({ id }) => focus.explanationEvidence.territories?.includes(id))
     && (!focus.explanationEvidence.when || focus.explanationEvidence.when(normalize(claim))) ? focus.explanationEvidence : undefined;
+  if (explanation?.limitation) limitation = [limitation, explanation.limitation].filter(Boolean).join(' ');
   const explanationDimensions = explanation
     ? explanation.dimensionsForClaim?.(normalize(claim)) || explanation.dimensions
     : undefined;
@@ -1072,7 +1088,14 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       ? explanationSupportsClaim ? explanationFacts.join('\n\n') : [focusedExplanation, `Como contexto: ${explanationFacts.join('\n\n')}`].filter(Boolean).join('\n\n')
       : focusedExplanation;
   const shareableContextReply = explanation && typeof focus.shareableReplyForContext === 'function'
-    ? focus.shareableReplyForContext({ claim, facts: explanationFacts, needs, limitation })
+    ? focus.shareableReplyForContext({
+      claim,
+      facts: explanationFacts,
+      metricFacts: educationOutcome ? primaryFacts.map((fact) => ({ id: fact.id, text: factFinding(fact) })) : [],
+      scopeNotes,
+      needs,
+      limitation,
+    })
     : undefined;
   const findingLead = direct.length ? 'Datos de la fuente: ' : focus.id === 'sector-wage-comparison' ? '' : 'Como contexto: ';
   const primaryCareCausalityReply = (() => {
@@ -1240,7 +1263,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       ...facts.map((fact) => ({ type: 'data_finding', ...(educationOutcomeCausalClaim ? { dataKind: 'context' } : {}), evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [factFinding(fact)] })),
       ...(missing.length ? [{ type: 'evidence_gap', missing, needed: missing, nextAction: tourismRegionalSectorComparison
         ? 'Buscar una fuente regional con recuentos comparables de empleo en turismo y agricultura para el mismo año.'
-        : `Buscar una fuente primaria que mida ${focus.label} con ese ámbito.` }] : []),
+        : educationOutcome ? educationOutcomeNextAction(educationQuestion, educationOutcomeCausalClaim)
+          : `Buscar una fuente primaria que mida ${focus.label} con ese ámbito.` }] : []),
       { type: 'cannot_conclude', evidenceIds: [], points: [limitation] },
       { type: 'conversation_reply', evidenceIds, text: reply },
     ],
