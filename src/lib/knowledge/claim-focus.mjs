@@ -21,7 +21,7 @@ import { EUROPEAN_PRICE_WAGE_CONVERGENCE_EVIDENCE } from './european-price-wage-
 import { PUBLIC_PRIVATE_PAY_SNAPSHOT } from './public-private-pay-snapshot.mjs';
 import { PUBLIC_SOCIAL_HOUSING_SNAPSHOT, asksForPublicSocialStockCount } from './public-social-housing-snapshot.mjs';
 import { YOUTH_HOUSING_INDEPENDENCE_SNAPSHOT } from './youth-housing-independence-snapshot.mjs';
-import { ROOM_RENTAL_MARKET_SNAPSHOT, roomRentalMarketDirectMeasureFor, roomRentalMarketRequestedMeasureFor } from './room-rental-market-snapshot.mjs';
+import { ROOM_RENTAL_MARKET_SNAPSHOT, roomRentalMarketClaimFor, roomRentalMarketDirectMeasureFor, roomRentalMarketRequestedMeasureFor } from './room-rental-market-snapshot.mjs';
 import { PUBLIC_SERVICE_DIGITAL_ACCESS_SNAPSHOT, publicServiceDigitalAccessClaimFor, publicServiceDigitalAccessMeasureFor } from './public-service-digital-access-snapshot.mjs';
 import { PUBLIC_DOCUMENT_REUSE_SNAPSHOT, publicDocumentReuseClaimFor, publicDocumentReuseLegalQuestionFor } from './public-document-reuse-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
@@ -56,9 +56,6 @@ const householdSavingsCapacity = (t) => {
 };
 const rentalBurden = /\b(ingres\w*|salari\w*|sueld\w*|nomina\w*|mitad|por ciento|porcentaje|esfuerzo|asequib\w*|poder alquilar|puede alquilar|puede pagar|alquilar[^.]{0,35}sol[oa]|emancip\w*|independiz\w*)\b/;
 const absoluteRentAmount = /\b(cuant\w*|importe\w*|cantid\w*|cuant[ií]a\w*|euros?|eur|mensual\w*|al mes|por mes|€)\b/;
-const roomRentalMarket = (text) => /\b(habitacion\w*|cuarto\w*|piso compartido|compartir piso|vivienda compartida|alquiler por habitaciones)\b/.test(text)
-  && /\b(alquil\w*|arrendam\w*|renta\w*|precio\w*|cost\w*|habitacion\w*|cuarto\w*|compartir|piso compartido)\b/.test(text)
-  && !/\b(hotel\w*|hostal\w*|hostel\w*|alojamiento turistico|vacacional\w*|turism\w*|turist\w*)\b/.test(text);
 const intergenerationalHousingDistribution = (t) => !/\b(pension\w*|jubilacion\w*|jubilad\w*)\b/.test(t)
   && /\b(j[oó]ven\w*|juventud|generaci[oó]n\w*|boomers?|mayor(?:es)?|nacid\w* entre)\b/.test(t)
   && /\b(viviend\w*|casas?|pisos?|alquil\w*|arrendam\w*|inquilin\w*|propietari\w*|arrendador\w*|casero\w*)\b/.test(t)
@@ -1926,7 +1923,7 @@ const focuses = [
   },
   {
     id: 'room-rental-market', label: 'alquiler de habitaciones en pisos compartidos',
-    when: roomRentalMarket,
+    when: roomRentalMarketClaimFor,
     claimType: 'descriptive',
     claimTypeFor: (claim) => /\b(aument\w*|sub\w*|crec\w*|increment\w*|desde (?:19|20)\d{2}|cada vez|se ha convertido|se ha vuelto|ha pasado a)\b/.test(normalize(claim)) ? 'trend' : 'descriptive',
     direct: [], context: [],

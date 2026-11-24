@@ -1347,3 +1347,32 @@ with neither. The deterministic fallback returns 7 complete, 76 limited and
 217 uncovered responses; the public states remain 268 insufficient and 32
 limited. These figures measure reviewed routing, sourcing and answer scope,
 not truth or accuracy across all possible text submissions.
+
+## Text-first answer quality pass — 24 November 2026
+
+The current pass prioritizes typed claims and short, source-linked explanations;
+it does not change the submission formats. Two reusable evidence families were
+added: INE TIC-H 2026 measures unmet online public-service needs and reported
+problems among users, while BOE Article 28 of Law 39/2015 explains the right to
+reuse documents already held by an administration. The survey is not used to
+claim general digital exclusion, and the law is not used to infer how often an
+office complies. Its exceptions—including sanction and inspection proceedings
+and the case where a document cannot exceptionally be retrieved—stay in the
+answer.
+
+The expanded held-out text-answer benchmark passes 187/187 cases across 52
+paraphrase groups. Claim-focus validation covers 318 paraphrases and boundary
+checks. The full classifier suite and `npm run check` pass; Astro reports no
+errors or warnings and five existing hints. A cross-family regression found
+that “cuarto trimestre” could be read as “room”; room matching now requires
+rental or shared-housing context, and a job-vacancy-rate runtime case protects
+that boundary.
+
+The 300-item unverified discovery corpus currently has a metric or focused
+family route for 169 claims (66 metric matches and 150 family matches, with 47
+overlapping); 131 have neither. The deterministic fallback returns 7 complete,
+87 limited and 206 uncovered responses. Public states are 265 insufficient
+and 35 limited. These are operational routing and sourcing counts, not factual
+accuracy scores; the corpus remains unverified. Text answer accuracy still
+needs broader review and coverage work before expanding the modality scope.
+Source: [BOE, consolidated Law 39/2015](https://www.boe.es/buscar/act.php?id=BOE-A-2015-10565&p=20261001&tn=1).

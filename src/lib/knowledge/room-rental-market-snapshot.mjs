@@ -12,9 +12,17 @@ const normalize = (value) => String(value || '').toLocaleLowerCase('es').normali
 const thresholdScopeAppliesOnlyToWholeHomes = (text) => /\bno (?:se )?(?:aplic\w*|correspond\w*|rige\w*)\b[^.!?]{0,60}\bhabitacion\w*\b/.test(text)
   || /\b(?:correspond\w*|refier\w*|aplic\w*)\b[^.!?]{0,90}\b(?:viviend\w* complet\w*|hogar\w* complet\w*)\b[^.!?]{0,45}\bno a? habitacion\w*\b/.test(text)
   || /\b(?:solo|unicamente)\b[^.!?]{0,60}\b(?:viviend\w* complet\w*|hogar\w* complet\w*)\b/.test(text);
-const roomRental = (text) => /\b(habitacion\w*|cuarto\w*|piso compartido|compartir piso|vivienda compartida|alquiler por habitaciones)\b/.test(text)
-  && /\b(alquil\w*|arrendam\w*|renta\w*|precio\w*|cost\w*|habitacion\w*|cuarto\w*|compartir|piso compartido)\b/.test(text)
-  && !/\b(hotel\w*|hostal\w*|hostel\w*|alojamiento turistico|vacacional\w*|turism\w*|turist\w*)\b/.test(text);
+export const roomRentalMarketClaimFor = (claim) => {
+  const text = normalize(claim);
+  const explicitRoom = /\b(habitacion\w*|piso compartido|compartir piso|vivienda compartida|alquiler por habitaciones)\b/.test(text);
+  const ambiguousRoom = /\bcuarto\w*\b/.test(text)
+    && !/\bcuarto trimestre\b/.test(text)
+    && /\b(alquil\w*|arrendam\w*|renta\w*|precio\w*|cost\w*|compartir|ofert\w*|anuncios?)\b/.test(text);
+  return (explicitRoom || ambiguousRoom)
+    && /\b(alquil\w*|arrendam\w*|renta\w*|precio\w*|cost\w*|habitacion\w*|cuarto\w*|compartir|piso compartido|ofert\w*|anuncios?)\b/.test(text)
+    && !/\b(hotel\w*|hostal\w*|hostel\w*|alojamiento turistico|vacacional\w*|turism\w*|turist\w*)\b/.test(text);
+};
+const roomRental = roomRentalMarketClaimFor;
 
 const requestedRoomMeasureFor = (claim) => {
   const rawText = String(claim || '');

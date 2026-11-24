@@ -79,11 +79,14 @@ if (normativeGap.result?.claimType !== 'normative' || !/criterio expl[ií]cito/.
 }
 
 const independenceClaim = deterministicApiFallback({ text: 'Tener un trabajo a jornada completa ya no garantiza poder independizarse' });
+const unrelatedEmploymentContext = independenceClaim.result?.blocks?.some((block) => block.type === 'data_finding'
+  && /temporalidad|paro/.test(block.points?.join(' ') || '')
+  && !(block.evidenceIds || []).some((id) => ['cje-emancipation-2025', 'cje-emancipation-methodology', 'youth-family-housing-ine'].includes(id)));
 if (independenceClaim.status !== 'partial' || independenceClaim.result?.id !== 'measurement-work-housing-independence'
   || independenceClaim.result?.evidenceLevel !== 'limited'
   || !independenceClaim.result?.sourceIds?.includes('cje-emancipation-2025')
   || !independenceClaim.result?.sourceIds?.includes('youth-family-housing-ine')
-  || independenceClaim.result?.blocks?.some((block) => block.type === 'data_finding' && /temporalidad|paro/.test(block.points?.join(' ') || ''))) {
+  || unrelatedEmploymentContext) {
   throw new Error('A full-time-work housing claim lost its limited CJE/INE context or inherited unrelated employment metrics.');
 }
 const fullTimePoverty = deterministicApiFallback({ text: 'Trabajar a jornada completa no impide estar en riesgo de pobreza', inputType: 'text', now: Date.parse('2026-11-17') });
