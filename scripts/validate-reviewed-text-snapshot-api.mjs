@@ -3,6 +3,7 @@ import { build } from 'esbuild';
 import { LABOUR_PRODUCTIVITY_SNAPSHOT } from '../src/lib/knowledge/labour-productivity-snapshot.mjs';
 import { HICP_BASKET_SNAPSHOT } from '../src/lib/knowledge/hicp-basket-snapshot.mjs';
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../src/lib/knowledge/education-earnings-snapshot.mjs';
+import { TOURIST_HOUSING_SNAPSHOT } from '../src/lib/knowledge/tourist-housing-snapshot.mjs';
 
 const compiled = await build({ entryPoints: ['functions/api/check.ts'], bundle: true, platform: 'node', format: 'esm', write: false, logLevel: 'silent' });
 const api = await import(`data:text/javascript;base64,${Buffer.from(compiled.outputFiles[0].contents).toString('base64')}`);
@@ -187,6 +188,67 @@ assert.doesNotMatch(partialEducationPay.body.result.reply, /10,04|11,48|17,71/);
 const unavailableEducationPay = await check(educationPayQueries[0], brokenDatabase);
 assert.equal(unavailableEducationPay.body.state, 'unavailable', 'A D1 failure must remain distinguishable from an empty read');
 assert.doesNotMatch(unavailableEducationPay.body.result?.reply || '', /10,04|11,48|17,71/);
+
+const touristHousingQueries = [
+  'Los pisos turísticos están retirando demasiada vivienda del alquiler residencial',
+  'El alquiler turístico es solo una parte del problema y la escasez estructural de oferta pesa más',
+];
+let touristHousingSourceIds;
+for (const query of touristHousingQueries) {
+  const result = await check(query);
+  assert.equal(result.body.state, 'insufficient');
+  assert.equal(result.body.result.answerScope.family, 'tourist-housing-supply');
+  assert.deepEqual(result.body.result.answerScope.directMetrics, []);
+  assert.deepEqual(result.body.result.answerScope.contextMetrics, ['tourist_housing_count', 'tourist_housing_share']);
+  assert.equal(result.body.result.evidenceSummary.mode, 'snapshot');
+  assert.match(result.body.result.reply, /341\.001 viviendas.*1,28 %.*mayo de 2026/s);
+  assert.match(result.body.result.reply, /no indican cu[aá]ntas viviendas dejaron el alquiler residencial/);
+  assert.match(result.body.result.reply, /Censo.*2021/);
+  assert.equal(result.body.result.arguments[0].verdict, 'insufficient');
+  const sourceIds = result.body.result.sources.map((source) => source.id);
+  assert.deepEqual(sourceIds, ['ine-tourist-count', 'ine-tourist-share']);
+  if (touristHousingSourceIds) assert.deepEqual(sourceIds, touristHousingSourceIds, `Tourist-housing paraphrase changed source selection: ${query}`);
+  touristHousingSourceIds = sourceIds;
+}
+
+const touristHousingRows = TOURIST_HOUSING_SNAPSHOT.observations.map((item) => ({
+  id: item.id, kind: 'observation', dataset_id: item.source.title, metric: item.metric,
+  metric_id: item.metricId, value: item.value, unit: item.unit, period: item.period,
+  geography: item.geography, population: item.population, dimensions_json: JSON.stringify(item.dimensions),
+  dimension_labels_json: '{}', url: null, excerpt: null,
+  payload_json: JSON.stringify({ dataKind: 'observed' }), source_id: item.source.id,
+  publisher: item.source.publisher, title: item.source.title, source_url: item.source.url,
+  published_at: null, retrieved_at: item.source.retrievedAt, trust_tier: 'primary', aliases_json: '[]',
+}));
+const partialTouristHousingDatabase = {
+  prepare() {
+    let metricId;
+    return {
+      bind(value) { metricId = value; return this; },
+      async all() { return { results: metricId === 'tourist_housing_count' ? touristHousingRows.filter((row) => row.metric_id === metricId) : [] }; },
+      async run() { return {}; },
+    };
+  },
+};
+const partialTouristHousing = await check(touristHousingQueries[0], partialTouristHousingDatabase);
+assert.equal(partialTouristHousing.body.state, 'insufficient');
+assert.doesNotMatch(partialTouristHousing.body.result.reply, /1,28 %/, 'A partial D1 result must not be completed with the full snapshot');
+assert.deepEqual(partialTouristHousing.body.result.sources.map((source) => source.id), ['ine-tourist-count']);
+const touristRegistration = await check('¿Cuántas viviendas turísticas con licencia hay en España?');
+assert.equal(touristRegistration.body.state, 'insufficient');
+assert.equal(touristRegistration.body.result.answerScope.family, 'tourist-housing-registration');
+assert.deepEqual(touristRegistration.body.result.answerScope.directMetrics, []);
+assert.deepEqual(touristRegistration.body.result.answerScope.contextMetrics, ['tourist_housing_count']);
+assert.match(touristRegistration.body.result.reply, /341\.001 viviendas.*mayo de 2026/s);
+assert.match(touristRegistration.body.result.reply, /no es un registro de licencias/);
+assert.deepEqual(touristRegistration.body.result.sources.map((source) => source.id), ['ine-tourist-count']);
+const touristHousingNeighbourhood = await check('Las viviendas turísticas han reducido la oferta para residentes en los barrios más céntricos');
+assert.equal(touristHousingNeighbourhood.body.state, 'insufficient');
+assert.deepEqual(touristHousingNeighbourhood.body.result.sources, [], 'National estimates must not answer a neighborhood-level claim');
+assert.doesNotMatch(touristHousingNeighbourhood.body.result.reply, /341\.001|1,28 %/);
+const unavailableTouristHousing = await check(touristHousingQueries[0], brokenDatabase);
+assert.equal(unavailableTouristHousing.body.state, 'unavailable');
+assert.doesNotMatch(unavailableTouristHousing.body.result?.reply || '', /341\.001|1,28 %/);
 
 const fullTime = await check('Trabajar a jornada completa no impide estar en riesgo de pobreza');
 assert.equal(fullTime.httpStatus, 200);

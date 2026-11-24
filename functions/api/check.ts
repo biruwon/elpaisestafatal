@@ -26,7 +26,7 @@ import { vacancyMeasurementClarificationMetricIdsForQuery, vacancyMeasurementMet
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-education-earnings-snapshot-48-2026-11';
+const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-education-earnings-tourist-housing-snapshots-49-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -350,7 +350,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           if (!localResolverAvailable) return json(warehouseUnavailableResponse);
           focusedObservations = undefined;
         } else {
-          if (['working-poverty', 'education-employment-outcomes', 'education-pay-comparison', 'primary-care-waits', 'primary-care-wait-trend', 'primary-care-wait-causes', 'real-wages', 'collective-agreement-wages', 'gdp-total-per-capita-comparison', 'labour-productivity-and-growth', 'household-inflation-basket', 'tourism-employment-contribution'].includes(focus.id) && focusedObservations.length === 0) {
+          if (['working-poverty', 'education-employment-outcomes', 'education-pay-comparison', 'primary-care-waits', 'primary-care-wait-trend', 'primary-care-wait-causes', 'real-wages', 'collective-agreement-wages', 'gdp-total-per-capita-comparison', 'labour-productivity-and-growth', 'household-inflation-basket', 'tourism-employment-contribution', 'tourist-housing-registration', 'tourist-housing-count', 'tourist-housing-share', 'tourist-housing-supply', 'tourism-urban-housing-cost'].includes(focus.id) && focusedObservations.length === 0) {
             // Reviewed text snapshots can answer from their own dated source
             // when a successful warehouse lookup has no rows. A failed D1
             // query still follows the unavailable path above; absence and

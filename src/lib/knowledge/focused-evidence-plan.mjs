@@ -44,7 +44,7 @@ const observationFitsClaim = (claim) => {
     if (/^tourist_housing_(?:count|share)$/.test(item.metricId || '')
       && requestedTerritories.length === 0 && item.dimensions?.geographyLevel !== 'country') return false;
     if (/^tourist_housing_(?:count|share)$/.test(item.metricId || '')
-      && /\b(?:barri\w*|distrit\w*|municipi\w*|ciudad\w*|centro|casco urbano)\b/.test(text)
+      && /\b(?:barri\w*|distrit\w*|municipi\w*|ciudad\w*|zonas?|centro|casco urbano)\b/.test(text)
       && item.dimensions?.geographyLevel !== 'municipality') return false;
     const population = normalize([item.population, JSON.stringify(item.dimensions || {}), JSON.stringify(item.dimensionLabels || {})].join(' '));
     const youthOverqualification = item.metricId === 'tertiary_overqualification_rate_age_20_34' && item.dimensions?.age === 'Y20-34';

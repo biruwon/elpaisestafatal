@@ -2,6 +2,7 @@ import { BROAD_SNAPSHOT_POLICY } from '../../src/lib/knowledge/broad-domain-snap
 import { GOVERNMENT_SCORECARD_SNAPSHOT } from '../../src/lib/knowledge/scorecard-snapshot.mjs';
 import { HICP_BASKET_SNAPSHOT } from '../../src/lib/knowledge/hicp-basket-snapshot.mjs';
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../../src/lib/knowledge/education-earnings-snapshot.mjs';
+import { TOURIST_HOUSING_SNAPSHOT } from '../../src/lib/knowledge/tourist-housing-snapshot.mjs';
 import { snapshotLifecycle } from '../../src/lib/knowledge/snapshot-lifecycle.mjs';
 
 const required = ['owner', 'createdAt', 'expiresAt', 'refreshCommand', 'validationStatus', 'supportedScope', 'unsupportedScope'];
@@ -14,6 +15,7 @@ assertPolicy('broad-domain', BROAD_SNAPSHOT_POLICY);
 assertPolicy('government-scorecard', GOVERNMENT_SCORECARD_SNAPSHOT);
 assertPolicy('hicp-basket', HICP_BASKET_SNAPSHOT);
 assertPolicy('education-earnings', EDUCATION_EARNINGS_SNAPSHOT);
+assertPolicy('tourist-housing', TOURIST_HOUSING_SNAPSHOT);
 const expired = snapshotLifecycle({ ...BROAD_SNAPSHOT_POLICY, createdAt: '2024-01-01', expiresAt: '2025-01-01' }, Date.parse('2026-08-20'));
 if (expired.usable || expired.status !== 'expired') throw new Error('Expired snapshot was still usable for factual context');
 const pending = snapshotLifecycle({ ...BROAD_SNAPSHOT_POLICY, createdAt: '2026-08-19', validationStatus: 'pending' }, Date.parse('2026-08-20'));

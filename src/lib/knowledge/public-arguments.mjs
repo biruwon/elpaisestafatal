@@ -25,7 +25,7 @@ export const publicEvidenceLevelForArguments = (level, plan, argumentsList) => l
 const assertsUnsupportedCausalPart = (text, argumentsList) => {
   if (!(argumentsList || []).some((argument) => argument.kind === 'causal' && argument.verdict !== 'supported')) return false;
   const unqualified = text
-    .replace(/\b(?:no (?:se puede|podemos|permite|permiten|mide|miden|demuestra|demuestran|acredita|acreditan|prueba|prueban|establece|establecen|identifica|identifican)\b|sin (?:datos|evidencia|una medici[oó]n)\b)[^.!?;,:]*(?:[.!?;,:]|$)/gi, ' ')
+    .replace(/\b(?:(?:no|ni|tampoco) (?:se puede|podemos|permite|permiten|mide|miden|indica|indican|demuestra|demuestran|acredita|acreditan|prueba|prueban|establece|establecen|identifica|identifican)\b|sin (?:datos|evidencia|una medici[oó]n)\b)[^.!?;,:]*(?:[.!?;,:]|$)/gi, ' ')
     .replace(/\b(?:para (?:comprobar|saber|valorar|establecer)|hace falta|faltan|se necesita|necesitamos|hay que)\b[^.!?]*(?:[.!?]|$)/gi, ' ');
   return /(?:^|[^\p{L}])(?:causa|causan|causó|causaron|causaba|causaban|causaría|causarían|provoca|provocan|provocó|provocaron|provocaba|provocarían|obliga|obligan|obligó|obligaron|empuja|empujan|empujó|empujaron|lleva|llevan|llevó|llevaron|llevaría|generan?|generó|generaron|determina|determinan|determinó|determinaron|explica|explican|explicó|explicaron|reduce|reducen|redujo|redujeron|aumenta|aumentan|aumentó|aumentaron|disminuye|disminuyen|disminuyó|disminuyeron|demuestra|demuestran|demostró|demostraron|confirma|confirman|confirmó|confirmaron|prueba|prueban|probó|probaron)(?=$|[^\p{L}])/iu.test(unqualified);
 };
@@ -48,7 +48,7 @@ export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
     const measuredFinding = findingText && !replyText.includes(findingText) ? `${finding}\n\n` : '';
     return `La fuente contradice la afirmación.\n\n${measuredFinding}${text}`;
   }
-  const alreadyStatesNonConclusion = /\bno (?:se puede|permite|podemos|alcanza a)\s+(?:confirmar|descartar|demostrar|sostener|afirmar|concluir|determinar|medir|calcular|comparar|establecer|atribuir|saber|evaluar)\b/i.test(text);
+  const alreadyStatesNonConclusion = /\bno (?:se puede|permite|podemos|alcanza a)\s+(?:confirmar|descartar|demostrar|sostener|afirmar|concluir|determinar|medir|calcular|contar|comparar|establecer|atribuir|saber|evaluar)\b/i.test(text);
   const missingEvidenceAlreadyExplained = /\b(?:no se ha localizado|no hemos localizado|no hemos encontrado)\b[^.!?]{0,120}\b(?:medici[oó]n|evidencia|datos?|fuente|respaldo)\b[^.!?]{0,120}\b(?:no demuestra|no permite|no se puede|no podemos|no alcanza|falta|pendiente)\b/i.test(text)
     || /\b(?:no se ha localizado|no hemos localizado|no hemos encontrado)\b[^.!?]{0,160}\b(?:medici[oó]n|evidencia|datos?|fuente|respaldo)\b[^.!?]*[.!?]\s*(?:esto\s+)?no demuestra que la afirmaci[oó]n sea falsa\b/i.test(text)
     || /\bpara comprobar\b[^.!?]{0,100}\b(?:hay que indicar|hace falta|se necesita)\b[^.!?]{0,120}\b(?:periodo|periodos|a[nñ]o|serie|dato|medida)\b/i.test(text);

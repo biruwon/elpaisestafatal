@@ -1037,3 +1037,27 @@ match, 114 a focused-family route and 50 both, leaving 146 with neither. The
 items remain unverified inputs, and routing counts are not factual-accuracy
 scores. The held-out text benchmark passes 49/49 cases across 12 paraphrase
 groups; this regression set also does not estimate population-wide accuracy.
+
+## Tourist housing as contextual evidence — 24 November 2026
+
+When a successful warehouse lookup has no rows, the text fallback can now show
+INE's May 2026 national estimate of 341,001 tourist dwellings and its 1.28%
+share of total housing stock. The share uses the 2021 Population and Housing
+Census as its denominator. The [INE count series](https://www.ine.es/consul/serie.do?d=true&nult=15&s=VTE71),
+[share series](https://www.ine.es/consul/serie.do?L=0&d=true&s=VTE287) and
+[methodology](https://www.ine.es/mapas/svg/indicadoresViviendaTuristica.htm?L=0)
+describe an experimental estimate based on scraped, deduplicated listings
+from three accommodation platforms and regional selection rules.
+
+These figures do not measure homes withdrawn from long-term rental, available
+rental supply, licensed dwellings, or the causal effect of tourism on rents.
+They remain contextual evidence, so the two national claim paraphrases retain
+an insufficient verdict. The national snapshot is withheld for claims about
+neighborhoods, cities or specific tourist zones. Failed warehouse reads remain
+unavailable, and partial observations are not filled with snapshot values.
+
+The deterministic audit now reports 3 complete, 42 limited and 255 uncovered
+responses in the 300-item unverified discovery set. Of these claims, 90 have a
+compiler metric match and 114 a focused-family route, with 50 in both; 146 have
+neither route. The held-out text benchmark remains 49/49 across 12 paraphrase
+groups. Neither set is a population-wide measure of factual accuracy.

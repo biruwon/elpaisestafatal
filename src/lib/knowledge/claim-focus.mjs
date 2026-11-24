@@ -1002,7 +1002,7 @@ const focuses = [
     direct: [], context: ['tourist_housing_count', 'tourist_housing_share'], claimType: 'causal',
     needs: ['viviendas que pasan del alquiler residencial a uso turístico en el mismo territorio y periodo', 'oferta de alquiler residencial antes y después del cambio', 'diseño que permita atribuir el cambio al uso turístico y no a otros factores'],
     explanation: 'El recuento de viviendas turísticas y su peso en el parque describen el uso turístico estimado; no indican cuántas viviendas dejaron el alquiler residencial ni prueban que el turismo causara una reducción de oferta.',
-    limitation: 'La estadística experimental del INE usa anuncios deduplicados de tres plataformas y criterios autonómicos. El dato agregado no mide alquileres residenciales perdidos, y una cifra provincial o autonómica no describe barrios o municipios.',
+    limitation: 'El porcentaje usa como denominador las viviendas del Censo de 2021, no las viviendas disponibles para alquilar. La estadística experimental del INE usa anuncios deduplicados de tres plataformas y criterios autonómicos; el dato agregado no mide alquileres residenciales perdidos, y una cifra provincial o autonómica no describe barrios o municipios.',
   },
   {
     id: 'residential-gentrification-displacement', label: 'desplazamiento de residentes por cambios en el mercado residencial',

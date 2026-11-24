@@ -137,6 +137,7 @@ child.stderr.on('data', (chunk) => { logs += chunk.toString(); });
 const pending = [];
 const env = { DB: d1, LOCAL_CLASSIFIER_ENDPOINT: `http://127.0.0.1:${port}`, LOCAL_CLASSIFIER_TOKEN: 'fixture' };
 const context = (request, overrides = {}) => ({ request, env: { ...env, ...overrides }, waitUntil: (promise) => pending.push(promise) });
+const emptyD1 = { prepare() { return { bind() { return this; }, async all() { return { results: [] }; }, async run() { return {}; } }; } };
   let checkRequestNumber = 0;
 try {
   await new Promise((resolve, reject) => {
@@ -145,10 +146,10 @@ try {
     child.once('exit', (code) => reject(new Error(`Resolver exited ${code}: ${logs.slice(-1000)}`)));
     child.stdout.on('data', (chunk) => { if (chunk.toString().includes('Local claim service listening')) { clearTimeout(timer); resolve(); } });
   });
-  const check = async (text, clarification) => {
+  const check = async (text, clarification, overrides = {}) => {
     checkRequestNumber += 1;
     const request = new Request('https://site.test/api/check?fresh=1', { method: 'POST', headers: { 'content-type': 'application/json', 'x-development-no-cache': '1', 'cf-connecting-ip': `192.0.2.${checkRequestNumber}` }, body: JSON.stringify({ text, inputType: 'text', ...(clarification ? { clarification } : {}) }) });
-    let response = await api.onRequestPost(context(request));
+    let response = await api.onRequestPost(context(request, overrides));
     let result = await response.json();
     let pollCount = 0;
     let lastPollMs = 0;
@@ -156,7 +157,7 @@ try {
     while (result.state === 'processing' && Date.now() < deadline) {
       await new Promise((resolve) => setTimeout(resolve, 200));
       const pollStarted = Date.now();
-      response = await api.onRequestGet(context(new Request(`https://site.test/api/check/${result.id}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ claim: text }) })));
+      response = await api.onRequestGet(context(new Request(`https://site.test/api/check/${result.id}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ claim: text }) }), overrides));
       lastPollMs = Date.now() - pollStarted;
       pollCount += 1;
       result = await response.json();
@@ -165,7 +166,7 @@ try {
     const resolverJob = result.state === 'processing' ? await fetch(`http://127.0.0.1:${port}/v1/classify/${encodeURIComponent(result.id)}`).then(async (job) => ({ status: job.status, body: (await job.text()).slice(0, 1200) })).catch((error) => String(error)) : undefined;
     if (result.state === 'processing' && resolverJob?.status === 200) {
       await new Promise((resolve) => setTimeout(resolve, 100));
-      response = await api.onRequestGet(context(new Request(`https://site.test/api/check/${result.id}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ claim: text }) })));
+      response = await api.onRequestGet(context(new Request(`https://site.test/api/check/${result.id}`, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ claim: text }) }), overrides));
       result = await response.json();
     }
     assert.notEqual(result.state, 'processing', `Timed out: ${text}\nPolls: ${pollCount}, last poll: ${lastPollMs}ms\nHealth: ${JSON.stringify(serviceHealth?.metrics || serviceHealth)}\nResolver job: ${JSON.stringify(resolverJob)}\n${logs.slice(-2000)}`);
@@ -296,6 +297,40 @@ try {
   assert.equal(educationOverqualificationNeighbour.result.answerScope?.family, 'education-employment-outcomes');
   assert.ok(!educationOverqualificationNeighbour.result.sources.some((source) => source.url === educationPayUrl), 'Education-level earnings must not be attributed to an overqualification claim');
   assert.doesNotMatch(educationOverqualificationNeighbour.result.reply, /10,04|11,48|17,71/, 'A nearby overqualification claim must not inherit salary figures');
+  const touristHousingQueries = [
+    'Los pisos turísticos están retirando demasiada vivienda del alquiler residencial',
+    'El alquiler turístico es solo una parte del problema y la escasez estructural de oferta pesa más',
+  ];
+  let touristHousingEvidenceIds;
+  for (const query of touristHousingQueries) {
+    const result = await check(query, undefined, { DB: emptyD1 });
+    assert.equal(result.state, 'insufficient', JSON.stringify(result));
+    assert.equal(result.result.answerScope?.family, 'tourist-housing-supply');
+    assert.deepEqual(result.result.answerScope.directMetrics, []);
+    assert.deepEqual(result.result.answerScope.contextMetrics, ['tourist_housing_count', 'tourist_housing_share']);
+    assert.ok(['snapshot', 'dynamic'].includes(result.result.evidenceSummary.mode));
+    assert.match(result.result.reply, /341\.001 viviendas.*1,28 %.*mayo de 2026/s);
+    assert.match(result.result.reply, /denominador las viviendas del Censo de 2021/);
+    assert.match(result.result.reply, /no indican cu[aá]ntas viviendas dejaron el alquiler residencial/);
+    assert.equal(result.result.sources.length, 2);
+    assert.ok(result.result.sources.every((source) => /(^|\.)ine\.es$/i.test(new URL(source.url).hostname)));
+    assert.equal(result.result.arguments?.[0]?.verdict, 'insufficient');
+    const evidenceIds = result.result.evidenceSummary.families.flatMap((family) => family.evidenceIds || []);
+    assert.ok(evidenceIds.length >= 2, 'The reply must retain source-linked observations for both count and denominator');
+    if (touristHousingEvidenceIds) assert.deepEqual([...evidenceIds].sort(), touristHousingEvidenceIds, `A tourist-housing paraphrase selected different observations: ${query}`);
+    touristHousingEvidenceIds = [...evidenceIds].sort();
+  }
+  const touristHousingNeighbour = await check('Las viviendas turísticas han reducido la oferta para residentes en los barrios más céntricos', undefined, { DB: emptyD1 });
+  assert.equal(touristHousingNeighbour.state, 'insufficient');
+  assert.equal(touristHousingNeighbour.result.answerScope?.family, 'tourist-housing-supply');
+  assert.deepEqual(touristHousingNeighbour.result.sources, [], 'National housing estimates must not be shown as neighborhood evidence');
+  assert.doesNotMatch(touristHousingNeighbour.result.reply, /341\.001|1,28 %/);
+  const touristHousingCount = await check('¿Cuántas viviendas turísticas hay en España?', undefined, { DB: emptyD1 });
+  assert.equal(touristHousingCount.state, 'limited');
+  assert.equal(touristHousingCount.result.answerScope?.family, 'tourist-housing-count');
+  assert.match(touristHousingCount.result.reply, /341\.001 viviendas.*mayo de 2026/s);
+  assert.equal(touristHousingCount.result.sources.length, 1);
+  assert.ok(['INE', 'Instituto Nacional de Estadística'].includes(touristHousingCount.result.sources[0].publisher));
   }
   if (!rentMagnitudeOnly) {
   let vacancyRateEvidenceIds;

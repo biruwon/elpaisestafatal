@@ -70,6 +70,12 @@ const causalContextReply = 'La cifra cuenta empleo en ramas características del
 const qualifiedCausalContext = qualifyPublicClaimReply(causalContextReply, [{ kind: 'causal', verdict: 'insufficient', evidenceIds: ['tourism-share-2024'], sourceIds: ['ine-tourism-employment-share-cste-2024'] }]);
 assert.match(qualifiedCausalContext, /^La evidencia no basta para confirmar toda la afirmación\.\n\n/);
 assert.ok(qualifiedCausalContext.includes(causalContextReply), 'A clear causal limitation must retain the sourced employment context');
+const linkedNegativeCausalReply = 'El recuento describe el uso turístico estimado; no indica cuántas viviendas dejaron el alquiler residencial ni prueban que el turismo causara una reducción de oferta.';
+const qualifiedLinkedNegativeCausalReply = qualifyPublicClaimReply(linkedNegativeCausalReply, [{ kind: 'causal', verdict: 'insufficient', evidenceIds: ['tourist-count'], sourceIds: ['ine-tourist-count'] }]);
+assert.match(qualifiedLinkedNegativeCausalReply, /^La evidencia no basta para confirmar toda la afirmación\.\n\n/);
+assert.ok(qualifiedLinkedNegativeCausalReply.includes(linkedNegativeCausalReply), 'A coordinated negative causal limitation must retain its sourced context');
+const countMeasurementLimitReply = 'El INE estima viviendas turísticas a partir de anuncios; esa cifra no permite contar viviendas con licencia ni confirma la situación legal de cada vivienda.';
+assert.equal(qualifyPublicClaimReply(countMeasurementLimitReply, [{ kind: 'descriptive', verdict: 'insufficient', evidenceIds: [], sourceIds: [] }]), countMeasurementLimitReply, 'A direct measurement limitation should preserve the useful context instead of falling back to a generic warning');
 const pluralCausalLimit = 'Las cifras cuentan empleo en ramas turísticas; no identifican qué puestos fueron causados por visitantes.';
 const qualifiedPluralCausalLimit = qualifyPublicClaimReply(pluralCausalLimit, [{ kind: 'descriptive', verdict: 'insufficient', evidenceIds: ['tourism-jobs'], sourceIds: ['ine-tourism-employment-share-cste-2024'] }]);
 assert.match(qualifiedPluralCausalLimit, /^La evidencia no basta para confirmar toda la afirmación\.\n\n/);

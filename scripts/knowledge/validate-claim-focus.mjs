@@ -14,6 +14,7 @@ import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care
 import { WORKING_POVERTY_SNAPSHOT } from '../../src/lib/knowledge/working-poverty-snapshot.mjs';
 import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/tourism-employment-snapshot.mjs';
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../../src/lib/knowledge/education-earnings-snapshot.mjs';
+import { TOURIST_HOUSING_SNAPSHOT } from '../../src/lib/knowledge/tourist-housing-snapshot.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { validateAnswerPlan } from './answer-plan-validation.mjs';
 import { alignPropositionOutcomes, comparableObservationGroups, composePropositionFindings, evidenceForProposition } from '../lib/compound-evidence.mjs';
@@ -497,6 +498,9 @@ const tourismCityCentreClaim = 'El turismo masivo ha hecho que vivir en el centr
 const tourismCityCentrePlan = focusedEvidencePlan(tourismCityCentreClaim, { observations: touristHousingObservations });
 assert.equal(tourismCityCentrePlan.answerScope.family, 'tourism-urban-housing-cost');
 assert.equal(tourismCityCentrePlan.sourceLinks.length, 0, 'National and provincial tourist-housing aggregates cannot answer a city-centre housing-cost claim');
+const tourismVisitedZonesPlan = focusedEvidencePlan('El turismo masivo eleva el coste de vivienda y servicios en las zonas más visitadas', { observations: touristHousingObservations });
+assert.equal(tourismVisitedZonesPlan.answerScope.family, 'tourism-urban-housing-cost');
+assert.equal(tourismVisitedZonesPlan.sourceLinks.length, 0, 'A national aggregate cannot answer a claim about more visited zones');
 const tourismEmploymentParaphrases = [
   'España depende demasiado del turismo para sostener el empleo',
   'El turismo representa una parte excesiva del empleo español',
@@ -588,6 +592,54 @@ assert.ok(EDUCATION_EARNINGS_SNAPSHOT.observations.every((item) => item.period =
 const expiredEducationPayFallback = deterministicApiFallback({ text: educationPayQueries[0], inputType: 'text', now: Date.parse('2028-07-01') });
 assert.equal(expiredEducationPayFallback.status, 'uncovered');
 assert.doesNotMatch(expiredEducationPayFallback.result.shareableReply, /10,04|11,48|17,71/, 'Expired earnings context must not be returned');
+const touristHousingFallbackQueries = [
+  'Los pisos turísticos están retirando demasiada vivienda del alquiler residencial',
+  'El alquiler turístico es solo una parte del problema y la escasez estructural de oferta pesa más',
+];
+let touristHousingFallbackSourceIds;
+for (const query of touristHousingFallbackQueries) {
+  const result = deterministicApiFallback({ text: query, inputType: 'text', now: Date.parse('2026-11-24') });
+  assert.equal(result.status, 'partial', 'Sourced national context should survive processing while the causal claim stays unresolved');
+  assert.equal(result.result.answerScope.family, 'tourist-housing-supply');
+  assert.deepEqual(result.result.answerScope.directMetrics, []);
+  assert.deepEqual(result.result.answerScope.contextMetrics, ['tourist_housing_count', 'tourist_housing_share']);
+  assert.match(result.result.shareableReply, /341\.001 viviendas.*1,28 %.*mayo de 2026/s);
+  assert.match(result.result.shareableReply, /no indican cu[aá]ntas viviendas dejaron el alquiler residencial/);
+  assert.match(result.result.shareableReply, /Censo.*2021/);
+  assert.equal(localPublicCheckResponse(result, query).state, 'insufficient', 'Tourist-dwelling counts cannot establish homes removed from residential rent');
+  const pending = localPublicCheckResponse({ status: 'processing', requestId: 'tourist-housing-preview' }, query);
+  assert.equal(pending.state, 'processing');
+  assert.equal(pending.preview?.state, 'insufficient');
+  assert.ok(pending.preview?.result?.sources.some((source) => source.id === 'ine-tourist-count'));
+  const evidenceIds = result.result.evidenceSummary.families.flatMap((family) => family.evidenceIds || []);
+  assert.equal(evidenceIds.length, 2);
+  const sourceIds = result.result.sourceIds;
+  if (touristHousingFallbackSourceIds) assert.deepEqual(sourceIds, touristHousingFallbackSourceIds, `Tourist-supply paraphrase changed sources: ${query}`);
+  touristHousingFallbackSourceIds = sourceIds;
+}
+const touristCountFallback = deterministicApiFallback({ text: '¿Cuántas viviendas turísticas hay en España?', inputType: 'text', now: Date.parse('2026-11-24') });
+assert.equal(localPublicCheckResponse(touristCountFallback, '¿Cuántas viviendas turísticas hay en España?').state, 'limited');
+assert.match(touristCountFallback.result.shareableReply, /341\.001 viviendas.*mayo de 2026/s);
+assert.ok(touristCountFallback.result.sourceIds.includes('ine-tourist-count'));
+const touristRegistrationFallback = deterministicApiFallback({ text: '¿Cuántas viviendas turísticas con licencia hay en España?', inputType: 'text', now: Date.parse('2026-11-24') });
+assert.equal(touristRegistrationFallback.result.answerScope.family, 'tourist-housing-registration');
+assert.equal(localPublicCheckResponse(touristRegistrationFallback, '¿Cuántas viviendas turísticas con licencia hay en España?').state, 'insufficient');
+assert.deepEqual(touristRegistrationFallback.result.answerScope.directMetrics, []);
+assert.deepEqual(touristRegistrationFallback.result.answerScope.contextMetrics, ['tourist_housing_count']);
+assert.match(touristRegistrationFallback.result.shareableReply, /341\.001 viviendas.*mayo de 2026/s);
+assert.match(touristRegistrationFallback.result.shareableReply, /no es un registro de licencias/);
+assert.deepEqual(touristRegistrationFallback.result.sourceIds, ['ine-tourist-count']);
+const touristNeighbourhoodFallback = deterministicApiFallback({ text: 'Las viviendas turísticas reducen la oferta para residentes en los barrios más céntricos', inputType: 'text', now: Date.parse('2026-11-24') });
+assert.equal(touristNeighbourhoodFallback.result.answerScope.family, 'tourist-housing-supply');
+assert.deepEqual(touristNeighbourhoodFallback.result.sourceIds, [], 'National estimates must not be shown as evidence for neighborhood displacement');
+assert.doesNotMatch(touristNeighbourhoodFallback.result.shareableReply, /341\.001|1,28 %/);
+const vacantHousingFallback = deterministicApiFallback({ text: '¿Cuántas viviendas vacías hay disponibles en la ciudad?', inputType: 'text', now: Date.parse('2026-11-24') });
+assert.equal(vacantHousingFallback.result.sourceIds?.includes('ine-tourist-count') || false, false, 'Tourist-housing context must not cross-route to vacant-home questions');
+const expiredTouristHousingFallback = deterministicApiFallback({ text: touristHousingFallbackQueries[0], inputType: 'text', now: Date.parse('2027-02-01') });
+assert.equal(expiredTouristHousingFallback.status, 'uncovered');
+assert.doesNotMatch(expiredTouristHousingFallback.result.shareableReply, /341\.001|1,28 %/, 'Expired INE figures must not be returned');
+assert.deepEqual(TOURIST_HOUSING_SNAPSHOT.observations.map((item) => item.value), [341001, 1.28]);
+assert.ok(TOURIST_HOUSING_SNAPSHOT.observations.every((item) => item.period === '2026M05' && item.geography === 'España'));
 const touristNeighbourhoodClaim = 'Los pisos turísticos reducen la oferta para residentes en los barrios céntricos de Barcelona';
 const touristNeighbourhoodPlan = focusedEvidencePlan(touristNeighbourhoodClaim, { observations: touristHousingObservations });
 assert.equal(touristNeighbourhoodPlan.sourceLinks.length, 0, 'A provincial or national aggregate cannot answer a neighbourhood-level claim');
