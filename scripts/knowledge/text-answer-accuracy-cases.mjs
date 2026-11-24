@@ -1327,6 +1327,33 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'tourism-regional-employment-loss-claim',
+    equivalenceGroup: 'tourism-regional-employment-counterfactual-spain-2024',
+    input: 'Reducir drásticamente el turismo destruiría empleo en regiones muy dependientes de él',
+    expected: {
+      state: 'insufficient', family: 'tourism-employment-contribution', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['2024', '12,3 %', 'empleo total en España', '2,78 millones de puestos', 'la cuota incluida es nacional', 'no está desglosada por región', 'no estima cuántos puestos cambiarían si se redujera el turismo'],
+      replyExcludes: ['el 12,3 % en cada región', 'el turismo destruirá 2,78 millones de puestos', 'no establece un umbral estadístico'],
+      evidence: [
+        { familyId: 'tourism_characteristic_employment_share', sourceIds: ['ine-tourism-employment-share-cste-2024'], dataIncludes: ['12,3 % (2024)'], dimensions: { period: '2024', geography: 'España', population: 'Employment in economic branches characteristic of tourism', denominator: 'Total employment in the Spanish economy', unit: '%' } },
+        { familyId: 'tourism_characteristic_employment_jobs', sourceIds: ['ine-tourism-characteristic-jobs-2024'], dataIncludes: ['2776,7 miles de puestos de trabajo (2024)'], dimensions: { period: '2024', geography: 'España', population: 'Jobs in economic branches characteristic of tourism', unit: 'miles de puestos de trabajo' } },
+      ],
+      maxReplyWords: 140,
+    },
+  },
+  {
+    id: 'tourism-regional-employment-loss-paraphrase',
+    equivalenceGroup: 'tourism-regional-employment-counterfactual-spain-2024',
+    input: 'Si cae mucho el turismo, se perderían empleos en las regiones que dependen de él',
+    expected: {
+      state: 'insufficient', family: 'tourism-employment-contribution', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['2024', '12,3 %', 'empleo total en España', '2,78 millones de puestos', 'la cuota incluida es nacional', 'no está desglosada por región', 'no estima cuántos puestos cambiarían si se redujera el turismo'],
+      replyExcludes: ['el 12,3 % en cada región', 'el turismo destruirá 2,78 millones de puestos', 'no establece un umbral estadístico'],
+      evidence: [],
+      maxReplyWords: 140,
+    },
+  },
+  {
     id: 'education-attainment-pay-vs-job-requirements',
     equivalenceGroup: 'education-attainment-pay-context-spain-2022',
     input: 'Los sueldos de muchos trabajos cualificados son demasiado parecidos a los de puestos que exigen mucha menos formación',

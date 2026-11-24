@@ -639,6 +639,13 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && requestedGeographyScopes(claim).some((scope) => scope.type === 'region')
     && /\b(mas|menos|mayor|menor|super\w*|inferior\w*)\b/.test(normalizedClaim)
     && /\b(que|a|al|frente a|respecto a)\b/.test(normalizedClaim);
+  const tourismRegionalScopeClaim = focus.id === 'tourism-employment-contribution'
+    && /\b(region\w*|regional\w*|comunidades? autonom\w*|provinci\w*|municipi\w*|territori\w*)\b/.test(normalizedClaim);
+  const tourismRegionalImpactClaim = tourismRegionalScopeClaim
+    && /\b(reduc\w*|recort\w*|disminu\w*|destrui\w*|perd\w*|desaparec\w*|caus\w*|provoc\w*|oblig\w*|fren\w*|afect\w*)\b/.test(normalizedClaim);
+  const tourismExcessiveDependenceClaim = focus.id === 'tourism-employment-contribution'
+    && !tourismRegionalSectorComparison
+    && /\b(demasiad\w*|excesiv\w*|sobredepend\w*|desproporcionad\w*)\b/.test(normalizedClaim);
   const sectorNames = [/\bturis\w*\b/, /\bhosteler\w*\b/, /\bhotel\w*\b/, /\bagricultur\w*\b/, /\bsector primario\b/, /\bconstrucci\w*\b/, /\bindustri\w*\b/, /\bmanufactur\w*\b/, /\bcomerci\w*\b/, /\btransporte\b/, /\bfinancier\w*\b/, /\btecnolog\w*\b/];
   const continuesSameSubject = (item) => {
     const clauseFocus = claimFocusFor(item.text);
@@ -828,7 +835,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && /\b(pag\w*\s+(?:las?\s+)?pension\w*|cotiz\w*|contribu\w*|financ\w*)\b/.test(normalizedClaim)
     && /\b(decad\w*|durante|jubil\w*|retir\w*)\b/.test(normalizedClaim);
   const ids = tourismRegionalSectorComparison ? [] : [...focusedMetricIdsFor(claim)];
-  const allowedDirect = educationOutcome ? ids
+  const allowedDirect = tourismRegionalScopeClaim ? []
+    : educationOutcome ? ids
     : focus.id === 'subjective-financial-strain' ? ids
     : focus.id === 'working-poverty' && fullTime && partTime ? ['in_work_poverty_full_time_rate', 'in_work_poverty_part_time_rate']
       : focus.id === 'working-poverty' && fullTime ? ['in_work_poverty_full_time_rate']
@@ -845,6 +853,12 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         : '';
   const needs = tourismRegionalSectorComparison
     ? ['recuento de empleo por actividad económica en el territorio solicitado, con el mismo año y unidad para las ramas turísticas y la agricultura', 'definición compatible de empleo y cobertura de actividades en ambos sectores']
+    : tourismRegionalImpactClaim ? [
+      'empleo en ramas características del turismo desglosado por región y periodo',
+      'una estimación contrafactual del empleo que cambiaría en cada región si disminuyera la actividad turística',
+    ]
+    : tourismRegionalScopeClaim ? ['empleo en ramas características del turismo desglosado por región y periodo, con cobertura comparable entre territorios']
+    : tourismExcessiveDependenceClaim ? focus.needs
     : subjectiveHouseholdShareRequested ? ['porcentaje de hogares, no solo proporción de población residente en hogares que responden así', 'periodo, territorio y población comparables']
     : subjectiveIndividualClaim ? ['medición directa de la situación del hogar o la persona concreta; la encuesta publicada resume a la población']
     : asksAboutMakingEndsMeet ? ['cruce de la dificultad declarada con la situación laboral y la jornada de las personas consultadas', 'periodo y población comparables']
@@ -890,6 +904,12 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && specialistOutpatientMagnitudeNotAssessed(claim);
   let limitation = tourismRegionalSectorComparison
     ? 'La serie disponible describe el conjunto de España; no compara empleo turístico y agrícola en el territorio solicitado.'
+    : tourismRegionalScopeClaim ? [
+      focus.limitation,
+      tourismRegionalImpactClaim
+        ? 'La cuota incluida es nacional, no está desglosada por región y no estima cuántos puestos cambiarían si se redujera el turismo.'
+        : 'La cuota incluida es nacional y no describe el empleo turístico de cada región.',
+    ].join(' ')
     : educationOutcome ? educationOutcomeLimitation(ids, focus.limitation, educationQuestion, educationOutcomeCausalClaim)
     : focus.id === 'working-poverty' ? 'El umbral relativo de pobreza y la respuesta subjetiva del hogar son medidas distintas. EU-SILC no cruza la dificultad declarada con la jornada laboral; el desglose por jornada tampoco incluye la edad. El dato no demuestra que el tipo de jornada cause el riesgo. El periodo es el año de la encuesta EU-SILC y los ingresos del umbral de pobreza pueden referirse a un año anterior.'
     : focus.id === 'sector-wage-comparison' ? [
@@ -1031,14 +1051,13 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     })()
     : undefined;
   const tourismDependencyClaim = focus.id === 'tourism-employment-contribution'
-    && !tourismRegionalSectorComparison
-    && /\b(depende\w*|dependencia|dependient\w*|demasiad\w*|excesiv\w*|caus\w*|crea\w*|genera\w*)\b/.test(normalizedClaim);
+    && tourismExcessiveDependenceClaim;
   const missing = educationOutcome
     ? [
       ...(ids.length ? ids.filter((id) => !facts.some((fact) => fact.id === id)).map(educationNeedForMetric) : needs),
       ...(educationOutcomeCausalClaim ? ['datos que relacionen las oportunidades disponibles, los puestos aceptados y los motivos de esa decisión para la misma población y periodo'] : []),
     ]
-    : tourismDependencyClaim ? needs
+    : tourismRegionalImpactClaim || tourismDependencyClaim ? needs
       : direct.length || explanationMeasuresClaim ? [] : needs;
   const primaryFacts = (direct.length ? direct : context).slice(0, educationOutcome ? 4 : 2);
   const trendNotes = educationTrendRequested ? primaryFacts.flatMap((fact) => {
@@ -1079,6 +1098,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const findingText = industrialComparison || workingPovertyComparison?.finding || primaryFacts.map(factFinding).join(' ');
   const gap = missing.length ? tourismRegionalSectorComparison
     ? 'La fuente nacional disponible no ofrece recuentos comparables de empleo turístico y agrícola para el territorio solicitado.'
+    : tourismRegionalImpactClaim ? 'La cifra nacional de empleo turístico no muestra cómo se distribuye el empleo por región ni estima el efecto de reducir la actividad turística.'
     : focus.id === 'working-poverty' && workingPovertyCountRequested
     ? 'La serie disponible mide un porcentaje, no el número de personas. Falta un recuento comparable de personas ocupadas bajo el umbral de riesgo de pobreza.'
     : educationOutcomeCausalClaim ? 'La tasa de sobrecualificación describe qué ocupaciones tienen las personas tituladas que ya trabajan; no mide por qué aceptaron esos puestos ni las oportunidades que tenían.'
@@ -1170,7 +1190,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       findings.join(' '),
       ...(tourismDependencyClaim && share ? [focus.evidenceGap] : []),
       scopeNotes.join(' '),
-      focus.limitation,
+      limitation,
       !findings.length ? gapForReply : '',
     ].filter(Boolean).join('\n\n');
   })();

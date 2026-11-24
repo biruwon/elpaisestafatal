@@ -137,6 +137,29 @@ assert.deepEqual(tourismEmploymentRegional.body.result.answerScope.contextMetric
 assert.deepEqual(tourismEmploymentRegional.body.result.sources, [], 'National figures must not settle a regional cross-sector comparison');
 assert.doesNotMatch(tourismEmploymentRegional.body.result.reply, /12,3 %|2,78 millones/);
 assert.match(tourismEmploymentRegional.body.result.reply, /recuentos comparables de empleo en turismo y agricultura/);
+for (const claim of [
+  'Reducir drásticamente el turismo destruiría empleo en regiones muy dependientes de él',
+  'Si cae mucho el turismo, se perderían empleos en las regiones que dependen de él',
+]) {
+  const regionalTourismImpact = await check(claim);
+  assert.equal(regionalTourismImpact.body.state, 'insufficient');
+  assert.equal(regionalTourismImpact.body.result.answerScope.family, 'tourism-employment-contribution');
+  assert.deepEqual(regionalTourismImpact.body.result.answerScope.directMetrics, []);
+  assert.deepEqual(regionalTourismImpact.body.result.answerScope.contextMetrics, ['tourism_characteristic_employment_share', 'tourism_characteristic_employment_jobs']);
+  assert.equal(regionalTourismImpact.body.result.arguments[0].verdict, 'insufficient');
+  assert.match(regionalTourismImpact.body.result.reply, /2024.*12,3 %.*empleo total en Espa[nñ]a/s);
+  assert.match(regionalTourismImpact.body.result.reply, /cuota incluida es nacional.*no est[aá] desglosada por regi[oó]n/);
+  assert.match(regionalTourismImpact.body.result.reply, /no estima cu[aá]ntos puestos cambiar[ií]an si se redujera el turismo/);
+  assert.doesNotMatch(regionalTourismImpact.body.result.reply, /no establece un umbral estad[ií]stico/);
+  assert.deepEqual(regionalTourismImpact.body.result.sources.map((source) => source.id).sort(), ['ine-tourism-characteristic-jobs-2024', 'ine-tourism-employment-share-cste-2024']);
+}
+const pensionFinancing = await check('El trabajador no ahorra sus cotizaciones para su propia pensión sino que financia a los jubilados actuales');
+assert.equal(pensionFinancing.body.state, 'limited');
+assert.equal(pensionFinancing.body.result.answerScope.family, 'pension-financing');
+assert.match(pensionFinancing.body.result.reply, /cotizaciones y otros ingresos corrientes financian las prestaciones actuales/);
+assert.match(pensionFinancing.body.result.reply, /financiaci[oó]n de reparto, distinta de acumular capital en una cuenta individual/);
+assert.match(pensionFinancing.body.result.reply, /no permite confirmar por s[ií] sola la sostenibilidad del sistema/i);
+assert.deepEqual(pensionFinancing.body.result.sources.map((source) => source.id), ['social-security-pay-as-you-go']);
 
 const educationPayQueries = [
   'Los sueldos de muchos trabajos cualificados son demasiado parecidos a los de puestos que exigen mucha menos formación',

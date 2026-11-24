@@ -108,7 +108,7 @@ const cases = [
   ]],
   ['foreign-housing-price-causality', ['Las compras de vivienda por extranjeros no residentes están encareciendo el mercado en zonas costeras', 'Las adquisiciones de compradores extranjeros elevan los precios de las casas en la costa']],
   ['migration-housing-demand-causality', ['La inmigración está haciendo que suban los alquileres en algunas ciudades', 'El aumento de población migrante eleva los precios de la vivienda local', 'Los extranjeros encarecen los alquileres en las ciudades']],
-  ['migration-wage-effects', ['La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores', 'La llegada de mano de obra extranjera ha reducido los sueldos en sectores con baja cualificación', 'Los trabajadores inmigrantes cobran menos desde que aumentó la oferta laboral', 'La inmigración presiona los salarios en los sectores con sueldos bajos']],
+  ['migration-wage-effects', ['La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores', 'La llegada de mano de obra extranjera ha reducido los sueldos en sectores con baja cualificación', 'La inmigración presiona los salarios en los sectores con sueldos bajos', 'La entrada de trabajadores extranjeros puede contener los sueldos de empleados nativos']],
   ['migration-fiscal-contribution', ['La inmigración cualificada aporta más fiscalmente que la inmigración atrapada en empleos de bajos salarios', 'Los inmigrantes aportan más a la Hacienda pública de lo que reciben en prestaciones', 'El balance fiscal de la población migrante depende del empleo y de cuánto cotiza']],
   ['migration-overqualification', ['La tasa de sobrecualificación de extranjeros es mayor que la de españoles', '¿Qué parte de las personas con ciudadanía extranjera y estudios terciarios trabaja en ocupaciones de menor cualificación?', 'La tasa de sobrecualificación de ciudadanos de otros países de la Unión Europea']],
   ['migrant-credential-recognition', ['La homologación lenta de títulos obliga a inmigrantes cualificados a trabajar por debajo de su formación', 'El retraso en convalidar estudios superiores deja a personas migrantes en puestos por debajo de su preparación', 'Los títulos obtenidos fuera de España no se reconocen y los profesionales extranjeros acaban en empleos de baja cualificación']],
@@ -780,6 +780,28 @@ for (const tourismEmploymentRegional of [
   assert.match(plan.shareableReply, /recuentos comparables de empleo tur[ií]stico y agr[ií]cola/);
   assert.equal(localPublicCheckResponse({ status: 'uncovered', requestId: 'tourism-regional-comparison', result: plan }, tourismEmploymentRegional).state, 'insufficient');
 }
+for (const claim of [
+  'Reducir drásticamente el turismo destruiría empleo en regiones muy dependientes de él',
+  'Si cae mucho el turismo, se perderían empleos en las regiones que dependen de él',
+]) {
+  const plan = focusedEvidencePlan(claim, {
+    observations: TOURISM_EMPLOYMENT_SNAPSHOT.observations,
+    now: Date.parse('2026-11-24'),
+  });
+  assert.equal(plan.answerScope.family, 'tourism-employment-contribution');
+  assert.equal(plan.evidenceLevel, 'insufficient', 'National employment shares cannot establish regional job losses under a tourism reduction');
+  assert.deepEqual(plan.answerScope.directMetrics, [], 'National tourism employment must be contextual for a regional counterfactual');
+  assert.deepEqual(plan.answerScope.contextMetrics, ['tourism_characteristic_employment_share', 'tourism_characteristic_employment_jobs']);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['ine-tourism-employment-share-cste-2024', 'ine-tourism-characteristic-jobs-2024']);
+  assert.match(plan.shareableReply, /2024.*12,3 %.*empleo total en Espa[nñ]a/s);
+  assert.match(plan.shareableReply, /cuota incluida es nacional, no est[aá] desglosada por regi[oó]n/);
+  assert.match(plan.shareableReply, /no estima cu[aá]ntos puestos cambiar[ií]an si se redujera el turismo/);
+  assert.doesNotMatch(plan.shareableReply, /no establece un umbral estad[ií]stico/, 'A regional job-loss claim is not a claim that tourism employment is excessive');
+  const response = localPublicCheckResponse({ status: 'partial', requestId: 'tourism-regional-impact', result: plan }, claim);
+  assert.equal(response.state, 'insufficient');
+  assert.match(response.result.reply, /no est[aá] desglosada por regi[oó]n.*no estima cu[aá]ntos puestos cambiar[ií]an/);
+}
 const tourismWageNeighbour = 'Los empleos turísticos están peor pagados que los agrícolas';
 assert.equal(claimFocusFor(tourismWageNeighbour)?.id, 'sector-wage-comparison');
 assert.ok(!focusedMetricIdsFor(tourismWageNeighbour)?.has('tourism_characteristic_employment_share'));
@@ -929,6 +951,14 @@ for (const claim of [
   '¿Cuánto subieron los precios de la vivienda en las zonas costeras?',
 ]) assert.equal(claimFocusFor(claim), undefined, `A nearby claim crossed into a different housing evidence contract: ${claim}`);
 assert.equal(claimFocusFor('Las cotizaciones actuales financian las pensiones vigentes')?.id, 'pension-financing', 'Current pension financing must stay separate from future benefit projections');
+const pensionFinancingClaim = 'El trabajador no ahorra sus cotizaciones para su propia pensión sino que financia a los jubilados actuales';
+const pensionFinancingAnswer = focusedEvidencePlan(pensionFinancingClaim);
+const pensionFinancingPublic = localPublicCheckResponse({ status: 'partial', requestId: 'pension-financing-readable', result: pensionFinancingAnswer }, pensionFinancingClaim);
+assert.equal(pensionFinancingPublic.state, 'limited');
+assert.match(pensionFinancingPublic.result.reply, /cotizaciones y otros ingresos corrientes financian las prestaciones actuales/);
+assert.match(pensionFinancingPublic.result.reply, /financiaci[oó]n de reparto, distinta de acumular capital en una cuenta individual/);
+assert.match(pensionFinancingPublic.result.reply, /no permite confirmar por s[ií] sola la sostenibilidad/i);
+assert.ok(pensionFinancingPublic.result.sources.some((source) => source.id === 'social-security-pay-as-you-go'));
 const specificButUncovered = [
   'La cita previa obligatoria ha convertido trámites básicos en una barrera',
   'Muchos autónomos necesitan pagar una gestoría solo para cumplir con Hacienda y Seguridad Social',
@@ -1342,6 +1372,16 @@ for (const paraphrase of [
 }
 assert.notEqual(claimFocusFor('¿Cuál es la tasa de paro estructural en España?')?.id, 'unemployment-wage-pressure', 'A direct unemployment-rate question must not be interpreted as a wage mechanism');
 assert.equal(claimFocusFor('La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores')?.id, 'migration-wage-effects', 'Migration-specific wage claims must retain their distinct evidence contract');
+for (const query of [
+  'Los trabajadores cualificados que vuelven del extranjero suelen tener que aceptar una bajada salarial',
+  'Los trabajadores inmigrantes cobran menos desde que aumentó la oferta laboral',
+]) {
+  assert.notEqual(claimFocusFor(query)?.id, 'migration-wage-effects', `A claim about wages within a migrant or returnee group was confused with immigration affecting other workers: ${query}`);
+  const response = localPublicCheckResponse(deterministicApiFallback({ text: query, inputType: 'text', now: Date.parse('2026-11-24') }), query);
+  assert.equal(response.state, 'insufficient', 'A returnee or migrant wage claim without matching evidence must remain unconfirmed');
+  assert.deepEqual(response.result.sources, [], 'The immigration wage-effect family must not attach unrelated sources');
+  assert.doesNotMatch(response.result.reply, /la inmigraci[oó]n haya reducido el sueldo de otras personas/i, 'A returnee wage claim must not inherit an explanation about immigration reducing other workers\' pay');
+}
 assert.equal(claimFocusFor('Para el mismo perfil profesional las empresas pagan salarios más bajos')?.id, 'matched-pay', 'Matched-profile wage claims without an unemployment mechanism must keep their own route');
 assert.equal(claimFocusFor('Los salarios españoles son más bajos que los europeos')?.id, 'nominal-wages', 'A countrywide wage comparison must not be presented as a same-profile comparison');
 assert.notEqual(claimFocusFor('Las mujeres cobran menos que los hombres en España')?.id, 'matched-pay', 'A gender-pay comparison must not inherit the same-profile salary methodology');
