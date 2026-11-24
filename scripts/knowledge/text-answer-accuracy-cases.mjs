@@ -1396,6 +1396,34 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'self-employment-startup-tax-claim-context',
+    equivalenceGroup: 'self-employment-startup-cost-context-spain-2026',
+    input: 'El sistema fiscal castiga empezar una actividad antes de que el negocio tenga ingresos estables',
+    expected: {
+      state: 'insufficient', family: 'self-employment-cost-viability', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['2026', '653,59 €', '205,88 € al mes', 'cotización a la Seguridad Social del RETA', 'no suma todos los impuestos', 'no permite confirmar', 'persona autónoma o de una sociedad'],
+      replyExcludes: ['206,88 €', 'todos los autónomos pagan 205,88 €', 'penaliza cualquier negocio'],
+      evidence: [{
+        familyId: 'self-employment-cost-viability', sourceIds: ['boe-reta-contributions-2026'],
+        dataIncludes: ['hasta 670 €', '653,59 € a 718,94 €', '31,5 %', '205,88 € al mes'],
+        dimensions: { period: 'ejercicio 2026', geography: 'España', denominator: 'no representa a todas las personas autónomas', unit: 'euros de base y cotización al mes' },
+      }],
+      maxReplyWords: 140,
+    },
+  },
+  {
+    id: 'self-employment-startup-tax-claim-paraphrase',
+    equivalenceGroup: 'self-employment-startup-cost-context-spain-2026',
+    input: 'Iniciar un negocio antes de tener ingresos estables sale caro por las cuotas e impuestos',
+    expected: {
+      state: 'insufficient', family: 'self-employment-cost-viability', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['2026', '653,59 €', '205,88 € al mes', 'cotización a la Seguridad Social del RETA', 'no suma todos los impuestos', 'no permite confirmar', 'persona autónoma o de una sociedad'],
+      replyExcludes: ['206,88 €', 'todos los autónomos pagan 205,88 €', 'penaliza cualquier negocio'],
+      evidence: [],
+      maxReplyWords: 140,
+    },
+  },
+  {
     id: 'wholesale-energy-pass-through-electricity-paraphrase',
     equivalenceGroup: 'wholesale-energy-pass-through-context-spain',
     input: 'La electricidad tarda en reflejar en las facturas las variaciones del mercado mayorista',

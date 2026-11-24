@@ -444,7 +444,7 @@ try {
   const selfEmploymentCost = await check('La cuota y los costes fijos hacen inviable ser autónomo con ingresos bajos o irregulares', undefined, { DB: emptyD1 });
   assert.equal(selfEmploymentCost.state, 'insufficient');
   assert.equal(selfEmploymentCost.result.answerScope?.family, 'self-employment-cost-viability');
-  assert.match(selfEmploymentCost.result.reply, /hasta 670 €.*653,59 € a 718,94 €.*206,88 € al mes/s);
+  assert.match(selfEmploymentCost.result.reply, /hasta 670 €.*653,59 € a 718,94 €.*205,88 € al mes/s);
   assert.match(selfEmploymentCost.result.reply, /antes de reducciones o bonificaciones/);
   assert.equal(selfEmploymentCost.result.shareableReply?.split(/\n{2,}/).length, 2);
   assert.deepEqual(selfEmploymentCost.result.sources.map((source) => source.id), ['boe-reta-contributions-2026']);

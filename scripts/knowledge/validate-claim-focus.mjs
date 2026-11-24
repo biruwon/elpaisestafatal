@@ -86,7 +86,7 @@ const cases = [
   ['pension-financing', ['El trabajador no ahorra sus cotizaciones para su propia pensión sino que financia a los jubilados actuales', '¿Las pensiones públicas usan reparto o cuentas individuales?', 'Las cotizaciones sostienen las jubilaciones actuales']],
   ['future-pension-outlook', ['Los jóvenes actuales pagarán pensiones durante décadas pero cobrarán una pensión relativamente menor', 'Las generaciones jóvenes esperan cobrar una pensión más baja al jubilarse', '¿Qué pensión recibirán en el futuro quienes cotizan hoy?']],
   ['pension-wage-comparison', ['Hay jubilados con pensiones superiores al sueldo de muchos trabajadores jóvenes', 'Los jubilados cobran pensiones más altas que el salario de muchos jóvenes empleados', 'La pensión media supera los ingresos mensuales de muchos trabajadores jóvenes', 'Los jubilados cobran más que los trabajadores jóvenes']],
-  ['self-employment-cost-viability', ['La cuota y los costes fijos hacen inviable ser autónomo con ingresos bajos o irregulares', 'Los gastos obligatorios de los autónomos impiden sostener una actividad con ingresos irregulares', 'Ser autónomo deja de compensar cuando la cuota fija supera los ingresos bajos']],
+  ['self-employment-cost-viability', ['La cuota y los costes fijos hacen inviable ser autónomo con ingresos bajos o irregulares', 'Los gastos obligatorios de los autónomos impiden sostener una actividad con ingresos irregulares', 'Ser autónomo deja de compensar cuando la cuota fija supera los ingresos bajos', 'El sistema fiscal castiga empezar una actividad antes de que el negocio tenga ingresos estables', 'Iniciar un negocio antes de tener ingresos estables sale caro por las cuotas e impuestos']],
   ['healthcare-double-payment', ['Muchas familias sienten que pagan dos veces por sanidad al pagar impuestos y además un seguro privado', 'Tener un seguro médico privado y pagar impuestos supone dos pagos relacionados con la atención sanitaria pública y privada', 'La prima del seguro privado se suma a los impuestos que financian la sanidad']],
   ['entrepreneurial-risk-perception', ['Emprender en España se percibe como más arriesgado que buscar una plaza pública', 'Crear una empresa parece más arriesgado que preparar una oposición', 'El riesgo percibido de emprender es mayor que el de trabajar como funcionario']],
   ['tourist-housing-count', ['¿Cuántas viviendas turísticas hay en España?', '¿Cuál es el recuento oficial de pisos turísticos?']],
@@ -1016,25 +1016,36 @@ assert.equal(selfEmploymentCosts.evidenceLevel, 'limited');
 assert.deepEqual(selfEmploymentCosts.answerScope.directMetrics, [], 'The legal schedule is not a direct measure of business viability');
 assert.deepEqual(selfEmploymentCosts.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], 'General income, wage and aggregate contribution totals cannot prove self-employment viability');
 assert.deepEqual(selfEmploymentCosts.sourceLinks.map((source) => source.id), ['boe-reta-contributions-2026'], 'Only the 2026 RETA schedule may appear as contextual evidence');
-assert.match(selfEmploymentCosts.shareableReply, /hasta 670 €.*653,59 € a 718,94 €.*206,88 € al mes/s);
+assert.equal((653.59 * 0.315).toFixed(2), '205.88', 'The 2026 minimum-base RETA estimate must equal its stated 31.5% contribution rate');
+assert.match(selfEmploymentCosts.shareableReply, /hasta 670 €.*653,59 € a 718,94 €.*205,88 € al mes/s);
 assert.match(selfEmploymentCosts.shareableReply, /antes de reducciones o bonificaciones/);
-assert.match(selfEmploymentCosts.shareableReply, /no permite confirmar que la actividad sea inviable/);
+assert.match(selfEmploymentCosts.shareableReply, /solo la cotizaci[oó]n a la Seguridad Social del RETA/);
+assert.match(selfEmploymentCosts.shareableReply, /no suma todos los impuestos/);
 assert.equal(selfEmploymentCosts.shareableReply.split(/\n{2,}/).length, 2);
-assert.match(selfEmploymentCosts.shareableReply, /facturación neta|ingresos netos/i);
-assert.match(selfEmploymentCosts.shareableReply, /datos de continuidad o cierre/);
+assert.match(selfEmploymentCosts.shareableReply, /forma jur[ií]dica/);
+assert.match(selfEmploymentCosts.shareableReply, /persona aut[oó]noma o de una sociedad/);
 assert.doesNotMatch(selfEmploymentCosts.shareableReply, /20[,.]?367|11[,.]?02|180[,.]?000/);
 assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'self-employment-costs', result: selfEmploymentCosts }, 'La cuota y los costes fijos hacen inviable ser autónomo con ingresos bajos o irregulares').state, 'insufficient', 'A statutory contribution example cannot settle a business-viability claim');
 for (const query of [
   'Los gastos obligatorios de los autónomos impiden sostener una actividad con ingresos irregulares',
   'Ser autónomo deja de compensar cuando la cuota fija supera los ingresos bajos',
+  'El sistema fiscal castiga empezar una actividad antes de que el negocio tenga ingresos estables',
+  'Iniciar un negocio antes de tener ingresos estables sale caro por las cuotas e impuestos',
 ]) {
   const plan = focusedEvidencePlan(query, { now: Date.parse('2026-11-24') });
   assert.equal(plan.answerScope.family, 'self-employment-cost-viability');
   assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['boe-reta-contributions-2026'], `A self-employment paraphrase changed evidence source: ${query}`);
-  assert.match(plan.shareableReply, /206,88 € al mes/);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
+  assert.match(plan.shareableReply, /205,88 € al mes/);
   assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'self-employment-paraphrase', result: plan }, query).state, 'insufficient');
 }
 assert.notEqual(claimFocusFor('Las cuotas empresariales elevadas hacen inviable que una empresa mantenga su plantilla')?.id, 'self-employment-cost-viability', 'Employer payroll costs must not inherit the individual RETA schedule');
+for (const query of [
+  'Las empresas que pagan menos impuestos generan más empleo',
+  'El impuesto de sociedades hace inviable montar una empresa antes de tener ingresos estables',
+  'Emprender es más arriesgado que preparar una oposición',
+  'El sistema fiscal castiga a los negocios que declaran mal el IVA',
+]) assert.notEqual(claimFocusFor(query)?.id, 'self-employment-cost-viability', `A nearby business-tax or entrepreneurship claim crossed into the RETA schedule: ${query}`);
 const employerContributionClaims = cases.find(([family]) => family === 'employer-contributions-labour-cost')[1];
 let employerContributionSources;
 let employerContributionFindings;

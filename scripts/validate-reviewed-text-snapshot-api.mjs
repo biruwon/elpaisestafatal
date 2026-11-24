@@ -308,11 +308,26 @@ const selfEmploymentCost = await check(selfEmploymentCostClaim);
 assert.equal(selfEmploymentCost.body.state, 'insufficient');
 assert.equal(selfEmploymentCost.body.result.answerScope.family, 'self-employment-cost-viability');
 assert.deepEqual(selfEmploymentCost.body.result.answerScope.directMetrics, []);
-assert.match(selfEmploymentCost.body.result.reply, /hasta 670 €.*653,59 € a 718,94 €.*206,88 € al mes/s);
+assert.match(selfEmploymentCost.body.result.reply, /hasta 670 €.*653,59 € a 718,94 €.*205,88 € al mes/s);
 assert.match(selfEmploymentCost.body.result.reply, /antes de reducciones o bonificaciones/);
-assert.match(selfEmploymentCost.body.result.reply, /no permite confirmar que la actividad sea inviable/);
+assert.match(selfEmploymentCost.body.result.reply, /no permite confirmar que iniciar una actividad est[eé] penalizado/);
 assert.equal(selfEmploymentCost.body.result.shareableReply?.split(/\n{2,}/).length, 2);
 assert.deepEqual(selfEmploymentCost.body.result.sources.map((source) => source.id), ['boe-reta-contributions-2026']);
+
+for (const claim of [
+  'El sistema fiscal castiga empezar una actividad antes de que el negocio tenga ingresos estables',
+  'Iniciar un negocio antes de tener ingresos estables sale caro por las cuotas e impuestos',
+]) {
+  const startupCosts = await check(claim);
+  assert.equal(startupCosts.body.state, 'insufficient');
+  assert.equal(startupCosts.body.result.answerScope.family, 'self-employment-cost-viability');
+  assert.deepEqual(startupCosts.body.result.answerScope.directMetrics, []);
+  assert.match(startupCosts.body.result.reply, /653,59 €.*205,88 € al mes/s);
+  assert.match(startupCosts.body.result.reply, /solo la cotizaci[oó]n a la Seguridad Social del RETA; no suma todos los impuestos/);
+  assert.match(startupCosts.body.result.reply, /no permite confirmar que iniciar una actividad est[eé] penalizado/);
+  assert.equal(startupCosts.body.result.shareableReply?.split(/\n{2,}/).length, 2);
+  assert.deepEqual(startupCosts.body.result.sources.map((source) => source.id), ['boe-reta-contributions-2026']);
+}
 
 const fullTime = await check('Trabajar a jornada completa no impide estar en riesgo de pobreza');
 assert.equal(fullTime.httpStatus, 200);

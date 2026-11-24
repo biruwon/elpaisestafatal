@@ -982,10 +982,15 @@ const tourismEmploymentContribution = (t) => {
   return !unpaidOvertime(t) && tourism && employment && (contributionOrDependence || regionalSectorComparison)
     && (!sectorEmploymentComparison(t) || regionalSectorComparison) && !differentFamily;
 };
-const selfEmploymentCostViability = (t) =>
-  /\b(autonom\w*|trabajador\w* por cuenta propia|cuenta propia|freelance)\b/.test(t)
-  && /\b(cuot\w*|cotiz\w*|cost\w* fijo\w*|gasto\w* (?:fijo\w*|obligatori\w*)|gestor\w*|carga administrat\w*|impuesto\w*)\b/.test(t)
-  && /\b(ingres\w*|factur\w*|rentab\w*|viable|inviable|compens\w*|irregular\w*|estable)\b/.test(t);
+const selfEmploymentCostViability = (t) => {
+  const selfEmployed = /\b(autonom\w*|trabajador\w* por cuenta propia|cuenta propia|freelance)\b/.test(t);
+  const businessStart = /\b(emprend\w*|empez\w*|inici\w*|comenz\w*|mont\w*|abr\w*|cre\w*)\b/.test(t)
+    && /\b(activid\w*|negocio\w*|empres\w*|proyecto\w*)\b/.test(t);
+  const companyTaxScope = /\b(sociedad\w*|impuesto\w* de sociedad\w*|persona\w* juridic\w*|s\.?l\.?u?\.?|s\.?a\.?)\b/.test(t);
+  return !companyTaxScope && (selfEmployed || businessStart)
+    && /\b(cuot\w*|cotiz\w*|cost\w* fijo\w*|gasto\w* (?:fijo\w*|obligatori\w*)|gestor\w*|carga administrat\w*|impuesto\w*|fisc\w*|tribut\w*)\b/.test(t)
+    && /\b(ingres\w*|factur\w*|rentab\w*|viable|inviable|compens\w*|irregular\w*|estable)\b/.test(t);
+};
 const employerContributionVisibility = (t) => {
   const contribution = /\b(cotiz\w*|cuot\w*|aportaci\w*)\b/.test(t);
   const employerNamed = /\b(empresari\w*|empresa|empleador\w*|patron\w*)\b.{0,45}\b(cotiz\w*|cuot\w*|aportaci\w*)\b/.test(t)
@@ -1948,11 +1953,12 @@ const focuses = [
     id: 'self-employment-cost-viability', label: 'costes fijos y viabilidad del trabajo autónomo',
     when: selfEmploymentCostViability,
     direct: [], context: [], claimType: 'causal',
-    needs: ['ingresos netos, cuotas y gastos fijos de autónomos con ingresos bajos o irregulares, para el mismo periodo', 'altas, continuidad y bajas de esas actividades, con motivo de cierre si se atribuye a los costes'],
-    explanation: 'Para comprobarlo hay que comparar los ingresos netos con las cuotas y demás gastos fijos de los mismos autónomos, y observar si sus actividades continúan o cierran.',
+    needs: ['forma jurídica y obligaciones concretas: cotización de una persona autónoma, impuestos personales o impuestos de una sociedad', 'ingresos netos, cuotas, impuestos, gastos fijos y reducciones aplicables a la misma actividad y periodo', 'altas, continuidad y bajas de esas actividades, con motivo de cierre si se atribuye a los costes'],
+    explanationHeadline: 'La cotización del RETA depende del tramo de rendimientos, pero no mide toda la carga fiscal de iniciar un negocio',
+    explanation: 'La cotización a la Seguridad Social de una persona autónoma es solo una parte de los costes de iniciar una actividad. No equivale al conjunto de impuestos de una sociedad ni demuestra por sí sola que los costes impidan emprender.',
     shareableReplyForContext: ({ facts }) => [
       facts.join(' '),
-      'Esta cotización no permite confirmar que la actividad sea inviable. Para comprobarlo faltan los ingresos netos y demás gastos de cada actividad, las reducciones aplicables y datos de continuidad o cierre que permitan medir el efecto de esos costes.',
+      'La cifra describe solo la cotización a la Seguridad Social del RETA; no suma todos los impuestos ni representa a todas las formas de negocio. Por sí sola no permite confirmar que iniciar una actividad esté penalizado. Para afinar la respuesta hacen falta la forma jurídica, las obligaciones concretas, los ingresos netos y las reducciones aplicables. ¿Se trata de una persona autónoma o de una sociedad?',
     ].join('\n\n'),
     explanationEvidence: {
       directClaimEvidence: false,
@@ -1965,11 +1971,11 @@ const focuses = [
         unit: 'euros de base y cotización al mes',
       },
       facts: [
-        'En 2026, para rendimientos netos mensuales de hasta 670 €, la base del tramo reducido va de 653,59 € a 718,94 €. Si se elige la base mínima, los tipos generales suman 31,5 % —28,3 % por contingencias comunes, 1,3 % por profesionales, 0,9 % de MEI, 0,9 % por cese y 0,1 % por formación—: unos 206,88 € al mes antes de reducciones o bonificaciones.',
+        'En 2026, para rendimientos netos mensuales de hasta 670 €, la base del tramo reducido va de 653,59 € a 718,94 €. Si se elige la base mínima, los tipos generales suman 31,5 % —28,3 % por contingencias comunes, 1,3 % por profesionales, 0,9 % de MEI, 0,9 % por cese y 0,1 % por formación—: 205,88 € al mes antes de reducciones o bonificaciones.',
       ],
       sources: [{ id: 'boe-reta-contributions-2026', title: 'Orden PJC/297/2026, de cotización a la Seguridad Social para 2026', publisher: 'Boletín Oficial del Estado', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2026-7296', publishedAt: '2026-03-31', retrievedAt: '2026-11-24', role: 'primary' }],
     },
-    limitation: 'El cálculo usa la base mínima de un tramo concreto y los tipos generales de 2026 antes de reducciones; no es la cuota de cada autónomo ni calcula la rentabilidad de un negocio. Los totales de cotizaciones, la renta mediana y los salarios medios tampoco muestran ese balance ni prueban por qué cerró una actividad.',
+    limitation: 'El cálculo usa la base mínima del primer tramo reducido del RETA y los tipos generales de 2026 antes de reducciones; no es la cuota de cada autónomo. La cotización no incluye todos los impuestos ni representa a una sociedad, y no mide la rentabilidad, la volatilidad de ingresos ni si estos costes disuaden de iniciar una actividad.',
   },
   {
     id: 'employer-contributions-labour-cost', label: 'cotizaciones empresariales y coste laboral total',
