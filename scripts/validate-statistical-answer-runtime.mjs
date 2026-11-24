@@ -331,6 +331,17 @@ try {
   assert.match(touristHousingCount.result.reply, /341\.001 viviendas.*mayo de 2026/s);
   assert.equal(touristHousingCount.result.sources.length, 1);
   assert.ok(['INE', 'Instituto Nacional de Estadística'].includes(touristHousingCount.result.sources[0].publisher));
+  const renewableGrid = await check('La falta de capacidad de las redes eléctricas obliga a verter energía solar y eólica', undefined, { DB: emptyD1 });
+  assert.equal(renewableGrid.state, 'insufficient');
+  assert.equal(renewableGrid.result.answerScope?.family, 'renewable-grid-integration');
+  assert.match(renewableGrid.result.reply, /154 GW.*reducci[oó]n significativa de los vertidos/s);
+  assert.match(renewableGrid.result.reply, /no mide por s[ií] sola cu[aá]nta generaci[oó]n renovable disponible se pierde actualmente/);
+  assert.deepEqual(renewableGrid.result.sources.map((source) => source.id), ['miteco-electricity-plan-2030']);
+  const gridInvestment = await check('La inversión en redes eléctricas no acompasa el crecimiento de renovables y nueva demanda', undefined, { DB: emptyD1 });
+  assert.equal(gridInvestment.state, 'insufficient');
+  assert.equal(gridInvestment.result.answerScope?.family, 'electricity-grid-investment-gap');
+  assert.match(gridInvestment.result.reply, /17\.142 millones de euros.*47 GW.*importes planificados, no gasto ya ejecutado/s);
+  assert.deepEqual(gridInvestment.result.sources.map((source) => source.id), ['miteco-electricity-investment-limits-2026', 'miteco-electricity-plan-2030']);
   }
   if (!rentMagnitudeOnly) {
   let vacancyRateEvidenceIds;

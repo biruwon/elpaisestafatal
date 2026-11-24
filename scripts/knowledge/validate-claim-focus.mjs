@@ -60,6 +60,8 @@ const cases = [
   ['electricity-price-transmission', ['El gas encarece la electricidad en el sistema marginalista', 'Los hogares no notan la electricidad barata de las renovables', 'El precio mayorista no llega íntegro a la factura de la luz']],
   ['electricity-industry-costs', ['El precio de la electricidad resta competitividad a parte de la industria española', 'La factura eléctrica reduce la competitividad de las fábricas españolas', 'La electricidad encarece la producción de muchas empresas industriales']],
   ['electricity-market-trading', ['España puede exportar electricidad barata en horas solares y necesitar energía más cara en otros momentos', 'España exporta electricidad barata al mediodía e importa energía más cara por la noche', 'Las interconexiones permiten vender electricidad cuando sobra y comprarla cuando sube el precio']],
+  ['renewable-grid-integration', ['Los cuellos de botella de la red eléctrica impiden aprovechar toda la generación renovable disponible', 'La falta de capacidad de las redes eléctricas obliga a verter energía solar y eólica', 'Las restricciones de red dejan fuera parte de la generación renovable disponible']],
+  ['electricity-grid-investment-gap', ['La inversión en redes eléctricas no acompasa el crecimiento de renovables y nueva demanda', 'Se invierte en las redes eléctricas menos de lo que requieren las nuevas conexiones', 'El gasto en la red eléctrica va rezagado frente al aumento de demanda y renovables']],
   ['rail-punctuality', ['Los retrasos de Cercanías hacen perder horas a los pasajeros', 'Los trenes de Renfe son poco puntuales', 'Las compensaciones por demoras ferroviarias no cubren el tiempo perdido']],
   ['pension-financing', ['El trabajador no ahorra sus cotizaciones para su propia pensión sino que financia a los jubilados actuales', '¿Las pensiones públicas usan reparto o cuentas individuales?', 'Las cotizaciones sostienen las jubilaciones actuales']],
   ['future-pension-outlook', ['Los jóvenes actuales pagarán pensiones durante décadas pero cobrarán una pensión relativamente menor', 'Las generaciones jóvenes esperan cobrar una pensión más baja al jubilarse', '¿Qué pensión recibirán en el futuro quienes cotizan hoy?']],
@@ -1717,6 +1719,56 @@ for (const paraphrase of [
   assert.deepEqual(plan.answerScope.directMetrics, []);
   assert.equal(plan.sourceLinks.length, 0);
 }
+const renewableGridClaims = [
+  'Los cuellos de botella de la red eléctrica impiden aprovechar toda la generación renovable disponible',
+  'La falta de capacidad de las redes eléctricas obliga a verter energía solar y eólica',
+];
+let renewableGridSourceIds;
+for (const query of renewableGridClaims) {
+  const plan = focusedEvidencePlan(query, { now: Date.parse('2026-11-24') });
+  assert.equal(plan.answerScope.family, 'renewable-grid-integration');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.match(plan.shareableReply, /154 GW.*reducci[oó]n significativa de los vertidos/s);
+  assert.match(plan.shareableReply, /no mide por s[ií] sola cu[aá]nta generaci[oó]n renovable disponible se pierde actualmente/);
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'renewable-grid', result: plan }, query).state, 'insufficient');
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  assert.deepEqual(sourceIds, ['miteco-electricity-plan-2030']);
+  if (renewableGridSourceIds) assert.deepEqual(sourceIds, renewableGridSourceIds, `Renewable-grid paraphrase changed source selection: ${query}`);
+  renewableGridSourceIds = sourceIds;
+  validateAnswerPlan(plan);
+}
+const renewableGridLocalClaim = 'Los cuellos de botella de la red eléctrica impiden aprovechar toda la generación renovable disponible en Andalucía';
+const renewableGridLocalPlan = focusedEvidencePlan(renewableGridLocalClaim, { now: Date.parse('2026-11-24') });
+assert.equal(renewableGridLocalPlan.answerScope.family, 'renewable-grid-integration');
+assert.deepEqual(renewableGridLocalPlan.sourceLinks, [], 'A national plan cannot answer a claim about renewable bottlenecks in a specific region');
+const expiredRenewableGridPlan = focusedEvidencePlan(renewableGridClaims[0], { now: Date.parse('2027-02-21') });
+assert.deepEqual(expiredRenewableGridPlan.sourceLinks, [], 'Expired grid-plan context must not be returned');
+const investmentGapClaims = [
+  'La inversión en redes eléctricas va por detrás del crecimiento de renovables y nueva demanda',
+  'La inversión en redes eléctricas no acompasa el crecimiento de renovables y nueva demanda',
+];
+let gridInvestmentSourceIds;
+for (const query of investmentGapClaims) {
+  const plan = focusedEvidencePlan(query, { now: Date.parse('2026-11-24') });
+  assert.equal(plan.answerScope.family, 'electricity-grid-investment-gap');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.match(plan.shareableReply, /17\.142 millones de euros.*47 GW.*importes planificados, no gasto ya ejecutado/s);
+  assert.match(plan.shareableReply, /se hab[ií]an mostrado insuficientes/);
+  assert.match(plan.limitation, /no compara el gasto ejecutado con el crecimiento efectivo/);
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'grid-investment-gap', result: plan }, query).state, 'insufficient');
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  assert.deepEqual(sourceIds, ['miteco-electricity-investment-limits-2026', 'miteco-electricity-plan-2030']);
+  if (gridInvestmentSourceIds) assert.deepEqual(sourceIds, gridInvestmentSourceIds, `Grid-investment paraphrase changed source selection: ${query}`);
+  gridInvestmentSourceIds = sourceIds;
+  validateAnswerPlan(plan);
+}
+assert.equal(claimFocusFor('La red ferroviaria necesita más inversión para atender la demanda')?.id, undefined, 'Electricity-grid evidence must not route to rail infrastructure');
+assert.equal(claimFocusFor('El precio de la electricidad industrial resta competitividad a las fábricas')?.id, 'electricity-industry-costs', 'Network-investment claims must not capture industrial electricity-price claims');
+assert.deepEqual(focusedEvidencePlan('La inversión en redes eléctricas va por detrás del crecimiento de renovables y nueva demanda', { now: Date.parse('2026-11-24') }).sourceLinks.map((source) => source.publisher), ['Ministerio para la Transición Ecológica y el Reto Demográfico', 'Ministerio para la Transición Ecológica y el Reto Demográfico']);
 assert.equal(claimFocusFor('El precio doméstico de la electricidad por kWh ha aumentado para los hogares')?.id, 'electricity-retail', 'Household price claims must keep their direct electricity measure');
 const unknownCurrency = focusedEvidencePlan(marginalClaim, { observations: [{ ...electricity[0], dimensions: { ...electricity[0].dimensions, currency: undefined } }] });
 assert.doesNotMatch(unknownCurrency.shareableReply, /0,2739/, 'An energy unit alone does not identify the currency of a price');

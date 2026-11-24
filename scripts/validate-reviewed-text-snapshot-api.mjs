@@ -250,6 +250,29 @@ const unavailableTouristHousing = await check(touristHousingQueries[0], brokenDa
 assert.equal(unavailableTouristHousing.body.state, 'unavailable');
 assert.doesNotMatch(unavailableTouristHousing.body.result?.reply || '', /341\.001|1,28 %/);
 
+const renewableGridClaim = 'Los cuellos de botella de la red eléctrica impiden aprovechar toda la generación renovable disponible';
+const renewableGrid = await check(renewableGridClaim);
+assert.equal(renewableGrid.body.state, 'insufficient');
+assert.equal(renewableGrid.body.result.answerScope.family, 'renewable-grid-integration');
+assert.deepEqual(renewableGrid.body.result.answerScope.directMetrics, []);
+assert.match(renewableGrid.body.result.reply, /154 GW.*reducci[oó]n significativa de los vertidos/s);
+assert.match(renewableGrid.body.result.reply, /no mide por s[ií] sola cu[aá]nta generaci[oó]n renovable disponible se pierde actualmente/);
+assert.deepEqual(renewableGrid.body.result.sources.map((source) => source.id), ['miteco-electricity-plan-2030']);
+const renewableGridRegion = await check('Los cuellos de botella de la red eléctrica impiden aprovechar toda la generación renovable disponible en Andalucía');
+assert.equal(renewableGridRegion.body.state, 'insufficient');
+assert.deepEqual(renewableGridRegion.body.result.sources, [], 'A national plan cannot answer a claim about regional renewable bottlenecks');
+assert.doesNotMatch(renewableGridRegion.body.result.reply, /154 GW/);
+
+const gridInvestmentClaim = 'La inversión en redes eléctricas va por detrás del crecimiento de renovables y nueva demanda';
+const gridInvestment = await check(gridInvestmentClaim);
+assert.equal(gridInvestment.body.state, 'insufficient');
+assert.equal(gridInvestment.body.result.answerScope.family, 'electricity-grid-investment-gap');
+assert.deepEqual(gridInvestment.body.result.answerScope.directMetrics, []);
+assert.match(gridInvestment.body.result.reply, /límites anuales vigentes de inversión.*insuficientes/s);
+assert.match(gridInvestment.body.result.reply, /17\.142 millones de euros.*47 GW.*importes planificados, no gasto ya ejecutado/s);
+assert.match(gridInvestment.body.result.limitations?.join(' '), /no compara el gasto ejecutado con el crecimiento efectivo/);
+assert.deepEqual(gridInvestment.body.result.sources.map((source) => source.id), ['miteco-electricity-investment-limits-2026', 'miteco-electricity-plan-2030']);
+
 const fullTime = await check('Trabajar a jornada completa no impide estar en riesgo de pobreza');
 assert.equal(fullTime.httpStatus, 200);
 assert.equal(fullTime.body.state, 'limited');

@@ -1031,7 +1031,7 @@ use the complete reviewed snapshot; failed lookups stay unavailable, and
 partial warehouse results are not completed with snapshot values. Both tested
 paraphrases retain the same three source rows.
 
-The current deterministic audit of the 300-item discovery set reports 3
+At that review checkpoint, the deterministic audit of the 300-item discovery set reported 3
 complete, 40 limited and 257 uncovered responses; 90 have a compiler metric
 match, 114 a focused-family route and 50 both, leaving 146 with neither. The
 items remain unverified inputs, and routing counts are not factual-accuracy
@@ -1056,8 +1056,34 @@ an insufficient verdict. The national snapshot is withheld for claims about
 neighborhoods, cities or specific tourist zones. Failed warehouse reads remain
 unavailable, and partial observations are not filled with snapshot values.
 
-The deterministic audit now reports 3 complete, 42 limited and 255 uncovered
+The checkpoint after adding this context reported 3 complete, 42 limited and 255 uncovered
 responses in the 300-item unverified discovery set. Of these claims, 90 have a
 compiler metric match and 114 a focused-family route, with 50 in both; 146 have
 neither route. The held-out text benchmark remains 49/49 across 12 paraphrase
 groups. Neither set is a population-wide measure of factual accuracy.
+
+## Electricity-network planning context — 24 November 2026
+
+Two text claim families now use current, national MITECO context. For claims
+about renewable generation and network constraints, the answer cites the
+electricity plan approved on 20 November: it targets integration of 154 GW of
+renewable capacity by 2030 and a significant reduction in curtailment. For
+claims that grid investment lags demand, MITECO's July assessment says the
+then-current annual investment limits had proved insufficient for transition
+needs and new access requests; the November plan lists €17,142 million in
+total planned investment and is designed for 47 GW of new demand.
+See the [2030 plan](https://www.miteco.gob.es/es/prensa/ultimas-noticias/2026/noviembre/el-gobierno-aprueba-la-planificacion-electrica-en-el-horizonte-2.html)
+and the [July investment-limit assessment](https://www.miteco.gob.es/es/prensa/ultimas-noticias/2026/julio/el-gobierno-acelera-la-electrificacion-de-la-economia-incrementa.html).
+
+These are a plan, a policy assessment and future capacity; they do not measure
+current MWh lost specifically to grid constraints or compare executed spending
+with realized growth in renewables and demand. Both claim families therefore
+retain an insufficient verdict. The national plan is withheld for claims about
+regional bottlenecks.
+
+The current deterministic audit reports 3 complete, 44 limited and 253
+uncovered responses in the 300-item unverified discovery set. Of these claims,
+90 have a compiler metric match and 116 a focused-family route, with 50 in both;
+144 have neither route. The public states are 275 insufficient and 25 limited.
+The held-out text benchmark remains 49/49 across 12 paraphrase groups. Neither
+set estimates population-wide factual accuracy.

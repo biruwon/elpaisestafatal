@@ -337,6 +337,14 @@ export const privateHealthcareAccessClaimType = (claim) => {
 };
 const electricity = /\b(electric\w*|luz|kwh|megavat\w*|mwh)\b/;
 const cost = /\b(preci\w*|cost\w*|car[oa]s?|barat\w*|pagan?|pagar|factura\w*|tarifa\w*)\b/;
+const electricityNetwork = /\b(?:red(?:es)?(?: electric\w*| de (?:transporte|distribucion))?|infraestructur\w* electric\w*)\b/;
+const renewableGridIntegration = (t) => electricityNetwork.test(t)
+  && /\b(renovabl\w*|eolic\w*|solar\w*|fotovoltaic\w*)\b/.test(t)
+  && /\b(cuell\w* de botell\w*|capacidad|congest\w*|vertid\w*|restricci\w*|limit\w*|aprovech\w*|integr\w*|evacua\w*)\b/.test(t);
+const electricityGridInvestmentGap = (t) => electricityNetwork.test(t)
+  && has(t, electricity)
+  && /\b(invert\w*|inviert\w*|inversi\w*|gasto\w*|presupuest\w*)\b/.test(t)
+  && /\b(por detras|atrasad\w*|rezagad\w*|insuficient\w*|no llega|no acompas\w*|menos|requier\w*|crec\w*|aument\w*|demand\w*|renovabl\w*|electrific\w*)\b/.test(t);
 const wagePriceMarginPassThrough = (t) => has(t, wages)
   && /\b(preci\w*|inflaci\w*|margen\w*|coste\w*|rentabil\w*|competitiv\w*|encarec\w*)\b/.test(t)
   && /\b(oblig\w*|forz\w*|traslad\w*|repercut\w*|provoc\w*|caus\w*|encarec\w*|absorber|asumir|reduc\w*|sub\w*|aument\w*)\b/.test(t)
@@ -1439,6 +1447,59 @@ const focuses = [
       },
     },
     limitation: 'Una lista de espera pública no mide las motivaciones de quienes contratan seguro ni el tiempo que esperan en la privada.',
+  },
+  {
+    id: 'renewable-grid-integration', label: 'integración de generación renovable y capacidad de red',
+    when: renewableGridIntegration,
+    direct: [], context: [], claimType: 'causal',
+    needs: [
+      'energía renovable disponible y energía vertida, en MWh, para el mismo periodo y territorio',
+      'motivo operativo del vertido, distinguiendo las limitaciones de red de otras restricciones',
+      'nivel geográfico y tecnología de generación',
+    ],
+    explanation: 'La planificación eléctrica indica qué capacidad de red se proyecta y qué objetivos de integración se persiguen; no mide por sí sola cuánta generación renovable disponible se pierde actualmente por límites de red.',
+    explanationEvidence: {
+      expiresAt: '2027-02-20', territories: ['ES'],
+      dimensions: {
+        subject: 'objetivo de integración de generación renovable y reducción de vertidos',
+        population: 'sistema eléctrico español según la Planificación de electricidad aprobada para el horizonte 2030',
+        geography: 'España', period: 'Planificación aprobada el 20/11/2026, horizonte 2030', unit: 'GW de potencia renovable prevista',
+      },
+      facts: [
+        'El plan eléctrico aprobado el 20 de noviembre de 2026 prevé integrar en 2030 los 154 GW de potencia renovable del PNIEC y plantea una reducción significativa de los vertidos. Es un objetivo de planificación, no una medición de la energía que se pierde hoy por límites de red.',
+      ],
+      sources: [{ id: 'miteco-electricity-plan-2030', title: 'Planificación de la red de transporte de electricidad con horizonte 2030', publisher: 'Ministerio para la Transición Ecológica y el Reto Demográfico', url: 'https://www.miteco.gob.es/es/prensa/ultimas-noticias/2026/noviembre/el-gobierno-aprueba-la-planificacion-electrica-en-el-horizonte-2.html', publishedAt: '2026-11-20', retrievedAt: '2026-11-24', role: 'primary' }],
+    },
+    limitation: 'La planificación no cuantifica los MWh renovables que se dejan de producir por límites de red ni distingue esa restricción física de otros motivos operativos. Para sostener la afirmación hacen falta datos operativos de vertidos, su motivo, tecnología, territorio y periodo.',
+  },
+  {
+    id: 'electricity-grid-investment-gap', label: 'inversión en redes eléctricas frente a nuevas necesidades',
+    when: electricityGridInvestmentGap,
+    direct: [], context: [], claimType: 'comparative',
+    needs: [
+      'inversión ejecutada, no solo autorizada o planificada, en transporte y distribución',
+      'crecimiento observado de la demanda y de la generación renovable en los mismos años',
+      'definición de la brecha de inversión y territorio comparables',
+    ],
+    explanation: 'MITECO ha reconocido límites de inversión insuficientes para las nuevas necesidades y ha aprobado una ampliación de la red. Eso documenta una respuesta de planificación, pero no calcula cuánto quedó atrás la inversión ya ejecutada.',
+    explanationEvidence: {
+      expiresAt: '2027-02-20', territories: ['ES'],
+      dimensions: {
+        subject: 'necesidades e inversión prevista en las redes eléctricas',
+        population: 'redes de transporte y distribución de electricidad en España',
+        geography: 'España', period: 'valoración de 2026; planificación hasta 2030', unit: 'millones de euros y GW de nueva demanda',
+      },
+      facts: [
+        'En julio de 2026, MITECO afirmó que los límites anuales vigentes de inversión en redes se habían mostrado insuficientes ante las necesidades de la transición energética y las solicitudes de acceso de nueva demanda.',
+        'El plan eléctrico aprobado el 20 de noviembre de 2026 cifra la inversión total de la planificación en 17.142 millones de euros y está diseñado para incorporar 47 GW de nueva demanda. Son importes planificados, no gasto ya ejecutado.',
+      ],
+      factSourceIds: [['miteco-electricity-investment-limits-2026'], ['miteco-electricity-plan-2030']],
+      sources: [
+        { id: 'miteco-electricity-investment-limits-2026', title: 'El Gobierno acelera la electrificación incrementando la inversión en redes eléctricas', publisher: 'Ministerio para la Transición Ecológica y el Reto Demográfico', url: 'https://www.miteco.gob.es/es/prensa/ultimas-noticias/2026/julio/el-gobierno-acelera-la-electrificacion-de-la-economia-incrementa.html', publishedAt: '2026-07-28', retrievedAt: '2026-11-24', role: 'primary' },
+        { id: 'miteco-electricity-plan-2030', title: 'Planificación de la red de transporte de electricidad con horizonte 2030', publisher: 'Ministerio para la Transición Ecológica y el Reto Demográfico', url: 'https://www.miteco.gob.es/es/prensa/ultimas-noticias/2026/noviembre/el-gobierno-aprueba-la-planificacion-electrica-en-el-horizonte-2.html', publishedAt: '2026-11-20', retrievedAt: '2026-11-24', role: 'primary' },
+      ],
+    },
+    limitation: 'La valoración oficial describe límites de inversión y la respuesta aprobada, pero no compara el gasto ejecutado con el crecimiento efectivo de renovables y demanda. «Ir por detrás» requiere fijar periodo, red y una brecha medible.',
   },
   {
     id: 'electricity-industry-price', label: 'precio eléctrico para grandes consumidores no domésticos',
