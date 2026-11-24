@@ -38,7 +38,7 @@ import { isReusableSemanticFamilyKey, isSpecificSemanticSignature, semanticFamil
 import { domainProfileFor } from './knowledge/domain-handlers.mjs';
 import { compareGroupObservations } from './knowledge/domain-verification.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
-import { excludedMetricIdsForQuery, metricCandidatesForQuery, metricQueryTextForIds, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
+import { constrainMetricIdsToQueryScope, excludedMetricIdsForQuery, isPrivateSectorMultiGroupFinancingClaim, metricCandidatesForQuery, metricQueryTextForIds, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 import { evidenceSummaryForPublic, selectEvidence } from './knowledge/evidence-selection.mjs';
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
 import { createModelTasks } from './model-tasks.mjs';
@@ -156,8 +156,9 @@ const compoundMetricIdsForInput = (text) => {
   const ids = new Set();
   const hasDemography = /\b(?:arbol demografico|estructura demografica|demograf[ií]a|envejecimiento|cotizantes|poblaci[oó]n en edad de trabajar)\b/.test(normalized);
   const hasPensions = /\b(?:pension|jubilaci[oó]n|cotizaci[oó]n|arcas p[uú]blicas|sostenib|arruin|d[eé]ficit)\w*\b/.test(normalized);
-  if (hasDemography && hasPensions) ids.add('old_age_dependency_ratio');
-  if (hasPensions) ids.add('old_age_survivors_benefits_per_capita');
+  const spendingRequested = /\b(?:gasto\w*|gast\w*|presupuest\w*|coste\w*|importe\w*|dedic\w*|euros?|millones|spending|expenditure)\b/.test(normalized);
+  if (hasDemography && hasPensions && /\b(?:dependencia demografica|dependencia por edad|ratio de dependencia|indice de dependencia)\b/.test(normalized)) ids.add('old_age_dependency_ratio');
+  if (hasPensions && spendingRequested) ids.add('old_age_survivors_benefits_per_capita');
   if (hasPensions && /\b(?:arcas p[uú]blicas|d[eé]ficit|deuda|finan(?:ciaci[oó]n|zas?)|presupuest)\w*\b/.test(normalized)) {
     ids.add('government_deficit_ratio');
     ids.add('government_debt_ratio');
@@ -172,21 +173,21 @@ const metricIdsForInput = (text, compiler = {}) => {
     ...(Array.isArray(compiler.explicitPropositions) ? compiler.explicitPropositions : [])
       .flatMap((item) => [...preferredMetricIdsForQuery(item?.text || '')]),
   ]);
-  if (compiler.explicitPropositions?.length > 1) return ids;
+  if (compiler.explicitPropositions?.length > 1) return constrainMetricIdsToQueryScope(text, ids);
   const preferred = preferredMetricIdsForQuery(text);
   const vacancyMeasurementIds = new Set(['job_vacancy_count', 'job_vacancy_rate', 'job_vacancy_rate_quarterly_change', 'occupied_job_post_count']);
   const selectedVacancyMeasurement = [...preferred].filter((id) => vacancyMeasurementIds.has(id));
-  if (selectedVacancyMeasurement.length !== 1) return ids;
+  if (selectedVacancyMeasurement.length !== 1) return constrainMetricIdsToQueryScope(text, ids);
   const vacancyFamilyMentioned = [...ids].some((id) => vacancyMeasurementIds.has(id));
-  if (!vacancyFamilyMentioned) return ids;
+  if (!vacancyFamilyMentioned) return constrainMetricIdsToQueryScope(text, ids);
   const result = new Set([...ids].filter((id) => !vacancyMeasurementIds.has(id) && id !== 'unemployment_rate'));
   result.add(selectedVacancyMeasurement[0]);
-  return result;
+  return constrainMetricIdsToQueryScope(text, result);
 };
-const metricIdsForBroadInput = (text, compiler = {}) => focusedMetricIdsFor(text) || metricCandidatesForQuery(text, [
+const metricIdsForBroadInput = (text, compiler = {}) => constrainMetricIdsToQueryScope(text, focusedMetricIdsFor(text) || metricCandidatesForQuery(text, [
   ...(Array.isArray(compiler.concepts) ? compiler.concepts : []),
   ...(Array.isArray(compiler.propositions) ? compiler.propositions.flatMap((item) => item?.concepts || []) : []),
-], 4);
+], 4));
 const boundedExcerpt = (value, limit = 900) => {
   const text = String(value || '').replace(/\s+/g, ' ').trim();
   return text.length <= limit ? text : `${text.slice(0, limit - 1).trimEnd()}…`;
@@ -789,6 +790,7 @@ const selectCompatibleWarehouseSeries = (query, observations) => {
 
 const findWarehouseEvidence = async (query, compiler, queryEmbedding, warehouseRecords) => {
   const normalizedQuery = normalise(query);
+  const metricScopeText = compiler?.claimText || query;
   const comparisonTexts = [normalizedQuery, ...(compiler?.claimText ? [normalise(compiler.claimText)] : []), ...(Array.isArray(compiler?.explicitPropositions) ? compiler.explicitPropositions : [])
     .filter((item) => item?.explicit !== false && item?.text).map((item) => normalise(item.text))];
   const explicitComparison = comparisonTexts.some((value) => /\b(?:mas|menos|mayor|menor|superior|inferior)\b[\s\S]{0,80}\b(?:que|frente a|comparad)\b/.test(value)
@@ -808,18 +810,19 @@ const findWarehouseEvidence = async (query, compiler, queryEmbedding, warehouseR
   // retaining the deterministic query lookup as a safety net for fast-path
   // and legacy callers. The answer is therefore based on reusable evidence
   // IDs, not on a claim-specific alias list.
-  const compilerMetricIds = Array.isArray(compiler?.retrievalMetricIds)
+  const rawCompilerMetricIds = Array.isArray(compiler?.retrievalMetricIds)
     ? compiler.retrievalMetricIds
     : Array.isArray(compiler?.metricIds) ? compiler.metricIds : [];
-  const hintedMetricIds = new Set([
+  const compilerMetricIds = constrainMetricIdsToQueryScope(metricScopeText, rawCompilerMetricIds);
+  const hintedMetricIds = constrainMetricIdsToQueryScope(metricScopeText, new Set([
     ...compilerMetricIds,
     // Only use the query text as a fallback for callers that predate the
     // compiler metric contract. Generated retrieval prose is deliberately
     // excluded because it can add a neighbouring metric (“gasto” beside
     // “recaudación”, for example) and change the question being answered.
-    ...(compilerMetricIds.length ? [] : preferredMetricIdsForQuery(normalizedQuery)),
-  ]);
-  const excludedMetricIds = excludedMetricIdsForQuery(normalizedQuery);
+    ...(compilerMetricIds.size ? [] : preferredMetricIdsForQuery(metricScopeText)),
+  ]));
+  const excludedMetricIds = excludedMetricIdsForQuery(metricScopeText);
   // A hinted metric can legitimately have more than 100 observations (for
   // example monthly inflation). Keep the broad path small, but let an
   // explicit metric retrieve enough of its own series to retain the latest
@@ -3194,9 +3197,10 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
     && (!householdArrangementContrast || hasHouseholdArrangementContrast(searchText(classified.primary)))
     && !broadPacketAvailable
     && !claimFocusFor(text)
+    && !isPrivateSectorMultiGroupFinancingClaim(text)
     && (!explicitMetricRoute || classified.compiler?.claimType === 'causal')
     && !predictionLike;
-  const retrievalClassified = (explicitMetricRoute || claimFocusFor(text) || compoundInput || vagueTaxJudgement(text) || predictionLike || broadPacketAvailable || householdArrangementContrast) && !preservePublishedClaim
+  const retrievalClassified = (explicitMetricRoute || claimFocusFor(text) || compoundInput || vagueTaxJudgement(text) || predictionLike || broadPacketAvailable || householdArrangementContrast || isPrivateSectorMultiGroupFinancingClaim(text)) && !preservePublishedClaim
     // A nearby published claim is not a valid alternative to an explicit
     // metric request. Keeping it here makes the UI look as if the metric was
     // answered by that claim, even when the warehouse selected the right

@@ -262,8 +262,11 @@ if (preferredMetricIdsForQuery('¿Cuánto gasta España en prestaciones de prote
 if (!preferredMetricIdsForQuery('¿Cuánto gasta España en pensiones y prestaciones de supervivencia por habitante?').has('old_age_survivors_benefits_per_capita')) throw new Error('Metric hints did not prefer old-age and survivors benefits');
 if (preferredMetricIdsForQuery('¿Cuánto gasta España en pensiones y prestaciones de supervivencia por habitante?').has('social_protection_benefits_per_capita')) throw new Error('Metric hints confused old-age benefits with total social protection spending');
 const compoundPension = preferredMetricIdsForQuery('Árbol demográfico completamente invertido: el sistema de pensiones es completamente insostenible y arruina las arcas públicas');
-for (const metricId of ['old_age_survivors_benefits_per_capita', 'old_age_dependency_ratio', 'government_deficit_ratio', 'government_debt_ratio']) {
+for (const metricId of ['government_deficit_ratio', 'government_debt_ratio']) {
   if (!compoundPension.has(metricId)) throw new Error(`Compound pension wording did not preserve ${metricId}`);
+}
+if (compoundPension.has('old_age_survivors_benefits_per_capita') || compoundPension.has('old_age_dependency_ratio')) {
+  throw new Error('A broad pension-sustainability claim must not be treated as a spending-per-capita or old-age-dependency measurement');
 }
 if (!preferredMetricIdsForQuery('¿España gasta más por habitante en pensiones que la Unión Europea?').has('old_age_survivors_benefits_per_capita_europe')) throw new Error('Metric hints did not prefer Spain/EU pension spending');
 if (preferredMetricIdsForQuery('¿España gasta más por habitante en pensiones que la Unión Europea?').has('old_age_survivors_benefits_per_capita')) throw new Error('Metric hints kept Spain-only pension spending alongside the Spain/EU comparison');

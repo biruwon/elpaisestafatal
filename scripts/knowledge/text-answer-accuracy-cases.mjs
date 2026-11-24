@@ -857,4 +857,98 @@ export const textAnswerAccuracyCases = [
       replyExcludes: ['27.700', 'hostelería', '1,6 %'], evidence: [], maxReplyWords: 100,
     },
   },
+  {
+    id: 'pension-worker-ratio-sufficiency',
+    equivalenceGroup: 'pension-worker-ratio-current',
+    input: 'El sistema de reparto depende de que haya suficientes trabajadores por cada pensionista',
+    expected: {
+      state: 'limited', family: 'pension-worker-beneficiary-ratio', verdict: 'mixed',
+      directSourceIds: ['social-security-affiliation-source', 'social-security-pay-as-you-go'],
+      replyIncludes: ['2,51 cotizantes por pensionista', 'octubre de 2026', 'sistema de reparto', 'no fija una cifra', 'bases salariales'],
+      replyExcludes: ['2,5 en julio de 2026', 'demuestra la sostenibilidad'],
+      evidence: [{
+        familyId: 'pension-worker-beneficiary-ratio',
+        sourceIds: ['social-security-affiliation-source', 'social-security-pay-as-you-go'],
+        dataIncludes: ['2014: 2,24', '2026: 2,51', 'ingresos generales', 'prestaciones actuales'],
+        dimensions: { period: '2014–2026', geography: 'España', population: 'cotizantes y pensionistas incluidos en el indicador', denominator: 'pensionistas recogidos en el indicador oficial', unit: 'cotizantes por pensionista' },
+      }],
+      maxReplyWords: 145,
+    },
+  },
+  {
+    id: 'pension-worker-ratio-structural-paraphrase',
+    equivalenceGroup: 'pension-worker-ratio-current',
+    input: 'El sistema de reparto necesita suficientes cotizantes para sostener a cada pensionista',
+    expected: {
+      state: 'limited', family: 'pension-worker-beneficiary-ratio', verdict: 'mixed',
+      directSourceIds: ['social-security-affiliation-source', 'social-security-pay-as-you-go'],
+      replyIncludes: ['2,51 cotizantes por pensionista', 'no fija una cifra', 'bases salariales'],
+      replyExcludes: ['2,5 en julio de 2026'],
+      evidence: [{
+        familyId: 'pension-worker-beneficiary-ratio',
+        sourceIds: ['social-security-affiliation-source', 'social-security-pay-as-you-go'],
+        dataIncludes: ['2014: 2,24', '2026: 2,51', 'ingresos generales'],
+        dimensions: { period: '2014–2026', geography: 'España', population: 'cotizantes y pensionistas incluidos en el indicador', unit: 'cotizantes por pensionista' },
+      }],
+      maxReplyWords: 145,
+    },
+  },
+  {
+    id: 'pension-worker-ratio-paraphrase-affiliates',
+    equivalenceGroup: 'pension-worker-ratio-current',
+    input: 'La relación entre trabajadores afiliados y pensionistas muestra si hay cotizantes suficientes',
+    expected: {
+      state: 'limited', family: 'pension-worker-beneficiary-ratio', verdict: 'mixed',
+      directSourceIds: ['social-security-affiliation-source', 'social-security-pay-as-you-go'],
+      replyIncludes: ['2,51 cotizantes por pensionista', 'no fija una cifra', 'bases salariales'],
+      replyExcludes: ['2,5 en julio de 2026'],
+      evidence: [{
+        familyId: 'pension-worker-beneficiary-ratio',
+        sourceIds: ['social-security-affiliation-source', 'social-security-pay-as-you-go'],
+        dataIncludes: ['2014: 2,24', '2026: 2,51', 'ingresos generales'],
+        dimensions: { period: '2014–2026', geography: 'España', population: 'cotizantes y pensionistas incluidos en el indicador', unit: 'cotizantes por pensionista' },
+      }],
+      maxReplyWords: 145,
+    },
+  },
+  {
+    id: 'pension-worker-ratio-aging-trend',
+    input: 'El envejecimiento está reduciendo la relación entre cotizantes y pensionistas',
+    expected: {
+      state: 'limited', family: 'pension-worker-beneficiary-ratio', verdict: 'mixed',
+      directSourceIds: ['social-security-affiliation-source', 'social-security-pay-as-you-go'],
+      replyIncludes: ['no muestra una bajada en conjunto', '2,24', '2,51', 'no separa el efecto del envejecimiento'],
+      evidence: [{
+        familyId: 'pension-worker-beneficiary-ratio',
+        sourceIds: ['social-security-affiliation-source', 'social-security-pay-as-you-go'],
+        dataIncludes: ['2014: 2,24', '2026: 2,51', 'cotizaciones', 'prestaciones actuales'],
+        dimensions: { period: '2014–2026', geography: 'España', population: 'cotizantes y pensionistas incluidos en el indicador', unit: 'cotizantes por pensionista' },
+      }],
+      maxReplyWords: 145,
+    },
+  },
+  {
+    id: 'pension-worker-ratio-wrong-territory',
+    input: 'La relación de cotizantes por pensionista en Francia ha bajado en 2026',
+    expected: {
+      state: 'insufficient', family: 'pension-worker-beneficiary-ratio', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['2,51', 'España'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'pension-worker-ratio-outside-period',
+    input: 'La relación de cotizantes por pensionista en 2012 era de 2,5',
+    expected: {
+      state: 'insufficient', family: 'pension-worker-beneficiary-ratio', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['2,51', '2,24', '2014'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'pension-worker-ratio-wrong-month',
+    input: 'La relación de cotizantes por pensionista en enero de 2026 fue suficiente',
+    expected: {
+      state: 'insufficient', family: 'pension-worker-beneficiary-ratio', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['2,51', 'octubre de 2026'], evidence: [], maxReplyWords: 100,
+    },
+  },
 ];

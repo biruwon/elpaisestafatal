@@ -2,6 +2,7 @@ import { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { HOUSING_COMPLETION_EVIDENCE, HOUSING_SUPPLY_PRESSURE_EVIDENCE } from './housing-supply-snapshot.mjs';
 import { MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE } from './mortgage-entry-snapshot.mjs';
 import { UNPAID_OVERTIME_SNAPSHOT } from './unpaid-overtime-snapshot.mjs';
+import { PENSION_CONTRIBUTOR_RATIO_SNAPSHOT } from './pension-contributor-ratio-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -566,18 +567,112 @@ const pensionPriceIndexationEvidence = {
   directClaimEvidence: true,
 };
 const pensionWageContributionBase = (t) => /\b(pension\w*|jubilaci[oó]n|sistema de pensiones)\b/.test(t)
-  && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w* laboral\w*|cotiz\w*)\b/.test(t)
+  && (/\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w* laboral\w*)\b/.test(t)
+    || /\bbase\w* de cotizaci[oó]n\w*\b/.test(t))
   && /\b(baj\w*|reduc\w*|debilit\w*|presion\w*|merm\w*|insuficient\w*|poc\w*)\b/.test(t)
   && /\b(emple\w*|ocupaci[oó]n|trabajador\w*|cotiz\w*|financi\w*|sostenibilidad|recaud\w*)\b/.test(t);
 const pensionDoublePaymentClaim = (t) => /\b(pension\w*|jubilaci[oó]n)\b/.test(t)
   && /\b(cotiz\w*|seguridad social|contribuci\w*|pension\w* public\w*)\b/.test(t)
   && /\b(ahorro privad\w*|plan(?:es)? privad\w*|plan(?:es)? de pensiones? privad\w*|pension\w* privad\w*|pension\w* complementar\w*|fondo de pensiones? privad\w*|otra privad\w*)\b/.test(t)
   && /\b(dos veces|doble|por duplicado|adem[aá]s|tener que|tendr\w* que|obligad\w*|pagar)\b/.test(t);
-const pensionWorkerSupportRatio = (t) => /\b(pension\w*|jubilad\w*|jubilaci[oó]n|sistema de reparto)\b/.test(t)
+const pensionWorkerSupportRatio = (t) => {
+  const pensioner = /\b(pension\w*|jubilad\w*)\b/.test(t);
+  const contributorCount = /\b(cotiz\w*|afiliad\w*)\b/.test(t);
+  const workersPerPensioner = /\b(?:trabajador\w*|emple\w*)[\s\w]{0,25}\bpor (?:cada )?pensionist\w*\b|\bpensionist\w*[\s\w]{0,25}\bpor (?:cada )?\b(?:trabajador|emple)\w*\b/.test(t);
+  return pensioner
+  && (contributorCount || workersPerPensioner)
   && /\b(trabajador\w*|cotiz\w*|emple\w*|afiliad\w*)\b/.test(t)
   && /\b(por cada|ratio|relaci[oó]n|proporci[oó]n|suficient\w*|depend\w*|cotiz\w* por (?:cada )?(?:pensionist\w*|jubilad\w*))\b/.test(t)
+  && !/\b(emplead\w* p[uú]blic\w*|sector p[uú]blic\w*|sector privad\w*|desemplead\w*)\b/.test(t)
   && !/\b(insostenible|sostenibilidad|quebr\w*|colaps\w*)\b/.test(t)
   && !pensionDoublePaymentClaim(t) && !pensionWageContributionBase(t);
+};
+const pensionWorkerRatioEvidence = (() => {
+  const snapshot = PENSION_CONTRIBUTOR_RATIO_SNAPSHOT;
+  const observations = snapshot.observations;
+  const latest = observations.at(-1);
+  const number = (value) => new Intl.NumberFormat('es-ES', { minimumFractionDigits: 2, maximumFractionDigits: 2 }).format(value);
+  const requestedYearsFor = (claim) => [...new Set([...normalize(claim).matchAll(/\b20\d{2}\b/g)].map(([year]) => Number(year)))].sort((left, right) => left - right);
+  const rowsFor = (claim) => {
+    const years = requestedYearsFor(claim);
+    if (!years.length) return [latest];
+    const selected = years.map((year) => observations.find((row) => row.year === year)).filter(Boolean);
+    return selected.length ? [selected[0], ...(selected.length > 1 && selected.at(-1) !== selected[0] ? [selected.at(-1)] : [])] : [latest];
+  };
+  const isTrendClaim = (claim) => /\b(?:cada vez|ultim\w* anos|aument\w*|crec\w*|sub\w*|reduc\w*|disminu\w*|descend\w*|baj\w*|cae|caen|envejec\w*|tendencia|evoluci\w*)\b/.test(normalize(claim));
+  const payAsYouGoSource = snapshot.payAsYouGoSource;
+  const seriesFact = `La serie publicada por la Seguridad Social registra ${observations.map((row) => `${row.year}: ${number(row.ratio)} cotizantes por pensionista`).join('; ')}. El último punto corresponde a octubre de 2026.`;
+  const fundingFact = 'En el sistema de reparto, las cotizaciones y los ingresos generales se distribuyen de inmediato o a corto plazo para pagar prestaciones actuales; la Seguridad Social describe además solidaridad entre generaciones y territorios.';
+  const dimensionsForYears = (years) => {
+    const supportedYears = years.filter((year) => observations.some((row) => row.year === year));
+    return {
+      subject: 'ratio oficial de cotizantes por pensionista',
+      population: 'cotizantes y pensionistas incluidos en el indicador publicado por la Seguridad Social',
+      period: supportedYears.length === 1 ? `${supportedYears[0]}${supportedYears[0] === 2026 ? ' (dato de octubre)' : ''}`
+        : supportedYears.length > 1 ? `${supportedYears[0]}–${supportedYears.at(-1)}${supportedYears.includes(2026) ? ' (último dato de octubre)' : ''}`
+          : '2014–2026; último dato de octubre de 2026',
+      geography: 'España',
+      denominator: 'pensionistas recogidos en el indicador oficial; la publicación ofrece la ratio, no los recuentos brutos usados para calcularla',
+      unit: 'cotizantes por pensionista',
+    };
+  };
+  return {
+    directClaimEvidence: true,
+    claimVerdict: 'mixed',
+    expiresAt: snapshot.expiresAt,
+    territories: ['ES'],
+    when: (claim) => {
+      const years = requestedYearsFor(claim);
+      const months = [...normalize(claim).matchAll(/\b(enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)\b/g)].map(([, month]) => month);
+      const monthFitsLatest = months.length === 1 && months[0] === 'octubre' && years.length === 1 && years[0] === 2026;
+      return years.every((year) => observations.some((row) => row.year === year))
+        && (!months.length || monthFitsLatest);
+    },
+    evidenceLabel: 'Ratio de cotizantes por pensionista publicada por la Seguridad Social',
+    dimensions: dimensionsForYears([]),
+    dimensionsForClaim: (claim) => dimensionsForYears(requestedYearsFor(claim)),
+    facts: [seriesFact, fundingFact],
+    factSourceIds: [[snapshot.source.id], [payAsYouGoSource.id]],
+    factDimensions: [
+      {
+        subject: 'ratio oficial de cotizantes por pensionista',
+        population: 'cotizantes y pensionistas incluidos en el indicador publicado por la Seguridad Social',
+        period: '2014–2026; último dato de octubre de 2026',
+        geography: 'España',
+        denominator: 'pensionistas recogidos en el indicador oficial; la publicación ofrece la ratio, no los recuentos brutos usados para calcularla',
+        unit: 'cotizantes por pensionista',
+      },
+      {
+        subject: 'financiación de reparto de la Seguridad Social',
+        population: 'prestaciones actuales del sistema español de Seguridad Social',
+        period: 'reglas de financiación descritas por la Seguridad Social',
+        geography: 'España',
+        denominator: 'cotizaciones e ingresos generales',
+        unit: 'descripción del sistema de financiación',
+      },
+    ],
+    sources: [snapshot.source, payAsYouGoSource],
+    shareableReplyForContext: ({ claim }) => {
+      const rows = rowsFor(claim);
+      const first = observations[0];
+      const last = latest;
+      if (isTrendClaim(claim)) {
+        return [
+          `La serie publicada no muestra una bajada en conjunto entre ${first.year} y octubre de ${last.year}: pasó de ${number(first.ratio)} a ${number(last.ratio)} cotizantes por pensionista. Hubo descensos en algunos años, así que no fue una subida continua.`,
+          'El indicador describe la relación observada, pero no separa el efecto del envejecimiento de otros cambios en empleo y cotización. Tampoco basta por sí solo para decidir si el sistema es sostenible.',
+        ].join('\n\n');
+      }
+      const latestFact = `En octubre de 2026, la Seguridad Social publicó ${number(last.ratio)} cotizantes por pensionista.`;
+      const selectedFact = rows.length === 1 && rows[0].year === last.year
+        ? latestFact
+        : `La serie publicada da ${rows.map((row) => `${number(row.ratio)} en ${row.year}`).join(' y ')} cotizantes por pensionista.`;
+      return [
+        `${selectedFact} En un sistema de reparto, las cotizaciones y otros ingresos corrientes financian prestaciones actuales, por lo que la relación cotizantes/pensionistas es relevante.`,
+        'La fuente no fija una cifra que signifique «suficientes». La ratio no incluye por sí sola las bases salariales, el importe de las prestaciones ni otras transferencias, así que no decide la sostenibilidad futura.',
+      ].join('\n\n');
+    },
+  };
+})();
 const intergenerationalHousingPensionComparison = (t) => /\b(generaci[oó]n|generaciones|boomers?|nacid\w* entre|mayores? de)\b/.test(t)
   && /\b(viviend\w*|alquil\w*|compra de vivienda|acceso a la vivienda|propietari\w*)\b/.test(t)
   && /\b(pension\w*|jubilaci[oó]n|jubilad\w*)\b/.test(t)
@@ -878,6 +973,9 @@ const focuses = [
     direct: [], context: [], claimType: 'comparative',
     needs: ['personas afiliadas que cotizan y personas pensionistas para el mismo periodo y perímetro', 'bases de cotización, ingresos del sistema y gasto en prestaciones', 'otras fuentes de financiación, transferencias y reglas de prestaciones'],
     explanation: 'La relación entre cotizantes y pensionistas puede describir la estructura del sistema, pero no determina por sí sola si la financiación es suficiente. También importan las bases salariales, las prestaciones y los ingresos no contributivos.',
+    explanationHeadline: 'La ratio cotizante/pensionista aporta contexto, pero no mide por sí sola la sostenibilidad',
+    shareableReplyForContext: pensionWorkerRatioEvidence.shareableReplyForContext,
+    explanationEvidence: pensionWorkerRatioEvidence,
     limitation: 'La dependencia por edad no equivale a cotizantes por pensionista. Un único cociente sin importes, perímetro y fuentes de financiación no demuestra por sí solo la sostenibilidad del sistema.',
   },
   {

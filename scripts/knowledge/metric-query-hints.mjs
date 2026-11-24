@@ -12,6 +12,41 @@ const normalise = (value) => String(value || '')
   .replace(/[^a-z0-9]+/g, ' ')
   .trim();
 
+export const isPrivateSectorMultiGroupFinancingClaim = (query) => {
+  const normalized = normalise(query);
+  const privatePayer = /\b(?:sector privado|empresas privadas|empleadores|patronal|trabajadores del sector privado)\b/.test(normalized);
+  const financingAction = /\b(?:sostien\w*|financ\w*|pag\w*|mantien\w*|cubr\w*|soport\w*)\b/.test(normalized);
+  const shareLanguage = /\b(?:proporcion\w*|porcentaje|parte|cuota|cada vez mas|creciente|crecientemente)\b/.test(normalized);
+  const representedGroups = [
+    /\b(?:pensionist\w*|jubilad\w*|pensiones?)\b/.test(normalized),
+    /\b(?:desemplead\w*|parad\w*|personas? en paro|beneficiarios? de desempleo)\b/.test(normalized),
+    /\b(?:emplead\w* public\w*|funcionari\w*|sector publico)\b/.test(normalized),
+  ].filter(Boolean).length;
+  return privatePayer && financingAction && shareLanguage && representedGroups >= 2;
+};
+
+const pensionSpendingMetricIds = new Set([
+  'old_age_survivors_benefits_per_capita', 'old_age_survivors_benefits_per_capita_europe',
+  'old_age_survivors_benefits_total', 'social_security_contributory_pension_expenditure',
+  'pension_contributory_expenditure_projected', 'pension_noncontributory_expenditure_projected',
+  'pension_system_expenditure_projected', 'social_security_contributory_pension_budget',
+  'social_security_noncontributory_pension_budget', 'social_security_pension_budget_total',
+]);
+const pensionSpendingRequested = (normalized) => /\b(?:gasto\w*|gast\w*|presupuest\w*|coste\w*|importe\w*|dedic\w*|euros?|millones|spending|expenditure)\b/.test(normalized);
+const europeRequested = (normalized) => /\b(?:europa|europe\w*|ue|union europea)\b/.test(normalized);
+const oldAgeDependencyRequested = (normalized) => /\b(?:dependencia demografica|dependencia por edad|ratio de dependencia|indice de dependencia|personas de 65 anos o mas por cada 100|mayores por cada 100 personas en edad de trabajar|personas? mayores? hay por cada (?:100|cien) en edad laboral)\b/.test(normalized);
+
+export const constrainMetricIdsToQueryScope = (query, metricIds) => {
+  const normalized = normalise(query);
+  if (isPrivateSectorMultiGroupFinancingClaim(query)) return new Set();
+  return new Set([...metricIds].filter((metricId) => {
+    if (pensionSpendingMetricIds.has(metricId) && !pensionSpendingRequested(normalized)) return false;
+    if (metricId === 'old_age_survivors_benefits_per_capita_europe' && !europeRequested(normalized)) return false;
+    if (metricId === 'old_age_dependency_ratio' && !oldAgeDependencyRequested(normalized)) return false;
+    return true;
+  }));
+};
+
 const hasHousingContextWithoutEmployment = (normalizedQuery) => {
   const housingContext = /(?:viviend|alquiler|arrend|piso|casero|propietari|inquilin|contrato de temporada)/.test(normalizedQuery);
   const explicitEmploymentContext = /(?:empleo|trabaj|laboral|ocupacion|asalariad|mercado de trabajo|puesto de trabajo)/.test(normalizedQuery);
@@ -111,8 +146,9 @@ const domain = /(?:ayud|prestacion|benefici|subsid|imv|cobrar el paro)/.test(nor
     }
   }
   const lexicalCandidates = registryMetricIdsForQuery(normalized);
-  const ordered = [...new Set([...conceptCandidates, ...lexicalCandidates])].filter((id) => registry[id] && !excluded.has(id));
-  return new Set(ordered.slice(0, limit));
+  const ordered = constrainMetricIdsToQueryScope(query, [...new Set([...conceptCandidates, ...lexicalCandidates])]
+    .filter((id) => registry[id] && !excluded.has(id)));
+  return new Set([...ordered].slice(0, limit));
 };
 
 const metricFamilyForId = (metricId) => String(metricId || '').replace(/_(?:europe|quarterly|monthly|annual)$/, '');
@@ -297,7 +333,7 @@ const metricHints = [
   { ids: ['social_protection_benefits_per_capita'], terms: ['gasto en proteccion social', 'prestaciones de proteccion social', 'proteccion social por habitante', 'prestaciones por habitante', 'gasto en prestaciones sociales', 'prestaciones sociales', 'ayudas sociales', 'gasto en ayudas', 'gasto social', 'prestaciones publicas', 'cuanto se gasta en ayudas', 'cuanto gasta espana en proteccion social'] },
   { ids: ['imv_title_holders_by_nationality', 'imv_beneficiary_average_age'], terms: ['ingreso minimo vital', 'ingreso minimo', 'imv', 'titulares del imv', 'beneficiarios del imv', 'edad media beneficiarios imv', 'ayudas del imv', 'renta minima vital'] },
   { ids: ['social_protection_benefits_per_capita_europe'], terms: ['gasto en proteccion social frente a europa', 'gasto en proteccion social frente a la union europea', 'prestaciones sociales frente a europa', 'prestaciones sociales frente a la union europea', 'ayudas sociales frente a europa', 'espana gasta mas en proteccion social que europa', 'espana gasta menos en proteccion social que europa', 'comparacion europea del gasto social', 'proteccion social europa'] },
-  { ids: ['old_age_survivors_benefits_per_capita'], terms: ['gasto en pensiones', 'prestaciones de vejez', 'pensiones por habitante', 'gasto en jubilacion', 'pensiones y supervivencia', 'cuanto gasta espana en pensiones', 'cuanto se gasta en pensiones', 'gasto de las pensiones', 'gasto pensionistas'] },
+  { ids: ['old_age_survivors_benefits_per_capita'], terms: ['gasto en pensiones', 'gasto de pensiones de vejez', 'gasto en pensiones de vejez', 'prestaciones de vejez', 'pensiones por habitante', 'gasto en jubilacion', 'pensiones y supervivencia', 'cuanto gasta espana en pensiones', 'cuanto se gasta en pensiones', 'gasto de las pensiones', 'gasto pensionistas'] },
   { ids: ['old_age_survivors_benefits_per_capita_europe'], terms: ['gasto en pensiones frente a europa', 'gasto en pensiones por habitante frente a europa', 'como queda el gasto en pensiones espanol frente a europa', 'gasto espanol en pensiones por persona comparado con europa', 'pensiones de espana frente a europa', 'pensiones por habitante frente a europa', 'espana gasta mas en pensiones que europa', 'espana gasta menos en pensiones que europa', 'espana gasta mas por habitante en pensiones que la union europea', 'espana gasta menos por habitante en pensiones que la union europea', 'pensiones por habitante que europa', 'pensiones frente a la union europea', 'pensiones y supervivencia frente a la union europea', 'comparacion europea del gasto en pensiones'] },
   { ids: ['unemployment_rate'], terms: ['tasa de paro', 'tasa de desempleo', 'desempleo en espana', 'paro en espana', 'evolucion del desempleo', 'evolucion del paro', 'no encuentra trabajo', 'no encuentran trabajo', 'personas activas no encuentran trabajo'] },
   { ids: ['unemployment_rate_europe'], terms: ['paro en europa', 'desempleo en europa', 'desempleo espanol frente al europeo', 'tasa de paro de espana frente a los paises europeos', 'tasa de paro espana frente a los paises europeos', 'ranking europeo de la tasa de desempleo', 'tasa de paro europea', 'comparacion europea', 'comparar paro europa', 'frente a europa en desempleo', 'supera a europa en desempleo', 'supera europa en desempleo', 'supera a europa en paro', 'supera europa en paro', 'europa tiene mas paro que espana', 'europa tiene mas desempleo que espana', 'paro mas alto de europa', 'paro mas bajo de europa', 'puesto de espana por desempleo', 'tasa paro europa', 'espana tasa paro alta europa', 'espana tasa paro baja europa', 'espana tasa de paro alta en europa', 'espana tasa de paro baja en europa', 'paro alta europa', 'paro baja europa'] },
@@ -334,7 +370,6 @@ const metricHints = [
   { ids: ['fertility_rate'], terms: ['fecundidad', 'tasa de fecundidad', 'natalidad', 'tasa de natalidad', 'hijos por mujer', 'nacimientos', 'nacimientos por mujer'] },
   { ids: ['fertility_rate_europe'], terms: ['fecundidad frente a europa', 'fecundidad frente a la union europea', 'tasa de fecundidad frente a europa', 'espana tiene menos hijos que europa', 'espana tiene mas hijos que europa', 'comparacion europea de fecundidad', 'hijos por mujer europa'] },
   { ids: ['old_age_dependency_ratio'], terms: ['envejecimiento', 'envejecida', 'personas mayores', 'dependencia de mayores', 'mayores de 65', 'sociedad envejecida', 'personas mayores por cada 100', 'personas mayores por cada cien', 'edad laboral', 'edad de trabajar', 'dependencia demografica', 'ratio de dependencia'] },
-  { ids: ['old_age_survivors_benefits_per_capita'], terms: ['pensiones', 'pension', 'jubilacion', 'jubilados', 'prestaciones de vejez', 'gasto en pensiones', 'gasto de jubilacion'] },
   { ids: ['temporary_employment_rate'], terms: ['temporalidad', 'contratos temporales', 'empleo temporal', 'precariedad laboral'] },
   { ids: ['median_equivalised_income'], terms: ['nivel de vida', 'capacidad de ahorro', 'ahorro de las familias', 'renta disponible'] },
   { ids: ['cpi_index'], terms: ['cesta de la compra', 'precio de servicios basicos', 'coste de vida'] },
@@ -364,12 +399,13 @@ const metricHints = [
 ];
 
 export const preferredMetricIdsForQuery = (query) => {
+  if (isPrivateSectorMultiGroupFinancingClaim(query)) return new Set();
   const vacancyMeasurements = vacancyMeasurementMetricIdsForQuery(query);
   if (vacancyMeasurements !== undefined) return vacancyMeasurements;
   const focused = focusedMetricIdsFor(query);
   const normalized = normalise(query);
   if (focused) {
-    if (!hasHousingContextWithoutEmployment(normalized)) return focused;
+    if (!hasHousingContextWithoutEmployment(normalized)) return constrainMetricIdsToQueryScope(query, focused);
     const scoped = new Set(focused);
     scoped.delete('temporary_employment_rate');
     scoped.delete('temporary_employment_rate_europe');
@@ -893,7 +929,7 @@ export const preferredMetricIdsForQuery = (query) => {
     preferred.delete('temporary_employment_rate');
     preferred.delete('temporary_employment_rate_europe');
   }
-  return preferred;
+  return constrainMetricIdsToQueryScope(query, preferred);
 };
 
 export const excludedMetricIdsForQuery = (query) => {
@@ -934,6 +970,9 @@ export const excludedMetricIdsForQuery = (query) => {
     && ['espana', 'pais', 'gobierno', 'sanchez', 'politic'].some((term) => normalized.includes(term));
   const priceContext = ['precio', 'precios', 'coste', 'cesta', 'ipc', 'electricidad', 'luz', 'alquiler'].some((term) => normalized.includes(term));
   const excluded = new Set();
+  if (isPrivateSectorMultiGroupFinancingClaim(query)) {
+    for (const id of Object.keys(registry)) excluded.add(id);
+  }
   if (hasHousingContextWithoutEmployment(normalized)) {
     excluded.add('temporary_employment_rate');
     excluded.add('temporary_employment_rate_europe');

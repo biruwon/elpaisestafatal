@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { excludedMetricIdsForQuery, metricQueryTextForIds, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
+import { constrainMetricIdsToQueryScope, excludedMetricIdsForQuery, isPrivateSectorMultiGroupFinancingClaim, metricCandidatesForQuery, metricQueryTextForIds, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
 
 // These are deliberately new conversational formulations rather than
 // published claim titles or aliases. Each should resolve to a reusable metric
@@ -172,6 +172,28 @@ for (const [query, expected, forbidden] of pensionNearNeighbors) {
     throw new Error(`${query}: expected ${expected} without adjacent measure ${forbidden}; got ${[...ids].join(', ')}`);
   }
 }
+
+const privateSectorMultiGroupClaims = [
+  'El sector privado sostiene una proporción cada vez mayor de pensionistas, desempleados y empleados públicos',
+  'Las empresas privadas financian una parte creciente de pensionistas, personas en paro y funcionarios',
+];
+const unrelatedPensionMetrics = new Set([
+  'old_age_survivors_benefits_per_capita', 'old_age_survivors_benefits_per_capita_europe',
+  'old_age_dependency_ratio', 'unemployment_rate', 'benefit_recipients_by_group',
+]);
+for (const query of privateSectorMultiGroupClaims) {
+  if (!isPrivateSectorMultiGroupFinancingClaim(query)) throw new Error(`Multi-group private-sector financing wording was not recognized: ${query}`);
+  if (preferredMetricIdsForQuery(query).size) throw new Error(`A financing-share claim inherited a metric for only one group: ${query}`);
+  if (constrainMetricIdsToQueryScope(query, unrelatedPensionMetrics).size) throw new Error(`A financing-share claim retained an incompatible metric candidate: ${query}`);
+  const excluded = excludedMetricIdsForQuery(query);
+  if ([...unrelatedPensionMetrics].some((id) => !excluded.has(id))) throw new Error(`A multi-group financing claim can still retrieve unrelated metrics: ${query}`);
+  if (metricCandidatesForQuery(query, ['pensions', 'benefits']).size) throw new Error(`Ontology candidates crossed into a multi-group financing claim: ${query}`);
+}
+const directPensionSpending = '¿Qué gasto de pensiones de vejez se registró por habitante?';
+if (!preferredMetricIdsForQuery(directPensionSpending).has('old_age_survivors_benefits_per_capita')) {
+  throw new Error('An explicit per-capita pension-spending question lost its matching metric family');
+}
+assert.deepEqual([...preferredMetricIdsForQuery('El gasto en pensiones aumenta')], ['old_age_survivors_benefits_per_capita'], 'An explicit pension-spending trend must retain its reviewed metric family');
 
 const failures = [];
 for (const [query, expected] of cases) {

@@ -1165,3 +1165,29 @@ The deterministic audit of the 300-item discovery set now reports 3 complete,
 26 limited. There are 89 compiler metric matches and 119 focused-family routes,
 with 50 claims in both groups and 142 with neither route. All inputs remain
 explicitly unverified, and routing counts do not estimate factual accuracy.
+
+## Pension contributor-to-pensioner ratio — 24 November 2026
+
+Two recurring text claims now use the Ministry of Inclusion's [October 2026
+Social Security affiliation presentation](https://bibliovirtual.inclusion.gob.es/documents/20121/0/202610%2BAfiliaci%C3%B3n%2Boct-26.pdf/427aa2e0-10cd-41c0-2815-84423e8f782c).
+It reports 2.51 contributors per pensioner in October 2026 and 2.24 in 2014.
+The [Social Security explanation of the pay-as-you-go system](https://www.seg-social.es/wps/portal/wss/internet/PortalEducativo/Profesores/Unidad5/PESS501/PESS503)
+provides context on current contributions and benefits.
+
+The reply is limited: the ratio is a headcount measure, provides no threshold
+for “enough” contributors, and does not isolate the effect of ageing or
+establish future sustainability. It is withheld for other territories,
+unsupported dates, and old-age dependency claims. A separate routing fix stops
+claims about the private sector financing several beneficiary groups from
+inheriting a per-capita pension-spending figure or unemployment rate; the live
+endpoint now returns an insufficient answer without a source or numeric claim
+for that wording.
+
+The held-out text answer benchmark passes 64/64 cases across 14 paraphrase
+groups. Claim-focus validation covers 246 paraphrase and scope checks, and
+semantic metric coverage checks 109 unseen formulations. The deterministic
+audit reports 3 complete, 52 limited and 245 uncovered answers; public states
+are 272 insufficient and 28 limited. There are 80 compiler metric matches and
+118 focused-family routes, with 50 in both groups and 152 with neither route.
+All 300 discovery inputs remain unverified, and these routing counts do not
+estimate factual accuracy.

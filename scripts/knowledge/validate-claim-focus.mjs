@@ -352,6 +352,11 @@ for (const [family, claim] of crossTopicClaims) {
     assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['ine-epa-unpaid-overtime-2026', 'ine-epa-questionnaire-2021']);
     assert.doesNotMatch(plan.shareableReply, /17 €/);
     assert.equal(localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim).state, 'limited');
+  } else if (family === 'pension-worker-beneficiary-ratio') {
+    assert.equal(plan.evidenceLevel, 'limited', 'A salary observation must not erase the independently sourced contributor-to-pensioner ratio');
+    assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['social-security-affiliation-source', 'social-security-pay-as-you-go']);
+    assert.doesNotMatch(plan.shareableReply, /17 €/);
+    assert.equal(localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim).state, 'limited');
   } else {
     assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should leave this claim unsupported: ${claim}`);
     assert.equal(plan.sourceLinks.length, 0, `An unrelated wage survey was attached to this claim: ${claim}`);
@@ -767,6 +772,43 @@ for (const unmatched of [
   const plan = focus ? focusedEvidencePlan(unmatched, { now: Date.parse('2026-11-24T12:00:00Z') }) : undefined;
   assert.ok(!plan?.sourceLinks?.length, `Hospitality overtime evidence crossed into a different measurement or scope: ${unmatched}`);
 }
+const pensionRatioClaim = 'El sistema de reparto depende de que haya suficientes trabajadores por cada pensionista';
+const pensionRatioPlan = focusedEvidencePlan(pensionRatioClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
+validateAnswerPlan(pensionRatioPlan);
+assert.equal(pensionRatioPlan.answerScope.family, 'pension-worker-beneficiary-ratio');
+assert.equal(pensionRatioPlan.evidenceLevel, 'limited', 'A current contributor-to-pensioner ratio is direct context but has no sufficiency threshold');
+assert.deepEqual(pensionRatioPlan.sourceLinks.map((source) => source.id), ['social-security-affiliation-source', 'social-security-pay-as-you-go']);
+assert.match(pensionRatioPlan.shareableReply, /En octubre de 2026.*2,51 cotizantes por pensionista/s);
+assert.match(pensionRatioPlan.shareableReply, /no fija una cifra.*bases salariales/s);
+assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'pension-worker-ratio', result: pensionRatioPlan }, pensionRatioClaim).state, 'limited');
+for (const paraphrase of [
+  'El sistema de reparto necesita suficientes cotizantes para sostener a cada pensionista',
+  'La relación entre trabajadores afiliados y pensionistas muestra si hay cotizantes suficientes',
+]) {
+  const plan = focusedEvidencePlan(paraphrase, { now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.equal(plan.answerScope.family, 'pension-worker-beneficiary-ratio');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), pensionRatioPlan.sourceLinks.map((source) => source.id), `A pension-ratio paraphrase changed evidence: ${paraphrase}`);
+  assert.match(plan.shareableReply, /2,51 cotizantes por pensionista/);
+}
+const pensionRatioTrend = focusedEvidencePlan('El envejecimiento está reduciendo la relación entre cotizantes y pensionistas', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(pensionRatioTrend.answerScope.family, 'pension-worker-beneficiary-ratio');
+assert.match(pensionRatioTrend.shareableReply, /no muestra una bajada en conjunto.*2,24.*2,51/s);
+assert.match(pensionRatioTrend.shareableReply, /no separa el efecto del envejecimiento/);
+for (const unmatched of [
+  'La relación de cotizantes por pensionista en Francia ha bajado en 2026',
+  'La relación de cotizantes por pensionista en Madrid bajó en enero de 2026',
+  'La relación de cotizantes por pensionista en 2012 era de 2,5',
+]) {
+  const plan = focusedEvidencePlan(unmatched, { now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.ok(!plan.sourceLinks.some((source) => source.id === 'social-security-affiliation-source'), `Pension ratio evidence crossed into another scope: ${unmatched}`);
+}
+const ageDependencyClaim = 'La dependencia demográfica de mayores por cada 100 personas en edad de trabajar aumenta';
+const ageDependencyPlan = focusedEvidencePlan(ageDependencyClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.ok(!ageDependencyPlan?.sourceLinks?.some((source) => source.id === 'social-security-affiliation-source'), 'An old-age dependency ratio must not inherit the pension-system contributor ratio');
+const pensionerSupportTransferClaim = 'El sector privado sostiene una proporción cada vez mayor de pensionistas, desempleados y empleados públicos';
+const pensionerSupportTransferPlan = focusedEvidencePlan(pensionerSupportTransferClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.notEqual(claimFocusFor(pensionerSupportTransferClaim)?.id, 'pension-worker-beneficiary-ratio', 'A claim about the private sector financing several public groups is not a contributor-to-pensioner ratio');
+assert.ok(!pensionerSupportTransferPlan?.sourceLinks?.some((source) => source.id === 'social-security-affiliation-source'), 'The headcount ratio must not be attached to a claim about sector financing shares');
 assert.equal(focusedEvidencePlan('El PIB de Francia no refleja cómo viven los hogares')?.sourceLinks.length, 0, 'Spain-scoped evidence must not be attached to an explicitly French claim');
 assert.equal(focusedEvidencePlan('Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', { now: Date.parse('2027-11-17') })?.sourceLinks.length, 0, 'Expired definition evidence must not appear as current');
 for (const claim of ['Las listas de espera sanitarias son muy largas', 'La temporalidad laboral ha bajado, pero no resume toda la precariedad']) {
