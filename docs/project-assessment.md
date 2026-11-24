@@ -1360,7 +1360,7 @@ office complies. Its exceptions—including sanction and inspection proceedings
 and the case where a document cannot exceptionally be retrieved—stay in the
 answer.
 
-The held-out benchmark now passes 192/192 cases across 53
+The held-out benchmark now passes 194/194 cases across 54
 paraphrase groups. Claim-focus validation covers 320 paraphrases and boundary
 checks. The full classifier suite and `npm run check` pass; Astro reports no
 errors or warnings and five existing hints. A cross-family regression found
@@ -1380,6 +1380,17 @@ area from a comparable area and the period before and after the measure;
 tourism-specific requirements appear only when the claim mentions tourism.
 Generic housing-supply gaps no longer use tourism-specific wording. Tests keep
 these claims separate from tourist-housing and rent-price claims.
+
+Claims that primary-care appointment delays push people into emergency care
+now remain insufficient: the Ministry of Health's 2026 second-wave survey
+measures waiting time, not linked emergency visits or a causal effect. It
+reports that 72.0% of the question 5c base (n=2,020) waited more than a day
+because no earlier appointment was available; among respondents eligible for
+question 5c_01, 1,417 valid answers give a mean wait of 9.71 days. The survey
+covers adults who used public family medicine for their own health problem in
+the previous 12 months and excludes mutualities with private care. Surgery
+wait claims stay outside this primary-care route. Source: [Ministry of Health,
+2026 Barómetro Sanitario, second wave](https://www.sanidad.gob.es/estadEstudios/estadisticas/BarometroSanitario/Barom_Sanit_2026/2Oleada/2026_CIS_2_OLA_3574multi.xlsx).
 
 The 300-item unverified discovery corpus currently has a metric or focused
 family route for 169 claims (66 metric matches and 150 family matches, with 47

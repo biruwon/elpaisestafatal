@@ -634,6 +634,36 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'primary-care-wait-causes-emergency-visits',
+    equivalenceGroup: 'primary-care-waits-and-emergency-use-causality',
+    input: 'La dificultad para obtener cita en atención primaria empuja a pacientes hacia urgencias',
+    expected: {
+      state: 'insufficient', family: 'primary-care-wait-causes', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['72 %', '9,71 días', 'no mide si las esperas llevan a urgencias', 'excluye mutualidades con asistencia privada'],
+      evidence: [
+        {
+          familyId: 'primary_care_wait_days', sourceIds: ['sanidad-primary-care-2026-wave2'], dataIncludes: ['9,71 días', '2026 · oleada 2'],
+          dimensions: { period: '2026-O2', geography: 'España', population: 'solo quienes esperaron más de un día por falta de cita', denominator: 'pregunta 5c_01 con respuesta válida en días', unit: 'días' },
+        },
+        {
+          familyId: 'primary_care_wait_over_one_day_rate', sourceIds: ['sanidad-primary-care-2026-wave2'], dataIncludes: ['72 %', '2026 · oleada 2'],
+          dimensions: { period: '2026-O2', geography: 'España', denominator: 'pacientes de la base de la pregunta 5c', unit: '%' },
+        },
+      ],
+      maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'primary-care-wait-causes-emergency-visits-paraphrase',
+    equivalenceGroup: 'primary-care-waits-and-emergency-use-causality',
+    input: 'La falta de cita del médico de familia lleva a las personas a urgencias',
+    expected: {
+      state: 'insufficient', family: 'primary-care-wait-causes', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['72 %', '9,71 días', 'no mide si las esperas llevan a urgencias', 'excluye mutualidades con asistencia privada'],
+      evidence: [], maxReplyWords: 150,
+    },
+  },
+  {
     id: 'specialist-outpatient-named-region-comparison',
     equivalenceGroup: 'specialist-outpatient-canarias-melilla-2025',
     input: 'La espera media de consultas externas fue mayor en Canarias que en Melilla en 2025',

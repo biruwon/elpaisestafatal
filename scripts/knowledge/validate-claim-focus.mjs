@@ -2698,6 +2698,7 @@ const waitCausalityPlan = focusedEvidencePlan(waitCausalityClaim, { observations
 assert.equal(waitCausalityPlan.claimType, 'causal');
 assert.deepEqual(waitCausalityPlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], 'Appointment-delay data must not be attributed as proof of emergency-care effects');
 assert.match(waitCausalityPlan.shareableReply, /9,71/);
+assert.notEqual(claimFocusFor('La espera por una operación lleva a pacientes a urgencias')?.id, 'primary-care-waits', 'Surgical-care delays must not inherit primary-care access or emergency-use context');
 assert.notEqual(claimFocusFor('Las esperas para el especialista varían entre comunidades autónomas')?.id, 'primary-care-waits', 'Hospital-specialist delays must remain outside primary care');
 assert.equal(claimFocusFor('Las listas de espera para cirugías se alargan')?.id, undefined, 'Surgical waiting lists must not inherit primary-care data');
 
