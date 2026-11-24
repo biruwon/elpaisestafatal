@@ -26,7 +26,14 @@ const cases = [
   ['youth-housing-family-formation-costs', ['La combinación de vivienda cara y cotizaciones altas reduce la capacidad de los jóvenes para tener hijos y ahorrar', 'El alquiler y las contribuciones elevadas limitan que la juventud ahorre y forme una familia', 'La vivienda costosa y los impuestos reducen la capacidad económica de los jóvenes para ahorrar y tener hijos']],
   ['inflation-tax-bracket-creep', ['La inflación eleva la carga fiscal cuando los tramos y deducciones no se actualizan al mismo ritmo', 'Si el IRPF no actualiza sus tramos con los precios, la inflación aumenta la recaudación', 'La progresividad en frío hace subir el IRPF cuando las rentas nominales crecen por la inflación']],
   ['household-inflation-basket', ['El IPC general no refleja bien lo que notan los hogares que gastan mucho en comida y alquiler', '¿Cómo han cambiado desde 2020 los alimentos, el alquiler y la inflación general para las familias?', 'El índice general no describe toda la cesta de familias que destinan más dinero a alimentación y vivienda', 'La cesta de la compra ha subido más de lo que percibe quien mira solo el IPC general', 'Los precios de los alimentos han subido más que la inflación general', 'Los alimentos se encarecieron por encima del IPC general']],
-  ['gdp-household-welfare', ['Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', 'Que el PIB crezca no se traduce directamente en una mejora de la vida de las familias', 'El PIB por habitante no refleja cómo se reparte la prosperidad entre los hogares']],
+  ['gdp-household-welfare', [
+    'Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio',
+    'Que el PIB crezca no se traduce directamente en una mejora de la vida de las familias',
+    'El PIB por habitante no refleja cómo se reparte la prosperidad entre los hogares',
+    'Los buenos datos macroeconómicos conviven con una sensación de empeoramiento económico entre hogares',
+    'El crecimiento del PIB avanza mientras muchas familias notan que su situación económica empeora',
+    'La economía registra buenos indicadores macro, pero los hogares sienten que viven peor',
+  ]],
   ['education-employment-outcomes', ['Un título universitario ya no garantiza encontrar un empleo cualificado', 'Tener estudios superiores no asegura trabajar en un puesto acorde con la titulación', 'La universidad ya no asegura encontrar trabajo acorde con sus estudios', 'La tasa de paro de titulados universitarios ha subido', 'Los graduados tienen menos empleo que quienes cursan formación profesional', 'La cohorte universitaria 2019–2020 encontró empleos que no se correspondían con su nivel de estudios', '¿Qué parte de los graduados universitarios trabaja en puestos acordes a su formación?', 'Hay demasiadas carreras con poca demanda laboral']],
   ['education-socioeconomic-performance', ['El rendimiento escolar depende demasiado de los recursos económicos de la familia', 'Las notas del alumnado están relacionadas con el nivel socioeconómico de sus hogares', 'El origen social condiciona los resultados académicos en ciencias', 'Los estudiantes de familias de bajos ingresos sacan peores notas']],
   ['job-opportunities', ['No hay trabajo', 'Aquí hay pocas ofertas de empleo', 'Es difícil encontrar trabajo en España', 'Los jóvenes no encuentran empleo', 'Empleo no hay', 'No hay empleo temporal', 'Hay pocos trabajos bien pagados']],
@@ -868,14 +875,24 @@ assert.equal(ruralAccess.sourceLinks.length, 0, 'National indicators must not be
 const gdpHousehold = focusedEvidencePlan('Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio');
 assert.equal(gdpHousehold.answerScope.family, 'gdp-household-welfare');
 assert.equal(gdpHousehold.evidenceLevel, 'limited', 'Definitions explain the scope but do not establish household outcomes');
-assert.equal(gdpHousehold.sourceLinks.length, 2, 'The GDP and household-income definitions need direct official sources');
+assert.equal(gdpHousehold.sourceLinks.length, 4, 'The GDP and household context needs official statistical definitions and current INE sources');
 assert.match(gdpHousehold.shareableReply, /aproximaci[oó]n al nivel material de vida/);
 assert.match(gdpHousehold.shareableReply, /renta disponible equivalente/);
-assert.match(gdpHousehold.shareableReply, /no demuestra que el crecimiento no les beneficie/);
-assert.doesNotMatch(gdpHousehold.shareableReply, /\d/);
+assert.match(gdpHousehold.shareableReply, /PIB real de Espa[nñ]a creci[oó] un 2,6 % en 2025/);
+assert.match(gdpHousehold.shareableReply, /8,5 %.*9,1 %.*36,4 %.*35,8 %/s);
+assert.match(gdpHousehold.shareableReply, /no prueban un empeoramiento general/);
 const gdpHouseholdPublic = localPublicCheckResponse({ status: 'complete', requestId: 'gdp-households', result: gdpHousehold }, 'Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio');
 assert.equal(gdpHouseholdPublic.state, 'limited');
-assert.equal(gdpHouseholdPublic.result.sources.length, 2, 'The public response must retain both definition sources');
+assert.equal(gdpHouseholdPublic.result.sources.length, 4, 'The public response must retain the definitions and both INE data sources');
+const gdpHouseholdCoexistenceClaim = 'Los buenos datos macroeconómicos conviven con una sensación de empeoramiento económico entre hogares';
+const gdpHouseholdCoexistence = deterministicApiFallback({ text: gdpHouseholdCoexistenceClaim, inputType: 'text', now: Date.parse('2026-11-24') });
+assert.equal(gdpHouseholdCoexistence.status, 'partial');
+assert.equal(gdpHouseholdCoexistence.result.answerScope.family, 'gdp-household-welfare');
+assert.equal(gdpHouseholdCoexistence.result.claimType, 'comparative');
+assert.match(gdpHouseholdCoexistence.result.shareableReply, /2,6 % en 2025/);
+assert.match(gdpHouseholdCoexistence.result.shareableReply, /una baj[oó] y la otra subi[oó]/);
+assert.equal(claimFocusFor('El PIB crece, pero aumenta el desempleo juvenil')?.id, undefined, 'A labor-market trend without household outcomes must not enter the household-welfare family');
+assert.equal(claimFocusFor('Los hogares dicen que su situación empeora, aunque no se menciona el PIB ni los datos macroeconómicos')?.id, undefined, 'A household-only trend must not inherit GDP comparison evidence');
 const selfEmploymentCosts = focusedEvidencePlan('La cuota y los costes fijos hacen inviable ser autónomo con ingresos bajos o irregulares', { observations: [
   { id: 'general-income', metricId: 'median_equivalised_income', value: 20367, period: '2025', unit: 'EUR', source: { id: 'income-source', title: 'Median income', url: 'https://example.org/income' } },
   { id: 'general-wage', metricId: 'median_hourly_earnings', value: 11.02, period: '2022', unit: 'EUR/hour', source: { id: 'wage-source', title: 'Median wage', url: 'https://example.org/wages' } },
@@ -1029,7 +1046,7 @@ const pensionerSupportTransferPlan = focusedEvidencePlan(pensionerSupportTransfe
 assert.notEqual(claimFocusFor(pensionerSupportTransferClaim)?.id, 'pension-worker-beneficiary-ratio', 'A claim about the private sector financing several public groups is not a contributor-to-pensioner ratio');
 assert.ok(!pensionerSupportTransferPlan?.sourceLinks?.some((source) => source.id === 'social-security-affiliation-source'), 'The headcount ratio must not be attached to a claim about sector financing shares');
 assert.equal(focusedEvidencePlan('El PIB de Francia no refleja cómo viven los hogares')?.sourceLinks.length, 0, 'Spain-scoped evidence must not be attached to an explicitly French claim');
-assert.equal(focusedEvidencePlan('Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', { now: Date.parse('2027-11-17') })?.sourceLinks.length, 0, 'Expired definition evidence must not appear as current');
+assert.equal(focusedEvidencePlan('Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', { now: Date.parse('2027-03-01') })?.sourceLinks.length, 0, 'Expired household-welfare snapshot evidence must not appear as current');
 for (const claim of ['Las listas de espera sanitarias son muy largas', 'La temporalidad laboral ha bajado, pero no resume toda la precariedad']) {
   assert.ok(broadDomainPacketsFor(claim).length, `A broad claim lost its reviewed context: ${claim}`);
 }

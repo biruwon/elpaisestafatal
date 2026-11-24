@@ -6,6 +6,7 @@ import { PENSION_CONTRIBUTOR_RATIO_SNAPSHOT } from './pension-contributor-ratio-
 import { EDUCATION_SOCIOECONOMIC_SNAPSHOT } from './education-socioeconomic-snapshot.mjs';
 import { UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT } from './university-graduate-outcomes-snapshot.mjs';
 import { RAIL_PUNCTUALITY_EVIDENCE, railPunctualityShareableReply } from './rail-punctuality-snapshot.mjs';
+import { GDP_HOUSEHOLD_WELFARE_SNAPSHOT } from './gdp-household-welfare-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -419,9 +420,12 @@ const ruralUrbanAccess = (t) => /\b(rural\w*|pueblo\w*|campo|zonas? rurales?)\b/
     /\b(transporte|autob[uú]s|tren|coche)\b/,
   ].filter((pattern) => pattern.test(t)).length >= 2
   && /\b(mas|menos|mejor|peor|diferenc\w*|compar\w*|frente a|que en|que quienes)\b/.test(t);
-const gdpHouseholdWelfare = (t) => /\b(?:pib|gdp|crecimiento economico|economia crece)\b/.test(t)
+const gdpHouseholdSignalNegated = (t) => /\b(?:no se (?:mencion\w*|habl\w*|disc\w*|inclu\w*)|sin (?:mencion\w*|habl\w*))\b[\s\w]{0,45}\b(?:pib|gdp|datos? macro|indicadores? macro)\b/.test(t);
+const gdpHouseholdWelfare = (t) => !gdpHouseholdSignalNegated(t)
+  && /\b(?:pib|gdp|crecimiento economico|economia crece|datos? macro(?:economicos)?|indicadores? macro(?:economicos)?)\b/.test(t)
   && /\b(?:hogar\w*|famili\w*|nivel de vida|condiciones de vida|bienestar|distribucion de la renta|desigualdad)\b/.test(t)
-  && /\bno\b[\s\w]{0,36}\b(?:reflej\w*|muestr\w*|represent\w*|mid\w*|traduc\w*|lleg\w*|repart\w*|indic\w*|explic\w*|signific\w*|demostr\w*|cuent\w*|es|sirv\w*)\b/.test(t)
+  && (/\bno\b[\s\w]{0,36}\b(?:reflej\w*|muestr\w*|represent\w*|mid\w*|traduc\w*|lleg\w*|repart\w*|indic\w*|explic\w*|signific\w*|demostr\w*|cuent\w*|es|sirv\w*)\b/.test(t)
+    || /\b(?:conviv\w*|coexist\w*|contrasta\w*|discrep\w*|desconexi\w*|empeor\w*|peor(?:a|an|ando)?|no se nota|no lo nota)\b/.test(t))
   && !/\b(?:cuant[oa]s?|porcentaje|tasa|indice|comparar|compara|comparacion)\b/.test(t);
 const gdpTotalPerCapitaComparison = (t) => {
   const aggregateGrowth = /\b(?:pib(?: real)? total|pib agregado|producto interior bruto(?: real)? total|crecimiento del pib(?: real)?|crecimiento economico|economia en su conjunto|total gdp|aggregate gdp|gdp growth)\b/.test(t);
@@ -1052,21 +1056,17 @@ const focuses = [
     id: 'gdp-household-welfare', label: 'PIB y condiciones de vida de los hogares',
     when: gdpHouseholdWelfare,
     direct: [], context: [],
+    claimType: 'comparative',
     needs: ['renta disponible mediana equivalente por persona, en términos reales, para el mismo territorio y periodo', 'distribución de la renta si se afirma que el crecimiento no llega a los hogares', 'definición concreta de bienestar si incluye vivienda, empleo, salud u otros servicios'],
-    explanation: 'El PIB mide producción agregada. Informa sobre el tamaño y el crecimiento de la economía, pero por sí solo no indica la renta disponible de cada hogar ni cómo se distribuye la prosperidad. Eurostat distingue el PIB de las medidas de ingreso y condiciones de vida de los hogares.',
-    explanationEvidence: {
-      directClaimEvidence: true,
-      expiresAt: '2027-11-16', territories: ['ES'],
-      facts: [
-        'Eurostat define el PIB real por habitante como el PIB ajustado por inflación dividido por la población media del año. Lo considera una aproximación al nivel material de vida, pero no una medida completa del bienestar económico.',
-        'Eurostat recoge ingresos y condiciones de vida mediante EU-SILC. La renta disponible equivalente ajusta el ingreso del hogar por su tamaño y composición y lo atribuye a cada persona; mide ingresos, no todas las dimensiones de bienestar.',
-      ],
-      sources: [
-        { id: 'eurostat-gdp-wellbeing-indicator', title: 'Real GDP per capita · SDG indicator profile', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/cache/metadata/en/sdg_08_10_esmsip2.htm', retrievedAt: '2026-11-16' },
-        { id: 'eurostat-income-living-conditions-metadata', title: 'Income and living conditions (EU-SILC) · metadata', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/cache/metadata/en/ilc_simsilc_el.htm', retrievedAt: '2026-11-16' },
-      ],
-    },
-    limitation: 'Esto confirma que el PIB no basta para describir cómo viven los hogares; no demuestra que el crecimiento no les beneficie. Para valorar su evolución hay que comparar ingresos reales y distribución en los mismos años y territorio.',
+    explanationHeadline: 'El PIB creció en 2025, mientras que dos indicadores de dificultades de los hogares evolucionaron en direcciones distintas',
+    explanation: 'El PIB mide producción agregada, no la renta disponible ni la experiencia económica de cada hogar. La ECV recoge dificultades declaradas mediante preguntas concretas; no ofrece una única medida de “sensación económica general”.',
+    explanationEvidence: GDP_HOUSEHOLD_WELFARE_SNAPSHOT,
+    shareableReplyForContext: ({ facts }) => [
+      facts[2],
+      facts[3],
+      'El PIB total mide producción agregada; Eurostat considera el PIB real por habitante, un indicador distinto, solo una aproximación al nivel material de vida. EU-SILC publica por separado ingresos y condiciones de vida, incluida la renta disponible equivalente ajustada al tamaño y composición del hogar. La ECV pregunta por dificultades concretas. Estas cifras muestran que el crecimiento y las dificultades pueden coexistir, pero no prueban un empeoramiento general de la percepción económica, cómo se repartió el crecimiento ni las causas de los cambios.',
+    ].filter(Boolean).join('\n\n'),
+    limitation: 'Esta comparación de datos de España cubre 2024–2025. El PIB no mide el ingreso de cada hogar y los porcentajes de la ECV son respuestas de la población, no tasas por hogar ni una medición de la experiencia de cada persona.',
   },
   {
     id: 'rural-urban-service-access', label: 'acceso rural y urbano a vivienda y servicios',
