@@ -345,6 +345,9 @@ const electricityGridInvestmentGap = (t) => electricityNetwork.test(t)
   && has(t, electricity)
   && /\b(invert\w*|inviert\w*|inversi\w*|gasto\w*|presupuest\w*)\b/.test(t)
   && /\b(por detras|atrasad\w*|rezagad\w*|insuficient\w*|no llega|no acompas\w*|menos|requier\w*|crec\w*|aument\w*|demand\w*|renovabl\w*|electrific\w*)\b/.test(t);
+const selfConsumptionConnectionDelay = (t) => /\b(autoconsum\w*|instalacion\w* (?:solar|fotovoltaic\w*) de autoconsum\w*|placas? solares? de autoconsum\w*)\b/.test(t)
+  && /\b(conexi\w*|acceso a la red|permis\w*|tramit\w*|burocr\w*|gesti\w*)\b/.test(t)
+  && /\b(demor\w*|retras\w*|tard\w*|fren\w*|bloque\w*|obstacul\w*|rentabl\w*|inviabl\w*|esper\w*|dificil\w*|complic\w*|ralent\w*|lent\w*)\b/.test(t);
 const wagePriceMarginPassThrough = (t) => has(t, wages)
   && /\b(preci\w*|inflaci\w*|margen\w*|coste\w*|rentabil\w*|competitiv\w*|encarec\w*)\b/.test(t)
   && /\b(oblig\w*|forz\w*|traslad\w*|repercut\w*|provoc\w*|caus\w*|encarec\w*|absorber|asumir|reduc\w*|sub\w*|aument\w*)\b/.test(t)
@@ -659,6 +662,9 @@ const housingConstructionPressure = (t) => {
     && !touristHousingDisplacementClaim(t)
     && !foreignHousingPriceCause(t);
 };
+const urbanPlanningLicenseDelay = (t) => /\b(licenci\w* urbanistic\w*|licenci\w* (?:municipal\w*|de obra\w*)|permis\w* urbanistic\w*|tramit\w* urbanistic\w*)\b/.test(t)
+  && /\b(constru\w*|edific\w*|obra\w*)\b/.test(t)
+  && /\b(lentitud|lent\w*|tard\w*|retras\w*|demor\w*|atasc\w*|fren\w*|poc\w*|escas\w*|insuficient\w*)\b/.test(t);
 const housingConstructionClaimType = (t) => {
   if (/\b(caus\w*|explic\w*|provoc\w*|debido|porque|por culpa|hace que|oblig\w*|retras\w*|presion\w*)\b/.test(t)) return 'causal';
   if (/\b(mas que|menos que|mayor\w* que|menor\w* que|compar\w*|frente a(?:l)?|por debajo|no alcanza)\b/.test(t)) return 'comparative';
@@ -1046,6 +1052,37 @@ const focuses = [
     evidenceGap: 'Faltan datos comparables de oferta y alquiler por municipio; la brecha nacional no demuestra por sí sola una causa.',
     explanationEvidence: HOUSING_SUPPLY_PRESSURE_EVIDENCE,
     limitation: 'Este cálculo nacional no cuenta hogares sin vivienda ni identifica unidades disponibles, asequibles o situadas donde creció la demanda.',
+  },
+  {
+    id: 'urban-planning-license-delays', label: 'plazos de licencia urbanística y actividad de construcción',
+    when: urbanPlanningLicenseDelay,
+    direct: [], context: [], claimType: 'causal',
+    needs: [
+      'fecha de solicitud y de resolución de cada expediente, desglosada por municipio y tipo de obra',
+      'número de solicitudes pendientes, concedidas, denegadas y retiradas en el mismo periodo',
+      'construcción residencial efectivamente iniciada o terminada y un diseño que mida el efecto del plazo de licencia',
+    ],
+    explanation: 'La estadística del INE cuenta licencias de obra mayor concedidas y describe las obras. No mide el tiempo de tramitación ni demuestra que las licencias causen un menor ritmo de construcción.',
+    shareableReplyForContext: ({ facts }) => [
+      facts.join(' '),
+      'El INE cuenta licencias concedidas, pero no mide cuántos días tardó cada expediente ni cuánto pesa esa demora sobre la construcción. Por sí solo, este dato no permite confirmar que el trámite cause un ritmo bajo de obras.',
+    ].join('\n\n'),
+    explanationEvidence: {
+      directClaimEvidence: false,
+      expiresAt: '2027-11-24', territories: ['ES'],
+      dimensions: {
+        subject: 'licencias municipales de obra mayor concedidas y características de las obras',
+        population: 'obras mayores de construcción, rehabilitación y demolición de edificios incluidas en la estadística',
+        geography: 'España; desagregación municipal o inferior', period: 'estadística mensual y anual; ficha vigente consultada el 24/11/2026',
+        denominator: 'licencias de obra mayor concedidas; no todos los expedientes solicitados o pendientes',
+        unit: 'recuento y características de licencias y obras; no días entre solicitud y resolución',
+      },
+      facts: [
+        'La ficha vigente del INE describe una estadística mensual de licencias de obra mayor concedidas por los ayuntamientos en todo el territorio nacional. Registra, entre otras variables, las características de las obras y su duración prevista; esa duración es la de la obra, no el plazo de tramitación de la licencia.',
+      ],
+      sources: [{ id: 'ine-building-permits-methodology', title: 'Estadística de Construcción de Edificios · ficha del Inventario de Operaciones Estadísticas', publisher: 'Instituto Nacional de Estadística', url: 'https://www.ine.es/dyngs/IOE/operacion.htm?numinv=20001', retrievedAt: '2026-11-24', role: 'primary' }],
+    },
+    limitation: 'La ficha estadística recoge licencias concedidas y variables sobre las obras, no solicitudes pendientes ni fechas de solicitud y resolución para calcular tiempos de espera. Tampoco identifica cuánta construcción habría ocurrido sin esa demora; por eso no permite atribuir a las licencias un bajo ritmo de edificación.',
   },
   {
     id: 'housing-supply', label: 'viviendas disponibles para uso residencial',
@@ -1447,6 +1484,37 @@ const focuses = [
       },
     },
     limitation: 'Una lista de espera pública no mide las motivaciones de quienes contratan seguro ni el tiempo que esperan en la privada.',
+  },
+  {
+    id: 'self-consumption-connection-delays', label: 'trámites de acceso y conexión para autoconsumo',
+    when: selfConsumptionConnectionDelay,
+    direct: [], context: [], claimType: 'causal',
+    needs: [
+      'tiempo transcurrido entre la solicitud y la activación, desglosado por modalidad, potencia, distribuidora y territorio',
+      'número de instalaciones de autoconsumo solicitadas, aprobadas, activadas y abandonadas en el mismo periodo',
+      'rentabilidad estimada de cada instalación y evidencia de que el trámite causó su abandono o demora',
+    ],
+    explanation: 'La norma distingue qué instalaciones de autoconsumo necesitan permisos de acceso y conexión, pero ese requisito no demuestra cuánto tardan los trámites ni cuántas instalaciones rentables se quedan sin hacer.',
+    shareableReplyForContext: ({ facts }) => [
+      facts.join(' '),
+      'La norma aclara quién necesita permisos, pero no mide cuánto tardan los trámites ni cuántos proyectos rentables se frenan. Por sí sola no permite confirmar la afirmación completa.',
+    ].join('\n\n'),
+    explanationEvidence: {
+      directClaimEvidence: false,
+      expiresAt: '2027-11-24', territories: ['ES'],
+      dimensions: {
+        subject: 'exenciones y procedimiento de acceso y conexión para instalaciones de autoconsumo eléctrico',
+        population: 'instalaciones de autoconsumo sujetas al Real Decreto 244/2019',
+        geography: 'España', period: 'normativa vigente descrita en la página consultada el 24/11/2026',
+        denominator: 'no contiene una medición de solicitudes, instalaciones activadas o abandonadas',
+        unit: 'condiciones regulatorias, no días de espera ni número de proyectos afectados',
+      },
+      facts: [
+        'MITECO indica que están exentas de permisos de acceso y conexión las instalaciones de autoconsumo sin excedentes —que no inyectan energía a la red— y las de hasta 15 kW con excedentes situadas en suelo urbanizado con los servicios exigidos por la normativa urbanística. Las demás siguen el procedimiento de acceso y conexión aplicable.',
+      ],
+      sources: [{ id: 'miteco-autoconsumo-access-connection', title: 'Preguntas frecuentes sobre autoconsumo · procedimiento de acceso y conexión', publisher: 'Ministerio para la Transición Ecológica y el Reto Demográfico', url: 'https://www.miteco.gob.es/es/energia/energia-electrica/electricidad/autoconsumo-electrico/preguntas-frecuentes-autoconsumo.html', retrievedAt: '2026-11-24', role: 'primary' }],
+    },
+    limitation: 'La FAQ describe requisitos legales, no los tiempos reales de tramitación. No ofrece una serie de instalaciones solicitadas, activadas o abandonadas ni calcula cuántas habrían sido rentables; por eso no permite atribuir retrasos o pérdida de proyectos al trámite. La regla tampoco implica que todas las instalaciones necesiten permisos.',
   },
   {
     id: 'renewable-grid-integration', label: 'integración de generación renovable y capacidad de red',

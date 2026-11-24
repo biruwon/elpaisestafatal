@@ -1082,9 +1082,41 @@ retain an insufficient verdict. The national plan is withheld for claims about
 regional bottlenecks. Their copyable answers now fit in two paragraphs, while
 the evidence explorer retains the detailed scope and measurement gaps.
 
-The current deterministic audit reports 3 complete, 44 limited and 253
+The current deterministic audit reports 3 complete, 47 limited and 250
 uncovered responses in the 300-item unverified discovery set. Of these claims,
-90 have a compiler metric match and 116 a focused-family route, with 50 in both;
-144 have neither route. The public states are 275 insufficient and 25 limited.
-The held-out text benchmark remains 49/49 across 12 paraphrase groups. Neither
-set estimates population-wide factual accuracy.
+89 have a compiler metric match and 119 a focused-family route, with 50 in both;
+142 have neither route. The public states are 275 insufficient and 25 limited.
+All 300 remain unverified discovery inputs; these routing totals do not
+estimate population-wide factual accuracy.
+
+## Self-consumption connection claims — 24 November 2026
+
+Text claims that autoconsumption connection procedures delay profitable solar
+installations now receive a narrow, source-backed explanation. MITECO says
+installations without surplus injection are exempt from grid-access and
+connection permits. Surplus installations up to 15 kW are also exempt when
+located on serviced urbanized land; other installations follow the applicable
+procedure. See the [MITECO autoconsumption guidance](https://www.miteco.gob.es/es/energia/energia-electrica/electricidad/autoconsumo-electrico/preguntas-frecuentes-autoconsumo.html).
+
+The guidance does not measure end-to-end processing time, applications,
+activations, abandonment, or project profitability. It therefore cannot show
+that delays blocked viable installations, and the answer retains an
+insufficient verdict. National legal guidance is withheld for regional claims.
+The public answer leads with the permit exemptions and the evidence gap in two
+short paragraphs; it does not present transmission-generation queue capacity
+as evidence about household self-consumption.
+
+## Urban-planning permit delays — 24 November 2026
+
+Text claims that slow urban-planning permits explain a low pace of construction
+now receive context from the INE's [Building Construction Statistics inventory
+entry](https://www.ine.es/dyngs/IOE/operacion.htm?numinv=20001). The operation
+counts major-work permits granted by municipalities and describes the works;
+the listed “planned duration” is the duration of the work, not permit
+processing time.
+
+The inventory does not provide the request-to-decision time or connect permit
+delays to construction output. This context therefore leaves the causal claim
+insufficient. Explicit residential supply claims keep their existing housing
+evidence family, and regional permit-delay claims do not receive national
+context as if it measured local waits.

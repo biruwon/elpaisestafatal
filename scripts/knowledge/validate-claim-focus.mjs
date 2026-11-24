@@ -60,8 +60,10 @@ const cases = [
   ['electricity-price-transmission', ['El gas encarece la electricidad en el sistema marginalista', 'Los hogares no notan la electricidad barata de las renovables', 'El precio mayorista no llega íntegro a la factura de la luz']],
   ['electricity-industry-costs', ['El precio de la electricidad resta competitividad a parte de la industria española', 'La factura eléctrica reduce la competitividad de las fábricas españolas', 'La electricidad encarece la producción de muchas empresas industriales']],
   ['electricity-market-trading', ['España puede exportar electricidad barata en horas solares y necesitar energía más cara en otros momentos', 'España exporta electricidad barata al mediodía e importa energía más cara por la noche', 'Las interconexiones permiten vender electricidad cuando sobra y comprarla cuando sube el precio']],
+  ['self-consumption-connection-delays', ['Los trámites para autoconsumo y conexión frenan instalaciones solares que serían rentables', 'La burocracia de acceso a red retrasa proyectos de autoconsumo solar viables', 'Las demoras de conexión impiden poner en marcha instalaciones fotovoltaicas de autoconsumo rentables']],
   ['renewable-grid-integration', ['Los cuellos de botella de la red eléctrica impiden aprovechar toda la generación renovable disponible', 'La falta de capacidad de las redes eléctricas obliga a verter energía solar y eólica', 'Las restricciones de red dejan fuera parte de la generación renovable disponible']],
   ['electricity-grid-investment-gap', ['La inversión en redes eléctricas no acompasa el crecimiento de renovables y nueva demanda', 'Se invierte en las redes eléctricas menos de lo que requieren las nuevas conexiones', 'El gasto en la red eléctrica va rezagado frente al aumento de demanda y renovables']],
+  ['urban-planning-license-delays', ['Se construye demasiado poco por la lentitud de las licencias urbanísticas', 'La demora de las licencias municipales de obra frena la construcción', 'Los permisos urbanísticos tardan y bloquean la edificación']],
   ['rail-punctuality', ['Los retrasos de Cercanías hacen perder horas a los pasajeros', 'Los trenes de Renfe son poco puntuales', 'Las compensaciones por demoras ferroviarias no cubren el tiempo perdido']],
   ['pension-financing', ['El trabajador no ahorra sus cotizaciones para su propia pensión sino que financia a los jubilados actuales', '¿Las pensiones públicas usan reparto o cuentas individuales?', 'Las cotizaciones sostienen las jubilaciones actuales']],
   ['future-pension-outlook', ['Los jóvenes actuales pagarán pensiones durante décadas pero cobrarán una pensión relativamente menor', 'Las generaciones jóvenes esperan cobrar una pensión más baja al jubilarse', '¿Qué pensión recibirán en el futuro quienes cotizan hoy?']],
@@ -264,7 +266,7 @@ assert.equal(claimFocusFor('El turismo eleva los alquileres en las ciudades')?.i
 assert.equal(claimFocusFor('Los turistas encarecen las habitaciones de hotel')?.id, undefined, 'Hotel-room prices must not cross-route into resident housing costs');
 assert.equal(claimFocusFor('Los turistas encarecen las habitaciones de hotel en los centros históricos')?.id, undefined, 'An urban location alone must not make a hotel-room price claim about resident housing');
 assert.equal(claimFocusFor('El turismo genera más empleo en las ciudades')?.id, 'tourism-employment-contribution', 'Tourism employment claims must use employment evidence rather than resident housing data');
-assert.equal(claimFocusFor('Se construye demasiado poco por la lentitud de las licencias urbanísticas')?.id, undefined, 'An unspecified construction claim must not be assumed to concern residential homes');
+assert.equal(claimFocusFor('Se construye demasiado poco por la lentitud de las licencias urbanísticas')?.id, 'urban-planning-license-delays', 'An unspecified construction claim may use general building-permit context, but not a residential supply verdict');
 assert.equal(claimFocusFor('La falta de vivienda nueva en Madrid explica la subida del alquiler')?.id, 'housing-construction-pressure', 'A local supply claim must retain its family while national evidence is withheld by scope');
 const housingCompletionPlan = focusedEvidencePlan('¿Cuántas viviendas nuevas se terminaron en España en 2025?', { now: Date.parse('2026-11-23') });
 assert.equal(housingCompletionPlan.answerScope.family, 'housing-completions');
@@ -1771,6 +1773,63 @@ for (const query of investmentGapClaims) {
 assert.equal(claimFocusFor('La red ferroviaria necesita más inversión para atender la demanda')?.id, undefined, 'Electricity-grid evidence must not route to rail infrastructure');
 assert.equal(claimFocusFor('El precio de la electricidad industrial resta competitividad a las fábricas')?.id, 'electricity-industry-costs', 'Network-investment claims must not capture industrial electricity-price claims');
 assert.deepEqual(focusedEvidencePlan('La inversión en redes eléctricas va por detrás del crecimiento de renovables y nueva demanda', { now: Date.parse('2026-11-24') }).sourceLinks.map((source) => source.publisher), ['Ministerio para la Transición Ecológica y el Reto Demográfico', 'Ministerio para la Transición Ecológica y el Reto Demográfico']);
+const selfConsumptionConnectionClaims = [
+  'Los trámites para autoconsumo y conexión frenan instalaciones solares que serían rentables',
+  'La burocracia de acceso a red retrasa proyectos de autoconsumo solar viables',
+  'Las demoras de conexión impiden poner en marcha instalaciones fotovoltaicas de autoconsumo rentables',
+];
+let selfConsumptionSourceIds;
+for (const query of selfConsumptionConnectionClaims) {
+  const plan = focusedEvidencePlan(query, { now: Date.parse('2026-11-24') });
+  assert.equal(plan.answerScope.family, 'self-consumption-connection-delays');
+  assert.equal(plan.claimType, 'causal');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.match(plan.shareableReply, /est[aá]n exentas de permisos de acceso y conexi[oó]n.*15 kW/s);
+  assert.match(plan.shareableReply, /no mide cu[aá]nto tardan los tr[aá]mites ni cu[aá]ntos proyectos rentables se frenan/);
+  assert.equal(plan.shareableReply.split(/\n{2,}/).length, 2);
+  assert.match(plan.limitation, /tiempos reales de tramitaci[oó]n/);
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'self-consumption-connection', result: plan }, query).state, 'insufficient');
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  assert.deepEqual(sourceIds, ['miteco-autoconsumo-access-connection']);
+  if (selfConsumptionSourceIds) assert.deepEqual(sourceIds, selfConsumptionSourceIds, `A self-consumption paraphrase changed evidence sources: ${query}`);
+  selfConsumptionSourceIds = sourceIds;
+  validateAnswerPlan(plan);
+}
+const selfConsumptionRegional = focusedEvidencePlan('Los trámites de autoconsumo retrasan las instalaciones solares rentables en Andalucía', { now: Date.parse('2026-11-24') });
+assert.deepEqual(selfConsumptionRegional.sourceLinks, [], 'National legal guidance must not stand in for regional processing-time evidence');
+const urbanPlanningPermitClaims = [
+  'Se construye demasiado poco por la lentitud de las licencias urbanísticas',
+  'La demora de las licencias municipales de obra frena la construcción',
+  'Los permisos urbanísticos tardan y bloquean la edificación',
+];
+let urbanPlanningPermitSourceIds;
+for (const query of urbanPlanningPermitClaims) {
+  const plan = focusedEvidencePlan(query, { now: Date.parse('2026-11-24') });
+  assert.equal(plan.answerScope.family, 'urban-planning-license-delays');
+  assert.equal(plan.claimType, 'causal');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.match(plan.shareableReply, /licencias de obra mayor concedidas.*duraci[oó]n prevista.*no el plazo de tramitaci[oó]n/s);
+  assert.match(plan.shareableReply, /no mide cu[aá]ntos d[ií]as tard[oó] cada expediente/);
+  assert.equal(plan.shareableReply.split(/\n{2,}/).length, 2);
+  assert.match(plan.limitation, /fechas de solicitud y resoluci[oó]n/);
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'urban-planning-permit-delay', result: plan }, query).state, 'insufficient');
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  assert.deepEqual(sourceIds, ['ine-building-permits-methodology']);
+  if (urbanPlanningPermitSourceIds) assert.deepEqual(sourceIds, urbanPlanningPermitSourceIds, `An urban permit paraphrase changed evidence sources: ${query}`);
+  urbanPlanningPermitSourceIds = sourceIds;
+  validateAnswerPlan(plan);
+}
+assert.equal(claimFocusFor('Se construyen pocas viviendas por falta de financiación')?.id, 'housing-construction-pressure', 'A residential supply claim must retain the housing evidence contract');
+assert.notEqual(claimFocusFor('La instalación de autoconsumo tarda en obtener permiso de conexión')?.id, 'urban-planning-license-delays', 'Electrical access permits must not inherit building-license evidence');
+const urbanPlanningRegional = focusedEvidencePlan('Las licencias urbanísticas retrasan la construcción de obra pública en Andalucía', { now: Date.parse('2026-11-24') });
+assert.deepEqual(urbanPlanningRegional.sourceLinks, [], 'A national inventory entry must not answer a regional processing-time claim');
+for (const nearby of [
+  'Instalar placas solares en una vivienda resulta rentable por el ahorro en la factura',
+  'Las grandes plantas solares tardan en conectarse a la red de transporte',
+  'La electricidad solar reduce el precio de la luz en los hogares',
+]) assert.notEqual(claimFocusFor(nearby)?.id, 'self-consumption-connection-delays', `A nearby solar claim crossed into the self-consumption processing family: ${nearby}`);
 assert.equal(claimFocusFor('El precio doméstico de la electricidad por kWh ha aumentado para los hogares')?.id, 'electricity-retail', 'Household price claims must keep their direct electricity measure');
 const unknownCurrency = focusedEvidencePlan(marginalClaim, { observations: [{ ...electricity[0], dimensions: { ...electricity[0].dimensions, currency: undefined } }] });
 assert.doesNotMatch(unknownCurrency.shareableReply, /0,2739/, 'An energy unit alone does not identify the currency of a price');

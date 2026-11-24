@@ -275,6 +275,34 @@ assert.equal(gridInvestment.body.result.shareableReply?.split(/\n{2,}/).length, 
 assert.match(gridInvestment.body.result.limitations?.join(' '), /no compara el gasto ejecutado con el crecimiento efectivo/);
 assert.deepEqual(gridInvestment.body.result.sources.map((source) => source.id), ['miteco-electricity-investment-limits-2026', 'miteco-electricity-plan-2030']);
 
+const selfConsumptionDelayClaim = 'Los trámites para autoconsumo y conexión frenan instalaciones solares que serían rentables';
+const selfConsumptionDelay = await check(selfConsumptionDelayClaim);
+assert.equal(selfConsumptionDelay.body.state, 'insufficient');
+assert.equal(selfConsumptionDelay.body.result.answerScope.family, 'self-consumption-connection-delays');
+assert.deepEqual(selfConsumptionDelay.body.result.answerScope.directMetrics, []);
+assert.match(selfConsumptionDelay.body.result.reply, /est[aá]n exentas de permisos de acceso y conexi[oó]n.*15 kW/s);
+assert.match(selfConsumptionDelay.body.result.reply, /no mide cu[aá]nto tardan los tr[aá]mites ni cu[aá]ntos proyectos rentables se frenan/);
+assert.equal(selfConsumptionDelay.body.result.shareableReply?.split(/\n{2,}/).length, 2);
+assert.deepEqual(selfConsumptionDelay.body.result.sources.map((source) => source.id), ['miteco-autoconsumo-access-connection']);
+const selfConsumptionDelayRegion = await check('Los trámites de autoconsumo retrasan las instalaciones solares rentables en Andalucía');
+assert.equal(selfConsumptionDelayRegion.body.state, 'insufficient');
+assert.deepEqual(selfConsumptionDelayRegion.body.result.sources, [], 'National regulation must not be presented as regional evidence about delays');
+assert.doesNotMatch(selfConsumptionDelayRegion.body.result.reply, /15 kW/);
+
+const urbanPlanningDelayClaim = 'Se construye demasiado poco por la lentitud de las licencias urbanísticas';
+const urbanPlanningDelay = await check(urbanPlanningDelayClaim);
+assert.equal(urbanPlanningDelay.body.state, 'insufficient');
+assert.equal(urbanPlanningDelay.body.result.answerScope.family, 'urban-planning-license-delays');
+assert.deepEqual(urbanPlanningDelay.body.result.answerScope.directMetrics, []);
+assert.match(urbanPlanningDelay.body.result.reply, /licencias de obra mayor concedidas.*duraci[oó]n prevista.*no el plazo de tramitaci[oó]n/s);
+assert.match(urbanPlanningDelay.body.result.reply, /no mide cu[aá]ntos d[ií]as tard[oó] cada expediente/);
+assert.equal(urbanPlanningDelay.body.result.shareableReply?.split(/\n{2,}/).length, 2);
+assert.deepEqual(urbanPlanningDelay.body.result.sources.map((source) => source.id), ['ine-building-permits-methodology']);
+const urbanPlanningDelayRegion = await check('Las licencias urbanísticas retrasan la construcción de obra pública en Andalucía');
+assert.equal(urbanPlanningDelayRegion.body.state, 'insufficient');
+assert.deepEqual(urbanPlanningDelayRegion.body.result.sources, [], 'National permit methodology must not be presented as regional evidence about delays');
+assert.doesNotMatch(urbanPlanningDelayRegion.body.result.reply, /licencias de obra mayor concedidas/);
+
 const fullTime = await check('Trabajar a jornada completa no impide estar en riesgo de pobreza');
 assert.equal(fullTime.httpStatus, 200);
 assert.equal(fullTime.body.state, 'limited');

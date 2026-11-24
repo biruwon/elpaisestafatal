@@ -344,6 +344,20 @@ try {
   assert.match(gridInvestment.result.reply, /17\.142 millones de euros.*47 GW.*importes planificados, no gasto ya ejecutado/s);
   assert.equal(gridInvestment.result.shareableReply?.split(/\n{2,}/).length, 2);
   assert.deepEqual(gridInvestment.result.sources.map((source) => source.id), ['miteco-electricity-investment-limits-2026', 'miteco-electricity-plan-2030']);
+  const selfConsumptionDelay = await check('La burocracia de acceso a red retrasa proyectos de autoconsumo solar viables', undefined, { DB: emptyD1 });
+  assert.equal(selfConsumptionDelay.state, 'insufficient');
+  assert.equal(selfConsumptionDelay.result.answerScope?.family, 'self-consumption-connection-delays');
+  assert.match(selfConsumptionDelay.result.reply, /est[aá]n exentas de permisos de acceso y conexi[oó]n.*15 kW/s);
+  assert.match(selfConsumptionDelay.result.reply, /no mide cu[aá]nto tardan los tr[aá]mites ni cu[aá]ntos proyectos rentables se frenan/);
+  assert.equal(selfConsumptionDelay.result.shareableReply?.split(/\n{2,}/).length, 2);
+  assert.deepEqual(selfConsumptionDelay.result.sources.map((source) => source.id), ['miteco-autoconsumo-access-connection']);
+  const urbanPlanningDelay = await check('Se construye demasiado poco por la lentitud de las licencias urbanísticas', undefined, { DB: emptyD1 });
+  assert.equal(urbanPlanningDelay.state, 'insufficient');
+  assert.equal(urbanPlanningDelay.result.answerScope?.family, 'urban-planning-license-delays');
+  assert.match(urbanPlanningDelay.result.reply, /licencias de obra mayor concedidas.*duraci[oó]n prevista.*no el plazo de tramitaci[oó]n/s);
+  assert.match(urbanPlanningDelay.result.reply, /no mide cu[aá]ntos d[ií]as tard[oó] cada expediente/);
+  assert.equal(urbanPlanningDelay.result.shareableReply?.split(/\n{2,}/).length, 2);
+  assert.deepEqual(urbanPlanningDelay.result.sources.map((source) => source.id), ['ine-building-permits-methodology']);
   }
   if (!rentMagnitudeOnly) {
   let vacancyRateEvidenceIds;
