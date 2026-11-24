@@ -50,6 +50,12 @@ const cases = [
     'El productor agrario se queda con muy poco de lo que paga el consumidor en la tienda',
   ]],
   ['rental-affordability', ['Con un sueldo normal ya no se puede alquilar un piso entero solo', 'El alquiler se lleva la mitad de los ingresos', 'La renta mensual consume casi todo el salario']],
+  ['room-rental-market', [
+    'El alquiler de una habitación se ha convertido en la única opción viable para muchos trabajadores adultos',
+    'Para muchos trabajadores adultos, compartir piso se ha vuelto la única alternativa viable',
+    'La renta mediana anunciada de una habitación en España fue de 400 euros al mes en 2025',
+    'En 2025 creció el número de habitaciones ofertadas en pisos compartidos',
+  ]],
   ['business-tax-burden', ['Las multinacionales digitales pagan proporcionalmente menos impuestos que las tiendas locales', 'La carga fiscal efectiva de grandes empresas tecnológicas es menor que la de los comercios pequeños', 'Las empresas digitales compiten con el comercio de barrio con una tributación más baja']],
   ['small-business-cost-pressure', ['Los comercios de barrio cierran por la suma de alquiler, energía e impuestos', 'El aumento de los costes operativos está haciendo desaparecer pequeños negocios', 'Las tiendas pequeñas no sobreviven cuando suben a la vez salarios, alquileres y electricidad']],
   ['business-size-productivity', ['El pequeño tamaño medio de las empresas frena la inversión y la productividad', 'Las pymes tienen menos capacidad para adoptar tecnología y pagar buenos salarios', 'El tamaño empresarial limita la innovación y los sueldos']],
@@ -492,6 +498,9 @@ assert.notEqual(claimFocusFor('El turismo eleva los alquileres en las ciudades')
 assert.equal(claimFocusFor('El turismo eleva los alquileres en las ciudades')?.id, 'tourism-urban-housing-cost', 'General tourism and rent claims need a causal cost family, not a housing-supply proxy');
 assert.equal(claimFocusFor('Los turistas encarecen las habitaciones de hotel')?.id, undefined, 'Hotel-room prices must not cross-route into resident housing costs');
 assert.equal(claimFocusFor('Los turistas encarecen las habitaciones de hotel en los centros históricos')?.id, undefined, 'An urban location alone must not make a hotel-room price claim about resident housing');
+assert.equal(claimFocusFor('El turismo encarece el alquiler de habitaciones para residentes')?.id, 'tourism-urban-housing-cost', 'Tourism-related residential rent claims must not inherit room-listing context');
+assert.equal(claimFocusFor('¿Cuánto cuesta alquilar una vivienda completa en España?')?.id, 'rental-price-amount', 'A complete-dwelling price question must not be misread as a count of completed homes');
+assert.equal(claimFocusFor('El alquiler de una vivienda completa en España cuesta 1.000 euros al mes')?.id, 'rental-price-amount', 'Whole-home rent amounts must not cross-route into room-rental evidence');
 assert.equal(claimFocusFor('El turismo genera más empleo en las ciudades')?.id, 'tourism-employment-contribution', 'Tourism employment claims must use employment evidence rather than resident housing data');
 assert.equal(claimFocusFor('Se construye demasiado poco por la lentitud de las licencias urbanísticas')?.id, 'urban-planning-license-delays', 'An unspecified construction claim may use general building-permit context, but not a residential supply verdict');
 assert.equal(claimFocusFor('La falta de vivienda nueva en Madrid explica la subida del alquiler')?.id, 'housing-construction-pressure', 'A local supply claim must retain its family while national evidence is withheld by scope');
@@ -512,6 +521,43 @@ assert.deepEqual(housingCompletionOldPeriod.sourceIds, []);
 const housingCompletionLocal = focusedEvidencePlan('¿Cuántas viviendas nuevas se terminaron en Madrid en 2025?', { now: Date.parse('2026-11-23') });
 assert.equal(housingCompletionLocal.evidenceLevel, 'insufficient', 'A national completion count must not answer a city-level question');
 assert.deepEqual(housingCompletionLocal.sourceIds, []);
+const roomRentalContext = focusedEvidencePlan('El alquiler de una habitación se ha convertido en la única opción viable para muchos trabajadores adultos', { now: Date.parse('2026-11-24') });
+assert.equal(roomRentalContext.answerScope.family, 'room-rental-market');
+assert.equal(roomRentalContext.evidenceLevel, 'limited');
+assert.equal(roomRentalContext.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient', 'Room listing and youth salary data cannot confirm exclusivity for adult workers');
+assert.deepEqual(roomRentalContext.blocks.find((block) => block.type === 'claim_breakdown').items[0].sourceIds, [], 'Context must not be marked as direct evidence for the exclusivity claim');
+assert.match(roomRentalContext.shareableReply, /101\.984/);
+assert.match(roomRentalContext.shareableReply, /400 euros/);
+assert.match(roomRentalContext.shareableReply, /33,6 %/);
+assert.match(roomRentalContext.shareableReply, /no se confirma/i);
+const roomMedianQuestion = focusedEvidencePlan('¿Cuál era la renta mediana anunciada de una habitación en España en 2025?', { now: Date.parse('2026-11-24') });
+assert.equal(roomMedianQuestion.answerScope.family, 'room-rental-market');
+assert.equal(roomMedianQuestion.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported');
+assert.ok(roomMedianQuestion.sourceIds.includes('cje-emancipation-2025'));
+assert.match(roomMedianQuestion.shareableReply, /2025.*400 euros/);
+assert.match(roomMedianQuestion.shareableReply, /Idealista/);
+const roomMedianLatestQuestion = focusedEvidencePlan('¿Cuánto cuesta alquilar una habitación en España?', { now: Date.parse('2026-11-24') });
+assert.equal(roomMedianLatestQuestion.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported', 'An unqualified room-rent question may use the latest reviewed measure when the answer names its year');
+assert.ok(roomMedianLatestQuestion.sourceIds.includes('cje-emancipation-2025'));
+assert.match(roomMedianLatestQuestion.shareableReply, /2025.*400 euros/);
+const roomMedianCurrentQuestion = focusedEvidencePlan('¿Cuánto cuesta hoy alquilar una habitación en España?', { now: Date.parse('2026-11-24') });
+assert.equal(roomMedianCurrentQuestion.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient', 'A historical 2025 snapshot must not be stated as today’s price');
+assert.deepEqual(roomMedianCurrentQuestion.blocks.find((block) => block.type === 'claim_breakdown').items[0].sourceIds, [], 'Historical context must not be attached as direct evidence for today’s price');
+assert.match(roomMedianCurrentQuestion.shareableReply, /no permite confirmar el precio actual.*2025/i);
+assert.match(roomMedianCurrentQuestion.shareableReply, /400 euros/);
+const incorrectRoomMedian = focusedEvidencePlan('La renta mediana anunciada de una habitación fue de 450 euros al mes en España en 2025', { now: Date.parse('2026-11-24') });
+assert.equal(incorrectRoomMedian.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'contradicted', 'The room median must be checked against its reported amount');
+const roomOffersTrend = focusedEvidencePlan('En 2025 se ofertaron 101.984 habitaciones en pisos compartidos, un 20 % más que en 2024 y un 85,4 % más que en 2022', { now: Date.parse('2026-11-24') });
+assert.equal(roomOffersTrend.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported', 'Both offer-count comparisons must match their own baseline years');
+const unsupportedRoomYear = focusedEvidencePlan('¿Cuál era la renta mediana anunciada de una habitación en España en 2024?', { now: Date.parse('2026-11-24') });
+assert.equal(unsupportedRoomYear.evidenceLevel, 'insufficient', 'The 2025 room-rent snapshot must not answer a 2024 median question');
+assert.deepEqual(unsupportedRoomYear.sourceIds, []);
+const unsupportedRoomRegion = focusedEvidencePlan('¿Cuál era la renta mediana anunciada de una habitación en Madrid en 2025?', { now: Date.parse('2026-11-24') });
+assert.equal(unsupportedRoomRegion.evidenceLevel, 'insufficient', 'A national room-rent median must not answer a Madrid-specific question');
+assert.deepEqual(unsupportedRoomRegion.sourceIds, []);
+const wholeHomeRentAmount = focusedEvidencePlan('¿Cuánto cuesta alquilar una vivienda completa en España?', { now: Date.parse('2026-11-24') });
+assert.equal(wholeHomeRentAmount.answerScope.family, 'rental-price-amount');
+assert.deepEqual(wholeHomeRentAmount.sourceIds, [], 'Room-rental evidence must not answer whole-home rent amounts');
 const housingPressurePlan = focusedEvidencePlan('La falta de vivienda nueva explica buena parte de la subida del alquiler', { now: Date.parse('2026-11-23') });
 assert.equal(housingPressurePlan.answerScope.family, 'housing-construction-pressure');
 assert.equal(housingPressurePlan.claimType, 'causal');

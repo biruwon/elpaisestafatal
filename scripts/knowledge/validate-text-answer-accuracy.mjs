@@ -37,9 +37,10 @@ for (const item of textAnswerAccuracyCases) {
   ]);
 
   for (const wanted of expected.evidence) {
-    const family = evidenceRecords.find((item) => item.familyId === wanted.familyId
+    const matchingRecords = evidenceRecords.filter((item) => item.familyId === wanted.familyId
       && (!wanted.sourceIds || JSON.stringify(sorted(item.sourceIds)) === JSON.stringify(sorted(wanted.sourceIds)))
       && (wanted.dataIncludes || []).every((text) => normalize((item.data || []).join(' ')).includes(normalize(text))));
+    const family = matchingRecords[0];
     if (!family) {
       checks.evidence = false;
       errors.push(`${item.id}: missing evidence family ${wanted.familyId}`);
@@ -55,7 +56,7 @@ for (const item of textAnswerAccuracyCases) {
       errors.push(`${item.id}: ${wanted.familyId} data omitted expected value/context «${text}»`);
     }
     for (const [dimension, expectedValue] of Object.entries(wanted.dimensions || {})) {
-      if (!normalize(family.dimensions?.[dimension]).includes(normalize(expectedValue))) {
+      if (!matchingRecords.some((item) => normalize(item.dimensions?.[dimension]).includes(normalize(expectedValue)))) {
         checks.evidence = false;
         errors.push(`${item.id}: ${wanted.familyId} omitted or changed ${dimension} «${expectedValue}»`);
       }

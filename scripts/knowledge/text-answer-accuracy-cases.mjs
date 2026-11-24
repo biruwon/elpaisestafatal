@@ -2,6 +2,213 @@
 // answer's evidence, scope, value, and uncertainty rather than route recall.
 export const textAnswerAccuracyCases = [
   {
+    id: 'room-rental-only-option-context',
+    equivalenceGroup: 'room-rental-worker-only-option',
+    input: 'El alquiler de una habitación se ha convertido en la única opción viable para muchos trabajadores adultos',
+    expected: {
+      state: 'insufficient',
+      family: 'room-rental-market',
+      verdict: 'insufficient',
+      directSourceIds: [],
+      replyIncludes: ['no se confirma', '101.984', '400 euros al mes', '33,6 %', 'no es un gasto observado', 'umbral del 30 %', '16–29 años'],
+      replyExcludes: ['el 33,6 % de todos los trabajadores adultos', 'única opción confirmada'],
+      evidence: [
+        {
+          familyId: 'room-rental-market',
+          sourceIds: ['cje-emancipation-2025'],
+          dataIncludes: ['101.984 habitaciones', '20,0 % más que en 2024', '85,4 % más que en 2022'],
+          dimensions: { period: '2025', geography: 'España', denominator: 'recuento de habitaciones ofertadas', unit: 'habitaciones ofertadas' },
+        },
+        {
+          familyId: 'room-rental-market',
+          sourceIds: ['cje-emancipation-2025'],
+          dataIncludes: ['renta mediana mensual anunciada', '400 euros', 'Idealista'],
+          dimensions: { period: '2025', geography: 'España', denominator: 'anuncios existentes de pisos compartidos en Idealista', unit: 'euros al mes' },
+        },
+        {
+          familyId: 'room-rental-market',
+          sourceIds: ['cje-emancipation-2025'],
+          dataIncludes: ['33,6 %', 'persona joven asalariada', 'no un gasto observado'],
+          dimensions: { population: 'persona joven asalariada', period: '2025', geography: 'España', denominator: 'salario de una persona joven asalariada', unit: 'porcentaje del salario' },
+        },
+      ],
+      maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'room-rental-only-option-paraphrase',
+    equivalenceGroup: 'room-rental-worker-only-option',
+    input: 'Para muchos trabajadores adultos, compartir piso se ha vuelto la única alternativa viable',
+    expected: {
+      state: 'insufficient',
+      family: 'room-rental-market',
+      verdict: 'insufficient',
+      directSourceIds: [],
+      replyIncludes: ['no se confirma', '101.984', '400 euros al mes', '33,6 %', 'persona asalariada de 16–29 años', 'umbral del 30 %'],
+      evidence: [{
+        familyId: 'room-rental-market',
+        sourceIds: ['cje-emancipation-2025'],
+        dataIncludes: ['101.984 habitaciones', '20,0 % más que en 2024', '85,4 % más que en 2022'],
+        dimensions: { period: '2025', geography: 'España', denominator: 'recuento de habitaciones ofertadas', unit: 'habitaciones ofertadas' },
+      }],
+      maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'room-rental-median-2025',
+    equivalenceGroup: 'room-rental-median-latest-reviewed',
+    input: '¿Cuál era la renta mediana anunciada de una habitación en España en 2025?',
+    expected: {
+      state: 'limited',
+      family: 'room-rental-market',
+      verdict: 'supported',
+      directSourceIds: ['cje-emancipation-2025'],
+      replyIncludes: ['400 euros', '2025', 'Idealista', 'mediana de oferta'],
+      evidence: [{
+        familyId: 'room-rental-market',
+        sourceIds: ['cje-emancipation-2025'],
+        dataIncludes: ['renta mediana mensual anunciada', '400 euros', 'Idealista'],
+        dimensions: { period: '2025', geography: 'España', denominator: 'anuncios existentes de pisos compartidos en Idealista', unit: 'euros al mes' },
+      }],
+      maxReplyWords: 70,
+    },
+  },
+  {
+    id: 'room-rental-latest-reviewed-median',
+    equivalenceGroup: 'room-rental-median-latest-reviewed',
+    input: '¿Cuánto cuesta alquilar una habitación en España?',
+    expected: {
+      state: 'limited',
+      family: 'room-rental-market',
+      verdict: 'supported',
+      directSourceIds: ['cje-emancipation-2025'],
+      replyIncludes: ['400 euros', '2025', 'Idealista', 'mediana de oferta'],
+      evidence: [{
+        familyId: 'room-rental-market',
+        sourceIds: ['cje-emancipation-2025'],
+        dataIncludes: ['renta mediana mensual anunciada', '400 euros', 'Idealista'],
+        dimensions: { period: '2025', geography: 'España', denominator: 'anuncios existentes de pisos compartidos en Idealista', unit: 'euros al mes' },
+      }],
+      maxReplyWords: 70,
+    },
+  },
+  {
+    id: 'room-rental-median-wrong-year',
+    input: '¿Cuál era la renta mediana anunciada de una habitación en España en 2024?',
+    expected: {
+      state: 'insufficient', family: 'room-rental-market', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['400 euros', '101.984', '33,6 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'room-rental-current-median-not-measured',
+    input: '¿Cuánto cuesta hoy alquilar una habitación en España?',
+    expected: {
+      state: 'insufficient', family: 'room-rental-market', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['no permite confirmar el precio actual', '2025', '400 euros', 'Idealista', 'mediana de oferta'],
+      evidence: [{
+        familyId: 'room-rental-market',
+        sourceIds: ['cje-emancipation-2025'],
+        dataIncludes: ['renta mediana mensual anunciada', '400 euros', 'Idealista'],
+        dimensions: { period: '2025', geography: 'España', denominator: 'anuncios existentes de pisos compartidos en Idealista', unit: 'euros al mes' },
+      }],
+      maxReplyWords: 70,
+    },
+  },
+  {
+    id: 'room-rental-youth-spending-not-observed',
+    input: 'En 2025 los jóvenes gastan el 33,6 % del salario en una habitación',
+    expected: {
+      state: 'insufficient', family: 'room-rental-market', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['no se puede confirmar un gasto observado', '33,6 %', '16–29 años', 'tendría que dedicar', 'no un gasto observado', 'umbral del 30 %'],
+      evidence: [{
+        familyId: 'room-rental-market',
+        sourceIds: ['cje-emancipation-2025'],
+        dataIncludes: ['33,6 %', 'persona joven asalariada', 'no un gasto observado'],
+        dimensions: { population: 'persona joven asalariada', period: '2025', geography: 'España', denominator: 'salario de una persona joven asalariada', unit: 'porcentaje del salario' },
+      }],
+      maxReplyWords: 70,
+    },
+  },
+  {
+    id: 'room-rental-adult-salary-effort-scope',
+    input: '¿Qué porcentaje del sueldo de un trabajador adulto se destina al alquiler de una habitación en 2025?',
+    expected: {
+      state: 'insufficient', family: 'room-rental-market', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['no se puede confirmar que la proporción corresponda a todos los trabajadores adultos', '33,6 %', 'persona joven asalariada', '16–29 años'],
+      evidence: [{
+        familyId: 'room-rental-market',
+        sourceIds: ['cje-emancipation-2025'],
+        dataIncludes: ['33,6 %', 'persona joven asalariada', 'no un gasto observado'],
+        dimensions: { population: 'persona joven asalariada', period: '2025', geography: 'España', denominator: 'salario de una persona joven asalariada', unit: 'porcentaje del salario' },
+      }],
+      maxReplyWords: 70,
+    },
+  },
+  {
+    id: 'room-rental-threshold-misapplication',
+    input: 'El CJE estima que una persona joven asalariada dedica el 33,6 % al alquiler de una habitación, por encima del umbral de asequibilidad del 30 % en 2025',
+    expected: {
+      state: 'limited', family: 'room-rental-market', verdict: 'contradicted', directSourceIds: ['cje-emancipation-2025'],
+      replyIncludes: ['la fuente contradice la afirmación', '33,6 %', '16–29 años', 'umbral del 30 %', 'viviendas completas', 'no a habitaciones'],
+      evidence: [{
+        familyId: 'room-rental-market',
+        sourceIds: ['cje-emancipation-2025'],
+        dataIncludes: ['33,6 %', 'persona joven asalariada', 'umbral del 30 %'],
+        dimensions: { population: 'persona joven asalariada', period: '2025', geography: 'España', denominator: 'salario de una persona joven asalariada', unit: 'porcentaje del salario' },
+      }],
+      maxReplyWords: 90,
+    },
+  },
+  {
+    id: 'room-rental-threshold-question',
+    equivalenceGroup: 'room-rental-threshold-scope',
+    input: '¿El umbral del 30 % de asequibilidad se aplica al alquiler de habitaciones en pisos compartidos?',
+    expected: {
+      state: 'limited', family: 'room-rental-market', verdict: 'contradicted', directSourceIds: ['cje-emancipation-2025'],
+      replyIncludes: ['la fuente contradice la afirmación', 'Observatorio de 2025', 'umbral del 30 %', 'vivienda completa', 'no a una habitación compartida'],
+      evidence: [{
+        familyId: 'room-rental-market',
+        sourceIds: ['cje-emancipation-2025'],
+        dataIncludes: ['umbral del 30 %', 'vivienda completa', 'habitación compartida'],
+        dimensions: { period: 'informe 2025', geography: 'España', denominator: 'coste de acceso a una vivienda completa', unit: 'porcentaje del coste de acceso' },
+      }],
+      maxReplyWords: 60,
+    },
+  },
+  {
+    id: 'room-rental-threshold-correct-scope',
+    equivalenceGroup: 'room-rental-threshold-scope',
+    input: 'El CJE indica que el umbral del 30 % corresponde a viviendas completas, no a habitaciones compartidas',
+    expected: {
+      state: 'limited', family: 'room-rental-market', verdict: 'supported', directSourceIds: ['cje-emancipation-2025'],
+      replyIncludes: ['Observatorio de 2025', 'umbral del 30 %', 'vivienda completa', 'no a una habitación compartida'],
+      evidence: [{
+        familyId: 'room-rental-market',
+        sourceIds: ['cje-emancipation-2025'],
+        dataIncludes: ['umbral del 30 %', 'vivienda completa', 'habitación compartida'],
+        dimensions: { period: 'informe 2025', geography: 'España', denominator: 'coste de acceso a una vivienda completa', unit: 'porcentaje del coste de acceso' },
+      }],
+      maxReplyWords: 60,
+    },
+  },
+  {
+    id: 'room-rental-median-wrong-territory',
+    input: '¿Cuál era la renta mediana anunciada de una habitación en Madrid en 2025?',
+    expected: {
+      state: 'insufficient', family: 'room-rental-market', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['400 euros', '101.984', '33,6 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'room-rental-whole-home-neighbour',
+    input: '¿Cuánto cuesta alquilar una vivienda completa en España?',
+    expected: {
+      state: 'insufficient', family: 'rental-price-amount', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['400 euros', '101.984', '33,6 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
     id: 'housing-completions-built-verb',
     equivalenceGroup: 'housing-completions-es-2025',
     input: 'En 2025 se acabaron 92.000 viviendas nuevas en España',

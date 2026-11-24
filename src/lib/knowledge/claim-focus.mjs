@@ -21,6 +21,7 @@ import { EUROPEAN_PRICE_WAGE_CONVERGENCE_EVIDENCE } from './european-price-wage-
 import { PUBLIC_PRIVATE_PAY_SNAPSHOT } from './public-private-pay-snapshot.mjs';
 import { PUBLIC_SOCIAL_HOUSING_SNAPSHOT, asksForPublicSocialStockCount } from './public-social-housing-snapshot.mjs';
 import { YOUTH_HOUSING_INDEPENDENCE_SNAPSHOT } from './youth-housing-independence-snapshot.mjs';
+import { ROOM_RENTAL_MARKET_SNAPSHOT, roomRentalMarketDirectMeasureFor, roomRentalMarketRequestedMeasureFor } from './room-rental-market-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -53,6 +54,9 @@ const householdSavingsCapacity = (t) => {
 };
 const rentalBurden = /\b(ingres\w*|salari\w*|sueld\w*|nomina\w*|mitad|por ciento|porcentaje|esfuerzo|asequib\w*|poder alquilar|puede alquilar|puede pagar|alquilar[^.]{0,35}sol[oa]|emancip\w*|independiz\w*)\b/;
 const absoluteRentAmount = /\b(cuant\w*|importe\w*|cantid\w*|cuant[ií]a\w*|euros?|eur|mensual\w*|al mes|por mes|€)\b/;
+const roomRentalMarket = (text) => /\b(habitacion\w*|cuarto\w*|piso compartido|compartir piso|vivienda compartida|alquiler por habitaciones)\b/.test(text)
+  && /\b(alquil\w*|arrendam\w*|renta\w*|precio\w*|cost\w*|habitacion\w*|cuarto\w*|compartir|piso compartido)\b/.test(text)
+  && !/\b(hotel\w*|hostal\w*|hostel\w*|alojamiento turistico|vacacional\w*|turism\w*|turist\w*)\b/.test(text);
 const intergenerationalHousingDistribution = (t) => !/\b(pension\w*|jubilacion\w*|jubilad\w*)\b/.test(t)
   && /\b(j[oó]ven\w*|juventud|generaci[oó]n\w*|boomers?|mayor(?:es)?|nacid\w* entre)\b/.test(t)
   && /\b(viviend\w*|casas?|pisos?|alquil\w*|arrendam\w*|inquilin\w*|propietari\w*|arrendador\w*|casero\w*)\b/.test(t)
@@ -1391,7 +1395,7 @@ const statutoryRetirementAge = (t) => {
 };
 const housingCompletionReference = (t) => !touristHousingMention(t)
   && /\b(viviend\w*|casas?|pisos?)\b/.test(t)
-  && /\b(termin\w*|complet\w*|finaliz\w*|acab\w*|conclu\w*)\b/.test(t);
+  && /\b(termin\w*|completad\w*|finaliz\w*|acab\w*|conclu\w*)\b/.test(t);
 const housingCompletionCountQuestion = (t) => housingCompletionReference(t)
   && (/\b(cuant\w*|numero|recuento|cantidad)\b/.test(t)
     || /\b92\s*000\b/.test(t) && /\b2025\b/.test(t));
@@ -1867,6 +1871,51 @@ const focuses = [
     needs: ['cambios de población residente y flujos migratorios en los mismos municipios y periodos', 'alquileres o precios de vivienda, viviendas disponibles y oferta nueva en esas zonas', 'una comparación causal que separe el efecto de población de empleo, turismo, oferta y financiación'],
     explanation: 'El crecimiento de población puede coincidir con más demanda de vivienda, pero el recuento de residentes no mide cuánto cambia los precios ni permite atribuir una subida a la inmigración.',
     limitation: 'Las cifras nacionales de población inmigrante y los índices nacionales de vivienda no muestran la presión local sobre alquileres ni su efecto causal. Hacen falta medidas locales y una comparación para el mismo periodo.',
+  },
+  {
+    id: 'room-rental-market', label: 'alquiler de habitaciones en pisos compartidos',
+    when: roomRentalMarket,
+    claimType: 'descriptive',
+    claimTypeFor: (claim) => /\b(aument\w*|sub\w*|crec\w*|increment\w*|desde (?:19|20)\d{2}|cada vez|se ha convertido|se ha vuelto|ha pasado a)\b/.test(normalize(claim)) ? 'trend' : 'descriptive',
+    direct: [], context: [],
+    needs: [
+      'recuento representativo de trabajadores adultos para quienes alquilar una habitación es la única opción asequible',
+      'ingresos, costes y alternativas de vivienda medidos para la misma población y periodo',
+    ],
+    needsForClaim: (claim) => roomRentalMarketDirectMeasureFor(claim) ? [] : [
+      'recuento representativo de trabajadores adultos para quienes alquilar una habitación es la única opción asequible',
+      'ingresos, costes y alternativas de vivienda medidos para la misma población y periodo',
+    ],
+    explanationHeadline: 'El CJE mide anuncios y costes juveniles, no si la habitación es la única opción para trabajadores adultos',
+    explanation: 'La renta mediana de una habitación procede de anuncios de pisos compartidos; el coste respecto al salario es una estimación para una persona joven asalariada. Ninguna de las dos medidas cuenta a los trabajadores adultos para quienes compartir habitación sea su única alternativa.',
+    evidenceGap: 'El informe no mide qué proporción de trabajadores adultos puede permitirse cada alternativa ni si una habitación es su única opción.',
+    explanationEvidence: ROOM_RENTAL_MARKET_SNAPSHOT,
+    shareableReplyForContext: ({ claim, facts }) => {
+      const measure = roomRentalMarketDirectMeasureFor(claim);
+      if (measure) return facts.join(' ');
+      const requestedMeasure = roomRentalMarketRequestedMeasureFor(claim);
+      const normalizedClaim = normalize(claim);
+      const asksForCurrentPrice = requestedMeasure === 'median' && /\b(actual\w*|hoy|ahora|vigente|current)\b/.test(normalizedClaim);
+      const claimsExclusivity = /\b(unic\w*|sola? opcion|no queda otra|viable|alternativ\w*)\b/.test(normalizedClaim)
+        && /\b(adult\w*|trabajad\w*|emplead\w*|ocupad\w*|poblacion general)\b/.test(normalizedClaim);
+      const contextualIndex = { median: 0, offers: 1, 'price-trend': 2, 'salary-effort': 3, threshold: 4 }[requestedMeasure];
+      if (!claimsExclusivity && contextualIndex !== undefined && facts[contextualIndex]) {
+        if (asksForCurrentPrice) return `El informe no permite confirmar el precio actual: su última cifra revisada corresponde a 2025. ${facts[contextualIndex]}`;
+        if (requestedMeasure === 'salary-effort' && /\b(gast(?:a|an|o|aron|aba|aban|ado|ados|adas)|pag(?:a|an|o|aron|aba|aban|ado|ados|adas)|desembols\w*|gasto observado)\b/.test(normalizedClaim)) {
+          return `No se puede confirmar un gasto observado con esta fuente. ${facts[contextualIndex]}`;
+        }
+        if (requestedMeasure === 'salary-effort' && !/\b(joven\w*|juventud)\b/.test(normalizedClaim)) {
+          return `No se puede confirmar que la proporción corresponda a todos los trabajadores adultos. ${facts[contextualIndex]}`;
+        }
+        return `La última cifra revisada del CJE corresponde a 2025. ${facts[contextualIndex]}`;
+      }
+      return [
+        'No se confirma que compartir una habitación sea la única opción para trabajadores adultos.',
+        'En España, el CJE registró 101.984 habitaciones ofertadas en 2025 (+20 % frente a 2024; +85,4 % frente a 2022). La renta mediana anunciada en Idealista fue de 400 euros al mes (+5,3 % interanual).',
+        'El 33,6 % estima el coste frente al salario de una persona asalariada de 16–29 años; no es un gasto observado. El umbral del 30 % se refiere a viviendas completas. El informe no mide cuántos trabajadores adultos carecen de alternativas.',
+      ].join('\n\n');
+    },
+    limitation: 'La muestra de anuncios y la comparación salarial juvenil no representan a todos los trabajadores adultos ni demuestran que compartir habitación sea su única alternativa.',
   },
   {
     id: 'work-housing-independence', label: 'empleo y acceso a vivienda independiente',
