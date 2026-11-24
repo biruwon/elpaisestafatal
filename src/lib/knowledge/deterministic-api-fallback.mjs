@@ -165,7 +165,11 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
         status: 'complete',
         evidenceLevel: reviewedContext.evidenceLevel,
         relatedClaims: related ? [related] : [],
-        guidance: { limitation: reviewedContext.limitation, questions: ['¿Quieres concretar el periodo, territorio o indicador?'] },
+        guidance: { limitation: reviewedContext.limitation, questions: [
+          reviewedContext.answerScope?.family === 'matched-pay'
+            ? '¿Qué profesión, país y perfil (edad, estudios, experiencia y jornada) quieres comparar?'
+            : '¿Quieres concretar el periodo, territorio o indicador?',
+        ] },
         result: reviewedContext,
       };
     }
@@ -173,7 +177,9 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
       status: focused.evidenceLevel === 'limited' || focused.sourceIds?.length ? 'partial' : 'uncovered',
       result: focused,
       relatedClaims: [],
-      guidance,
+      guidance: focused.answerScope?.family === 'matched-pay'
+        ? { limitation: focused.limitation, questions: ['¿Qué profesión, país y perfil (edad, estudios, experiencia y jornada) quieres comparar?'] }
+        : guidance,
     };
   }
   const scorecardLifecycle = snapshotLifecycle(GOVERNMENT_SCORECARD_SNAPSHOT, now);

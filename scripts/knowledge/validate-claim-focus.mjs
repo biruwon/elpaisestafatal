@@ -54,7 +54,7 @@ const cases = [
   ['pension-private-savings-requirement', ['Los jóvenes tendrán que pagar dos veces para la jubilación: cotizaciones y ahorro privado', 'Quienes trabajan deberán aportar a un plan privado además de cotizar para tener pensión', 'La jubilación exige pagar una pensión pública y otra privada']],
   ['pension-worker-beneficiary-ratio', ['El sistema de reparto depende de que haya suficientes trabajadores por cada pensionista', 'Cada vez hay menos cotizantes por jubilado y eso condiciona la financiación de las pensiones', 'La relación entre afiliados y pensionistas determina los recursos disponibles para prestaciones']],
   ['intergenerational-housing-pension-comparison', ['Los boomers tuvieron acceso a vivienda y jubilación en condiciones que las generaciones posteriores no tendrán', 'Las generaciones futuras se enfrentan a peores condiciones de vivienda y pensión', 'El acceso a la vivienda y a una jubilación suficiente ha cambiado entre generaciones']],
-  ['matched-pay', ['Las empresas españolas pagan menos por el mismo perfil profesional', 'Los salarios difieren entre países aun desempeñando el mismo puesto', 'Mismo trabajo y sueldo distinto según el país']],
+  ['matched-pay', ['Las empresas españolas pagan mucho menos que las de otros países europeos por el mismo perfil profesional', 'Los salarios difieren entre países aun desempeñando el mismo puesto', 'Mismo trabajo y sueldo distinto según el país']],
   ['unemployment-wage-pressure', ['El paro estructural permite a las empresas ofrecer salarios bajos porque siempre hay candidatos', 'El desempleo elevado debilita la negociación salarial y presiona los sueldos a la baja', 'Cuando abundan los candidatos, las empresas pueden contener los salarios', 'Con mucho paro, los empleadores pueden frenar las subidas de sueldo']],
   ['local-safety-trend', ['En mi barrio ha subido la inseguridad este mes', 'La delincuencia ha empeorado en mi calle estas semanas', 'En la zona hay cada vez más robos', 'En mi municipio han aumentado los hurtos este trimestre']],
   ['primary-care-waits', ['Hay que esperar demasiado para conseguir cita con el médico de familia', '¿Cuántos días tarda una cita en atención primaria?', 'La cita con el médico de cabecera llega con mucha demora']],
@@ -1120,6 +1120,45 @@ for (const paraphrase of [
 assert.notEqual(claimFocusFor('¿Cuál es la tasa de paro estructural en España?')?.id, 'unemployment-wage-pressure', 'A direct unemployment-rate question must not be interpreted as a wage mechanism');
 assert.equal(claimFocusFor('La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores')?.id, 'migration-wage-effects', 'Migration-specific wage claims must retain their distinct evidence contract');
 assert.equal(claimFocusFor('Para el mismo perfil profesional las empresas pagan salarios más bajos')?.id, 'matched-pay', 'Matched-profile wage claims without an unemployment mechanism must keep their own route');
+assert.equal(claimFocusFor('Los salarios españoles son más bajos que los europeos')?.id, 'nominal-wages', 'A countrywide wage comparison must not be presented as a same-profile comparison');
+assert.notEqual(claimFocusFor('Las mujeres cobran menos que los hombres en España')?.id, 'matched-pay', 'A gender-pay comparison must not inherit the same-profile salary methodology');
+assert.equal(claimFocusFor('Los sueldos de trabajos cualificados son demasiado parecidos a los de puestos que exigen mucha menos formación')?.id, 'education-pay-comparison', 'An education-to-pay claim must keep its distinct measurement route');
+const matchedPayClaims = cases.find(([family]) => family === 'matched-pay')[1];
+let matchedPaySourceIds;
+for (const [index, claim] of matchedPayClaims.entries()) {
+  const plan = focusedEvidencePlan(claim, { now: Date.parse('2026-11-24') });
+  assert.equal(plan.answerScope.family, 'matched-pay', `A same-profile wage paraphrase changed family: ${claim}`);
+  assert.deepEqual(plan.answerScope.directMetrics, [], 'Eurostat calculator methodology is not direct wage evidence for an unspecified profile');
+  assert.deepEqual(plan.answerScope.contextMetrics, [], 'Unadjusted national wage metrics must not be substituted for a matched-profile comparison');
+  assert.equal(plan.evidenceLevel, 'limited', 'The Eurostat methodology should be available as context');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['eurostat-salary-calculator']);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient', 'A method for comparing profiles is not a result for an unspecified profile');
+  assert.match(plan.shareableReply, /ocupaci[oó]n \(ISCO-08\).*experiencia en el puesto.*jornada.*tama[nñ]o de empresa/);
+  assert.match(plan.shareableReply, /2022.*2025/);
+  assert.match(plan.shareableReply, /no indica qu[eé] profesi[oó]n o perfil compara ni qu[eé] significa «mucho menos»/);
+  assert.match(plan.shareableReply, /no ajustan las diferencias de precios entre pa[ií]ses/);
+  assert.doesNotMatch(plan.shareableReply, /\d+\s*€/i, 'The answer must not invent a numeric comparison without a selected profile');
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: `matched-pay-${index}`, result: plan }, claim).state, 'insufficient');
+  const fallback = deterministicApiFallback({ text: claim, inputType: 'text', now: Date.parse('2026-11-24') });
+  assert.equal(fallback.status, 'partial');
+  assert.deepEqual(fallback.result.sourceLinks.map((source) => source.id), ['eurostat-salary-calculator']);
+  assert.match(fallback.guidance.questions[0], /profesi[oó]n, pa[ií]s y perfil/);
+  const evidenceIds = plan.evidenceSummary.families.flatMap((family) => family.evidenceIds || []);
+  if (matchedPaySourceIds) assert.deepEqual(evidenceIds, matchedPaySourceIds, `A same-profile paraphrase changed its source evidence: ${claim}`);
+  matchedPaySourceIds = evidenceIds;
+}
+const expiredMatchedPay = focusedEvidencePlan(matchedPayClaims[0], { now: Date.parse('2027-05-01') });
+assert.deepEqual(expiredMatchedPay.sourceLinks, [], 'Expired salary-calculator guidance must not be presented as current');
+assert.doesNotMatch(expiredMatchedPay.shareableReply, /ISCO-08|2025/, 'Expired salary-calculator details must not leak into a later answer');
+const namedCountryMatchedPay = focusedEvidencePlan('España paga menos que Alemania por el mismo puesto', { now: Date.parse('2026-11-24') });
+assert.equal(namedCountryMatchedPay.answerScope.family, 'matched-pay');
+assert.deepEqual(namedCountryMatchedPay.sourceLinks.map((source) => source.id), ['eurostat-salary-calculator'], 'The EU salary model should support a named EU-country profile comparison');
+const euAggregateMatchedPay = focusedEvidencePlan('España paga menos que la Unión Europea por el mismo perfil', { now: Date.parse('2026-11-24') });
+assert.deepEqual(euAggregateMatchedPay.sourceLinks.map((source) => source.id), ['eurostat-salary-calculator']);
+assert.match(euAggregateMatchedPay.shareableReply, /no produce una media única de la UE/, 'EU-country estimates must not be misrepresented as one EU average');
+const nonEuMatchedPay = focusedEvidencePlan('España paga menos que Estados Unidos por el mismo puesto', { now: Date.parse('2026-11-24') });
+assert.deepEqual(nonEuMatchedPay.sourceLinks, [], 'An EU-only salary calculator must not be attached to a Spain–US comparison');
+assert.equal(nonEuMatchedPay.evidenceLevel, 'insufficient');
 assert.equal(claimFocusFor('Los salarios pierden poder adquisitivo frente al coste de la vida')?.id, 'real-wages', 'Real-wage claims must not inherit unemployment/wage-bargaining context');
 
 const pensionPayGap = focusedEvidencePlan('Hay jubilados con pensiones superiores al sueldo de muchos trabajadores jóvenes');

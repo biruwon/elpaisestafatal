@@ -1762,10 +1762,33 @@ const focuses = [
   {
     id: 'matched-pay', label: 'salarios de perfiles profesionales comparables',
     when: (t) => has(t, wages) && /\b(mismo|misma|equivalente|similar)\b/.test(t) && /\b(perfil\w*|profes\w*|puesto\w*|trabajo|titul\w*|formacion|cualific\w*)\b/.test(t),
-    direct: [], context: ['median_hourly_earnings', 'median_hourly_earnings_europe', 'gender_pay_gap'],
-    needs: ['ocupación, experiencia y formación equivalentes', 'jornada y salario bruto o neto', 'país, periodo y poder de compra'],
-    explanation: 'Comparar el mismo perfil profesional requiere controlar ocupación, jornada, experiencia y formación.',
-    limitation: 'Una mediana salarial nacional o una brecha salarial sin ajustar no compara personas que desempeñan el mismo puesto.',
+    direct: [], context: [],
+    needs: ['países concretos y ocupación ISCO-08, sexo, edad y estudios comparables', 'años de experiencia en el puesto, contrato y jornada comparables', 'actividad, tamaño de empresa, región y año iguales', 'salario bruto por hora o mes; ajustar por precios si se compara poder adquisitivo'],
+    explanation: 'Eurostat ofrece una calculadora que estima salarios medios para el mismo perfil en distintos países. La afirmación no especifica el puesto ni los atributos necesarios para elegir una comparación concreta.',
+    explanationHeadline: 'Eurostat permite comparar perfiles definidos, pero falta concretar cuál',
+    explanationEvidence: {
+      directClaimEvidence: false,
+      expiresAt: '2027-04-30', territories: ['ES', 'AT', 'BE', 'BG', 'HR', 'CY', 'CZ', 'DK', 'EE', 'FI', 'FR', 'DE', 'EL', 'HU', 'IE', 'IT', 'LV', 'LT', 'LU', 'MT', 'NL', 'PL', 'PT', 'RO', 'SK', 'SI', 'SE', 'EU'],
+      evidenceLabel: 'Alcance de la calculadora salarial de Eurostat',
+      dimensions: {
+        subject: 'salario bruto medio estimado para un perfil laboral y empresarial seleccionado, comparable entre países de la UE',
+        population: 'perfiles de empleados representados en la Encuesta de Estructura Salarial de 2022; no empresas o trabajadores concretos',
+        geography: 'Estados miembros de la Unión Europea; algunos países, sectores o tamaños de empresa pueden no tener datos',
+        period: 'microdatos de 2022 extrapolados al año de referencia 2025',
+        denominator: 'horas pagadas para la estimación por hora; perfil modelizado, no distribución de salarios individuales',
+        unit: 'euros brutos por hora o por mes',
+      },
+      facts: [
+        'La calculadora de Eurostat compara estimaciones de salario bruto medio para los mismos atributos: sexo, edad, estudios, ocupación (ISCO-08), experiencia en el puesto, contrato, jornada, actividad económica, tamaño de empresa y región. Usa la Encuesta de Estructura Salarial de 2022 y extrapola las estimaciones a 2025.',
+      ],
+      sources: [{ id: 'eurostat-salary-calculator', title: 'Salary calculator · Eurostat', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Salary_calculator', retrievedAt: '2026-11-24', role: 'primary' }],
+    },
+    shareableReplyForContext: ({ facts }) => [
+      facts.join(' '),
+      'Esto permite comprobar una comparación concreta entre países, pero no resuelve la frase general: no indica qué profesión o perfil compara ni qué significa «mucho menos». La herramienta no produce una media única de la UE. Sus cifras son medias modelizadas en euros, no salarios de cada empresa o persona, y no ajustan las diferencias de precios entre países. Para verificarla hay que fijar los mismos atributos del perfil y comparar los países y el año elegidos.',
+    ].join('\n\n'),
+    evidenceGap: 'Falta concretar los países, la profesión y el perfil, además de un umbral para «mucho menos»; una media nacional o una brecha salarial sin ajustar no compara perfiles equivalentes.',
+    limitation: 'La calculadora ofrece estimaciones medias modelizadas, no el salario observado de cada empresa o persona. Expresa los resultados en euros sin corregir diferencias de precios entre países, y puede no cubrir algunos países, actividades o empresas pequeñas.',
   },
   {
     id: 'nominal-wages', label: 'salarios y remuneración',

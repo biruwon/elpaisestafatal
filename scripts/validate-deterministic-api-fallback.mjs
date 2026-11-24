@@ -165,12 +165,12 @@ if (causalWorktimeComparison.result?.blocks?.find((block) => block.type === 'cla
 }
 const countTrend = deterministicApiFallback({ text: '¿Cada vez hay más personas ocupadas en riesgo de pobreza?', inputType: 'text', now: Date.parse('2026-11-17') });
 const countTrendArgument = countTrend.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0];
-if (countTrend.status !== 'uncovered' || countTrend.result?.evidenceLevel !== 'insufficient' || countTrend.result?.claimType !== 'trend'
+if (countTrend.status !== 'partial' || countTrend.result?.evidenceLevel !== 'insufficient' || countTrend.result?.claimType !== 'trend'
   || countTrendArgument?.verdict !== 'insufficient' || countTrendArgument?.evidenceIds?.length
   || !countTrend.result?.shareableReply?.includes('mide un porcentaje, no el número de personas')
   || !countTrend.result?.shareableReply?.includes('bajó 1,9 puntos porcentuales')
   || !countTrend.result?.sourceIds?.includes('eurostat-in-work-poverty-2026-11')) {
-  throw new Error('The rate series was incorrectly used to confirm or contradict a claim about the number of affected workers.');
+  throw new Error('A contextual rate series must leave the count claim insufficient while preserving its related evidence.');
 }
 const contraryRateTrend = deterministicApiFallback({ text: 'La tasa de riesgo de pobreza entre ocupados ha aumentado entre 2015 y 2025', inputType: 'text', now: Date.parse('2026-11-17') });
 if (contraryRateTrend.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict !== 'contradicted'
@@ -184,12 +184,12 @@ if (scopedRateTrend.result?.headline !== 'El riesgo de pobreza entre personas oc
 }
 const subjectivePoverty = deterministicApiFallback({ text: 'En España se puede trabajar a jornada completa y seguir sin llegar a fin de mes', inputType: 'text', now: Date.parse('2026-11-23T16:00:00Z') });
 const subjectiveArgument = subjectivePoverty.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0];
-if (subjectivePoverty.status !== 'uncovered' || subjectivePoverty.result?.evidenceLevel !== 'insufficient'
+if (subjectivePoverty.status !== 'partial' || subjectivePoverty.result?.evidenceLevel !== 'insufficient'
   || !subjectivePoverty.result?.shareableReply?.includes('Como contexto:')
   || !subjectivePoverty.result?.shareableReply?.includes('20,6 % de la población')
   || !subjectivePoverty.result?.shareableReply?.includes('cruce de la dificultad declarada con la situación laboral y la jornada')
   || subjectiveArgument?.sourceIds?.length || subjectiveArgument?.evidenceIds?.length) {
-  throw new Error('The household subjective-poverty rate was presented as direct evidence about full-time workers.');
+  throw new Error('Household poverty context must leave the full-time-claim verdict insufficient.');
 }
 const partTimePoverty = deterministicApiFallback({ text: 'Trabajar a tiempo parcial no impide ser pobre', inputType: 'text', now: Date.parse('2026-11-17') });
 if (partTimePoverty.status !== 'partial' || partTimePoverty.result?.evidenceLevel !== 'limited'
@@ -227,14 +227,15 @@ if (nonTextWorkingPoverty.result?.sourceIds?.some((sourceId) => sourceId.startsW
 }
 const graduateOutcomeClaim = 'Un título universitario ya no garantiza encontrar un empleo cualificado';
 const graduateOutcome = deterministicApiFallback({ text: graduateOutcomeClaim, inputType: 'text', now: Date.parse('2026-11-17') });
+const graduateOutcomeClaimFinding = graduateOutcome.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.finding || '';
 if (graduateOutcome.status !== 'partial' || graduateOutcome.result?.evidenceLevel !== 'limited'
   || graduateOutcome.result?.evidenceSummary?.mode !== 'snapshot'
   || graduateOutcome.result?.answerScope?.family !== 'education-employment-outcomes'
-  || !graduateOutcome.result?.shareableReply?.includes('83,2 %') || !graduateOutcome.result?.shareableReply?.includes('34 %')
-  || !graduateOutcome.result?.shareableReply?.includes('en 2025')
-  || !graduateOutcome.result?.shareableReply?.includes('definición de este dato difiere')
-  || graduateOutcome.result?.shareableReply?.includes('no compara dos periodos')
-  || !graduateOutcome.result?.shareableReply?.includes('no garantizan el resultado de cada persona')
+  || !graduateOutcomeClaimFinding.includes('83,2 %') || !graduateOutcome.result?.shareableReply?.includes('34 %')
+  || !graduateOutcome.result?.shareableReply?.includes('España, 2025')
+  || !graduateOutcome.result?.shareableReply?.includes('diferencia de definición')
+  || !/no compara cohortes previas/i.test(graduateOutcome.result?.shareableReply || '')
+  || !graduateOutcome.result?.shareableReply?.includes('no una garantía individual')
   || !graduateOutcome.result?.sourceIds?.includes('eurostat-tertiary-employment')
   || !graduateOutcome.result?.sourceIds?.includes('eurostat-tertiary-overqualification')
   || graduateOutcome.result?.sourceIds?.includes('eurostat-tertiary-unemployment')
@@ -246,8 +247,9 @@ for (const paraphrase of [
   'Un título superior no garantiza conseguir un trabajo cualificado',
 ]) {
   const answer = deterministicApiFallback({ text: paraphrase, inputType: 'text', now: Date.parse('2026-11-17') });
+  const answerClaimFinding = answer.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.finding || '';
   if (answer.status !== 'partial' || answer.result?.answerScope?.family !== 'education-employment-outcomes'
-    || !answer.result?.shareableReply?.includes('83,2 %') || !answer.result?.shareableReply?.includes('34 %')
+    || !answerClaimFinding.includes('83,2 %') || !answer.result?.shareableReply?.includes('34 %')
     || JSON.stringify(answer.result?.sourceIds || []) !== JSON.stringify(graduateOutcome.result.sourceIds)) {
     throw new Error(`A graduate employment paraphrase changed the evidence family or source scope: ${paraphrase}`);
   }
@@ -411,15 +413,17 @@ const rentalMechanismClaims = [
   { family: 'rental-regulation-contract-shift', claim: 'El control de precios provoca que viviendas pasen del alquiler habitual al de temporada', context: true },
   { family: 'rental-regulation-contract-shift', claim: 'La regulación en Cataluña desplazó viviendas del alquiler habitual a contratos de temporada', context: true },
   { family: 'rental-regulation-contract-shift', claim: 'Los topes de alquiler hacen que parte de la oferta desaparezca del mercado regulado' },
-  { family: 'rental-landlord-motives', claim: 'El miedo a la okupación y al impago hace que propietarios retiren pisos del alquiler' },
-  { family: 'rental-landlord-motives', claim: 'Hay viviendas vacías que no se alquilan por miedo a problemas legales con inquilinos' },
+  { family: 'rental-landlord-motives', claim: 'El miedo a la okupación y al impago hace que propietarios retiren pisos del alquiler', context: true },
+  { family: 'rental-landlord-motives', claim: 'Hay viviendas vacías que no se alquilan por miedo a problemas legales con inquilinos', context: true },
   { family: 'rental-landlord-motives', claim: 'Los propietarios prefieren el alquiler de temporada porque les da más flexibilidad que el alquiler habitual' },
 ];
 for (const { family, claim, context = false } of rentalMechanismClaims) {
   const result = deterministicApiFallback({ text: claim, inputType: 'text' });
   const reply = result.result?.shareableReply || '';
   const claimItem = result.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0];
-  const expectedSourceIds = context ? ['catalonia-seasonal-rental-deposits'] : [];
+  const expectedSourceIds = context
+    ? family === 'rental-landlord-motives' ? ['observatorio-alquiler-landlord-profile-2025'] : ['catalonia-seasonal-rental-deposits']
+    : [];
   if (result.status !== (context ? 'partial' : 'uncovered') || result.result?.id !== `measurement-${family}`
     || result.result?.claimType !== 'causal' || result.result?.evidenceLevel !== (context ? 'limited' : 'insufficient')
     || JSON.stringify(result.result?.sourceIds || []) !== JSON.stringify(expectedSourceIds)
@@ -428,7 +432,7 @@ for (const { family, claim, context = false } of rentalMechanismClaims) {
     || !result.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.length)) {
     throw new Error(`A rental-market mechanism did not preserve its own evidence gap: ${claim}`);
   }
-  if (context && (!/9\.330/.test(reply) || !/13\.517/.test(reply) || !/44,9 %/.test(reply)
+  if (context && family === 'rental-regulation-contract-shift' && (!/9\.330/.test(reply) || !/13\.517/.test(reply) || !/44,9 %/.test(reply)
     || !/Catalu[nñ]a/.test(reply) || !result.result?.blocks?.some((block) => block.type === 'data_finding' && block.dataKind === 'context'))) {
     throw new Error(`The seasonal-rental trend lost its region, figures, or context-only label: ${claim}`);
   }
