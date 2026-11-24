@@ -4,14 +4,17 @@
 export const sourcesForEvidenceIds = (plan, evidenceIds = []) => {
   const requested = new Set(evidenceIds);
   const knownSources = new Set((plan?.sourceLinks || []).map((source) => source.id));
-  const result = new Set([...requested].filter((id) => knownSources.has(id)));
+  const directSourceIds = new Set([...requested].filter((id) => knownSources.has(id)));
+  const dataEvidenceIds = new Set([...requested].filter((id) => !knownSources.has(id)));
+  const result = new Set(directSourceIds);
   const add = (record) => {
-    if (!(record?.evidenceIds || []).some((id) => requested.has(id))) return;
+    if (!(record?.evidenceIds || []).some((id) => dataEvidenceIds.has(id))) return;
     for (const id of record.sourceIds || []) if (knownSources.has(id)) result.add(id);
   };
   for (const family of plan?.evidenceSummary?.families || []) {
-    add(family);
-    for (const criterion of family.criteria || []) add(criterion);
+    if (Array.isArray(family.criteria) && family.criteria.length) {
+      for (const criterion of family.criteria) add(criterion);
+    } else add(family);
   }
   return [...result];
 };

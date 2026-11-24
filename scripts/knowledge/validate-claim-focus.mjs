@@ -593,6 +593,13 @@ for (const [family, claim] of crossTopicClaims) {
     const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim);
     assert.equal(publicResponse.state, 'insufficient', 'Aggregate context must not confirm a universal private-saving requirement');
     assert.equal(publicResponse.result.arguments[0].verdict, 'insufficient');
+  } else if (family === 'pension-indexation-comparison') {
+    assert.equal(plan.evidenceLevel, 'limited', 'The scoped pension and wage comparison should remain available');
+    assert.deepEqual(plan.sourceLinks.map((source) => source.id), [
+      'pension-revaluation-2023', 'pension-revaluation-2024', 'ine-epa-main-job-wage-deciles-2024',
+    ]);
+    assert.doesNotMatch(plan.shareableReply, /17 €/);
+    assert.equal(localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim).state, 'limited');
   } else {
     assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should leave this claim unsupported: ${claim}`);
     assert.equal(plan.sourceLinks.length, 0, `An unrelated wage survey was attached to this claim: ${claim}`);
@@ -983,6 +990,27 @@ assert.match(pensionFinancingPublic.result.reply, /cotizaciones y otros ingresos
 assert.match(pensionFinancingPublic.result.reply, /financiaci[oó]n de reparto, distinta de acumular capital en una cuenta individual/);
 assert.match(pensionFinancingPublic.result.reply, /no permite confirmar por s[ií] sola la sostenibilidad/i);
 assert.ok(pensionFinancingPublic.result.sources.some((source) => source.id === 'social-security-pay-as-you-go'));
+const pensionIndexationWageClaim = 'Las pensiones se actualizan mejor con la inflación que muchos salarios';
+const pensionIndexationPlan = focusedEvidencePlan(pensionIndexationWageClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(claimFocusFor(pensionIndexationWageClaim)?.id, 'pension-indexation-comparison');
+assert.equal(pensionIndexationPlan.answerScope.family, 'pension-indexation-comparison');
+const pensionIndexationPublic = localPublicCheckResponse({ status: 'partial', requestId: 'pension-indexation-wage-comparison', result: pensionIndexationPlan }, pensionIndexationWageClaim);
+assert.equal(pensionIndexationPublic.state, 'limited');
+assert.equal(pensionIndexationPublic.result.arguments[0].verdict, 'mixed');
+assert.deepEqual(pensionIndexationPublic.result.criteria.map((criterion) => criterion.sourceIds), [
+  ['pension-revaluation-2023', 'pension-revaluation-2024'],
+  ['ine-epa-main-job-wage-deciles-2024'],
+  ['pension-revaluation-2023', 'pension-revaluation-2024', 'ine-epa-main-job-wage-deciles-2024'],
+], 'Each pension/wage finding must cite only the official source documents that support it');
+assert.match(pensionIndexationPublic.result.reply, /12,6 %.*11,0 %.*1,6 puntos porcentuales/s);
+assert.match(pensionIndexationPublic.result.reply, /no permite generalizar a otros periodos/);
+assert.ok(pensionIndexationPublic.result.reply.trim().split(/\s+/).length <= 140, 'The pension/wage comparison should stay digestible');
+const pensionIndexationWrongYear = focusedEvidencePlan('Las pensiones se actualizaron mejor con la inflación que los salarios en 2025', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.deepEqual(pensionIndexationWrongYear.sourceLinks, [], 'The 2022–2024 pension/wage comparison must not answer a 2025 claim');
+const pensionPriceRuleClaim = '¿Las pensiones contributivas se revalorizan conforme al IPC en 2024?';
+const pensionPriceRulePlan = focusedEvidencePlan(pensionPriceRuleClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(pensionPriceRulePlan.answerScope.family, 'pension-price-indexation', 'A rule question without a wage comparison must stay on the pension-law route');
+assert.ok(!pensionPriceRulePlan.sourceLinks.some((source) => source.id === 'ine-epa-main-job-wage-deciles-2024'));
 const pensionPrivateClaims = [
   'Ahorrar de forma privada será imprescindible aunque se siga cotizando al sistema público',
   'La pensión pública quizá no alcance para mantener el nivel de vida y habrá que ahorrar por cuenta propia',
@@ -1581,8 +1609,8 @@ const pensionIndexation = focusedEvidencePlan(pensionIndexationClaim, { now: Dat
 assert.equal(pensionIndexation.answerScope.family, 'pension-price-indexation');
 assert.equal(pensionIndexation.evidenceLevel, 'limited');
 assert.equal(pensionIndexation.evidenceSummary.mode, 'snapshot');
-assert.match(pensionIndexation.shareableReply, /2,5 % en 2022, 8,5 % en 2023, 3,8 % en 2024, 2,8 % en 2025 y 2,7 % en 2026/);
-assert.match(pensionIndexation.shareableReply, /no mide el coste de vida de cada hogar pensionista/);
+assert.match(pensionIndexation.shareableReply, /2,5 % en 2022; 8,5 % en 2023; 3,8 % en 2024; 2,8 % en 2025; 2,7 % en 2026/);
+assert.match(pensionIndexation.shareableReply, /no mide la inflación personal ni el poder de compra de cada hogar/);
 assert.deepEqual(pensionIndexation.sourceLinks.map((source) => source.id), [
   'pension-revaluation-2022', 'pension-revaluation-2023', 'pension-revaluation-2024', 'pension-revaluation-2025', 'pension-revaluation-2026',
 ]);

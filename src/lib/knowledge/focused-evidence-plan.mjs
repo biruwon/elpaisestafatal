@@ -937,7 +937,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       ? `${focus.limitation} La tabla no evalúa la magnitud adicional de la afirmación, como un número de días o «mucho mayor».`
       : focus.limitation;
   const territories = requestedGeographyScopes(claim);
-  const reviewedExplanation = focus.explanationEvidence && now < Date.parse(focus.explanationEvidence.expiresAt)
+  const explanationAvailable = !focus.explanationEvidence?.createdAt
+    || snapshotLifecycle(focus.explanationEvidence, now).usable;
+  const reviewedExplanation = focus.explanationEvidence && explanationAvailable && now < Date.parse(focus.explanationEvidence.expiresAt)
     && territories.every(({ id }) => focus.explanationEvidence.territories?.includes(id))
     && (!focus.explanationEvidence.when || focus.explanationEvidence.when(normalize(claim))) ? focus.explanationEvidence : undefined;
   const explanation = reviewedExplanation?.selectForClaim?.({ claim, normalizedClaim }) || reviewedExplanation;
@@ -1281,19 +1283,39 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       ...(matching.some((fact) => direct.includes(fact)) && !educationOutcomeCausalClaim ? {} : { missingDimensions: missing }),
     };
   });
-  if (explanationMeasuresClaim) families.push({
-    familyId: focus.id,
-    familyLabel: focus.label,
-    label: focus.label,
-    direction: 'qualifies',
-    status: 'available',
-    dataKind: 'snapshot',
-    finding: explanationFacts.join(' '),
-    data: explanationFacts,
-    evidenceIds: explanation.sources.map((source) => source.id),
-    sourceIds: explanation.sources.map((source) => source.id),
-    dimensions: explanationDimensions,
-  });
+  if (explanationMeasuresClaim) {
+    const hasFactSources = Array.isArray(explanation.factSourceIds)
+      && explanation.factSourceIds.length === explanationFacts.length;
+    const criteria = hasFactSources ? explanationFacts.map((finding, index) => {
+      const sourceIds = explanation.factSourceIds[index] || [];
+      const sourceTitles = explanation.sources.filter((source) => sourceIds.includes(source.id)).map((source) => source.title);
+      return {
+        id: `${focus.id}-${index + 1}`,
+        label: sourceTitles.join(' · ') || explanation.evidenceLabel || focus.label,
+        finding,
+        status: 'available',
+        dataKind: 'snapshot',
+        data: [finding],
+        evidenceIds: sourceIds,
+        sourceIds,
+        dimensions: explanation.factDimensions?.[index] || explanationDimensions,
+      };
+    }) : undefined;
+    families.push({
+      familyId: focus.id,
+      familyLabel: focus.label,
+      label: focus.label,
+      direction: 'qualifies',
+      status: 'available',
+      dataKind: 'snapshot',
+      finding: explanationFacts.join(' '),
+      data: explanationFacts,
+      evidenceIds: explanation.sources.map((source) => source.id),
+      sourceIds: explanation.sources.map((source) => source.id),
+      dimensions: explanationDimensions,
+      ...(criteria ? { criteria } : {}),
+    });
+  }
   else if (explanation && ids.length === 0) {
     const hasFactSources = Array.isArray(explanation.factSourceIds)
       && explanation.factSourceIds.length === explanationFacts.length;

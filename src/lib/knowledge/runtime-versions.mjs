@@ -5,7 +5,7 @@ export const RUNTIME_VERSIONS = Object.freeze({
   evidencePacketSchema: '1',
   compilerContract: '2',
   knowledge: '2026-08-04.2',
-  fallbackKnowledge: 'deterministic-fallback-71-pension-transfer-account-2026-11',
-  warehouseKnowledge: 'warehouse-2026-11-24.35-pension-transfer-account',
+  fallbackKnowledge: 'deterministic-fallback-73-pension-indexation-wages-2026-11',
+  warehouseKnowledge: 'warehouse-2026-11-24.37-pension-indexation-wages',
   indexKnowledge: 'index-only-2026-08-05.9',
 });

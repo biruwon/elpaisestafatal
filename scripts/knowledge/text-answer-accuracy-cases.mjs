@@ -1297,6 +1297,71 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'pension-indexation-vs-wages-2022-2024',
+    equivalenceGroup: 'pension-indexation-vs-wages-2022-2024',
+    input: 'Las pensiones se actualizan mejor con la inflación que muchos salarios',
+    expected: {
+      state: 'limited', family: 'pension-indexation-comparison', verdict: 'mixed',
+      directSourceIds: ['pension-revaluation-2023', 'pension-revaluation-2024', 'ine-epa-main-job-wage-deciles-2024'],
+      replyIncludes: ['8,5 % en 2023', '3,8 % en 2024', '12,6 %', '1.802,8 € (2022)', '2.001,4 € (2024)', '11,0 %', '1,6 puntos porcentuales', 'No muestra cómo cambió el sueldo de cada trabajador'],
+      replyExcludes: ['2,8 % en 2025', '2,7 % en 2026'],
+      evidence: [{
+        familyId: 'pension-indexation-comparison', sourceIds: ['pension-revaluation-2023', 'pension-revaluation-2024', 'ine-epa-main-job-wage-deciles-2024'],
+        dataIncludes: ['8,5 % en 2023', '3,8 % en 2024', '1.802,8 € en 2022', '2.001,4 € en 2024', '12,6 %', '11,0 %', '1,6 puntos porcentuales'],
+        dimensions: { period: '2022–2024', geography: 'España', population: 'contributory pensions covered by the general revaluation', denominator: 'salario mediano de 2022', unit: 'porcentaje de variación nominal' },
+      }],
+      maxReplyWords: 140,
+    },
+  },
+  {
+    id: 'pension-indexation-vs-wages-paraphrase',
+    equivalenceGroup: 'pension-indexation-vs-wages-2022-2024',
+    input: 'La revalorización de las pensiones siguió más de cerca el IPC que el salario mediano entre 2022 y 2024',
+    expected: {
+      state: 'limited', family: 'pension-indexation-comparison', verdict: 'mixed',
+      directSourceIds: ['pension-revaluation-2023', 'pension-revaluation-2024', 'ine-epa-main-job-wage-deciles-2024'],
+      replyIncludes: ['12,6 %', '11,0 %', '1,6 puntos porcentuales', 'no permite generalizar a otros periodos'],
+      evidence: [{
+        familyId: 'pension-indexation-comparison', sourceIds: ['pension-revaluation-2023', 'pension-revaluation-2024', 'ine-epa-main-job-wage-deciles-2024'],
+        dataIncludes: ['12,6 %', '11,0 %', '1,6 puntos porcentuales'],
+        dimensions: { period: '2022–2024', geography: 'España' },
+      }],
+      maxReplyWords: 140,
+    },
+  },
+  {
+    id: 'pension-indexation-vs-wages-wrong-year',
+    input: 'Las pensiones se actualizaron mejor con la inflación que los salarios en 2025',
+    expected: {
+      state: 'insufficient', family: 'pension-indexation-comparison', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['12,6 %', '11,0 %', '2.001,4 €'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'pension-indexation-vs-wages-foreign-scope',
+    input: 'En Francia, las pensiones se actualizaron mejor con la inflación que los salarios en 2024',
+    expected: {
+      state: 'insufficient', family: 'pension-indexation-comparison', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['12,6 %', '11,0 %', '2.001,4 €'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'pension-indexation-vs-wages-nearby-rule',
+    input: '¿Las pensiones contributivas se revalorizan conforme al IPC en 2024?',
+    expected: {
+      state: 'limited', family: 'pension-price-indexation', verdict: 'mixed',
+      directSourceIds: ['pension-revaluation-2022', 'pension-revaluation-2023', 'pension-revaluation-2024', 'pension-revaluation-2025', 'pension-revaluation-2026'],
+      replyIncludes: ['artículo 58', '3,8 % en 2024'],
+      replyExcludes: ['1.802,8 €', 'salario mediano', '1,6 puntos porcentuales'],
+      evidence: [{
+        familyId: 'pension-price-indexation', sourceIds: ['pension-revaluation-2022', 'pension-revaluation-2023', 'pension-revaluation-2024', 'pension-revaluation-2025', 'pension-revaluation-2026'],
+        dataIncludes: ['2,5 % en 2022', '8,5 % en 2023', '3,8 % en 2024'],
+        dimensions: { period: '2022–2026', geography: 'España', population: 'pensiones contributivas', unit: 'porcentaje de aumento anual' },
+      }],
+      maxReplyWords: 150,
+    },
+  },
+  {
     id: 'pension-private-saving-necessity',
     equivalenceGroup: 'pension-private-saving-sufficiency-context-spain',
     input: 'Ahorrar de forma privada será imprescindible aunque se siga cotizando al sistema público',

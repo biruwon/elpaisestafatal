@@ -6,6 +6,7 @@ import { PENSION_CONTRIBUTOR_RATIO_SNAPSHOT } from './pension-contributor-ratio-
 import { RETIREMENT_AGE_SNAPSHOT } from './retirement-age-snapshot.mjs';
 import { PENSION_PRIVATE_SAVINGS_SNAPSHOT } from './pension-private-savings-snapshot.mjs';
 import { PENSION_TRANSFER_ACCOUNT_SNAPSHOT } from './pension-transfer-account-snapshot.mjs';
+import { PENSION_INDEXATION_WAGE_SNAPSHOT } from './pension-indexation-wage-snapshot.mjs';
 import { EDUCATION_SOCIOECONOMIC_SNAPSHOT } from './education-socioeconomic-snapshot.mjs';
 import { UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT } from './university-graduate-outcomes-snapshot.mjs';
 import { RAIL_PUNCTUALITY_EVIDENCE, railPunctualityShareableReply } from './rail-punctuality-snapshot.mjs';
@@ -703,7 +704,7 @@ const retireeHousingCostComparison = (t) => /\b(jubilad\w*|pensionist\w*|pension
   && /\b(renta\w*|ingres\w*|salari\w*|sueld\w*|remuner\w*|trabajador\w*|emplead\w*|ocupad\w*)\b/.test(t)
   && /\b(mas|menos|mayor\w*|menor\w*|superior\w*|inferior\w*|compar\w*|diferenc\w*|cambi\w*|frente a|que quien\w*|pued\w* tener)\b/.test(t);
 const pensionIndexationComparison = (t) => /\b(pension\w*|jubilad\w*|jubilaci[oó]n)\b/.test(t)
-  && /\b(inflaci[oó]n|precios|coste de vida|revaloriz\w*|actualiz\w*|index\w*)\b/.test(t)
+  && /\b(ipc|inflaci[oó]n|precios|coste de vida|revaloriz\w*|actualiz\w*|index\w*)\b/.test(t)
   && /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|trabajador\w*)\b/.test(t)
   && /\b(mejor\w*|peor\w*|mas|menos|mayor\w*|menor\w*|super\w*|compar\w*|frente a|que)\b/.test(t);
 const pensionPriceIndexation = (t) => {
@@ -744,6 +745,99 @@ const pensionPriceIndexationEvidence = {
     { id: 'pension-revaluation-2026', title: 'Real Decreto-ley 3/2026 · revalorización de pensiones para 2026', publisher: 'BOE', url: 'https://www.boe.es/diario_boe/txt.php?id=BOE-A-2026-2548', publishedAt: '2026-02-04', retrievedAt: '2026-11-17', role: 'primary' },
   ],
   directClaimEvidence: true,
+};
+const pensionPriceIndexationReply = ({ claim, facts }) => {
+  const years = [...new Set([...normalize(claim).matchAll(/\b20\d{2}\b/g)].map(([year]) => year))];
+  const allValues = [...String(facts[1] || '').matchAll(/([\d,]+ %) en (20\d{2})/g)];
+  const selected = years.length
+    ? allValues.filter(([, , year]) => years.includes(year))
+    : allValues;
+  const increases = selected.map(([, value, year]) => `${value} en ${year}`).join('; ');
+  return [
+    facts[0],
+    increases ? `El aumento general aprobado fue ${increases}.` : facts[1],
+    'El porcentaje general describe la regla legal y no mide la inflación personal ni el poder de compra de cada hogar; existen excepciones para algunas cuantías y prestaciones.',
+  ].filter(Boolean).join('\n\n');
+};
+const pensionIndexationWageEvidence = (() => {
+  const snapshot = PENSION_INDEXATION_WAGE_SNAPSHOT;
+  const percent = (value) => new Intl.NumberFormat('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(value);
+  const money = (value) => new Intl.NumberFormat('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1, useGrouping: true, minimumGroupingDigits: 1 }).format(value);
+  const revaluationFactor = snapshot.pensionRevaluations.reduce((factor, row) => factor * (1 + row.value / 100), 1);
+  const pensionChange = (revaluationFactor - 1) * 100;
+  const firstWage = snapshot.medianMonthlyWages[0];
+  const lastWage = snapshot.medianMonthlyWages.at(-1);
+  const wageChange = (lastWage.value / firstWage.value - 1) * 100;
+  const difference = pensionChange - wageChange;
+  const revaluations = snapshot.pensionRevaluations;
+  const yearSourceIds = revaluations.map((row) => row.year === 2023 ? snapshot.sourceIds.pension2023 : snapshot.sourceIds.pension2024);
+  return {
+    schemaVersion: snapshot.schemaVersion,
+    owner: snapshot.owner,
+    createdAt: snapshot.createdAt,
+    asOf: snapshot.asOf,
+    validationStatus: snapshot.validationStatus,
+    expiresAt: snapshot.expiresAt,
+    territories: ['ES'],
+    when: (claim) => [...claim.matchAll(/\b20\d{2}\b/g)].every(([year]) => Number(year) >= 2022 && Number(year) <= 2024),
+    evidenceLabel: 'Revalorización de pensiones y salario mediano bruto · España, 2022–2024',
+    dimensions: {
+      subject: 'cambio acumulado de la revalorización general de pensiones contributivas frente al salario mediano bruto mensual del empleo principal',
+      population: snapshot.population,
+      period: '2022–2024; revalorizaciones de 2023 y 2024',
+      geography: snapshot.geography,
+      denominator: 'importe de pensión antes de cada revalorización; salario mediano de 2022 para el cambio salarial acumulado',
+      unit: snapshot.unit,
+    },
+    facts: [
+      `En España, la revalorización general de las pensiones contributivas fue del ${percent(revaluations[0].value)} % en ${revaluations[0].year} y del ${percent(revaluations[1].value)} % en ${revaluations[1].year}. La regla general sigue el promedio del IPC interanual del periodo de referencia, con excepciones y reglas específicas.`,
+      `En la EPA, el salario mediano bruto mensual del empleo principal pasó de ${money(firstWage.value)} € en ${firstWage.year} a ${money(lastWage.value)} € en ${lastWage.year}; es un aumento calculado del ${percent(wageChange)} %.`,
+      `Encadenadas desde el importe de 2022, las revalorizaciones generales de 2023 y 2024 suman un ${percent(pensionChange)} %. En esta comparación, superan en ${percent(difference)} puntos porcentuales el aumento acumulado del salario mediano; son medidas de poblaciones distintas y el salario mediano no describe el cambio de cada persona.`,
+    ],
+    factSourceIds: [
+      yearSourceIds,
+      [snapshot.sourceIds.wages],
+      [...new Set([...yearSourceIds, snapshot.sourceIds.wages])],
+    ],
+    factDimensions: [
+      {
+        subject: 'revalorización anual general de pensiones contributivas',
+        population: 'pensiones contributivas del sistema de la Seguridad Social; existen excepciones y reglas específicas',
+        period: '2023–2024', geography: snapshot.geography,
+        denominator: 'importe de cada pensión antes de la revalorización anual', unit: 'porcentaje de aumento nominal',
+      },
+      {
+        subject: 'salario mediano bruto mensual del empleo principal',
+        population: 'personas asalariadas incluidas en la EPA, según su empleo principal',
+        period: '2022–2024', geography: snapshot.geography,
+        denominator: 'salario mediano mensual bruto de 2022', unit: 'euros brutos mensuales y variación porcentual calculada',
+      },
+      {
+        subject: 'cambio acumulado de revalorización general de pensiones frente al salario mediano',
+        population: snapshot.population,
+        period: '2022–2024', geography: snapshot.geography,
+        denominator: 'importe de pensión de 2022 y salario mediano mensual bruto de 2022', unit: 'porcentaje acumulado y puntos porcentuales',
+      },
+    ],
+    sources: snapshot.sources,
+    directClaimEvidence: true,
+    claimVerdict: 'mixed',
+  };
+})();
+const pensionIndexationWageReply = () => {
+  const snapshot = PENSION_INDEXATION_WAGE_SNAPSHOT;
+  const percent = (value) => new Intl.NumberFormat('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1 }).format(value);
+  const money = (value) => new Intl.NumberFormat('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 1, useGrouping: true, minimumGroupingDigits: 1 }).format(value);
+  const revaluationFactor = snapshot.pensionRevaluations.reduce((factor, row) => factor * (1 + row.value / 100), 1);
+  const pensionChange = (revaluationFactor - 1) * 100;
+  const firstWage = snapshot.medianMonthlyWages[0];
+  const lastWage = snapshot.medianMonthlyWages.at(-1);
+  const wageChange = (lastWage.value / firstWage.value - 1) * 100;
+  return [
+    `Entre 2022 y 2024, la revalorización general de las pensiones contributivas fue del 8,5 % en 2023 y del 3,8 % en 2024: acumuló un ${percent(pensionChange)} %. La norma vincula la subida general al IPC medio de referencia, con excepciones.`,
+    `En el mismo periodo, la EPA sitúa el salario mediano bruto mensual del empleo principal en ${money(firstWage.value)} € (2022) y ${money(lastWage.value)} € (2024), un ${percent(wageChange)} % más. La revalorización de pensiones superó ese aumento mediano en ${percent(pensionChange - wageChange)} puntos porcentuales.`,
+    'Esto compara una regla general aplicada a pensiones contributivas con el salario mediano de personas asalariadas en su empleo principal. No muestra cómo cambió el sueldo de cada trabajador, el ingreso neto ni todas las pensiones, y no permite generalizar a otros periodos.',
+  ].join('\n\n');
 };
 const pensionWageContributionBase = (t) => /\b(pension\w*|jubilaci[oó]n|sistema de pensiones)\b/.test(t)
   && (/\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w* laboral\w*)\b/.test(t)
@@ -1470,14 +1564,18 @@ const focuses = [
     explanation: 'La revalorización general de las pensiones contributivas sigue una regla legal ligada al IPC medio del periodo de referencia. La cifra anual describe el aumento aprobado, no el coste de vida de cada hogar.',
     limitation: 'El porcentaje general de revalorización no mide la inflación personal de cada pensionista ni el poder de compra de su hogar; las cuantías mínimas y algunas prestaciones pueden seguir reglas distintas.',
     explanationEvidence: pensionPriceIndexationEvidence,
+    shareableReplyForContext: pensionPriceIndexationReply,
   },
   {
     id: 'pension-indexation-comparison', label: 'actualización de pensiones, salarios e inflación',
     when: pensionIndexationComparison,
     direct: [], context: [], claimType: 'comparative',
     needs: ['reglas y cambios efectivos de las pensiones en cada año', 'serie salarial definida como bruta o neta y para la misma población y periodo', 'índice de precios y comparación acumulada desde una fecha común'],
+    explanationHeadline: 'En 2022–2024, las revalorizaciones generales superaron el aumento del salario mediano de la EPA',
     explanation: 'La revalorización de las pensiones, el crecimiento de los salarios y la inflación son series distintas. Para decir cuál evolucionó mejor hay que fijar el periodo y comparar cambios acumulados en unidades compatibles.',
-    limitation: 'Una regla de actualización con la inflación no demuestra por sí sola que las pensiones crecieran más que los salarios; importan las fechas iniciales, los cambios salariales y qué grupos se comparan.',
+    explanationEvidence: pensionIndexationWageEvidence,
+    shareableReplyForContext: pensionIndexationWageReply,
+    limitation: 'La comparación concreta cubre España en 2022–2024: revalorizaciones generales de pensiones contributivas y salario mediano bruto mensual de la EPA para el empleo principal. No mide variaciones individuales, ingresos netos ni todos los tipos de pensión; no se debe generalizar a otros periodos.',
   },
   {
     id: 'pension-wage-comparison', label: 'pensiones y salarios de la población trabajadora',
