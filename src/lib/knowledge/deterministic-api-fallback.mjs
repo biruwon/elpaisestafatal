@@ -138,6 +138,10 @@ const focusedFollowUp = (plan, fallback) => {
     limitation: plan.limitation,
     questions: ['¿Quieres cuantificar la diferencia para un empleo y año concretos, o comprobar qué saben los trabajadores sobre ella?'],
   };
+  if (family === 'foreign-new-build-local-affordability') return {
+    limitation: plan.limitation,
+    questions: ['¿Qué provincia costera y qué ingresos locales quieres usar para comprobar la asequibilidad?'],
+  };
   return fallback;
 };
 

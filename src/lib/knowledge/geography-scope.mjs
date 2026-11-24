@@ -42,6 +42,25 @@ const territoryAliases = [
     ['La Rioja', 'la rioja', ['la rioja']], ['Ceuta', 'ceuta', ['ceuta']], ['Melilla', 'melilla', ['melilla']],
     ['Barcelona', 'barcelona', ['barcelona']], ['Valencia', 'valencia', ['valencia']], ['Sevilla', 'sevilla', ['sevilla']],
   ].map(([, id, aliases]) => [id, 'region', aliases]),
+  // Provinces are subnational scopes too. Recognizing them prevents a
+  // countrywide observation from being shown for a province-specific claim.
+  ...[
+    ['A Coruña', 'a coruna', ['a coruna', 'la coruna']], ['Albacete', 'albacete', ['albacete']],
+    ['Alicante', 'alicante', ['alicante']], ['Almería', 'almeria', ['almeria']], ['Ávila', 'avila', ['avila']],
+    ['Badajoz', 'badajoz', ['badajoz']], ['Burgos', 'burgos', ['burgos']], ['Cáceres', 'caceres', ['caceres']],
+    ['Cádiz', 'cadiz', ['cadiz']], ['Castellón', 'castellon', ['castellon', 'castello']],
+    ['Ciudad Real', 'ciudad real', ['ciudad real']], ['Córdoba', 'cordoba', ['cordoba']], ['Cuenca', 'cuenca', ['cuenca']],
+    ['Girona', 'girona', ['girona', 'gerona']], ['Granada', 'granada', ['granada']], ['Guadalajara', 'guadalajara', ['guadalajara']],
+    ['Guipúzcoa', 'guipuzcoa', ['guipuzcoa', 'gipuzkoa']], ['Huelva', 'huelva', ['huelva']], ['Huesca', 'huesca', ['huesca']],
+    ['Jaén', 'jaen', ['jaen']], ['León', 'leon', ['leon']], ['Lleida', 'lleida', ['lleida', 'lerida']],
+    ['Lugo', 'lugo', ['lugo']], ['Málaga', 'malaga', ['malaga']], ['Ourense', 'ourense', ['ourense', 'orense']],
+    ['Palencia', 'palencia', ['palencia']], ['Las Palmas', 'las palmas', ['las palmas']],
+    ['Pontevedra', 'pontevedra', ['pontevedra']], ['Salamanca', 'salamanca', ['salamanca']],
+    ['Santa Cruz de Tenerife', 'santa cruz de tenerife', ['santa cruz de tenerife']], ['Segovia', 'segovia', ['segovia']],
+    ['Soria', 'soria', ['soria']], ['Tarragona', 'tarragona', ['tarragona']], ['Teruel', 'teruel', ['teruel']],
+    ['Toledo', 'toledo', ['toledo']], ['Valladolid', 'valladolid', ['valladolid']], ['Vizcaya', 'vizcaya', ['vizcaya', 'bizkaia']],
+    ['Zamora', 'zamora', ['zamora']], ['Zaragoza', 'zaragoza', ['zaragoza']],
+  ].map(([, id, aliases]) => [id, 'region', aliases]),
 ];
 
 const regionCodes = new Map([
@@ -62,7 +81,24 @@ const requestedTerritories = (value) => {
     normalized = normalized.replaceAll(`banco de ${alias}`, ' ').replaceAll(`bank of ${alias}`, ' ');
   }
   const text = ` ${normalized} `;
-  const found = territoryAliases.filter(([, , aliases]) => aliases.some((alias) => [alias, `${alias}s`, `${alias}es`].some((term) => text.includes(` ${term} `))));
+  const aliasMatches = territoryAliases.flatMap((scope) => scope[2].flatMap((alias) => [alias, `${alias}s`, `${alias}es`].flatMap((term) => {
+    const marker = ` ${term} `;
+    const matches = [];
+    let cursor = 0;
+    while (true) {
+      const index = text.indexOf(marker, cursor);
+      if (index < 0) break;
+      matches.push({ scope, start: index + 1, end: index + marker.length - 1 });
+      cursor = index + 1;
+    }
+    return matches;
+  })));
+  // Prefer the longest matched territory phrase when one scope name contains
+  // another (for example, León inside Castilla y León).
+  const found = [...new Map(aliasMatches
+    .filter((match) => !aliasMatches.some((other) => other.scope !== match.scope && other.start <= match.start && other.end >= match.end
+      && (other.end - other.start) > (match.end - match.start)))
+    .map(({ scope }) => [`${scope[0]}:${scope[1]}`, scope])).values()];
   const specificRegions = found.some(([, type]) => type === 'region');
   const comparative = /\b(?:versus|vs|compare|comparing|comparison|compared? (?:to|with)|frente a|comparad\w*|comparar|entre .{0,45} y )\b/.test(normalize(value));
   return specificRegions && !comparative ? found.filter(([, type]) => type !== 'country') : found;

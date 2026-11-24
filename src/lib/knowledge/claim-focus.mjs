@@ -235,6 +235,40 @@ const cjeEmancipation2025Source = { id: 'cje-emancipation-2025', title: 'Observa
 const cjeEmancipationMethodologySource = { id: 'cje-emancipation-methodology', title: 'Observatorio de Emancipación · población joven y alcance', publisher: 'Consejo de la Juventud de España', url: 'https://www.cje.org/observatorio-de-emancipacion/', retrievedAt: '2026-11-17', role: 'primary' };
 const ineHousingBarrierSource = { id: 'youth-family-housing-ine', title: 'Encuesta de Condiciones de Vida 2025 · dificultades de acceso a la vivienda', publisher: 'INE', url: 'https://www.ine.es/dyngs/Prensa/es/m3ECV2025.htm', publishedAt: '2026-04-27', retrievedAt: '2026-11-17', role: 'primary' };
 const foreignHousingRegistrySource = { id: 'registradores-eri-2026-q3-foreign-purchases', title: 'Estadística Registral Inmobiliaria · tercer trimestre de 2026', publisher: 'Colegio de Registradores de España', url: 'https://www.registradores.org/documents/d/guest/eri_3t_2026', retrievedAt: '2026-11-17', role: 'primary' };
+const foreignNewBuildRegistrySource = { id: 'registradores-eri-anuario-2025', title: 'Estadística Registral Inmobiliaria · Anuario 2025', publisher: 'Colegio de Registradores de la Propiedad, Bienes Muebles y Mercantiles de España', url: 'https://www.registradores.org/documents/d/guest/eri-anuario-2025', publishedAt: '2026', retrievedAt: '2026-11-24', role: 'primary' };
+const foreignNewBuildEvidence = {
+  expiresAt: '2027-05-31',
+  territories: ['ES'],
+  evidenceLabel: 'Compras de vivienda nueva por nacionalidad del comprador · España, 2025',
+  dimensions: {
+    subject: 'compraventas registradas según la nacionalidad del comprador y si la vivienda era nueva o usada',
+    population: 'compraventas inscritas en el Registro de la Propiedad; compradores clasificados como de nacionalidad extranjera o nacional',
+    period: '2025',
+    geography: 'España',
+    denominator: '13,82 %: total de compraventas registradas; 21,54 % y 21,76 %: compras dentro de cada grupo de nacionalidad',
+    unit: 'porcentaje de compraventas',
+  },
+  facts: [
+    'En 2025, el 13,82 % de las compraventas de vivienda registradas en España correspondió a compradores de nacionalidad extranjera.',
+    'Dentro de cada grupo, la vivienda nueva representó el 21,54 % de las compras de extranjeros y el 21,76 % de las compras de nacionales. Son porcentajes sobre las compras de cada grupo; no indican qué parte de todas las viviendas nuevas se vendió a extranjeros.',
+  ],
+  factSourceIds: [['registradores-eri-anuario-2025'], ['registradores-eri-anuario-2025']],
+  factDimensions: [
+    {
+      subject: 'compraventas de vivienda registradas por nacionalidad del comprador',
+      population: 'compras inscritas en España durante 2025',
+      period: '2025', geography: 'España',
+      denominator: 'total de compraventas registradas', unit: 'porcentaje',
+    },
+    {
+      subject: 'proporción de compras de vivienda nueva dentro de cada grupo de compradores',
+      population: 'compradores de nacionalidad extranjera o nacional en las compraventas inscritas',
+      period: '2025', geography: 'España',
+      denominator: 'compraventas del grupo de nacionalidad correspondiente', unit: 'porcentaje',
+    },
+  ],
+  sources: [foreignNewBuildRegistrySource],
+};
 const foreignHousingPurchaseEvidence = {
   expiresAt: '2027-03-31',
   territories: ['ES'],
@@ -537,6 +571,15 @@ const foreignHousingPriceCause = (t) => /\b(viviend\w*|alquil\w*|renta\w*|piso\w
   && /\b(caus\w*|provoc\w*|encarec\w*|aument\w*|sub\w*|elev\w*|dispar\w*|presion\w*|retir\w*)\b/.test(t);
 const foreignHousingPurchaseCause = (t) => foreignHousingPriceCause(t)
   && /\b(compra\w*|comprador\w*|adquisici\w*|inversor\w*|transacci\w*|no residentes?)\b/.test(t);
+const foreignNewBuildLocalAffordability = (t) => {
+  const housingDevelopment = /\b(viviend\w*|pisos?|casas?|promoci\w*|obra nueva|constru\w*|edific\w*)\b/.test(t)
+    && /\b(promoci\w*|obra nueva|viviendas? nuevas?|nuevas? viviendas?|constru\w*|edific\w*)\b/.test(t);
+  const foreignBuyer = /\b(extranjer\w*|forane\w*|internacional\w*|de fuera)\b/.test(t)
+    && /\b(comprador\w*|compr\w*|adquisici\w*|inversor\w*|demanda)\b/.test(t);
+  const localAffordability = /\b(salari\w*|sueldo\w*|ingres\w*|asequib\w*|accesible\w*|pag\w*|poder adquisitiv\w*)\b/.test(t)
+    && /\b(local\w*|resident\w*|trabajador\w*|hogar\w*|poblaci\w*)\b/.test(t);
+  return housingDevelopment && foreignBuyer && localAffordability && !foreignHousingPriceCause(t);
+};
 const migrationHousingDemandCause = (t) => foreignHousingPriceCause(t)
   && !/\b(compra\w*|comprador\w*|adquisici\w*|inversor\w*|transacci\w*|no residentes?)\b/.test(t);
 const youthHousingFamilyFormation = (t) => /\b(j[oó]ven\w*|juventud|emancip\w*)\b/.test(t)
@@ -1161,6 +1204,29 @@ const focuses = [
     needs: ['encuesta de preferencias y riesgo percibido entre personas comparables', 'probabilidad de ingresos y continuidad laboral por alternativa', 'población, territorio y periodo definidos'],
     explanation: 'La percepción de riesgo al emprender no se deduce de la temporalidad del empleo ni de la tasa de paro. Hacen falta respuestas de las mismas personas sobre alternativas comparables.',
     limitation: 'Una comparación entre emprendimiento y empleo público necesita definir qué riesgo se mide —ingresos, continuidad, inversión o fracaso— y a qué población se refiere.',
+  },
+  {
+    id: 'foreign-new-build-local-affordability', label: 'compradores extranjeros y acceso local a vivienda nueva',
+    when: foreignNewBuildLocalAffordability,
+    direct: [], context: [], claimType: 'descriptive',
+    needs: [
+      'datos de promociones y ventas de vivienda nueva por localidad, periodo y perfil previsto o efectivo del comprador',
+      'nacionalidad y residencia habitual del comprador, que son dimensiones distintas',
+      'precios de vivienda nueva e ingresos o salarios de hogares residentes en la misma zona y periodo',
+      'una medida de asequibilidad para hogares locales, no solo el volumen de compras de personas extranjeras',
+    ],
+    explanationHeadline: 'El registro muestra compras por nacionalidad, no a quién se destinan las promociones ni su asequibilidad local',
+    explanation: 'Las compraventas inscritas pueden aportar contexto sobre quién compró, pero no indican para quién se construyó o comercializó una promoción ni si los hogares locales pueden pagarla.',
+    explanationEvidence: {
+      ...foreignNewBuildEvidence,
+      directClaimEvidence: false,
+      when: (text) => [...text.matchAll(/\b(?:19|20)\d{2}\b/g)].every(([year]) => year === '2025'),
+    },
+    shareableReplyForContext: ({ facts }) => [
+      facts.join(' '),
+      'Son compras registradas por nacionalidad en toda España, no datos sobre el público al que se dirigían las promociones. La fuente no cruza vivienda nueva con costa concreta, residencia habitual ni salarios locales; por eso no confirma la afirmación.',
+    ].filter(Boolean).join('\n\n'),
+    limitation: 'El Anuario Registral cubre España en 2025 y clasifica por nacionalidad. No mide la intención comercial de las promociones, la residencia habitual, el cruce entre vivienda nueva y localidades costeras ni la asequibilidad frente a salarios locales.',
   },
   {
     id: 'foreign-housing-price-causality', label: 'efecto de compras y población extranjera sobre los precios de vivienda',

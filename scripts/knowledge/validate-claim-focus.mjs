@@ -86,6 +86,11 @@ const cases = [
   ['housing-completions', ['¿Cuántas viviendas nuevas se terminaron en España en 2025?', '¿Cuál fue el recuento de viviendas terminadas en España durante 2025?', '¿Se terminaron 92.000 viviendas nuevas en España en 2025?', 'En 2025 se acabaron 92.000 viviendas nuevas en España', '¿Cuántas viviendas nuevas se concluyeron en España en 2025?']],
   ['housing-construction-pressure', ['La falta de vivienda nueva explica buena parte de la subida del alquiler', 'Se construyen pocas viviendas frente al número de hogares que se crean', 'La lentitud de las licencias urbanísticas retrasa la construcción de viviendas nuevas']],
   ['housing-supply', ['¿Cuántas casas vacías hay disponibles en la ciudad?']],
+  ['foreign-new-build-local-affordability', [
+    'Muchas promociones nuevas en la costa se construyen para compradores extranjeros y no para salarios locales',
+    'Las promociones de obra nueva se dirigen a compradores de fuera y quedan fuera del alcance de los sueldos locales',
+    'Los compradores internacionales concentran la vivienda nueva y los residentes locales no pueden pagarla',
+  ]],
   ['foreign-housing-price-causality', ['Las compras de vivienda por extranjeros no residentes están encareciendo el mercado en zonas costeras', 'Las adquisiciones de compradores extranjeros elevan los precios de las casas en la costa']],
   ['migration-housing-demand-causality', ['La inmigración está haciendo que suban los alquileres en algunas ciudades', 'El aumento de población migrante eleva los precios de la vivienda local', 'Los extranjeros encarecen los alquileres en las ciudades']],
   ['migration-wage-effects', ['La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores', 'La llegada de mano de obra extranjera ha reducido los sueldos en sectores con baja cualificación', 'Los trabajadores inmigrantes cobran menos desde que aumentó la oferta laboral', 'La inmigración presiona los salarios en los sectores con sueldos bajos']],
@@ -1127,6 +1132,41 @@ for (const paraphrase of [
 }
 assert.notEqual(claimFocusFor('¿Qué porcentaje de compraventas de vivienda corresponde a compradores de nacionalidad extranjera?')?.id, 'foreign-housing-price-causality', 'A descriptive buyer-nationality query must not be routed as a causal price claim');
 assert.notEqual(claimFocusFor('Las viviendas vacacionales de la costa encarecen el alquiler residencial')?.id, 'foreign-housing-price-causality', 'Tourist-housing claims must not inherit foreign-buyer evidence');
+const foreignNewBuildClaim = 'Muchas promociones nuevas en la costa se construyen para compradores extranjeros y no para salarios locales';
+const foreignNewBuild = focusedEvidencePlan(foreignNewBuildClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(foreignNewBuild.answerScope.family, 'foreign-new-build-local-affordability');
+assert.equal(foreignNewBuild.evidenceLevel, 'limited', 'Registry figures are contextual and must not settle a local targeting or affordability claim');
+assert.equal(foreignNewBuild.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+assert.deepEqual(foreignNewBuild.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], 'National purchase context must not be attached as direct evidence for marketing intent or local affordability');
+assert.deepEqual(foreignNewBuild.sourceLinks.map((source) => source.id), ['registradores-eri-anuario-2025']);
+assert.match(foreignNewBuild.shareableReply, /13,82 %/);
+assert.match(foreignNewBuild.shareableReply, /21,54 %.*21,76 %/);
+assert.match(foreignNewBuild.shareableReply, /no confirma la afirmaci[oó]n/);
+assert.match(foreignNewBuild.limitation, /España en 2025/);
+assert.equal(foreignNewBuild.answerScope.directMetrics.length, 0);
+assert.equal(localPublicCheckResponse({ status: 'partial', requestId: 'foreign-newbuild', result: foreignNewBuild }, foreignNewBuildClaim).state, 'insufficient');
+for (const paraphrase of [
+  'Las promociones de obra nueva se dirigen a compradores de fuera y quedan fuera del alcance de los sueldos locales',
+  'Los compradores internacionales concentran la vivienda nueva y los residentes locales no pueden pagarla',
+]) {
+  const answer = focusedEvidencePlan(paraphrase, { now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.equal(answer.answerScope.family, 'foreign-new-build-local-affordability', `A foreign new-build affordability paraphrase changed family: ${paraphrase}`);
+  assert.equal(answer.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+  assert.deepEqual(answer.sourceLinks.map((source) => source.id), foreignNewBuild.sourceLinks.map((source) => source.id), `A paraphrase changed its national context source: ${paraphrase}`);
+  assert.deepEqual(answer.evidenceSummary.families[0].data, foreignNewBuild.evidenceSummary.families[0].data, `A paraphrase changed its source facts: ${paraphrase}`);
+}
+const localForeignNewBuild = focusedEvidencePlan('Las promociones de vivienda nueva para compradores extranjeros no son asequibles para residentes locales en Alicante', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(localForeignNewBuild.answerScope.family, 'foreign-new-build-local-affordability');
+assert.deepEqual(localForeignNewBuild.sourceLinks, [], 'National figures must not be shown as context for a named province');
+const olderForeignNewBuild = focusedEvidencePlan('En 2024 las promociones de vivienda nueva se dirigían a compradores extranjeros y no eran asequibles para salarios locales', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.deepEqual(olderForeignNewBuild.sourceLinks, [], '2025 registry evidence must not be attached to a claim explicitly about 2024');
+for (const nearby of [
+  'Las compras de extranjeros encarecen la vivienda en la costa',
+  'Las viviendas nuevas son inaccesibles para las familias locales',
+  '¿Qué porcentaje de viviendas nuevas compran extranjeros en España?',
+]) assert.notEqual(claimFocusFor(nearby)?.id, 'foreign-new-build-local-affordability', `A nearby claim crossed into new-build local affordability: ${nearby}`);
+const foreignNewBuildFallback = deterministicApiFallback({ text: foreignNewBuildClaim, inputType: 'text', now: Date.parse('2026-11-24T12:00:00Z') });
+assert.match(foreignNewBuildFallback.guidance.questions[0], /provincia costera.*ingresos locales/);
 const migrationHousing = focusedEvidencePlan('La inmigración está haciendo que suban los alquileres en algunas ciudades');
 assert.equal(migrationHousing.answerScope.family, 'migration-housing-demand-causality');
 assert.equal(migrationHousing.claimType, 'causal');
