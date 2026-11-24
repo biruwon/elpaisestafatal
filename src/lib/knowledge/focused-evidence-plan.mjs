@@ -874,6 +874,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const explanation = focus.explanationEvidence && now < Date.parse(focus.explanationEvidence.expiresAt)
     && territories.every(({ id }) => focus.explanationEvidence.territories?.includes(id))
     && (!focus.explanationEvidence.when || focus.explanationEvidence.when(normalize(claim))) ? focus.explanationEvidence : undefined;
+  const explanationDimensions = explanation
+    ? explanation.dimensionsForClaim?.(normalize(claim)) || explanation.dimensions
+    : undefined;
   const specialistOutpatientComparison = focus.id === 'specialist-outpatient-regional-waits'
     ? namedEvidenceComparison(claim, explanation?.comparisonRows)
     : undefined;
@@ -1163,7 +1166,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     data: explanationFacts,
     evidenceIds: explanation.sources.map((source) => source.id),
     sourceIds: explanation.sources.map((source) => source.id),
-    dimensions: explanation.dimensions,
+    dimensions: explanationDimensions,
   });
   else if (explanation && ids.length === 0) {
     const hasFactSources = Array.isArray(explanation.factSourceIds)
@@ -1182,7 +1185,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         data: [finding],
         evidenceIds: sourceIds,
         sourceIds,
-        dimensions: explanation.factDimensions?.[index] || explanation.dimensions,
+        dimensions: explanation.factDimensions?.[index] || explanationDimensions,
         missingDimensions: needs,
       });
     });
@@ -1197,7 +1200,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       data: explanationFacts,
       evidenceIds: explanation.sources.map((source) => source.id),
       sourceIds: explanation.sources.map((source) => source.id),
-      dimensions: explanation.dimensions,
+      dimensions: explanationDimensions,
       missingDimensions: needs,
     });
   }

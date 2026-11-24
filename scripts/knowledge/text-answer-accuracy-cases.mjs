@@ -764,4 +764,97 @@ export const textAnswerAccuracyCases = [
       replyExcludes: ['la productividad por persona ocupada subió'], evidence: [], maxReplyWords: 120,
     },
   },
+  {
+    id: 'unpaid-overtime-hospitality-frequency',
+    equivalenceGroup: 'unpaid-overtime-hospitality-2026',
+    input: 'En hostelería se hacen horas extra sin cobrar de manera habitual',
+    expected: {
+      state: 'limited', family: 'unpaid-overtime', verdict: 'mixed',
+      directSourceIds: ['ine-epa-unpaid-overtime-2026', 'ine-epa-questionnaire-2021'],
+      replyIncludes: ['27.700', '22.400', '5.300', '30,8 %', '90.000', '1,6 %', '1.732.500', 'semana de referencia', 'no basta para confirmar toda la afirmación'],
+      replyExcludes: ['2025', 'restaurantes', 'horas no declaradas'],
+      evidence: [{
+        familyId: 'unpaid-overtime',
+        sourceIds: ['ine-epa-unpaid-overtime-2026', 'ine-epa-questionnaire-2021'],
+        dataIncludes: ['27.700', '22.400', '5.300', '2026', 'semana de referencia'],
+        dimensions: { period: '2026-T3', geography: 'España', population: 'asalariados de hostelería', denominator: '90.000 asalariados de hostelería con horas extra', unit: 'personas estimadas y porcentajes' },
+      }],
+      maxReplyWords: 145,
+    },
+  },
+  {
+    id: 'unpaid-overtime-hostel-sector-paraphrase',
+    equivalenceGroup: 'unpaid-overtime-hospitality-2026',
+    input: 'Los empleados del sector hostelero siguen realizando horas extraordinarias no remuneradas',
+    expected: {
+      state: 'limited', family: 'unpaid-overtime', verdict: 'mixed',
+      directSourceIds: ['ine-epa-unpaid-overtime-2026', 'ine-epa-questionnaire-2021'],
+      replyIncludes: ['27.700', '22.400', '5.300', '30,8 %', '90.000', '1,6 %', 'semana de referencia'],
+      replyExcludes: ['2025', 'restaurantes', 'horas no declaradas'],
+      evidence: [{
+        familyId: 'unpaid-overtime',
+        sourceIds: ['ine-epa-unpaid-overtime-2026', 'ine-epa-questionnaire-2021'],
+        dataIncludes: ['27.700', '2026', 'semana de referencia'],
+        dimensions: { period: '2026-T3', geography: 'España', population: 'asalariados de hostelería', denominator: '90.000 asalariados de hostelería con horas extra', unit: 'personas estimadas y porcentajes' },
+      }],
+      maxReplyWords: 145,
+    },
+  },
+  {
+    id: 'unpaid-overtime-hospitality-second-quarter',
+    input: 'En hostelería, durante el segundo trimestre de 2026 se hicieron horas extra sin pagar',
+    expected: {
+      state: 'limited', family: 'unpaid-overtime', verdict: 'mixed',
+      directSourceIds: ['ine-epa-unpaid-overtime-2026', 'ine-epa-questionnaire-2021'],
+      replyIncludes: ['39.200', '30.700', '8.500', '42,9 %', '91.400', '2,3 %', '1.672.300', 'segundo trimestre de 2026'],
+      replyExcludes: ['tercer trimestre de 2026', '27.700 personas'],
+      evidence: [{
+        familyId: 'unpaid-overtime',
+        sourceIds: ['ine-epa-unpaid-overtime-2026', 'ine-epa-questionnaire-2021'],
+        dataIncludes: ['39.200', '30.700', '8.500', '2026-T2', 'semana de referencia'],
+        dimensions: { period: '2026-T2', geography: 'España', population: 'asalariados de hostelería', denominator: '91.400 asalariados de hostelería con horas extra', unit: 'personas estimadas y porcentajes' },
+      }],
+      maxReplyWords: 145,
+    },
+  },
+  {
+    id: 'unpaid-overtime-hospitality-wrong-year',
+    input: 'En la hostelería se trabajaron horas extra sin pagar en 2025',
+    expected: {
+      state: 'insufficient', family: 'unpaid-overtime', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['27.700', '22.400', '5.300', '2026'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'unpaid-overtime-wrong-industry',
+    input: 'Los trabajadores de educación hicieron horas extraordinarias sin cobrar en 2026',
+    expected: {
+      state: 'insufficient', family: 'unpaid-overtime', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['27.700', 'hostelería', '1,6 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'unpaid-overtime-unsupported-trend',
+    input: 'En hostelería están aumentando las horas extra sin pagar en 2026',
+    expected: {
+      state: 'insufficient', family: 'unpaid-overtime', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['27.700', '39.200', 'hostelería'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'unpaid-overtime-unsupported-annual-period',
+    input: 'En hostelería se hacen horas extraordinarias sin pagar durante todo 2026',
+    expected: {
+      state: 'insufficient', family: 'unpaid-overtime', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['27.700', '39.200', '2026-T3'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'unpaid-overtime-unsupported-hotel-subsector',
+    input: 'En hoteles se realizan horas extra sin remunerar',
+    expected: {
+      state: 'insufficient', family: 'unpaid-overtime', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['27.700', 'hostelería', '1,6 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
 ];

@@ -35,7 +35,7 @@ const cases = [
   ['business-tax-burden', ['Las multinacionales digitales pagan proporcionalmente menos impuestos que las tiendas locales', 'La carga fiscal efectiva de grandes empresas tecnológicas es menor que la de los comercios pequeños', 'Las empresas digitales compiten con el comercio de barrio con una tributación más baja']],
   ['small-business-cost-pressure', ['Los comercios de barrio cierran por la suma de alquiler, energía e impuestos', 'El aumento de los costes operativos está haciendo desaparecer pequeños negocios', 'Las tiendas pequeñas no sobreviven cuando suben a la vez salarios, alquileres y electricidad']],
   ['business-size-productivity', ['El pequeño tamaño medio de las empresas frena la inversión y la productividad', 'Las pymes tienen menos capacidad para adoptar tecnología y pagar buenos salarios', 'El tamaño empresarial limita la innovación y los sueldos']],
-  ['unpaid-overtime', ['En hostelería se hacen horas extra sin cobrar', 'Las horas extraordinarias no remuneradas son habituales en algunos trabajos', 'Muchos trabajadores trabajan horas extra gratis']],
+  ['unpaid-overtime', ['En hostelería se hacen horas extra sin cobrar', 'En el sector hostelero se trabajan horas extraordinarias sin remunerar', 'Los empleados de hostelería siguen haciendo horas extra que no cobran', 'Las horas extra en hostelería se trabajan gratis con demasiada frecuencia']],
   ['wage-growth-job-mobility', ['Cambiar de empresa es la única forma de conseguir una subida salarial importante', 'El sueldo aumenta más al cambiar de trabajo que permaneciendo en la misma empresa', 'Quienes cambian de empleo logran mejores subidas de salario']],
   ['wage-progression', ['Los trabajadores jóvenes encadenan años de salarios de entrada sin progresión real', 'Los sueldos iniciales se estancan durante los primeros años de carrera', 'Quienes empiezan con un salario bajo apenas avanzan aunque acumulen antigüedad']],
   ['regional-wage-housing-cost', ['Las ciudades con más empleo son aquellas donde la vivienda se come la mejora salarial', 'En las áreas con más trabajo el coste del alquiler absorbe las subidas de sueldo', 'Los salarios más altos de las grandes ciudades no compensan el gasto de vivienda', 'El coste de vivienda ha eliminado la ventaja salarial de trabajar en Madrid o Barcelona', 'El alquiler borra la prima salarial de vivir en Madrid']],
@@ -347,9 +347,16 @@ for (const [family, claim] of crossTopicClaims) {
   const plan = focusedEvidencePlan(claim, { observations: [irrelevantWageObservation], propositions: deterministicFallbackCompiler(claim).explicitPropositions });
   assert.deepEqual(plan.answerScope.directMetrics, [], `A nearby salary statistic became direct evidence: ${claim}`);
   assert.deepEqual(plan.answerScope.contextMetrics, family === 'education-pay-comparison' ? ['mean_hourly_earnings_by_education'] : [], `A nearby salary statistic became context for a different claim: ${claim}`);
-  assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should leave this claim unsupported: ${claim}`);
-  assert.equal(plan.sourceLinks.length, 0, `An unrelated wage survey was attached to this claim: ${claim}`);
-  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim).state, 'insufficient');
+  if (family === 'unpaid-overtime') {
+    assert.equal(plan.evidenceLevel, 'limited', 'A salary observation must not erase the independently sourced EPA overtime measurement');
+    assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['ine-epa-unpaid-overtime-2026', 'ine-epa-questionnaire-2021']);
+    assert.doesNotMatch(plan.shareableReply, /17 €/);
+    assert.equal(localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim).state, 'limited');
+  } else {
+    assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should leave this claim unsupported: ${claim}`);
+    assert.equal(plan.sourceLinks.length, 0, `An unrelated wage survey was attached to this claim: ${claim}`);
+    assert.equal(localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim).state, 'insufficient');
+  }
 }
 for (const claim of [
   'Tener un máster o un doctorado no garantiza cobrar un salario acorde con la cualificación',
@@ -715,6 +722,51 @@ for (const query of [
   assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'self-employment-paraphrase', result: plan }, query).state, 'insufficient');
 }
 assert.notEqual(claimFocusFor('Las cuotas empresariales elevadas hacen inviable que una empresa mantenga su plantilla')?.id, 'self-employment-cost-viability', 'Employer payroll costs must not inherit the individual RETA schedule');
+const unpaidOvertimeClaim = 'En hostelería se hacen horas extra sin cobrar de manera habitual';
+const unpaidOvertimePlan = focusedEvidencePlan(unpaidOvertimeClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
+validateAnswerPlan(unpaidOvertimePlan);
+assert.equal(unpaidOvertimePlan.answerScope.family, 'unpaid-overtime');
+assert.equal(unpaidOvertimePlan.evidenceLevel, 'limited', 'A direct weekly estimate supports occurrence but not the undefined frequency word «habitual»');
+assert.deepEqual(unpaidOvertimePlan.sourceLinks.map((source) => source.id), ['ine-epa-unpaid-overtime-2026', 'ine-epa-questionnaire-2021']);
+assert.match(unpaidOvertimePlan.shareableReply, /22\.400 asalariados de hosteler[ií]a.*27\.700 personas/s);
+assert.match(unpaidOvertimePlan.shareableReply, /30,8 %.*90\.000.*1,6 %.*1\.732\.500/s);
+assert.match(unpaidOvertimePlan.shareableReply, /semana de referencia/);
+assert.match(unpaidOvertimePlan.shareableReply, /Este dato no basta para confirmar toda la afirmaci[oó]n/);
+assert.equal(unpaidOvertimePlan.shareableReply.split(/\n{2,}/).length, 2);
+assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'hospitality-unpaid-overtime', result: unpaidOvertimePlan }, unpaidOvertimeClaim).state, 'limited');
+for (const paraphrase of [
+  'En el sector hostelero se trabajan horas extraordinarias sin remunerar',
+  'Los empleados de hostelería siguen haciendo horas extra que no cobran',
+]) {
+  const plan = focusedEvidencePlan(paraphrase, { now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.equal(plan.answerScope.family, 'unpaid-overtime');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), unpaidOvertimePlan.sourceLinks.map((source) => source.id), `An overtime paraphrase changed the evidence: ${paraphrase}`);
+  assert.match(plan.shareableReply, /22\.400 asalariados de hosteler[ií]a.*27\.700 personas/s);
+}
+const secondQuarterOvertime = focusedEvidencePlan('En hostelería, durante el segundo trimestre de 2026 se hicieron horas extra sin pagar', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(secondQuarterOvertime.answerScope.family, 'unpaid-overtime');
+assert.equal(secondQuarterOvertime.evidenceLevel, 'limited');
+assert.match(secondQuarterOvertime.shareableReply, /En el segundo trimestre de 2026, 30\.700.*39\.200 personas\. Es el 42,9 %.*91\.400.*2,3 %.*1\.672\.300/s);
+for (const unmatched of [
+  'En hostelería se declaran menos horas de las que realmente se trabajan',
+  'En educación se hacen horas extra sin pagar',
+  'En hostelería se hacen horas extra sin pagar en 2025',
+  'En Madrid se hacen horas extra sin pagar en hostelería',
+  'En restaurantes se hacen horas extra sin cobrar',
+  'En hostelería están aumentando las horas extra sin pagar en 2026',
+  'En el sector público se hacen horas extraordinarias sin remunerar en 2026',
+  'En hostelería y agricultura se hacen horas extra gratis en 2026',
+  'En hostelería se hacen horas extra sin pagar en el cuarto trimestre de 2026',
+  'En hostelería durante el primer semestre de 2026 se hacen horas extra sin pagar',
+  'En hostelería se hacen horas extra sin pagar durante todo 2026',
+  'En el sector hotelero se hacen horas extra sin pagar en 2026',
+  'En hostelería se hacen horas extra sin pagar la semana pasada',
+  'En hostelería se hacen horas extra sin pagar durante los últimos 3 meses',
+]) {
+  const focus = claimFocusFor(unmatched);
+  const plan = focus ? focusedEvidencePlan(unmatched, { now: Date.parse('2026-11-24T12:00:00Z') }) : undefined;
+  assert.ok(!plan?.sourceLinks?.length, `Hospitality overtime evidence crossed into a different measurement or scope: ${unmatched}`);
+}
 assert.equal(focusedEvidencePlan('El PIB de Francia no refleja cómo viven los hogares')?.sourceLinks.length, 0, 'Spain-scoped evidence must not be attached to an explicitly French claim');
 assert.equal(focusedEvidencePlan('Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', { now: Date.parse('2027-11-17') })?.sourceLinks.length, 0, 'Expired definition evidence must not appear as current');
 for (const claim of ['Las listas de espera sanitarias son muy largas', 'La temporalidad laboral ha bajado, pero no resume toda la precariedad']) {

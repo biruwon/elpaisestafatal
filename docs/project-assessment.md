@@ -1135,3 +1135,33 @@ does not compare a specific worker's irregular net income with the full set of
 business costs or show that the contribution caused an activity to close, so
 the claim remains insufficient. The copyable answer keeps that limit next to
 the example rather than treating the monthly contribution as a universal fee.
+
+## Unpaid overtime in hospitality — 24 November 2026
+
+Text claims that unpaid overtime is common in Spanish hospitality now use the
+INE EPA's current industry table, backed by the survey questionnaire. In the
+third quarter of 2026, the EPA estimated 22,400 salaried hospitality workers
+reported only unpaid overtime during their reference week and 5,300 reported
+both paid and unpaid overtime. Together, 27,700 represented 30.8% of the
+90,000 hospitality employees who reported any overtime, or 1.6% of the
+sector's 1,732,500 salaried workers. The corresponding estimate was 26,800 in
+Q1 and 39,200 in Q2; these quarterly estimates must not be summed as unique
+people.
+When a text claim names Q1, Q2, or Q3 of 2026, its answer selects that
+quarter's counts, share and denominators instead of defaulting to the latest
+quarter.
+
+The questionnaire asks about paid and unpaid overtime hours in the employee's
+main job during the reference week. The table estimates people, not total
+unpaid hours, repeat hours for the same person, or a legal finding. The public
+verdict is limited: the figures establish that employees reported unpaid
+overtime, but the EPA does not define a threshold for “habitual” or show how
+often the same worker experiences it. Regional, out-of-period and narrow
+subsector claims do not receive the Spain-wide hospitality figures. The
+held-out text answer benchmark passes 57/57 cases across 13 paraphrase groups;
+that regression set is not a population-wide factual-accuracy estimate.
+The deterministic audit of the 300-item discovery set now reports 3 complete,
+50 limited and 247 uncovered answers; 274 public states are insufficient and
+26 limited. There are 89 compiler metric matches and 119 focused-family routes,
+with 50 claims in both groups and 142 with neither route. All inputs remain
+explicitly unverified, and routing counts do not estimate factual accuracy.

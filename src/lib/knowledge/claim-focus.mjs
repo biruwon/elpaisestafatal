@@ -1,6 +1,7 @@
 import { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { HOUSING_COMPLETION_EVIDENCE, HOUSING_SUPPLY_PRESSURE_EVIDENCE } from './housing-supply-snapshot.mjs';
 import { MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE } from './mortgage-entry-snapshot.mjs';
+import { UNPAID_OVERTIME_SNAPSHOT } from './unpaid-overtime-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -594,7 +595,115 @@ const businessSizeProductivityConstraint = (t) => /\b(empresas? peque[nñ]as?|pe
   && (/\b(limit\w*|fren\w*|impid\w*|reduc\w*|afect\w*|condicion\w*|explic\w*)\b/.test(t)
     || /\b(menos|menor\w*)[\s\w]{0,25}\b(capacidad|posibilidad|acceso)\b/.test(t));
 const unpaidOvertime = (t) => /\b(horas? extra\w*|horas? extraordinari\w*)\b/.test(t)
-  && /\b(no pag\w*|sin pag\w*|impag\w*|sin cobr\w*|no cobr\w*|gratis|no remuner\w*|trabaj\w* gratis)\b/.test(t);
+  && /\b(no pag\w*|sin pag\w*|impag\w*|sin cobr\w*|no cobr\w*|gratis|no remuner\w*|sin remuner\w*|trabaj\w* gratis)\b/.test(t);
+const unpaidOvertimeEvidence = (() => {
+  const number = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 1 });
+  const people = (thousands) => new Intl.NumberFormat('es-ES', { maximumFractionDigits: 0, useGrouping: 'always' }).format(thousands * 1000);
+  const periods = UNPAID_OVERTIME_SNAPSHOT.observations;
+  const latest = periods.at(-1);
+  const requestedQuarterFor = (claim) => {
+    const text = normalize(claim);
+    const namedQuarter = text.match(/\b(primer(?:o|a)?|segund(?:o|a)?|tercer(?:o|a)?|cuart(?:o|a)?)\s+trimestre\b|\btrimestre\s+(primero|segundo|tercero|cuarto)\b/);
+    const named = namedQuarter?.[1] || namedQuarter?.[2];
+    if (named) return /^(?:primer|primero|primera)$/.test(named) ? 1
+      : /^segund/.test(named) ? 2 : /^tercer/.test(named) ? 3 : 4;
+    const numbered = text.match(/\b([1-4])\s*t\b|\b[qt]([1-4])\b|\btrimestre\s*([1-4])\b/);
+    return numbered ? Number(numbered[1] || numbered[2] || numbered[3]) : undefined;
+  };
+  const metricsFor = (row) => {
+    const unpaid = row.unpaidOnly + row.both;
+    return {
+      unpaid,
+      shareOfOvertime: number.format(unpaid / row.overtime * 100),
+      shareOfSector: number.format(unpaid / row.employees * 100),
+    };
+  };
+  const quarters = periods.map((row) => {
+    const values = metricsFor(row);
+    return `${row.period}: ${people(row.unpaidOnly)} solo no pagadas y ${people(row.both)} pagadas y no pagadas (${people(values.unpaid)} en total), ${values.shareOfOvertime} % de quienes hicieron horas extra (${people(row.overtime)}) y ${values.shareOfSector} % del total de asalariados del sector (${people(row.employees)})`;
+  }).join('; ');
+  const dimensionsForQuarter = (row) => ({
+    subject: 'asalariados de hostelería que realizaron horas extra no pagadas, solos o junto con horas pagadas',
+    population: 'asalariados de hostelería de ambos sexos; España',
+    period: row.period,
+    geography: 'España',
+    denominator: `${people(row.overtime)} asalariados de hostelería con horas extra; ${people(row.employees)} asalariados totales del sector`,
+    unit: 'personas estimadas y porcentajes',
+  });
+  const otherIndustryPatterns = [
+    /\b(?:agricultur\w*|agrari\w*|ganader\w*|pesquer\w*|forestal\w*|miner\w*|extractiv\w*)\b/,
+    /\b(?:comerci\w*|retail|construcci\w*|fabric\w*|industri\w*|manufactur\w*|energ[ií]a|electric\w*|suministro|agua|residu\w*|saneamiento)\b/,
+    /\b(?:transport\w*|log[ií]stic\w*|almacen\w*|educaci\w*|docent\w*|universit\w*|escuel\w*|sanitari\w*|hospital\w*|m[eé]dic\w*|enferm\w*|salud)\b/,
+    /\b(?:financier\w*|banc\w*|asegurador\w*|seguros?|inmobiliari\w*|inform[aá]tic\w*|tecnolog\w*|telecom\w*|profesional\w*|cient[ií]fic\w*|administrativ\w*)\b/,
+    /\b(?:servicios? social\w*|cultur\w*|art[ií]stic\w*|deport\w*|dom[eé]stic\w*|hogar\w*|militar\w*|funcionari\w*|empleo p[uú]blico|sector p[uú]blico|sector privado|administraci[oó]n p[uú]blica|turis\w*)\b/,
+  ];
+  const mentionsAnotherIndustry = (claim) => otherIndustryPatterns.some((pattern) => pattern.test(claim));
+  const mentionsAnExactSubsector = (claim) => /\b(?:restaurantes?|bares?|cafeter[ií]as?|hoteles?|hoteler\w*|hostales?|camarer\w*|cociner\w*)\b/.test(claim);
+  return {
+    directClaimEvidence: true,
+    claimVerdict: 'mixed',
+    expiresAt: UNPAID_OVERTIME_SNAPSHOT.expiresAt,
+    territories: ['ES'],
+    when: (claim) => {
+      const years = [...claim.matchAll(/\b20\d{2}\b/g)].map(([year]) => Number(year));
+      const mentionsMonth = /\b(?:enero|febrero|marzo|abril|mayo|junio|julio|agosto|septiembre|octubre|noviembre|diciembre)\b/.test(claim);
+      const mentionsAnnualWindow = /\b(?:semestre|anual\w*|todo (?:el )?ano|durante todo (?:el )?(?:ano|20\d{2})|ano completo|a lo largo de (?:todo )?(?:el )?ano|cada trimestre|trimestre a trimestre|mes a mes|(?:esta|este|pasada?|anterior|actual|ultimo|ultimos?)\s+(?:semana|mes|trimestre|semestre|ano)|(?:semana|mes|trimestre|semestre|ano)\s+(?:pasado|pasada|anterior|actual)|ultim\w*\s+(?:\d+\s+)?(?:semanas?|meses?|trimestres?|semestres?|anos?)|primer\w*\s+(?:\d+\s+)?meses?)\b/.test(claim);
+      const mentionsQuarter = /\b(?:trimestre|q[1-4]|t[1-4]|[1-4]\s*t)\b/.test(claim);
+      const quarterMentions = claim.match(/\b(?:primer(?:o|a)?|segund(?:o|a)?|tercer(?:o|a)?|cuart(?:o|a)?|[1-4](?:er|o|to)?|q[1-4]|t[1-4]|[1-4]\s*t)\b/g) || [];
+      const requestedQuarter = requestedQuarterFor(claim);
+      const requestsOtherPeriod = mentionsMonth || mentionsAnnualWindow || mentionsQuarter
+        && (!requestedQuarter || requestedQuarter > periods.length || quarterMentions.length !== 1 || !years.includes(2026));
+      const requestsTrend = /\b(?:cada vez|aument\w*|increment\w*|crec\w*|sub\w*|dispar\w*|baj\w*|disminu\w*|empeor\w*|mejor\w*|tendencia|evoluci\w*)\b/.test(claim);
+      const requestsOtherIndustry = mentionsAnotherIndustry(claim) || mentionsAnExactSubsector(claim);
+      return years.every((year) => year === 2026) && !requestsOtherPeriod && !requestsTrend && !requestsOtherIndustry;
+    },
+    evidenceLabel: 'Asalariados que declaran horas extra pagadas o no pagadas en la EPA',
+    dimensions: dimensionsForQuarter(latest),
+    dimensionsForClaim: (claim) => dimensionsForQuarter(periods[(requestedQuarterFor(claim) || periods.length) - 1] || latest),
+    facts: [
+      `En la EPA, la estimación trimestral de asalariados de hostelería con horas extra solo no pagadas o con ambos tipos fue: ${quarters}. Cada cifra corresponde a su trimestre y no se suma como personas únicas, porque una persona puede aparecer en más de uno.`,
+      'El cuestionario de la EPA pregunta por las horas extraordinarias pagadas y no pagadas en el empleo principal durante la semana de referencia. La tabla estima personas, no el total de horas no pagadas ni la frecuencia individual a lo largo del año.',
+    ],
+    factSourceIds: [
+      [UNPAID_OVERTIME_SNAPSHOT.source.id],
+      [UNPAID_OVERTIME_SNAPSHOT.questionnaireSource.id],
+    ],
+    factDimensions: [
+      {
+        subject: 'asalariados de hostelería con alguna hora extra no pagada, por trimestre',
+        population: 'asalariados de hostelería de ambos sexos',
+        period: '2026-T1, 2026-T2 y 2026-T3',
+        geography: 'España',
+        denominator: 'asalariados de hostelería con horas extra de cada trimestre; no son personas únicas en el año',
+        unit: 'personas estimadas por trimestre, no acumulables',
+      },
+      {
+        subject: 'horas extra pagadas y no pagadas en el empleo principal',
+        population: 'personas asalariadas entrevistadas por la EPA',
+        period: 'semana de referencia de cada entrevista',
+        geography: 'España',
+        denominator: 'horas trabajadas por la persona en su empleo principal',
+        unit: 'horas extraordinarias pagadas y no pagadas declaradas',
+      },
+    ],
+    sources: [UNPAID_OVERTIME_SNAPSHOT.source, UNPAID_OVERTIME_SNAPSHOT.questionnaireSource],
+    shareableReplyForContext: ({ claim }) => {
+      const normalizedClaim = normalize(claim);
+      const isHospitalityClaim = /\bhosteler\w*\b/.test(normalizedClaim);
+      const requestedQuarter = requestedQuarterFor(normalizedClaim);
+      const selected = requestedQuarter ? periods[requestedQuarter - 1] : latest;
+      const selectedMetrics = metricsFor(selected);
+      const ordinal = ['primer', 'segundo', 'tercer', 'cuarto'][requestedQuarter ? requestedQuarter - 1 : 2];
+      const hospitalityFinding = `En el ${ordinal} trimestre de 2026, ${people(selected.unpaidOnly)} asalariados de hostelería declararon solo horas extra no pagadas y otros ${people(selected.both)} declararon ambos tipos: ${people(selectedMetrics.unpaid)} personas. Es el ${selectedMetrics.shareOfOvertime} % de quienes hicieron horas extra en ese sector (${people(selected.overtime)}) y el ${selectedMetrics.shareOfSector} % de sus ${people(selected.employees)} asalariados.`;
+      return [
+        isHospitalityClaim
+          ? hospitalityFinding
+          : `En el ${ordinal} trimestre de 2026, ${people(selectedMetrics.unpaid)} asalariados de hostelería declararon alguna hora extra no pagada durante su semana de referencia. Para otros sectores, esta serie por sí sola no permite calcular el porcentaje: las categorías y el sector deben coincidir con la afirmación.`,
+        `Las estimaciones trimestrales fueron ${people(metricsFor(periods[0]).unpaid)} en el primero, ${people(metricsFor(periods[1]).unpaid)} en el segundo y ${people(metricsFor(periods[2]).unpaid)} en el tercero. La EPA pregunta por las horas de la semana de referencia; estos recuentos muestran que ocurrió, pero no siguen a las mismas personas ni definen qué significa «habitual». Este dato no basta para confirmar toda la afirmación.`,
+      ].join('\n\n');
+    },
+  };
+})();
 const wageGrowthJobMobility = (t) => /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*)\b/.test(t)
   && /\b(subid\w*|aument\w*|mejor\w*|crec\w*|increment\w*)\b/.test(t)
   && /\b(cambi\w* de (?:empresa|trabajo|empleo)|cambio de (?:empresa|trabajo|empleo)|moverse de empresa|pasar a otra empresa)\b/.test(t);
@@ -630,7 +739,7 @@ const tourismEmploymentContribution = (t) => {
     && /\b(que|a|al|frente a|respecto a)\b/.test(t)
     && !/\b(crec\w*|aument\w*|increment\w*|evoluc\w*|variac\w*)\b/.test(t);
   const differentFamily = /\b(viviend\w*|alquil\w*|arrendam\w*|salari\w*|sueld\w*|productiv\w*|pernoctacion\w*|noches? de hotel)\b/.test(t);
-  return tourism && employment && (contributionOrDependence || regionalSectorComparison)
+  return !unpaidOvertime(t) && tourism && employment && (contributionOrDependence || regionalSectorComparison)
     && (!sectorEmploymentComparison(t) || regionalSectorComparison) && !differentFamily;
 };
 const selfEmploymentCostViability = (t) =>
@@ -1318,10 +1427,13 @@ const focuses = [
   },
   {
     id: 'unpaid-overtime', label: 'horas extraordinarias trabajadas y remuneradas',
-    when: unpaidOvertime,
+    when: unpaidOvertime, claimType: 'descriptive',
     direct: [], context: [],
     needs: ['horas extraordinarias efectivamente trabajadas y pagadas', 'sector, tipo de contrato, periodo y población laboral comparables', 'fuente que permita distinguir horas no registradas de horas no remuneradas'],
     explanation: 'Las encuestas salariales generales no cuentan por sí solas las horas extra trabajadas y no pagadas.',
+    explanationHeadline: 'La EPA registra horas extra no pagadas en hostelería, pero no define si son habituales',
+    shareableReplyForContext: unpaidOvertimeEvidence.shareableReplyForContext,
+    explanationEvidence: unpaidOvertimeEvidence,
     limitation: 'Sin registros comparables de horas trabajadas y remuneradas no se puede estimar con qué frecuencia se incumple el pago de horas extraordinarias.',
   },
   {
