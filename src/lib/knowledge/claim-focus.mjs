@@ -22,6 +22,7 @@ import { PUBLIC_PRIVATE_PAY_SNAPSHOT } from './public-private-pay-snapshot.mjs';
 import { PUBLIC_SOCIAL_HOUSING_SNAPSHOT, asksForPublicSocialStockCount } from './public-social-housing-snapshot.mjs';
 import { YOUTH_HOUSING_INDEPENDENCE_SNAPSHOT } from './youth-housing-independence-snapshot.mjs';
 import { ROOM_RENTAL_MARKET_SNAPSHOT, roomRentalMarketDirectMeasureFor, roomRentalMarketRequestedMeasureFor } from './room-rental-market-snapshot.mjs';
+import { PUBLIC_SERVICE_DIGITAL_ACCESS_SNAPSHOT, publicServiceDigitalAccessClaimFor, publicServiceDigitalAccessMeasureFor } from './public-service-digital-access-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -1871,6 +1872,37 @@ const focuses = [
     needs: ['cambios de población residente y flujos migratorios en los mismos municipios y periodos', 'alquileres o precios de vivienda, viviendas disponibles y oferta nueva en esas zonas', 'una comparación causal que separe el efecto de población de empleo, turismo, oferta y financiación'],
     explanation: 'El crecimiento de población puede coincidir con más demanda de vivienda, pero el recuento de residentes no mide cuánto cambia los precios ni permite atribuir una subida a la inmigración.',
     limitation: 'Las cifras nacionales de población inmigrante y los índices nacionales de vivienda no muestran la presión local sobre alquileres ni su efecto causal. Hacen falta medidas locales y una comparación para el mismo periodo.',
+  },
+  {
+    id: 'public-service-digital-access', label: 'acceso y dificultades de uso de servicios públicos digitales',
+    when: publicServiceDigitalAccessClaimFor,
+    claimTypeFor: (claim) => publicServiceDigitalAccessMeasureFor(claim) ? 'descriptive'
+      : /\b(exclu\w*|barrer\w*|traslad\w*|carg\w*|oblig\w*)\b/.test(normalize(claim)) ? 'causal' : 'descriptive',
+    direct: [], context: [],
+    needs: [
+      'una medida representativa de personas que no pudieron o no quisieron completar trámites digitales, con su población base y motivos',
+      'resultados para personas mayores de 74 años y para quienes no usan internet',
+      'datos que distingan una dificultad declarada de una exclusión causada por el diseño del servicio',
+    ],
+    explanationHeadline: 'La encuesta detecta barreras digitales, pero no mide una exclusión general',
+    explanation: 'La encuesta del INE observa trámites no realizados online pese a una necesidad declarada y problemas entre quienes sí usaron webs o apps públicas. Son poblaciones distintas: los problemas entre usuarios no miden a quienes no pudieron acceder.',
+    evidenceGap: 'La encuesta no demuestra que la digitalización cause una exclusión general ni mide a las personas de más de 74 años.',
+    explanationEvidence: PUBLIC_SERVICE_DIGITAL_ACCESS_SNAPSHOT,
+    shareableReplyForContext: ({ claim, facts }) => {
+      const normalizedClaim = normalize(claim);
+      if (publicServiceDigitalAccessMeasureFor(claim)) return facts.join(' ');
+      if (/\b(exclu\w*|barrer\w*|habilidad\w*|conocimient\w*|competenc\w*)\b/.test(normalizedClaim)) {
+        if (/\b(mayor\w*|ancian\w*|65 a 74|65 74|tercera edad)\b/.test(normalizedClaim)) {
+          return 'Encuesta TIC-H 2026 del INE: el 6,5 % de todas las personas de 65–74 años necesitó un trámite oficial y no lo solicitó online. Entre usuarios de internet de esa edad con una necesidad no tramitada online, el 73,3 % citó falta de habilidades o conocimientos. Esto señala una barrera para algunas personas, pero no demuestra exclusión general; la encuesta no incluye a mayores de 74 años.';
+        }
+        return 'Encuesta TIC-H 2026 del INE: el 4,4 % de todas las personas de 16–74 años necesitó un documento o reclamación y no lo solicitó online. Entre usuarios de internet con esa necesidad no tramitada, el 51,1 % citó falta de habilidades o conocimientos. Son señales de barrera, no una tasa de exclusión general.';
+      }
+      if (/\b(traslad\w*|carg\w*|oblig\w*)\b/.test(normalizedClaim)) {
+        return [...facts, 'La encuesta no mide cuánto trabajo administrativo se trasladó a la ciudadanía ni permite atribuir causalmente esas dificultades a la digitalización.'].join('\n\n');
+      }
+      return [...facts, 'Los resultados describen la Encuesta TIC-H 2026 y no equivalen a una medida de exclusión general de todos los trámites.'].join('\n\n');
+    },
+    limitation: 'La encuesta es de personas de 16–74 años en hogares privados. Los porcentajes de necesidades no tramitadas, motivos declarados y problemas entre usuarios tienen denominadores distintos; una dificultad declarada no prueba por sí sola que un servicio excluya a una población.',
   },
   {
     id: 'room-rental-market', label: 'alquiler de habitaciones en pisos compartidos',

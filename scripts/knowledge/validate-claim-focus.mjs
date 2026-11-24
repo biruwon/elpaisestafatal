@@ -56,6 +56,12 @@ const cases = [
     'La renta mediana anunciada de una habitación en España fue de 400 euros al mes en 2025',
     'En 2025 creció el número de habitaciones ofertadas en pisos compartidos',
   ]],
+  ['public-service-digital-access', [
+    'Los trámites online excluyen a personas mayores o con poca competencia digital',
+    'Algunas personas mayores no pueden completar gestiones públicas por internet',
+    'La falta de habilidades digitales dificulta solicitar ayudas en la sede electrónica',
+    'Usuarios encuentran fallos en las webs de las administraciones públicas',
+  ]],
   ['business-tax-burden', ['Las multinacionales digitales pagan proporcionalmente menos impuestos que las tiendas locales', 'La carga fiscal efectiva de grandes empresas tecnológicas es menor que la de los comercios pequeños', 'Las empresas digitales compiten con el comercio de barrio con una tributación más baja']],
   ['small-business-cost-pressure', ['Los comercios de barrio cierran por la suma de alquiler, energía e impuestos', 'El aumento de los costes operativos está haciendo desaparecer pequeños negocios', 'Las tiendas pequeñas no sobreviven cuando suben a la vez salarios, alquileres y electricidad']],
   ['business-size-productivity', ['El pequeño tamaño medio de las empresas frena la inversión y la productividad', 'Las pymes tienen menos capacidad para adoptar tecnología y pagar buenos salarios', 'El tamaño empresarial limita la innovación y los sueldos']],
@@ -145,6 +151,44 @@ for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
   assert.equal(claimFocusFor(claim)?.id, family, claim);
   assert.equal(broadDomainPacketsFor(claim).length, 0, `A precise claim inherited a broad packet: ${claim}`);
 }
+const publicDigitalBarrier = focusedEvidencePlan('Los trámites online excluyen a personas mayores o con poca competencia digital', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(publicDigitalBarrier.answerScope.family, 'public-service-digital-access');
+assert.equal(publicDigitalBarrier.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient',
+  'Evidence of a skills barrier among some people must not be upgraded to a claim of general exclusion');
+assert.deepEqual(publicDigitalBarrier.sourceLinks.map((source) => source.id), [
+  'ine-tich-2026-egovernment-documentation', 'ine-tich-2026-egovernment-nonuse-reasons',
+]);
+assert.match(publicDigitalBarrier.shareableReply, /6,5 %.*todas las personas de 65–74/);
+assert.match(publicDigitalBarrier.shareableReply, /73,3 %.*falta de habilidades/);
+assert.match(publicDigitalBarrier.shareableReply, /no demuestra exclusión general/);
+validateAnswerPlan(publicDigitalBarrier);
+const publicDigitalSkillsRate = focusedEvidencePlan('¿Qué porcentaje de personas de 65 a 74 años que necesitaban un documento oficial y no lo solicitaron online alegó falta de habilidades o conocimientos?', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.deepEqual(publicDigitalSkillsRate.sourceLinks.map((source) => source.id), ['ine-tich-2026-egovernment-nonuse-reasons']);
+assert.equal(publicDigitalSkillsRate.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'supported');
+assert.match(publicDigitalSkillsRate.shareableReply, /73,3 %/);
+assert.match(publicDigitalSkillsRate.shareableReply, /No es el porcentaje de todas las personas mayores/);
+const publicDigitalAgeProblems = focusedEvidencePlan('Entre quienes usaron webs públicas, las personas mayores tuvieron más dificultades de uso que los jóvenes', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.deepEqual(publicDigitalAgeProblems.sourceLinks.map((source) => source.id), ['ine-tich-2026-egovernment-problems']);
+assert.equal(publicDigitalAgeProblems.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'mixed',
+  'The survey reports more problems overall among younger users, but more difficulty-of-use among older users; a broad comparison needs qualification');
+assert.match(publicDigitalAgeProblems.shareableReply, /55,8 %.*51,9 %/);
+assert.match(publicDigitalAgeProblems.shareableReply, /31,4 %.*35,4 %/);
+const broadOlderUserProblem = focusedEvidencePlan('Las personas mayores tienen problemas con los trámites públicos online', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(broadOlderUserProblem.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient',
+  'Problem reports among users must not directly substantiate a broad claim about all older people');
+assert.deepEqual(broadOlderUserProblem.answerScope.directMetrics, [], 'User-only problem rates must remain contextual for a broad access claim');
+const wrongPeriodDigitalAccess = focusedEvidencePlan('En 2024, el 55,9 % de quienes usaron webs públicas tuvo problemas al usarlas', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(wrongPeriodDigitalAccess.answerScope.family, 'public-service-digital-access');
+assert.deepEqual(wrongPeriodDigitalAccess.sourceLinks, [], 'The 2026 survey must not be used as evidence for a 2024 rate');
+const localDigitalAccess = focusedEvidencePlan('En Madrid, los trámites online excluyen a las personas mayores', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(localDigitalAccess.answerScope.family, 'public-service-digital-access');
+assert.deepEqual(localDigitalAccess.sourceLinks, [], 'A national survey must not be presented as a Madrid estimate');
+const appointmentAccessNeighbour = 'La cita previa obligatoria en la DGT ha convertido trámites básicos en una barrera';
+assert.equal(claimFocusFor(appointmentAccessNeighbour), undefined, 'Evidence on online service problems must not route to appointment availability');
+assert.equal(focusedEvidencePlan(appointmentAccessNeighbour), undefined);
+const duplicateDocumentNeighbour = 'Las administraciones piden por internet documentos que otras administraciones ya tienen';
+assert.equal(claimFocusFor(duplicateDocumentNeighbour), undefined, 'Digital access statistics must not be reused to prove duplicate document requests');
+assert.equal(focusedEvidencePlan(duplicateDocumentNeighbour), undefined);
 const landlordConcernQueries = [
   'El miedo a la okupación y al impago hace que propietarios retiren pisos del alquiler',
   'Hay viviendas vacías que no se alquilan por miedo a problemas legales con inquilinos',

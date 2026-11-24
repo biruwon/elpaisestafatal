@@ -2411,4 +2411,150 @@ export const textAnswerAccuracyCases = [
       replyExcludes: ['35.212,32', '24.751,40'], evidence: [], maxReplyWords: 120,
     },
   },
+  {
+    id: 'public-digital-access-barrier-older-adults',
+    equivalenceGroup: 'public-digital-access-barrier-older-adults',
+    input: 'Los trámites online excluyen a personas mayores o con poca competencia digital',
+    expected: {
+      state: 'insufficient', family: 'public-service-digital-access', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['6,5 %', '73,3 %', 'señala una barrera', 'no demuestra exclusión general', 'mayores de 74 años'],
+      replyExcludes: ['73,3 % de todas las personas mayores', 'la administración excluye a la mayoría'],
+      evidence: [
+        {
+          familyId: 'public-service-digital-access', sourceIds: ['ine-tich-2026-egovernment-documentation'],
+          dataIncludes: ['6,5 %', '65–74 años', 'necesitaba hacerlo'],
+          dimensions: { period: 'Encuesta TIC-H 2026', geography: 'España', denominator: 'todas las personas de 65–74 años', unit: 'porcentaje de personas' },
+        },
+        {
+          familyId: 'public-service-digital-access', sourceIds: ['ine-tich-2026-egovernment-nonuse-reasons'],
+          dataIncludes: ['73,3 %', 'usuarios de internet de 65–74 años', 'falta de habilidades'],
+          dimensions: { period: 'Encuesta TIC-H 2026', denominator: 'personas de 65–74 años con necesidad no tramitada online', unit: 'porcentaje de ese grupo' },
+        },
+      ],
+      maxReplyWords: 140,
+    },
+  },
+  {
+    id: 'public-digital-access-barrier-paraphrase',
+    equivalenceGroup: 'public-digital-access-barrier-older-adults',
+    input: 'A algunas personas mayores les cuesta completar trámites por internet por falta de conocimientos digitales',
+    expected: {
+      state: 'insufficient', family: 'public-service-digital-access', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['6,5 %', '73,3 %', 'no demuestra exclusión general'],
+      evidence: [], maxReplyWords: 140,
+    },
+  },
+  {
+    id: 'public-digital-access-unmet-need-older',
+    equivalenceGroup: 'public-digital-access-unmet-need-older',
+    input: '¿Qué porcentaje de personas de 65 a 74 años no solicitó online un trámite administrativo que necesitaba?',
+    expected: {
+      state: 'limited', family: 'public-service-digital-access', verdict: 'supported',
+      directSourceIds: ['ine-tich-2026-egovernment-documentation'],
+      replyIncludes: ['6,5 %', '65–74 años', 'Encuesta TIC-H 2026', 'todas las personas de 65–74 años'],
+      evidence: [{
+        familyId: 'public-service-digital-access', sourceIds: ['ine-tich-2026-egovernment-documentation'],
+        dataIncludes: ['6,5 %', 'necesitaba hacerlo'],
+        dimensions: { period: 'Encuesta TIC-H 2026', population: 'personas de 65–74 años', denominator: 'todas las personas de 65–74 años', unit: 'porcentaje de personas' },
+      }],
+      maxReplyWords: 65,
+    },
+  },
+  {
+    id: 'public-digital-access-unmet-need-older-paraphrase',
+    equivalenceGroup: 'public-digital-access-unmet-need-older',
+      input: '¿Qué porcentaje de personas de 65–74 con una necesidad de documento oficial dejó el trámite sin solicitar por internet?',
+    expected: {
+      state: 'limited', family: 'public-service-digital-access', verdict: 'supported',
+      directSourceIds: ['ine-tich-2026-egovernment-documentation'],
+      replyIncludes: ['6,5 %', '65–74 años', 'todas las personas de 65–74 años'],
+      evidence: [], maxReplyWords: 65,
+    },
+  },
+  {
+    id: 'public-digital-access-older-skills-reason',
+    input: '¿Qué porcentaje de personas de 65 a 74 años que necesitaban un documento oficial y no lo solicitaron online alegó falta de habilidades o conocimientos?',
+    expected: {
+      state: 'limited', family: 'public-service-digital-access', verdict: 'supported',
+      directSourceIds: ['ine-tich-2026-egovernment-nonuse-reasons'],
+      replyIncludes: ['73,3 %', 'usuarios de internet de 65–74 años', 'falta de habilidades', 'No es el porcentaje de todas las personas mayores'],
+      evidence: [{
+        familyId: 'public-service-digital-access', sourceIds: ['ine-tich-2026-egovernment-nonuse-reasons'],
+        dataIncludes: ['73,3 %', 'usuarios de internet', 'falta de habilidades'],
+        dimensions: { period: 'Encuesta TIC-H 2026', denominator: 'personas de 65–74 años con necesidad no tramitada online', unit: 'porcentaje de ese grupo' },
+      }],
+      maxReplyWords: 70,
+    },
+  },
+  {
+    id: 'public-digital-access-general-skills-reason',
+    input: '¿Qué porcentaje de usuarios de internet de 16–74 años que no solicitaron online un documento oficial que necesitaban citó falta de habilidades?',
+    expected: {
+      state: 'limited', family: 'public-service-digital-access', verdict: 'supported',
+      directSourceIds: ['ine-tich-2026-egovernment-nonuse-reasons'],
+      replyIncludes: ['51,1 %', 'usuarios de internet de 16–74 años', 'falta de habilidades', 'No es el porcentaje de toda la población'],
+      evidence: [{
+        familyId: 'public-service-digital-access', sourceIds: ['ine-tich-2026-egovernment-nonuse-reasons'],
+        dataIncludes: ['51,1 %', 'usuarios de internet', 'falta de habilidades'],
+        dimensions: { period: 'Encuesta TIC-H 2026', denominator: 'personas de 16–74 años con necesidad no tramitada online', unit: 'porcentaje de ese grupo' },
+      }],
+      maxReplyWords: 70,
+    },
+  },
+  {
+    id: 'public-digital-access-wrong-value',
+    input: 'En 2026, el 10 % de las personas de 65 a 74 años no solicitó por internet un trámite que necesitaba',
+    expected: {
+      state: 'limited', family: 'public-service-digital-access', verdict: 'contradicted',
+      directSourceIds: ['ine-tich-2026-egovernment-documentation'],
+      replyIncludes: ['6,5 %', 'todas las personas de 65–74 años'], evidence: [], maxReplyWords: 65,
+    },
+  },
+  {
+    id: 'public-digital-access-user-problem-rate',
+    input: '¿Qué porcentaje de personas de 16 a 74 años que usaron webs públicas tuvo problemas?',
+    expected: {
+      state: 'limited', family: 'public-service-digital-access', verdict: 'supported',
+      directSourceIds: ['ine-tich-2026-egovernment-problems'],
+      replyIncludes: ['55,9 %', 'usaron por motivos particulares', 'Quienes no usaron esos canales no forman parte de este denominador'],
+      evidence: [{
+        familyId: 'public-service-digital-access', sourceIds: ['ine-tich-2026-egovernment-problems'],
+        dataIncludes: ['55,9 %', 'últimos 12 meses'],
+        dimensions: { period: 'Encuesta TIC-H 2026', denominator: 'usuarios de internet de 16–74 años de esos canales públicos', unit: 'porcentaje que declaró algún problema' },
+      }],
+      maxReplyWords: 70,
+    },
+  },
+  {
+    id: 'public-digital-access-wrong-year',
+    input: 'En 2024, el 55,9 % de quienes usaron webs públicas tuvo problemas al usarlas',
+    expected: {
+      state: 'insufficient', family: 'public-service-digital-access', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['55,9 %', '51,9 %', '73,3 %'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'public-digital-access-wrong-territory',
+    input: 'En Madrid, los trámites online excluyen a las personas mayores',
+    expected: {
+      state: 'insufficient', family: 'public-service-digital-access', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['6,5 %', '73,3 %', '55,9 %'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'public-digital-access-appointment-neighbour',
+    input: 'La cita previa obligatoria en la DGT ha convertido trámites básicos en una barrera',
+    expected: {
+      state: 'insufficient', family: undefined, verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['6,5 %', '73,3 %', '55,9 %'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'public-digital-access-duplicate-document-neighbour',
+    input: 'Las administraciones piden por internet documentos que otras administraciones ya tienen',
+    expected: {
+      state: 'insufficient', family: undefined, verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['6,5 %', '73,3 %', '55,9 %'], evidence: [], maxReplyWords: 120,
+    },
+  },
 ];
