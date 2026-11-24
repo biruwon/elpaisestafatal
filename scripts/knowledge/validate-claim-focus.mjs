@@ -58,6 +58,7 @@ const cases = [
   ['wage-progression', ['Los trabajadores jóvenes encadenan años de salarios de entrada sin progresión real', 'Los sueldos iniciales se estancan durante los primeros años de carrera', 'Quienes empiezan con un salario bajo apenas avanzan aunque acumulen antigüedad']],
   ['regional-wage-housing-cost', ['Las ciudades con más empleo son aquellas donde la vivienda se come la mejora salarial', 'En las áreas con más trabajo el coste del alquiler absorbe las subidas de sueldo', 'Los salarios más altos de las grandes ciudades no compensan el gasto de vivienda', 'El coste de vivienda ha eliminado la ventaja salarial de trabajar en Madrid o Barcelona', 'El alquiler borra la prima salarial de vivir en Madrid']],
   ['housing-investment-return-comparison', ['Los inversores compran vivienda porque ofrece más rentabilidad que los negocios productivos', 'El capital prefiere el ladrillo frente a la inversión en empresas productivas', 'La rentabilidad inmobiliaria supera a la de invertir en actividades productivas']],
+  ['minimum-wage-compression', ['El salario mínimo ha comprimido la escala salarial y los puestos con responsabilidad apenas cobran más', 'Las subidas del SMI están aplanando los sueldos y hasta los puestos responsables ganan poco más', 'El aumento del salario mínimo concentra salarios cerca del mínimo y reduce las diferencias entre ocupaciones']],
   ['education-pay-comparison', ['Los sueldos de trabajos cualificados son demasiado parecidos a los de puestos que exigen menos formación', 'Los empleos que requieren estudios superiores no pagan mucho más que los que exigen menos estudios', 'La remuneración es similar entre puestos de distinta cualificación', 'Tener un máster o un doctorado no garantiza cobrar un salario acorde con la cualificación', 'Una titulación de posgrado no asegura un sueldo proporcional a la formación']],
   ['education-skill-demand-vs-curriculum', ['Los idiomas y competencias digitales pesan más en el empleo que muchas asignaturas del título', 'Las empresas priorizan competencias digitales e idiomas frente a muchas materias de la carrera', 'El mercado de trabajo exige habilidades que la universidad no enseña en sus asignaturas']],
   ['firm-wage-capacity', ['Las grandes empresas tienen productividad suficiente para pagar más pero contienen salarios', 'Las empresas más productivas podrían pagar mejores sueldos y no lo hacen', 'Las compañías con más beneficios frenan la remuneración de sus plantillas']],
@@ -1040,6 +1041,29 @@ assert.deepEqual(meiPreStart.sourceLinks.map((source) => source.id), ['boe-pensi
 assert.match(meiPreStart.shareableReply, /no establece una cotización del MEI para 2022/);
 assert.deepEqual(focusedEvidencePlan('El Mecanismo de Equidad Intergeneracional francés eleva las cotizaciones', { now: Date.parse('2026-11-24T12:00:00Z') }).sourceLinks, [], 'Spanish MEI law and projections must not answer a French claim');
 assert.notEqual(claimFocusFor('La cotización adicional de solidaridad no resuelve la sostenibilidad de las pensiones')?.id, 'pension-mei-contribution', 'The solidarity contribution must not inherit MEI evidence');
+const minimumWageClaim = 'El salario mínimo ha comprimido la escala salarial y muchos puestos con responsabilidad apenas cobran más';
+const minimumWagePlan = focusedEvidencePlan(minimumWageClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(claimFocusFor(minimumWageClaim)?.id, 'minimum-wage-compression');
+assert.equal(minimumWagePlan.answerScope.family, 'minimum-wage-compression');
+const minimumWagePublic = localPublicCheckResponse({ status: 'partial', requestId: 'smi-wage-concentration', result: minimumWagePlan }, minimumWageClaim);
+assert.equal(minimumWagePublic.state, 'limited');
+assert.equal(minimumWagePublic.result.arguments[0].verdict, 'mixed');
+assert.deepEqual(minimumWagePublic.result.criteria.map((criterion) => criterion.sourceIds), [
+  ['airef-smi-wage-concentration-2026'],
+  ['airef-smi-wage-concentration-2026'],
+  ['ine-eaes-occupation-wages-2024'],
+], 'AIReF distribution findings and INE occupation wages must retain their own source documents');
+assert.match(minimumWagePublic.result.reply, /3,5 %.*12,2 %/s);
+assert.match(minimumWagePublic.result.reply, /no cuánto de la compresión causó el SMI/);
+assert.match(minimumWagePublic.result.reply, /63\.865,45.*116,2 %/s);
+assert.ok(minimumWagePublic.result.reply.trim().split(/\s+/).length <= 180, 'The SMI compression assessment should stay digestible');
+const smiDistributionOnly = focusedEvidencePlan('El SMI está concentrando las bases de cotización cerca del mínimo y aplanando la escala salarial', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.deepEqual(smiDistributionOnly.sourceLinks.map((source) => source.id), ['airef-smi-wage-concentration-2026'], 'A distribution-only claim must not inherit the INE leadership comparison');
+assert.doesNotMatch(smiDistributionOnly.shareableReply, /Directores y gerentes|INE/);
+assert.notEqual(claimFocusFor('La subida del SMI afecta al empleo juvenil y a la afiliación')?.id, 'minimum-wage-compression', 'Employment effects must not be cross-routed to pay-scale compression');
+assert.notEqual(claimFocusFor('Directores y gerentes cobran mucho más que la media nacional')?.id, 'minimum-wage-compression', 'A question about occupational pay alone must not inherit SMI evidence');
+assert.deepEqual(focusedEvidencePlan('El salario mínimo ha comprimido la escala salarial en Francia', { now: Date.parse('2026-11-24T12:00:00Z') }).sourceLinks, [], 'Spanish AIReF and INE data must not answer a French claim');
+assert.deepEqual(focusedEvidencePlan('El SMI ha comprimido la escala salarial en 2025', { now: Date.parse('2026-11-24T12:00:00Z') }).sourceLinks, [], 'A 2018–2024 distribution series must not answer a 2025 claim');
 const pensionPrivateClaims = [
   'Ahorrar de forma privada será imprescindible aunque se siga cotizando al sistema público',
   'La pensión pública quizá no alcance para mantener el nivel de vida y habrá que ahorrar por cuenta propia',

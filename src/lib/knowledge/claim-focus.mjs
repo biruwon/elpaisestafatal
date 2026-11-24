@@ -8,6 +8,7 @@ import { PENSION_PRIVATE_SAVINGS_SNAPSHOT } from './pension-private-savings-snap
 import { PENSION_TRANSFER_ACCOUNT_SNAPSHOT } from './pension-transfer-account-snapshot.mjs';
 import { PENSION_INDEXATION_WAGE_SNAPSHOT } from './pension-indexation-wage-snapshot.mjs';
 import { PENSION_MEI_SNAPSHOT } from './pension-mei-snapshot.mjs';
+import { MINIMUM_WAGE_COMPRESSION_SNAPSHOT } from './minimum-wage-compression-snapshot.mjs';
 import { EDUCATION_SOCIOECONOMIC_SNAPSHOT } from './education-socioeconomic-snapshot.mjs';
 import { UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT } from './university-graduate-outcomes-snapshot.mjs';
 import { RAIL_PUNCTUALITY_EVIDENCE, railPunctualityShareableReply } from './rail-punctuality-snapshot.mjs';
@@ -685,6 +686,8 @@ const wageProgression = (t) => /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*)\b/.t
   && /\b(entrada|inicial\w*|comienzo|primeros? a[nñ]os|banda salarial|salario base|empez\w*|empiez\w*|inici\w*|antiguedad)\b/.test(t)
   && /\b(progres\w*|avanz\w*|estanc\w*|permanec\w*|encaden\w*|a[nñ]os|sub\w*|aument\w*|crec\w*|antiguedad)\b/.test(t)
   && !/\b(viviend\w*|casas?|piso\w*|hipotec\w*|comprar|compra de)\b/.test(t);
+const minimumWageCompression = (t) => /\b(smi|salari\w* minim\w*)\b/.test(t)
+  && /\b(compresi\w*|comprim\w*|aplan\w*|concentr\w*|escala salarial|estructura salarial|piramide salarial|diferenc\w*|distancia\w*|apenas|poco mas|cualificad\w*|responsabilid\w*|responsable\w*|directiv\w*|jefatur\w*|mandos?)\b/.test(t);
 const educationPayComparison = (t) => /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|pag\w*|cobr\w*)\b/.test(t)
   && /\b(cualificad\w*|cualificaci\w*|formaci\w*|estudios? (?:superiores?|universitarios?)|titulaci\w*|educaci\w*|puestos? que (?:exigen|requieren)|trabajos? que (?:exigen|requieren))\b/.test(t)
   && /\b(parecid\w*|similar\w*|igual\w*|mism\w*|diferenc\w*|distint\w*|brecha\w*|compar\w*|acorde\w*|proporcional\w*|garant\w*|menos|mas|mayor\w*|menor\w*|superior\w*|inferior\w*)\b/.test(t);
@@ -928,6 +931,73 @@ const pensionMeiReply = ({ claim, facts }) => {
     `AIReF estima que el MEI aporta ingresos equivalentes al ${percent(modeledImpact.through2025)} % del PIB hasta 2025 y al ${percent(modeledImpact.average2022To2050)} % del PIB como promedio de 2022–2050. Las medidas de ingresos analizadas en conjunto promedian ${percent(modeledImpact.allRevenueMeasuresAverage2022To2050)} % del PIB.`,
     'AIReF advierte que cumplir formalmente la regla de gasto no resuelve por sí solo la sostenibilidad. Esa conclusión se refiere al sistema; aunque estima una aportación del MEI, el informe no determina si el mecanismo aislado basta para resolver el problema. Los datos confirman que sube las cotizaciones y aporta ingresos, pero no prueban ni descartan que el MEI por sí solo resuelva la sostenibilidad.',
   ].join('\n\n');
+};
+const minimumWageCompressionEvidence = (() => {
+  const snapshot = MINIMUM_WAGE_COMPRESSION_SNAPSHOT;
+  const { distribution, occupationWages } = snapshot;
+  const decimal = (value, digits = 1) => new Intl.NumberFormat('es-ES', { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
+  const asksResponsibilityPay = (claim) => /\b(responsabilid\w*|responsable\w*|directiv\w*|gerent\w*|jefatur\w*|mandos?)\b/.test(normalize(claim));
+  const findings = [
+    `AIReF observa una mayor concentración de bases de cotización cerca del SMI: la proporción situada en una banda de ±5 % pasó del ${decimal(distribution.nearMinimumShare2018)} % en 2018 al ${decimal(distribution.nearMinimumShare2024)} % en 2024. Son bases extraídas de la MCVL y ajustadas a jornada y mes completos; no son salarios netos ni un recuento de nóminas individuales.`,
+    'La comparación describe cómo cambió la distribución, pero no aísla qué parte causaron las subidas del SMI: AIReF advierte que los cambios del periodo dificultan separar su efecto causal de otros factores.',
+    `En 2024, el INE estimó una ganancia bruta anual media de ${decimal(occupationWages.managersMeanGrossAnnual, 2)} euros para Directores y gerentes, un ${decimal(occupationWages.managersPremiumPercent)} % por encima de la media nacional (${decimal(occupationWages.nationalMeanGrossAnnual, 2)} euros); en Servicios no cualificados fue de ${decimal(occupationWages.unqualifiedServicesMeanGrossAnnual, 2)} euros. Son grupos ocupacionales distintos y no representan todos los puestos con responsabilidad.`,
+  ];
+  return {
+    schemaVersion: snapshot.schemaVersion,
+    owner: snapshot.owner,
+    createdAt: snapshot.createdAt,
+    asOf: snapshot.asOf,
+    validationStatus: snapshot.validationStatus,
+    expiresAt: snapshot.expiresAt,
+    territories: ['ES'],
+    when: (claim) => [...normalize(claim).matchAll(/\b20\d{2}\b/g)].map(([year]) => Number(year)).every((year) => year >= 2018 && year <= 2024),
+    evidenceLabel: 'Distribución de bases próximas al SMI y salarios por ocupación',
+    dimensions: {
+      subject: 'concentración de bases de cotización cerca del SMI y ganancia bruta anual por ocupación',
+      population: `${snapshot.distributionPopulation}; ${snapshot.occupationPopulation}`,
+      period: `${snapshot.distributionPeriod}; salarios por ocupación en ${occupationWages.year}`,
+      geography: snapshot.geography,
+      denominator: `${snapshot.distributionDenominator}; ${snapshot.occupationDenominator}`,
+      unit: `${snapshot.distributionUnit}; ${snapshot.occupationUnit}`,
+    },
+    facts: findings,
+    factSourceIds: [
+      [snapshot.distributionSourceId],
+      [snapshot.distributionSourceId],
+      [snapshot.occupationSourceId],
+    ],
+    factDimensions: [
+      { subject: 'concentración de bases cerca del SMI', population: snapshot.distributionPopulation, period: snapshot.distributionPeriod, geography: snapshot.geography, denominator: snapshot.distributionDenominator, unit: snapshot.distributionUnit },
+      { subject: 'límites de atribución causal de la tendencia salarial', population: 'mercado laboral español', period: 'periodo analizado por AIReF', geography: snapshot.geography, denominator: 'factores simultáneos del periodo', unit: 'cautela metodológica, no efecto causal cuantificado' },
+      { subject: 'ganancia anual por grupo de ocupación', population: snapshot.occupationPopulation, period: String(occupationWages.year), geography: snapshot.geography, denominator: snapshot.occupationDenominator, unit: snapshot.occupationUnit },
+    ],
+    sources: snapshot.sources,
+    directClaimEvidence: true,
+    selectForClaim: ({ claim }) => {
+      if (asksResponsibilityPay(claim)) return undefined;
+      return {
+        ...minimumWageCompressionEvidence,
+        facts: findings.slice(0, 2),
+        factSourceIds: [
+          [snapshot.distributionSourceId],
+          [snapshot.distributionSourceId],
+        ],
+        factDimensions: minimumWageCompressionEvidence.factDimensions.slice(0, 2),
+        sources: snapshot.sources.filter((source) => source.id === snapshot.distributionSourceId),
+      };
+    },
+    claimVerdictFor: () => 'mixed',
+  };
+})();
+const minimumWageCompressionReply = ({ claim }) => {
+  const snapshot = MINIMUM_WAGE_COMPRESSION_SNAPSHOT;
+  const { distribution, occupationWages } = snapshot;
+  const decimal = (value, digits = 1) => new Intl.NumberFormat('es-ES', { minimumFractionDigits: digits, maximumFractionDigits: digits }).format(value);
+  const distributionFinding = `Hay una señal de concentración en la parte baja: AIReF calculó que la proporción de bases de cotización dentro de ±5 % del SMI pasó del ${decimal(distribution.nearMinimumShare2018)} % en 2018 al ${decimal(distribution.nearMinimumShare2024)} % en 2024. Las bases se ajustan a jornada y mes completos; no equivalen al salario neto.`;
+  const attributionLimit = 'Esto muestra un acercamiento de las bases al mínimo, pero no cuánto de la compresión causó el SMI: AIReF advierte que los cambios simultáneos del periodo dificultan aislar su efecto causal.';
+  if (!/\b(responsabilid\w*|responsable\w*|directiv\w*|gerent\w*|jefatur\w*|mandos?)\b/.test(normalize(claim))) return [distributionFinding, attributionLimit].join('\n\n');
+  const leadershipFinding = `Para Directores y gerentes, el dato apunta en sentido contrario a «apenas más»: el INE registró una media bruta de ${decimal(occupationWages.managersMeanGrossAnnual, 2)} euros anuales en 2024, un ${decimal(occupationWages.managersPremiumPercent)} % sobre la media nacional (${decimal(occupationWages.nationalMeanGrossAnnual, 2)} euros), frente a ${decimal(occupationWages.unqualifiedServicesMeanGrossAnnual, 2)} euros en Servicios no cualificados. Esta categoría no representa todos los puestos con responsabilidad ni indica cuántos quedan cerca del SMI.`;
+  return [distributionFinding, leadershipFinding, attributionLimit].join('\n\n');
 };
 const pensionWageContributionBase = (t) => /\b(pension\w*|jubilaci[oó]n|sistema de pensiones)\b/.test(t)
   && (/\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w* laboral\w*)\b/.test(t)
@@ -2089,6 +2159,17 @@ const focuses = [
     explanationEvidence: { ...EDUCATION_SOCIOECONOMIC_SNAPSHOT, when: educationSocioeconomicSnapshotFitsRequest },
     shareableReplyForContext: ({ facts }) => `${facts.slice(0, 3).join(' ')} La asociación no permite atribuir la brecha a los ingresos familiares ni decidir si es excesiva. PISA evalúa ciencias a los 15 años; no mide las notas de todas las etapas.`,
     limitation: 'El dato se refiere a ciencias y estudiantes de 15 años en PISA 2025; no mide las calificaciones de todas las etapas. El ESCS combina educación y ocupación parentales y posesiones del hogar, no solo renta. Una asociación estadística no identifica por sí sola un efecto causal ni determina si la diferencia es excesiva.',
+  },
+  {
+    id: 'minimum-wage-compression', label: 'concentración salarial cerca del SMI y diferencias por ocupación',
+    when: minimumWageCompression,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['distribución salarial o bases de cotización medidas con el mismo umbral del SMI en años comparables', 'un diseño que separe el efecto de las subidas del SMI de otras reformas y cambios del periodo', 'salario bruto por grupos ocupacionales comparables si se afirma que puestos con responsabilidad cobran apenas más'],
+    explanationHeadline: 'Más bases se concentran cerca del SMI, pero la serie no aísla su efecto causal',
+    explanation: 'AIReF registra que más bases de cotización se acercaron al SMI entre 2018 y 2024, aunque esas bases no son salarios netos ni la comparación estima cuánto de la compresión causó el SMI. Los promedios del INE por grupo ocupacional permiten comprobar si la afirmación sobre puestos directivos describe ese grupo, no cada puesto con responsabilidad.',
+    explanationEvidence: minimumWageCompressionEvidence,
+    shareableReplyForContext: minimumWageCompressionReply,
+    limitation: 'La serie de AIReF mide bases de cotización ajustadas a jornada y mes completos, no salarios netos; su comparación temporal no identifica por sí sola el efecto causal del SMI. El promedio de Directores y gerentes del INE no representa todos los puestos con responsabilidad ni compara personas con tareas equivalentes.',
   },
   {
     id: 'education-pay-comparison', label: 'salarios según formación exigida por el puesto',

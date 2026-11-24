@@ -1218,6 +1218,34 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'minimum-wage-compression-and-responsibility-pay',
+    equivalenceGroup: 'minimum-wage-compression-and-responsibility-pay',
+    input: 'El salario mínimo ha comprimido la escala salarial y muchos puestos con responsabilidad apenas cobran más',
+    expected: {
+      state: 'limited', family: 'minimum-wage-compression', verdict: 'mixed',
+      directSourceIds: ['airef-smi-wage-concentration-2026', 'ine-eaes-occupation-wages-2024'],
+      replyIncludes: ['3,5 % en 2018 al 12,2 % en 2024', 'bases de cotización dentro de ±5 % del SMI', '63.865,45 euros anuales', '116,2 % sobre la media nacional', '16.062,57 euros en Servicios no cualificados', 'no cuánto de la compresión causó el SMI'],
+      replyExcludes: ['el SMI causó toda la compresión', 'todos los puestos con responsabilidad cobran apenas más'],
+      evidence: [
+        { familyId: 'minimum-wage-compression', sourceIds: ['airef-smi-wage-concentration-2026'], dataIncludes: ['3,5 % en 2018', '12,2 % en 2024', 'bases de cotización'], dimensions: { period: '2018–2024', geography: 'España', unit: 'porcentaje de trabajadores con bases en una banda de ±5 % del SMI' } },
+        { familyId: 'minimum-wage-compression', sourceIds: ['airef-smi-wage-concentration-2026'], dataIncludes: ['dificultan separar su efecto causal de otros factores'], dimensions: { period: 'periodo analizado por AIReF', geography: 'España', unit: 'cautela metodológica, no efecto causal cuantificado' } },
+        { familyId: 'minimum-wage-compression', sourceIds: ['ine-eaes-occupation-wages-2024'], dataIncludes: ['63.865,45', '116,2 % por encima de la media nacional', '29.540,26', '16.062,57 euros'], dimensions: { period: '2024', geography: 'España', denominator: 'ganancia bruta anual media por trabajador', unit: 'euros brutos anuales y variación porcentual sobre la media nacional' } },
+      ],
+      maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'minimum-wage-compression-paraphrase',
+    equivalenceGroup: 'minimum-wage-compression-and-responsibility-pay',
+    input: 'Las subidas del SMI están aplanando los sueldos y hasta los puestos responsables ganan poco más',
+    expected: {
+      state: 'limited', family: 'minimum-wage-compression', verdict: 'mixed',
+      directSourceIds: ['airef-smi-wage-concentration-2026', 'ine-eaes-occupation-wages-2024'],
+      replyIncludes: ['3,5 % en 2018 al 12,2 % en 2024', '63.865,45 euros anuales', '16.062,57 euros en Servicios no cualificados', 'no cuánto de la compresión causó el SMI'],
+      replyExcludes: ['el SMI causó toda la compresión'], evidence: [], maxReplyWords: 180,
+    },
+  },
+  {
     id: 'pension-mei-contribution-and-impact',
     equivalenceGroup: 'pension-mei-contribution-and-impact',
     input: 'El Mecanismo de Equidad Intergeneracional es una subida de cotizaciones que no resuelve el problema de fondo',
