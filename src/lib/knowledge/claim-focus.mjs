@@ -10,6 +10,7 @@ import { GDP_HOUSEHOLD_WELFARE_SNAPSHOT } from './gdp-household-welfare-snapshot
 import { HOUSEHOLD_BUDGET_SNAPSHOT, HOUSEHOLD_SAVING_SNAPSHOT } from './household-budget-snapshot.mjs';
 import { FOOD_CHAIN_PRICE_SPREAD_EVIDENCE } from './food-chain-price-spread-snapshot.mjs';
 import { ENERGY_PRICE_PASS_THROUGH_EVIDENCE } from './energy-price-pass-through-snapshot.mjs';
+import { FIXED_DISCONTINUOUS_STATUS_EVIDENCE } from './fixed-discontinuous-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -75,6 +76,10 @@ const unemploymentWagePressure = (t) => !migrationPopulation.test(t)
   && /\b(paro|desemple\w*|desocupad\w*|exceso de mano de obra|oferta de trabajadores|candidat\w*|demandantes? de empleo|abundancia de trabajadores|muchos aspirantes)\b/.test(t)
   && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|pagan?|cobr\w*|wage\w*)\b/.test(t)
   && /\b(permit\w*|mantener|ofrec\w*|press\w*|presion\w*|negoci\w*|fren\w*|baj\w*|reduc\w*|contener|limitar|debilit\w*|menos|sub\w*|aument\w*)\b/.test(t);
+const fixedDiscontinuousEmploymentStatus = (t) => /\b(fij\w* discontinu\w*|contrat\w* fij\w* discontinu\w*|indefinid\w* fij\w* discontinu\w*)\b/.test(t)
+  && /\b(paro|desemple\w*|ocupad\w*|inactiv\w*|sin actividad|actividad|trabaj\w*|temporad\w*|campan\w*|prestaci\w*|subsid\w*|estadistic\w*|epa|contabiliz\w*|escond\w*|ocult\w*|encubiert\w*|maquill\w*|cuant\w*|numero\w*|recuento\w*)\b/.test(t)
+  && !/\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|jornada\w*|horas? extra\w*)\b/.test(t)
+  && !/\b(puedo|tengo derecho|solicitar|tramitar|como cobro)\b/.test(t);
 const localSafetyTrend = (t) => {
   const safetyClaim = t.replace(/\bseguridad social\b/g, '');
   return !migrationPopulation.test(t)
@@ -1520,6 +1525,37 @@ const focuses = [
     explanation: 'El Ministerio cuenta delitos registrados; la Encuesta de Condiciones de Vida del INE pregunta por percepción vecinal. Para comparar una tendencia local, dime el municipio y cuál de las dos medidas quieres revisar.',
     explanationEvidence: localSafetyMeasurementEvidence,
     limitation: 'Los datos publicados no miden la tendencia local con el mismo indicador, territorio y periodo que la afirmación.',
+  },
+  {
+    id: 'fixed-discontinuous-employment-status', label: 'contratos fijos-discontinuos y clasificación EPA del paro',
+    when: fixedDiscontinuousEmploymentStatus,
+    direct: [], context: [],
+    claimTypeFor: (t) => /\b(caus\w*|provoc\w*|oblig\w*|porque|debido a|por culpa de)\b/.test(t) ? 'causal'
+      : /\b(desde (?:19|20)\d{2}|entre (?:19|20)\d{2}|cada vez|aument\w*|sub\w*|baj\w*|reduc\w*|crec\w*|evoluci\w*)\b/.test(t) ? 'trend'
+        : /\b(cuant\w*|numero\w*|recuento\w*|porcentaje|tasa)\b/.test(t) ? 'quantitative' : 'descriptive',
+    needsForClaim: (claim) => {
+      const text = normalize(claim);
+      return [
+        'microdatos EPA que distingan contrato, actividad y situación durante cada semana de referencia',
+        'búsqueda activa, disponibilidad y vínculo con el empleo para clasificar ocupación, paro e inactividad',
+        'días trabajados e ingresos anuales durante los periodos sin actividad; los datos de prestaciones del SEPE son un registro distinto',
+        ...(/\b(cuant\w*|numero\w*|recuento\w*|porcentaje|tasa|cuant[oa]s?)\b/.test(text)
+          ? ['recuento de personas, no de contratos, con periodo y definición explícitos'] : []),
+        ...(/\b(escond\w*|ocult\w*|encubiert\w*|maquill\w*|desplaz\w*|sustitu\w*|caus\w*|provoc\w*|oblig\w*|porque|debido a|por culpa de|desde (?:19|20)\d{2})\b/.test(text)
+          ? ['comparación temporal y diseño que permita evaluar si cambió la clasificación o solo la modalidad contractual'] : []),
+      ];
+    },
+    explanationHeadline: 'La modalidad fija-discontinua y el paro EPA son categorías distintas',
+    explanation: 'El contrato fijo-discontinuo es indefinido y puede incluir periodos sin actividad. La EPA clasifica a las personas por su situación laboral en una semana de referencia; una prestación del SEPE durante la inactividad no equivale por sí sola a un recuento de paro EPA.',
+    explanationEvidence: FIXED_DISCONTINUOUS_STATUS_EVIDENCE,
+    shareableReplyForContext: () => [
+      'El Estatuto define el fijo-discontinuo como contrato indefinido para trabajos estacionales o intermitentes, con periodos de actividad e inactividad.',
+      'La EPA clasifica por semana: ocupada si trabajó al menos una hora o mantiene un empleo del que está temporalmente ausente; parada si no tiene empleo, buscó activamente en las cuatro semanas anteriores y está disponible.',
+      'Eurostat clasifica como ocupados a los trabajadores estacionales fuera de temporada solo si siguen realizando tareas regulares; la EPA aplica esta metodología.',
+      'El SEPE indica que pueden percibir prestación por desempleo durante la inactividad productiva entre campañas, si cumplen los requisitos. Cobrarla no prueba una clasificación errónea en la EPA.',
+      'Estas fuentes no permiten confirmar que la EPA oculte parte del paro ni contar cuántas personas deberían añadirse. Harían falta microdatos EPA por semana sobre actividad, búsqueda y disponibilidad, y registros comparables de días trabajados, ingresos y prestaciones.',
+    ].join('\n\n'),
+    limitation: 'Las definiciones legales y estadísticas describen cómo se contrata, clasifica y protege a estas personas; no cuantifican cuántas deberían sumarse al paro EPA ni prueban una ocultación. Para medirlo hacen falta microdatos por persona y periodo, no contar contratos o prestaciones como si fueran personas desempleadas.',
   },
   {
     id: 'unemployment-wage-pressure', label: 'desempleo local, oferta de candidatos y negociación salarial',

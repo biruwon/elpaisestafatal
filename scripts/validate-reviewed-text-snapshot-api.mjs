@@ -161,6 +161,28 @@ assert.match(pensionFinancing.body.result.reply, /financiaci[oó]n de reparto, d
 assert.match(pensionFinancing.body.result.reply, /no permite confirmar por s[ií] sola la sostenibilidad del sistema/i);
 assert.deepEqual(pensionFinancing.body.result.sources.map((source) => source.id), ['social-security-pay-as-you-go']);
 
+const fixedDiscontinuousClaim = 'Los contratos fijos discontinuos esconden parte del desempleo estacional';
+const fixedDiscontinuous = await check(fixedDiscontinuousClaim);
+assert.equal(fixedDiscontinuous.body.state, 'insufficient');
+assert.equal(fixedDiscontinuous.body.result.answerScope.family, 'fixed-discontinuous-employment-status');
+assert.deepEqual(fixedDiscontinuous.body.result.answerScope.directMetrics, []);
+assert.equal(fixedDiscontinuous.body.result.arguments[0].verdict, 'insufficient');
+assert.match(fixedDiscontinuous.body.result.reply, /al menos una hora/);
+assert.match(fixedDiscontinuous.body.result.reply, /busc[oó] activamente en las cuatro semanas anteriores/);
+assert.match(fixedDiscontinuous.body.result.reply, /inactividad productiva entre campa[nñ]as/);
+assert.match(fixedDiscontinuous.body.result.reply, /no permiten confirmar que la EPA oculte parte del paro/);
+assert.deepEqual(fixedDiscontinuous.body.result.sources.map((source) => source.id), [
+  'boe-statute-fixed-discontinuous-2026',
+  'ine-epa-employment-status-faq',
+  'eurostat-eu-lfs-seasonal-worker-status',
+  'sepe-fixed-discontinuous-benefit-inactivity',
+]);
+const fixedDiscontinuousParaphrase = await check('El paro estacional permanece oculto entre los trabajadores fijos discontinuos');
+assert.equal(fixedDiscontinuousParaphrase.body.state, fixedDiscontinuous.body.state);
+assert.equal(fixedDiscontinuousParaphrase.body.result.answerScope.family, fixedDiscontinuous.body.result.answerScope.family);
+assert.deepEqual(fixedDiscontinuousParaphrase.body.result.sources.map((source) => source.id), fixedDiscontinuous.body.result.sources.map((source) => source.id));
+assert.match(fixedDiscontinuousParaphrase.body.result.reply, /microdatos EPA por semana/);
+
 const educationPayQueries = [
   'Los sueldos de muchos trabajos cualificados son demasiado parecidos a los de puestos que exigen mucha menos formación',
   'Tener un máster o un doctorado no garantiza un salario acorde con la cualificación',

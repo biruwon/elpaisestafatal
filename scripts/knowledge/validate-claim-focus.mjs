@@ -71,6 +71,7 @@ const cases = [
   ['matched-pay', ['Las empresas españolas pagan mucho menos que las de otros países europeos por el mismo perfil profesional', 'Los salarios difieren entre países aun desempeñando el mismo puesto', 'Mismo trabajo y sueldo distinto según el país']],
   ['employer-contributions-labour-cost', ['Las cotizaciones empresariales ocultan parte del coste laboral real que soporta cada empleo', 'El trabajador no percibe cuánto cuesta realmente su empleo porque parte de las cotizaciones no aparece como salario bruto', 'Las cotizaciones patronales no aparecen en el sueldo bruto y los trabajadores no ven el coste real del puesto']],
   ['unemployment-wage-pressure', ['El paro estructural permite a las empresas ofrecer salarios bajos porque siempre hay candidatos', 'El desempleo elevado debilita la negociación salarial y presiona los sueldos a la baja', 'Cuando abundan los candidatos, las empresas pueden contener los salarios', 'Con mucho paro, los empleadores pueden frenar las subidas de sueldo']],
+  ['fixed-discontinuous-employment-status', ['Los contratos fijos discontinuos esconden parte del desempleo estacional', 'Los fijos discontinuos que están entre campañas se cuentan como parados ocultos aunque no trabajen', '¿La EPA incluye de forma incorrecta en el empleo a los trabajadores fijos discontinuos que están fuera de temporada?']],
   ['local-safety-trend', ['En mi barrio ha subido la inseguridad este mes', 'La delincuencia ha empeorado en mi calle estas semanas', 'En la zona hay cada vez más robos', 'En mi municipio han aumentado los hurtos este trimestre']],
   ['primary-care-waits', ['Hay que esperar demasiado para conseguir cita con el médico de familia', '¿Cuántos días tarda una cita en atención primaria?', 'La cita con el médico de cabecera llega con mucha demora']],
   ['private-healthcare-access', ['Se contrata seguro privado para evitar esperas de especialistas', '¿La sanidad privada permite acceder antes a las pruebas?', 'El seguro privado se compra por la rapidez de las citas']],
@@ -1369,6 +1370,52 @@ for (const paraphrase of [
   assert.deepEqual(answer.evidenceSummary.families[0].data, unemploymentWageAnswer.evidenceSummary.families[0].data, `An unemployment/wages paraphrase changed facts: ${paraphrase}`);
   assert.ok(answer.shareableReply.trim().split(/\s+/).length <= 160, `An unemployment/wages paraphrase exceeded the digestible answer length: ${paraphrase}`);
   assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'unemployment-wage-paraphrase', result: answer }, paraphrase).state, 'insufficient');
+}
+const fixedDiscontinuousClaims = [
+  'Los contratos fijos discontinuos esconden parte del desempleo estacional',
+  'El paro estacional permanece oculto entre los trabajadores fijos discontinuos',
+  'La estadística del paro no cuenta la inactividad de los trabajadores fijos discontinuos',
+  '¿La EPA incluye de forma incorrecta en el empleo a los trabajadores fijos discontinuos que están fuera de temporada?',
+];
+let fixedDiscontinuousSources;
+for (const claim of fixedDiscontinuousClaims) {
+  assert.equal(claimFocusFor(claim)?.id, 'fixed-discontinuous-employment-status', `A fixed-discontinuous unemployment claim changed family: ${claim}`);
+  assert.deepEqual([...(focusedMetricIdsFor(claim) || [])], [], 'Contract status and official definitions do not provide a numeric count');
+  const plan = focusedEvidencePlan(claim, { observations: [], now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.equal(plan.answerScope.family, 'fixed-discontinuous-employment-status');
+  assert.equal(plan.claimType, 'descriptive', 'The hidden-unemployment slogan is a classification claim, not a broad causal estimate');
+  assert.equal(plan.evidenceLevel, 'limited', 'Official definitions provide context but do not measure a hidden-unemployment count');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  assert.deepEqual(sourceIds, [
+    'boe-statute-fixed-discontinuous-2026',
+    'ine-epa-employment-status-faq',
+    'eurostat-eu-lfs-seasonal-worker-status',
+    'sepe-fixed-discontinuous-benefit-inactivity',
+  ]);
+  if (!fixedDiscontinuousSources) fixedDiscontinuousSources = sourceIds;
+  else assert.deepEqual(sourceIds, fixedDiscontinuousSources, 'Paraphrases must reuse the same official evidence');
+  assert.match(plan.shareableReply, /al menos una hora/);
+  assert.match(plan.shareableReply, /busc[oó] activamente en las cuatro semanas anteriores/);
+  assert.match(plan.shareableReply, /inactividad productiva entre campa[nñ]as/);
+  assert.match(plan.shareableReply, /no permiten confirmar que la EPA oculte parte del paro/);
+  assert.match(plan.shareableReply, /microdatos EPA por semana/);
+  assert.doesNotMatch(plan.shareableReply, /todos los fijos discontinuos son parados/);
+  assert.ok(plan.shareableReply.trim().split(/\s+/).length <= 165, 'The fixed-discontinuous answer must stay digestible and scoped');
+  const response = localPublicCheckResponse({ status: 'partial', requestId: 'fixed-discontinuous-status', result: plan }, claim);
+  assert.equal(response.state, 'insufficient', 'Contextual definitions must not confirm a claim that the hidden-unemployment count is unmeasured');
+  assert.deepEqual(response.result.sources.map((source) => source.id), fixedDiscontinuousSources);
+  assert.match(response.result.reply, /al menos una hora/);
+}
+for (const neighbour of [
+  'La temporalidad ha bajado aunque parte de la precariedad se haya desplazado a otras fórmulas',
+  'Los contratos temporales son parados ocultos',
+  'Los fijos discontinuos cobran menos que los indefinidos',
+  '¿Tengo derecho a prestación si soy fijo discontinuo?',
+]) {
+  assert.notEqual(claimFocusFor(neighbour)?.id, 'fixed-discontinuous-employment-status', `A nearby claim crossed into the fixed-discontinuous status family: ${neighbour}`);
+  const plan = focusedEvidencePlan(neighbour, { observations: [], now: Date.parse('2026-11-24T12:00:00Z') });
+  assert.ok(!plan?.sourceLinks?.some((source) => fixedDiscontinuousSources.includes(source.id)), `The fixed-discontinuous sources were attached to an unrelated or individualized claim: ${neighbour}`);
 }
 assert.notEqual(claimFocusFor('¿Cuál es la tasa de paro estructural en España?')?.id, 'unemployment-wage-pressure', 'A direct unemployment-rate question must not be interpreted as a wage mechanism');
 assert.equal(claimFocusFor('La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores')?.id, 'migration-wage-effects', 'Migration-specific wage claims must retain their distinct evidence contract');

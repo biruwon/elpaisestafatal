@@ -1451,6 +1451,35 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'fixed-discontinuous-seasonal-unemployment',
+    equivalenceGroup: 'fixed-discontinuous-status-and-seasonal-unemployment-spain',
+    input: 'Los contratos fijos discontinuos esconden parte del desempleo estacional',
+    expected: {
+      state: 'insufficient', family: 'fixed-discontinuous-employment-status', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['contrato indefinido', 'una hora', 'buscó activamente', 'inactividad productiva entre campañas', 'no permiten confirmar que la EPA oculte parte del paro', 'microdatos EPA'],
+      replyExcludes: ['todos los fijos discontinuos son parados', 'un millón de parados ocultos'],
+      evidence: [
+        { familyId: 'fixed-discontinuous-employment-status', sourceIds: ['boe-statute-fixed-discontinuous-2026'], dataIncludes: ['trabajos estacionales o intermitentes'], dimensions: { period: 'consolidado a 18/11/2026', geography: 'España', unit: 'definición legal' } },
+        { familyId: 'fixed-discontinuous-employment-status', sourceIds: ['ine-epa-employment-status-faq'], dataIncludes: ['la situación durante una semana de referencia', 'al menos una hora', 'buscado trabajo activamente'], dimensions: { population: 'población de 16 o más años residente en viviendas familiares', period: 'semana anterior a la entrevista; resultados trimestrales', geography: 'España' } },
+        { familyId: 'fixed-discontinuous-employment-status', sourceIds: ['eurostat-eu-lfs-seasonal-worker-status', 'ine-epa-employment-status-faq'], dataIncludes: ['trabajo estacional', 'fuera de temporada', 'tareas'], dimensions: { period: 'desde 2021', geography: 'Unión Europea', unit: 'criterio de clasificación estadística' } },
+        { familyId: 'fixed-discontinuous-employment-status', sourceIds: ['sepe-fixed-discontinuous-benefit-inactivity'], dataIncludes: ['periodos de inactividad productiva entre campañas'], dimensions: { population: 'personas trabajadoras fijas-discontinuas que reúnen los requisitos aplicables', geography: 'España', unit: 'regla de acceso a una prestación; no número de personas' } },
+      ],
+      maxReplyWords: 165,
+    },
+  },
+  {
+    id: 'fixed-discontinuous-seasonal-unemployment-paraphrase',
+    equivalenceGroup: 'fixed-discontinuous-status-and-seasonal-unemployment-spain',
+    input: 'El paro estacional permanece oculto entre los trabajadores fijos discontinuos',
+    expected: {
+      state: 'insufficient', family: 'fixed-discontinuous-employment-status', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['contrato indefinido', 'una hora', 'buscó activamente', 'inactividad productiva entre campañas', 'no permiten confirmar que la EPA oculte parte del paro', 'microdatos EPA'],
+      replyExcludes: ['todos los fijos discontinuos son parados', 'un millón de parados ocultos'],
+      evidence: [],
+      maxReplyWords: 165,
+    },
+  },
+  {
     id: 'wholesale-energy-pass-through-electricity-paraphrase',
     equivalenceGroup: 'wholesale-energy-pass-through-context-spain',
     input: 'La electricidad tarda en reflejar en las facturas las variaciones del mercado mayorista',
