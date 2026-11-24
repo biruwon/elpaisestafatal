@@ -66,6 +66,7 @@ const cases = [
   ['retiree-housing-cost-comparison', ['Los jubilados con vivienda pagada pueden tener más renta disponible que trabajadores que pagan alquiler', 'Tras pagar la vivienda, algunos pensionistas disponen de más ingresos que quienes trabajan y alquilan', 'La diferencia de coste de vivienda cambia la renta disponible de jubilados y trabajadores inquilinos']],
   ['pension-price-indexation', ['Las pensiones contributivas se revalorizan con el IPC', '¿Las pensiones conservan poder adquisitivo al actualizarse con los precios?', '¿Cuánto subieron las pensiones públicas en 2026 según la inflación?']],
   ['pension-indexation-comparison', ['Las pensiones se actualizan mejor con la inflación que muchos salarios', 'Las revalorizaciones de las pensiones superan el crecimiento salarial en algunos periodos', 'Los salarios han seguido peor la inflación que las pensiones']],
+  ['pension-mei-contribution', ['El Mecanismo de Equidad Intergeneracional es una subida de cotizaciones que no resuelve el problema de fondo', 'El MEI eleva las cotizaciones, pero no garantiza por sí solo la sostenibilidad de las pensiones', 'La cuota del mecanismo de equidad intergeneracional aumenta hasta 2029 y no basta para equilibrar el sistema']],
   ['pension-wage-contribution-base', ['Los salarios bajos debilitan el sistema de pensiones aunque aumente el empleo', 'La creación de empleo no compensa unas bases de cotización demasiado bajas para financiar las pensiones', 'Las remuneraciones reducidas limitan la financiación contributiva de las pensiones']],
   ['pension-private-savings-requirement', [
     'Los jóvenes tendrán que pagar dos veces para la jubilación: cotizaciones y ahorro privado',
@@ -1011,6 +1012,34 @@ const pensionPriceRuleClaim = '¿Las pensiones contributivas se revalorizan conf
 const pensionPriceRulePlan = focusedEvidencePlan(pensionPriceRuleClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
 assert.equal(pensionPriceRulePlan.answerScope.family, 'pension-price-indexation', 'A rule question without a wage comparison must stay on the pension-law route');
 assert.ok(!pensionPriceRulePlan.sourceLinks.some((source) => source.id === 'ine-epa-main-job-wage-deciles-2024'));
+const meiClaim = 'El Mecanismo de Equidad Intergeneracional es una subida de cotizaciones que no resuelve el problema de fondo';
+const meiPlan = focusedEvidencePlan(meiClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(claimFocusFor(meiClaim)?.id, 'pension-mei-contribution');
+assert.equal(meiPlan.answerScope.family, 'pension-mei-contribution');
+const meiPublic = localPublicCheckResponse({ status: 'partial', requestId: 'pension-mei-impact', result: meiPlan }, meiClaim);
+assert.equal(meiPublic.state, 'limited');
+assert.equal(meiPublic.result.arguments[0].verdict, 'mixed');
+assert.deepEqual(meiPublic.result.criteria.map((criterion) => criterion.sourceIds), [
+  ['boe-pension-mei-2023-2050'],
+  ['boe-pension-mei-2023-2050', 'boe-pension-mei-rate-2026'],
+  ['airef-mei-impact-pension-rule-2026'],
+  ['airef-mei-impact-pension-rule-2026'],
+], 'MEI legal facts and AIReF model estimates must retain their own source documents');
+assert.match(meiPublic.result.reply, /0,9 %.*0,75 %.*0,15 %/s);
+assert.match(meiPublic.result.reply, /0,3 % del PIB hasta 2025.*0,4 % del PIB como promedio de 2022–2050/s);
+assert.match(meiPublic.result.reply, /no determina si el mecanismo aislado basta para resolver el problema/);
+assert.ok(meiPublic.result.reply.trim().split(/\s+/).length <= 170, 'The MEI assessment should stay digestible');
+const meiRateOnlyClaim = '¿Qué tipo de cotización del MEI se aplica en el Régimen General en 2026?';
+const meiRateOnlyPlan = focusedEvidencePlan(meiRateOnlyClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.equal(meiRateOnlyPlan.answerScope.family, 'pension-mei-contribution');
+assert.equal(meiRateOnlyPlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported');
+assert.deepEqual(meiRateOnlyPlan.sourceLinks.map((source) => source.id), ['boe-pension-mei-2023-2050', 'boe-pension-mei-rate-2026']);
+assert.doesNotMatch(meiRateOnlyPlan.shareableReply, /AIReF|PIB/);
+const meiPreStart = focusedEvidencePlan('¿Qué tipo de cotización del MEI se aplicó en 2022?', { now: Date.parse('2026-11-24T12:00:00Z') });
+assert.deepEqual(meiPreStart.sourceLinks.map((source) => source.id), ['boe-pension-mei-2023-2050'], 'The law establishes that the MEI began in 2023, without inventing a 2022 rate');
+assert.match(meiPreStart.shareableReply, /no establece una cotización del MEI para 2022/);
+assert.deepEqual(focusedEvidencePlan('El Mecanismo de Equidad Intergeneracional francés eleva las cotizaciones', { now: Date.parse('2026-11-24T12:00:00Z') }).sourceLinks, [], 'Spanish MEI law and projections must not answer a French claim');
+assert.notEqual(claimFocusFor('La cotización adicional de solidaridad no resuelve la sostenibilidad de las pensiones')?.id, 'pension-mei-contribution', 'The solidarity contribution must not inherit MEI evidence');
 const pensionPrivateClaims = [
   'Ahorrar de forma privada será imprescindible aunque se siga cotizando al sistema público',
   'La pensión pública quizá no alcance para mantener el nivel de vida y habrá que ahorrar por cuenta propia',

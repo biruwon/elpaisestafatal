@@ -7,6 +7,7 @@ import { RETIREMENT_AGE_SNAPSHOT } from './retirement-age-snapshot.mjs';
 import { PENSION_PRIVATE_SAVINGS_SNAPSHOT } from './pension-private-savings-snapshot.mjs';
 import { PENSION_TRANSFER_ACCOUNT_SNAPSHOT } from './pension-transfer-account-snapshot.mjs';
 import { PENSION_INDEXATION_WAGE_SNAPSHOT } from './pension-indexation-wage-snapshot.mjs';
+import { PENSION_MEI_SNAPSHOT } from './pension-mei-snapshot.mjs';
 import { EDUCATION_SOCIOECONOMIC_SNAPSHOT } from './education-socioeconomic-snapshot.mjs';
 import { UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT } from './university-graduate-outcomes-snapshot.mjs';
 import { RAIL_PUNCTUALITY_EVIDENCE, railPunctualityShareableReply } from './rail-punctuality-snapshot.mjs';
@@ -707,6 +708,9 @@ const pensionIndexationComparison = (t) => /\b(pension\w*|jubilad\w*|jubilaci[o�
   && /\b(ipc|inflaci[oó]n|precios|coste de vida|revaloriz\w*|actualiz\w*|index\w*)\b/.test(t)
   && /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*|trabajador\w*)\b/.test(t)
   && /\b(mejor\w*|peor\w*|mas|menos|mayor\w*|menor\w*|super\w*|compar\w*|frente a|que)\b/.test(t);
+const pensionMeiContribution = (t) => /\bmecanismo de equidad intergeneracional\b/.test(t)
+  || /\bmei\b/.test(t) && /\b(pension\w*|cotiz\w*|seguridad social|fondo de reserva|sostenibil\w*|aportaci\w*)\b/.test(t);
+const pensionMeiImpactQuestion = (claim) => /\b(resolv\w*|solucion\w*|suficient\w*|bast\w*|sostenibil\w*|problema de fondo|impacto|efecto|recaud\w*|ingresos?)\b/.test(normalize(claim));
 const pensionPriceIndexation = (t) => {
   const namesPension = /\b(pension\w*|jubilad\w*|jubilaci[oó]n)\b/.test(t);
   const mentionsPrices = /\b(ipc|inflaci[oó]n|precios|coste de vida|poder adquisitivo)\b/.test(t);
@@ -837,6 +841,92 @@ const pensionIndexationWageReply = () => {
     `Entre 2022 y 2024, la revalorización general de las pensiones contributivas fue del 8,5 % en 2023 y del 3,8 % en 2024: acumuló un ${percent(pensionChange)} %. La norma vincula la subida general al IPC medio de referencia, con excepciones.`,
     `En el mismo periodo, la EPA sitúa el salario mediano bruto mensual del empleo principal en ${money(firstWage.value)} € (2022) y ${money(lastWage.value)} € (2024), un ${percent(wageChange)} % más. La revalorización de pensiones superó ese aumento mediano en ${percent(pensionChange - wageChange)} puntos porcentuales.`,
     'Esto compara una regla general aplicada a pensiones contributivas con el salario mediano de personas asalariadas en su empleo principal. No muestra cómo cambió el sueldo de cada trabajador, el ingreso neto ni todas las pensiones, y no permite generalizar a otros periodos.',
+  ].join('\n\n');
+};
+const pensionMeiEvidence = (() => {
+  const snapshot = PENSION_MEI_SNAPSHOT;
+  const { rateSchedule, modeledImpact } = snapshot;
+  const percent = (value) => new Intl.NumberFormat('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 2 }).format(value);
+  const currentRate = rateSchedule.find((row) => row.year === 2026);
+  return {
+    schemaVersion: snapshot.schemaVersion,
+    owner: snapshot.owner,
+    createdAt: snapshot.createdAt,
+    asOf: snapshot.asOf,
+    validationStatus: snapshot.validationStatus,
+    expiresAt: snapshot.expiresAt,
+    territories: ['ES'],
+    when: (claim) => {
+      const years = [...claim.matchAll(/\b20\d{2}\b/g)].map(([year]) => Number(year));
+      return years.every((year) => year >= 2022 && year <= 2050);
+    },
+    evidenceLabel: 'Mecanismo de Equidad Intergeneracional · norma y evaluación AIReF',
+    dimensions: {
+      subject: 'cotización adicional finalista y su impacto estimado en los ingresos del sistema de pensiones',
+      population: 'personas y empresas sujetas a cotización por jubilación; proyección agregada de ingresos y gasto del sistema',
+      period: 'tipos de cotización 2023–2050; evaluación AIReF de 2022–2050 con observación de impacto hasta 2025',
+      geography: snapshot.geography,
+      denominator: `${snapshot.rateDenominator}; para el modelo, PIB de España`,
+      unit: `${snapshot.rateUnit}; ${snapshot.modelUnit}`,
+    },
+    facts: [
+      'Desde el 1 de enero de 2023, el MEI es una cotización adicional finalista aplicable a los regímenes y situaciones en que se cotiza por jubilación. Nutre el Fondo de Reserva de la Seguridad Social y no se computa para calcular prestaciones individuales.',
+      `En el Régimen General, el tipo sobre la base de contingencias comunes sube del ${percent(rateSchedule[0].total)} % en 2023 al ${percent(currentRate.total)} % en 2026; ese año, ${percent(currentRate.employer)} % corresponde a la empresa y ${percent(currentRate.worker)} % a la persona trabajadora. La escala legal llega al ${percent(rateSchedule[6].total)} % en 2029 y se mantiene hasta 2050.`,
+      `En su evaluación de 2026, AIReF estima para el MEI un impacto en los ingresos equivalente al ${percent(modeledImpact.through2025)} % del PIB hasta 2025 y al ${percent(modeledImpact.average2022To2050)} % del PIB como promedio de 2022–2050. El conjunto de las medidas de ingresos analizadas promedia ${percent(modeledImpact.allRevenueMeasuresAverage2022To2050)} % del PIB en ese periodo.`,
+      `AIReF señala que cumplir formalmente la regla de gasto en pensiones no resuelve por sí solo la sostenibilidad. Esa conclusión se refiere al sistema; el informe estima una aportación del MEI, pero no determina si el mecanismo aislado basta para resolver el problema. Como contexto, proyecta un gasto bruto medio en pensiones del ${percent(modeledImpact.grossPensionExpenditureAverage2022To2050)} % del PIB y uno neto del ${percent(modeledImpact.netPensionExpenditureAverage2022To2050)} % del PIB en 2022–2050.`,
+    ],
+    factSourceIds: [
+      [snapshot.legalSourceId],
+      [snapshot.legalSourceId, snapshot.currentRateSourceId],
+      [snapshot.impactSourceId],
+      [snapshot.impactSourceId],
+    ],
+    factDimensions: [
+      { subject: 'diseño legal del MEI', population: 'regímenes y supuestos en que se cotiza por la contingencia de jubilación', period: 'desde 2023', geography: snapshot.geography, denominator: snapshot.rateDenominator, unit: 'regla legal de cotización finalista' },
+      { subject: 'tipo del MEI en el Régimen General', population: 'empresas y personas trabajadoras cotizantes por contingencias comunes', period: '2023–2050', geography: snapshot.geography, denominator: snapshot.rateDenominator, unit: snapshot.rateUnit },
+      { subject: 'impacto estimado del MEI en ingresos', population: 'sistema público de pensiones en el escenario de AIReF', period: 'hasta 2025 y promedio 2022–2050', geography: snapshot.geography, denominator: snapshot.modelDenominator, unit: snapshot.modelUnit },
+      { subject: 'gasto bruto y neto en pensiones bajo medidas de ingreso', population: 'sistema público de pensiones en el escenario de AIReF', period: 'promedio 2022–2050', geography: snapshot.geography, denominator: snapshot.modelDenominator, unit: snapshot.modelUnit },
+    ],
+    sources: snapshot.sources,
+    directClaimEvidence: true,
+    selectForClaim: ({ claim }) => {
+      if (pensionMeiImpactQuestion(claim)) return undefined;
+      const years = [...normalize(claim).matchAll(/\b20\d{2}\b/g)].map(([year]) => Number(year));
+      const needsCurrentOrder = years.length === 0 || years.includes(2026);
+      const sourceIds = [snapshot.legalSourceId, ...(needsCurrentOrder ? [snapshot.currentRateSourceId] : [])];
+      return {
+        ...pensionMeiEvidence,
+        facts: pensionMeiEvidence.facts.slice(0, 2),
+        factSourceIds: [
+          pensionMeiEvidence.factSourceIds[0],
+          [snapshot.legalSourceId, ...(needsCurrentOrder ? [snapshot.currentRateSourceId] : [])],
+        ],
+        factDimensions: pensionMeiEvidence.factDimensions.slice(0, 2),
+        sources: snapshot.sources.filter((source) => sourceIds.includes(source.id)),
+      };
+    },
+    claimVerdictFor: (claim) => pensionMeiImpactQuestion(claim) ? 'mixed' : 'supported',
+  };
+})();
+const pensionMeiReply = ({ claim, facts }) => {
+  const snapshot = PENSION_MEI_SNAPSHOT;
+  if (!facts?.length) return 'La evidencia revisada sólo cubre la norma española del MEI y los periodos publicados. No puedo trasladar esos tipos o proyecciones a otro territorio ni a años fuera de esa cobertura.';
+  const percent = (value) => new Intl.NumberFormat('es-ES', { minimumFractionDigits: 1, maximumFractionDigits: 2 }).format(value);
+  const years = [...new Set([...normalize(claim).matchAll(/\b20\d{2}\b/g)].map(([year]) => Number(year)))];
+  const selectedRates = snapshot.rateSchedule.filter((row) => years.includes(row.year)
+    || row.through && years.some((year) => year >= row.year && year <= row.through));
+  const currentRate = snapshot.rateSchedule.find((row) => row.year === 2026);
+  if (years.includes(2022) && selectedRates.length === 0) return 'El MEI empezó a aplicarse el 1 de enero de 2023; la norma no establece una cotización del MEI para 2022.';
+  const rates = selectedRates.length
+    ? selectedRates.map((row) => `${row.year}${row.through ? `–${row.through}` : ''}: ${percent(row.total)} % (${percent(row.employer)} % empresa; ${percent(row.worker)} % persona trabajadora)`).join('; ')
+    : `el tipo en 2026 es ${percent(currentRate.total)} % (${percent(currentRate.employer)} % empresa; ${percent(currentRate.worker)} % persona trabajadora); llega a ${percent(snapshot.rateSchedule[6].total)} % en 2029 y se mantiene hasta 2050`;
+  const { modeledImpact } = snapshot;
+  const legalFinding = `${years.includes(2022) ? 'El MEI empezó a aplicarse el 1 de enero de 2023. ' : ''}El MEI es una cotización adicional finalista sobre la base de contingencias comunes: alimenta el Fondo de Reserva y no se computa para calcular prestaciones individuales. En el Régimen General, ${rates}.`;
+  if (facts?.length <= 2) return legalFinding;
+  return [
+    legalFinding,
+    `AIReF estima que el MEI aporta ingresos equivalentes al ${percent(modeledImpact.through2025)} % del PIB hasta 2025 y al ${percent(modeledImpact.average2022To2050)} % del PIB como promedio de 2022–2050. Las medidas de ingresos analizadas en conjunto promedian ${percent(modeledImpact.allRevenueMeasuresAverage2022To2050)} % del PIB.`,
+    'AIReF advierte que cumplir formalmente la regla de gasto no resuelve por sí solo la sostenibilidad. Esa conclusión se refiere al sistema; aunque estima una aportación del MEI, el informe no determina si el mecanismo aislado basta para resolver el problema. Los datos confirman que sube las cotizaciones y aporta ingresos, pero no prueban ni descartan que el MEI por sí solo resuelva la sostenibilidad.',
   ].join('\n\n');
 };
 const pensionWageContributionBase = (t) => /\b(pension\w*|jubilaci[oó]n|sistema de pensiones)\b/.test(t)
@@ -1414,6 +1504,17 @@ const focuses = [
     shareableReplyForContext: pensionWorkerRatioEvidence.shareableReplyForContext,
     explanationEvidence: pensionWorkerRatioEvidence,
     limitation: 'La dependencia por edad no equivale a cotizantes por pensionista. Un único cociente sin importes, perímetro y fuentes de financiación no demuestra por sí solo la sostenibilidad del sistema.',
+  },
+  {
+    id: 'pension-mei-contribution', label: 'cotización e impacto del Mecanismo de Equidad Intergeneracional',
+    when: pensionMeiContribution,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['tipo MEI y reparto entre empresa y persona trabajadora para el año solicitado', 'impacto de ingresos estimado por el mismo organismo y escenario', 'una evaluación del MEI aislado si se afirma que por sí solo resuelve la sostenibilidad'],
+    explanationHeadline: 'El MEI añade una cotización; su aportación estimada no mide por sí sola la sostenibilidad',
+    explanation: 'La norma fija una cotización finalista del MEI y AIReF estima su aportación dentro de un conjunto de medidas. El tipo legal y la evaluación agregada permiten describir la medida, pero no aislar su efecto causal ni definir qué significaría resolver el «problema de fondo».',
+    explanationEvidence: pensionMeiEvidence,
+    shareableReplyForContext: pensionMeiReply,
+    limitation: 'La escala legal corresponde al Régimen General y a la base por contingencias comunes; existen reglas específicas para otros regímenes. La estimación de AIReF depende de sus supuestos y evalúa el MEI dentro de un paquete, no como medida aislada. No establece una condición suficiente de sostenibilidad.',
   },
   {
     id: 'pension-financing', label: 'cómo se financian las pensiones de reparto',

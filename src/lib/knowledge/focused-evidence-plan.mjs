@@ -652,6 +652,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && propositions.some((proposition) => /\b(ahorr\w*|plan(?:es)? privad\w*|pension\w* privad\w*)\b/.test(normalize(proposition.text)))
     && propositions.some((proposition) => /\b(pension\w*|jubilaci\w*|cotiz\w*|seguridad social|sistema p[uú]blic\w*)\b/.test(normalize(proposition.text)))
     && propositions.every((proposition) => /\b(ahorr\w*|plan(?:es)? privad\w*|pension\w* privad\w*|pension\w*|jubilaci\w*|cotiz\w*|seguridad social|sistema p[uú]blic\w*)\b/.test(normalize(proposition.text)));
+  const samePensionMeiCompound = focus.id === 'pension-mei-contribution'
+    && propositions.length === 2
+    && propositions.some((proposition) => claimFocusFor(proposition.text)?.id === focus.id)
+    && propositions.every((proposition) => /\b(mei|mecanismo de equidad intergeneracional|cotiz\w*|pension\w*|sostenibil\w*|fondo de reserva)\b/.test(normalize(proposition.text)));
   const continuesSameSubject = (item) => {
     const clauseFocus = claimFocusFor(item.text);
     if (clauseFocus?.id === focus.id) return true;
@@ -735,7 +739,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       || sameProductivityComparison && /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(clauseText)) return true;
     if (sameLandlordMotive) return true;
     if (samePensionPrivateSavingsCompound) return true;
-    if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism || unemploymentSupplyExplanation || sameEmployerContributionVisibility) return true;
+    if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism || samePensionMeiCompound || unemploymentSupplyExplanation || sameEmployerContributionVisibility) return true;
     if (educationOutcomeCauseClause) return true;
     if (clauseFocus) return false;
     // A clause such as “una parte se produce más barata” can refer back to

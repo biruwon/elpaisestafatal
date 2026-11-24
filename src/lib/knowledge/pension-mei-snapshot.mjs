@@ -1,0 +1,72 @@
+// Legal schedule and AIReF's modeled revenue contribution for the Spanish
+// Intergenerational Equity Mechanism (MEI). The model impact is not a test of
+// the MEI in isolation.
+const sources = {
+  legalFramework: {
+    id: 'boe-pension-mei-2023-2050',
+    title: 'Real Decreto-ley 2/2023 · mecanismo de equidad intergeneracional',
+    publisher: 'Boletín Oficial del Estado',
+    url: 'https://www.boe.es/eli/es/rdl/2023/03/16/2/con/20230629',
+    publishedAt: '2023-03-17',
+    retrievedAt: '2026-11-24',
+    role: 'primary',
+  },
+  currentRate: {
+    id: 'boe-pension-mei-rate-2026',
+    title: 'Orden PJC/297/2026 · tipos de cotización a la Seguridad Social',
+    publisher: 'Boletín Oficial del Estado',
+    url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2026-7296&p=20260331&tn=1',
+    publishedAt: '2026-03-31',
+    retrievedAt: '2026-11-24',
+    role: 'primary',
+  },
+  impactAssessment: {
+    id: 'airef-mei-impact-pension-rule-2026',
+    title: 'Estudio de evaluación de la regla de gasto de pensiones · mayo de 2026',
+    publisher: 'Autoridad Independiente de Responsabilidad Fiscal',
+    url: 'https://www.airef.es/wp-content/uploads/2026/05/Pensiones/AIReF.-Estudio-de-evaluacion-de-la-regla-de-gasto-de-pensiones.pdf',
+    publishedAt: '2026-05-29',
+    retrievedAt: '2026-11-24',
+    role: 'primary',
+  },
+};
+
+export const PENSION_MEI_SNAPSHOT = Object.freeze({
+  schemaVersion: '1',
+  owner: 'knowledge-review',
+  createdAt: '2026-11-24',
+  asOf: '2026-11-24',
+  expiresAt: '2027-06-30',
+  validationStatus: 'reviewed',
+  refreshCommand: 'Check the annual BOE Social Security contribution order and the latest AIReF pension spending-rule assessment for updated rates and modeled impacts.',
+  supportedScope: 'Spain; MEI legal design and general-regime rate schedule from 2023 through 2050; AIReF modeled revenue impact through 2025 and average 2022–2050',
+  unsupportedScope: 'the isolated causal effect of the MEI on pension sustainability; an undefined "fundamental problem"; individual contributions or pension outcomes',
+  sources: Object.values(sources),
+  rateSchedule: [
+    { year: 2023, total: 0.6, employer: 0.5, worker: 0.1 },
+    { year: 2024, total: 0.7, employer: 0.58, worker: 0.12 },
+    { year: 2025, total: 0.8, employer: 0.67, worker: 0.13 },
+    { year: 2026, total: 0.9, employer: 0.75, worker: 0.15 },
+    { year: 2027, total: 1.0, employer: 0.83, worker: 0.17 },
+    { year: 2028, total: 1.1, employer: 0.92, worker: 0.18 },
+    { year: 2029, total: 1.2, employer: 1.0, worker: 0.2 },
+    { year: 2030, through: 2050, total: 1.2, employer: 1.0, worker: 0.2 },
+  ],
+  modeledImpact: {
+    through2025: 0.3,
+    average2022To2050: 0.4,
+    allRevenueMeasuresAverage2022To2050: 1.6,
+    grossPensionExpenditureAverage2022To2050: 14.6,
+    netPensionExpenditureAverage2022To2050: 13.0,
+    unit: 'porcentaje del PIB',
+    sourceId: sources.impactAssessment.id,
+  },
+  geography: 'España',
+  rateDenominator: 'base de cotización por contingencias comunes',
+  rateUnit: 'porcentaje de la base de cotización',
+  modelDenominator: 'PIB de España en el escenario de AIReF',
+  modelUnit: 'impacto como porcentaje del PIB',
+  legalSourceId: sources.legalFramework.id,
+  currentRateSourceId: sources.currentRate.id,
+  impactSourceId: sources.impactAssessment.id,
+});

@@ -31,9 +31,13 @@ for (const item of textAnswerAccuracyCases) {
     digest: reply.trim().split(/\s+/).filter(Boolean).length <= expected.maxReplyWords,
   };
   const evidenceFamilies = result.evidenceSummary?.families || [];
+  const evidenceRecords = evidenceFamilies.flatMap((family) => [
+    family,
+    ...(family.criteria || []).map((criterion) => ({ ...criterion, familyId: family.familyId })),
+  ]);
 
   for (const wanted of expected.evidence) {
-    const family = evidenceFamilies.find((item) => item.familyId === wanted.familyId
+    const family = evidenceRecords.find((item) => item.familyId === wanted.familyId
       && (!wanted.sourceIds || JSON.stringify(sorted(item.sourceIds)) === JSON.stringify(sorted(wanted.sourceIds)))
       && (wanted.dataIncludes || []).every((text) => normalize((item.data || []).join(' ')).includes(normalize(text))));
     if (!family) {

@@ -1218,6 +1218,62 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'pension-mei-contribution-and-impact',
+    equivalenceGroup: 'pension-mei-contribution-and-impact',
+    input: 'El Mecanismo de Equidad Intergeneracional es una subida de cotizaciones que no resuelve el problema de fondo',
+    expected: {
+      state: 'limited', family: 'pension-mei-contribution', verdict: 'mixed',
+      directSourceIds: ['boe-pension-mei-2023-2050', 'boe-pension-mei-rate-2026', 'airef-mei-impact-pension-rule-2026'],
+      replyIncludes: ['cotización adicional finalista', '0,9 %', '0,75 %', '0,15 %', '1,2 % en 2029', '0,3 % del PIB hasta 2025', '0,4 % del PIB como promedio de 2022–2050', 'no determina si el mecanismo aislado basta para resolver el problema'],
+      replyExcludes: ['el MEI por sí solo resuelve la sostenibilidad', 'el MEI no aporta ingresos'],
+      evidence: [
+        { familyId: 'pension-mei-contribution', sourceIds: ['boe-pension-mei-2023-2050'], dataIncludes: ['cotización adicional finalista', 'Fondo de Reserva', 'no se computa para calcular prestaciones individuales'], dimensions: { period: 'desde 2023', geography: 'España', unit: 'regla legal de cotización finalista' } },
+        { familyId: 'pension-mei-contribution', sourceIds: ['boe-pension-mei-2023-2050', 'boe-pension-mei-rate-2026'], dataIncludes: ['0,9 % en 2026', '0,75 %', '0,15 %', '1,2 % en 2029'], dimensions: { period: '2023–2050', geography: 'España', denominator: 'base de cotización por contingencias comunes', unit: 'porcentaje de la base de cotización' } },
+        { familyId: 'pension-mei-contribution', sourceIds: ['airef-mei-impact-pension-rule-2026'], dataIncludes: ['0,3 % del PIB hasta 2025', '0,4 % del PIB como promedio de 2022–2050', '1,6 % del PIB'], dimensions: { period: 'hasta 2025 y promedio 2022–2050', geography: 'España', denominator: 'PIB de España en el escenario de AIReF', unit: 'impacto como porcentaje del PIB' } },
+        { familyId: 'pension-mei-contribution', sourceIds: ['airef-mei-impact-pension-rule-2026'], dataIncludes: ['no resuelve por sí solo la sostenibilidad', '14,6 % del PIB', '13,0 % del PIB'], dimensions: { period: 'promedio 2022–2050', geography: 'España', denominator: 'PIB de España en el escenario de AIReF', unit: 'impacto como porcentaje del PIB' } },
+      ],
+      maxReplyWords: 170,
+    },
+  },
+  {
+    id: 'pension-mei-contribution-paraphrase',
+    equivalenceGroup: 'pension-mei-contribution-and-impact',
+    input: 'El MEI eleva las cotizaciones, pero no garantiza por sí solo la sostenibilidad de las pensiones',
+    expected: {
+      state: 'limited', family: 'pension-mei-contribution', verdict: 'mixed',
+      directSourceIds: ['boe-pension-mei-2023-2050', 'boe-pension-mei-rate-2026', 'airef-mei-impact-pension-rule-2026'],
+      replyIncludes: ['0,9 %', '0,4 % del PIB como promedio de 2022–2050', 'el informe no determina si el mecanismo aislado basta para resolver'],
+      replyExcludes: ['el MEI garantiza la sostenibilidad'], evidence: [], maxReplyWords: 170,
+    },
+  },
+  {
+    id: 'pension-mei-rate-only-2026',
+    input: '¿Qué tipo de cotización del MEI se aplica en el Régimen General en 2026?',
+    expected: {
+      state: 'limited', family: 'pension-mei-contribution', verdict: 'supported',
+      directSourceIds: ['boe-pension-mei-2023-2050', 'boe-pension-mei-rate-2026'],
+      replyIncludes: ['2026: 0,9 %', '0,75 % empresa', '0,15 % persona trabajadora'],
+      replyExcludes: ['AIReF', 'PIB', 'sostenibilidad'], evidence: [], maxReplyWords: 80,
+    },
+  },
+  {
+    id: 'pension-mei-rate-before-start',
+    input: '¿Qué tipo de cotización del MEI se aplicó en 2022?',
+    expected: {
+      state: 'limited', family: 'pension-mei-contribution', verdict: 'supported', directSourceIds: ['boe-pension-mei-2023-2050'],
+      replyIncludes: ['empezó a aplicarse el 1 de enero de 2023', 'no establece una cotización del MEI para 2022'],
+      replyExcludes: ['0,6 %', '0,9 %', '2026'], evidence: [], maxReplyWords: 80,
+    },
+  },
+  {
+    id: 'pension-mei-foreign-scope',
+    input: 'El Mecanismo de Equidad Intergeneracional francés eleva las cotizaciones',
+    expected: {
+      state: 'insufficient', family: 'pension-mei-contribution', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['0,9 %', 'AIReF', 'Fondo de Reserva'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
     id: 'pension-transfer-concealment-2024',
     equivalenceGroup: 'pension-transfer-concealment-2024',
     input: 'El déficit de la Seguridad Social se disimula mediante transferencias desde los Presupuestos del Estado',
