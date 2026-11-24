@@ -1399,4 +1399,16 @@ overlapping); 131 have neither. The deterministic fallback returns 7 complete,
 and 35 limited. These are operational routing and sourcing counts, not factual
 accuracy scores; the corpus remains unverified. Text answer accuracy still
 needs broader review and coverage work before expanding the modality scope.
+
+A concurrent exploratory pass over 22 claims without deterministic routes found
+that some non-geographic comparisons could receive a gap message about missing
+data for two territories. The message now requires two explicitly named,
+recognized territories; checks cover country pairs, Spanish-region pairs and
+nearby employment, public/private-service and household comparisons. This fixes
+the scope of that limitation message, not the underlying answers. The same
+exploration still found tangential retrieved context on some unresolved claims,
+and high resolver latency under concurrent load; relevance and load behavior
+remain open text-first work. This exploratory sample is not an accuracy
+benchmark.
+
 Source: [BOE, consolidated Law 39/2015](https://www.boe.es/buscar/act.php?id=BOE-A-2015-10565&p=20261001&tn=1).

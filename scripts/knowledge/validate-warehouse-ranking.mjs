@@ -1,4 +1,5 @@
-import { rankingCoversNamedTerritories, summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './warehouse-ranking.mjs';
+import { hasNamedTerritoryPair, rankingCoversNamedTerritories, summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './warehouse-ranking.mjs';
+import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 import assert from 'node:assert/strict';
 
 const source = { id: 'eurostat', title: 'Desempleo en Europa', url: 'https://ec.europa.eu/eurostat/' };
@@ -11,8 +12,19 @@ const records = [
 const result = summarizeWarehouseRanking('España tiene la tasa de paro más alta de Europa', records);
 if (!result || !result.points.some((point) => point.includes('España ocupa la posición'))) throw new Error('Ranking handler did not rank Spain correctly');
 const territoryClaim = [{ type: 'comparative', subject: 'espana', object: 'francia' }];
+if (!hasNamedTerritoryPair(territoryClaim)) throw new Error('A comparison between Spain and France was not identified as a geographic pair');
 if (rankingCoversNamedTerritories(territoryClaim, [records[0]])) throw new Error('A Spain-only series was accepted for a Spain-France comparison');
 if (!rankingCoversNamedTerritories(territoryClaim, [records[0], records[2]])) throw new Error('A matched Spain-France series was rejected');
+const nonGeographicComparisons = [
+  'Las prácticas y becas sustituyen puestos de entrada que antes eran empleos normales',
+  'La sanidad privada sirve para acelerar problemas menores mientras la pública atiende los casos más graves',
+  'Alquilar una vivienda se ha convertido en algo mucho más fácil para parejas que para personas solas',
+  'La burocracia dificulta que autónomos cumplan con Hacienda',
+];
+for (const text of nonGeographicComparisons) {
+  const parsed = deterministicFallbackCompiler(text);
+  if (hasNamedTerritoryPair(parsed.explicitPropositions)) throw new Error(`A non-geographic comparison was interpreted as two territories: ${text}`);
+}
 const contradictory = summarizeWarehouseRanking('España tiene la tasa de paro más baja de Europa', records);
 if (!contradictory || !contradictory.points.some((point) => point.includes('España no ocupa la posición'))) throw new Error('Ranking handler did not flag a contradictory ranking');
 const regionalSource = { id: 'eurostat-regional', title: 'Densidad de población por región · Eurostat', url: 'https://ec.europa.eu/eurostat/' };
@@ -24,6 +36,10 @@ const regionalRecords = [
   { id: 'brussels-2024', metricId: 'regional_population_density', value: 7800, unit: 'Persons per square kilometre', period: '2024', dimensions: { geo: 'BE10' }, dimensionLabels: { geo: 'Région de Bruxelles-Capitale' }, source: regionalSource },
 ];
 const regional = summarizeWarehouseRegionalComparison('Madrid tiene más densidad que Andalucía', regionalRecords);
+const madridAndaluciaClaim = deterministicFallbackCompiler('Madrid tiene más densidad que Andalucía').explicitPropositions;
+if (!hasNamedTerritoryPair(madridAndaluciaClaim)) throw new Error('A named regional comparison was not identified as geographic');
+if (rankingCoversNamedTerritories(madridAndaluciaClaim, [regionalRecords[0]])) throw new Error('A Madrid-only series was accepted for a Madrid-Andalucía comparison');
+if (!rankingCoversNamedTerritories(madridAndaluciaClaim, [regionalRecords[0], regionalRecords[1]])) throw new Error('A matched Madrid-Andalucía series was rejected');
 if (!regional || !regional.regional || !regional.headline.includes('Comunidad de Madrid') || !regional.reply.includes('850')) throw new Error('Regional comparison did not use the requested Spanish regions and common period');
 const spanishRanking = summarizeWarehouseRanking('¿Qué comunidad tiene mayor densidad de población?', regionalRecords);
 if (!spanishRanking || !spanishRanking.summary.includes('Comunidad de Madrid') || !spanishRanking.reply.includes('personas por km²') || spanishRanking.observations.some((item) => item.dimensions?.geo === 'BE10')) throw new Error('Regional ranking did not restrict a Spanish community query to Spanish regions');

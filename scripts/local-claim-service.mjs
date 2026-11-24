@@ -20,7 +20,7 @@ import { priceMeasurement, priceRateRequested } from '../src/lib/knowledge/measu
 import { comparisonQuality, observationFlags } from '../src/lib/knowledge/observation-quality.mjs';
 import { preferLatestSourceRevisions } from '../src/lib/knowledge/source-revisions.mjs';
 import { displayMetric, displayPeriod, requestsLatestObservation, summarizeWarehouseLatest, summarizeWarehouseTrend } from './knowledge/warehouse-trend.mjs';
-import { rankingCoversNamedTerritories, summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './knowledge/warehouse-ranking.mjs';
+import { hasNamedTerritoryPair, rankingCoversNamedTerritories, summarizeWarehouseEuropeanComparison, summarizeWarehouseRanking, summarizeWarehouseRegionalComparison } from './knowledge/warehouse-ranking.mjs';
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 import { deterministicFallbackCompiler } from './knowledge/fallback-compiler.mjs';
 import { compilerInstruction, compilerSchema, formatCompilerCandidates, normalizeCompilerOutput, reconcileCompilerSafety, shouldUseLocalCompiler } from './knowledge/local-compiler-contract.mjs';
@@ -2433,7 +2433,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const comparativeClaim = classified.compiler?.claimType === 'comparative' || compilerPropositions.some((item) => item.type === 'comparative');
   const rankingCandidate = regionalComparison || europeanComparison || (asksForRanking && !historicalClaim && !primary && !isNormative && !isCausal && !isLegal && !isDefinition && !isGroupComparison ? summarizeWarehouseRanking(text, observations) : null);
   const rankingCoversClaim = rankingCandidate && rankingCoversNamedTerritories(compilerPropositions, rankingCandidate.observations);
-  const comparisonNeedsPair = !primary && handlerId === 'ranking' && comparativeClaim && (!rankingCandidate || !rankingCoversClaim);
+  const comparisonNeedsPair = !primary && handlerId === 'ranking' && comparativeClaim && hasNamedTerritoryPair(compilerPropositions) && (!rankingCandidate || !rankingCoversClaim);
   const ranking = comparisonNeedsPair ? null : rankingCandidate;
   if (comparisonNeedsPair) {
     status = 'uncovered';

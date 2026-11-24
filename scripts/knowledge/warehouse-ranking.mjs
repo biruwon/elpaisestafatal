@@ -11,19 +11,22 @@ const comparableDimensions = (item) => Object.entries(item.dimensions || {})
 const baseKey = (item) => JSON.stringify({ source: item.source?.id || item.sourceId || '', metric: item.metric || item.datasetId || '', unit: item.unit || '', dimensions: comparableDimensions(item) });
 const countryName = (item) => String(item.dimensionLabels?.geo || item.dimensions?.geo || item.geo || 'Territorio');
 const euAliases = new Set(['eu', 'eu27 2020', 'european union', 'union europea', 'europa']);
-const countryAliases = (() => {
-  const names = new Set();
+const countryAliasCodes = (() => {
+  const names = new Map();
   const spanish = new Intl.DisplayNames(['es'], { type: 'region' });
   const english = new Intl.DisplayNames(['en'], { type: 'region' });
   for (let first = 65; first <= 90; first += 1) for (let second = 65; second <= 90; second += 1) {
     const code = String.fromCharCode(first, second);
     for (const display of [spanish.of(code), english.of(code)]) {
       const normalized = normalise(display || '');
-      if (normalized && normalized !== normalise(code)) names.add(normalized);
+      if (normalized && normalized !== normalise(code)) names.set(normalized, ['EU', 'EU27_2020'].includes(code) ? 'EU27_2020' : code);
     }
   }
+  for (const alias of euAliases) names.set(alias, 'EU27_2020');
   return names;
 })();
+const countryAliasesByCode = new Map();
+for (const [alias, code] of countryAliasCodes) countryAliasesByCode.set(code, [...(countryAliasesByCode.get(code) || []), alias]);
 const observationGeographyAliases = (item) => {
   const code = String(item.dimensions?.geo || item.geo || '').trim().toUpperCase();
   const aliases = new Set([normalise(code), normalise(item.dimensionLabels?.geo || ''), normalise(item.geography || '')].filter(Boolean));
@@ -34,15 +37,6 @@ const observationGeographyAliases = (item) => {
   }
   if (['EU', 'EU27_2020'].includes(code)) for (const alias of euAliases) aliases.add(alias);
   return aliases;
-};
-
-export const rankingCoversNamedTerritories = (propositions, observations) => {
-  const targets = [...new Set((propositions || []).filter((item) => item.type === 'comparative')
-    .flatMap((item) => [item.subject, item.object]).map((value) => normalise(value || '')).filter(Boolean))];
-  const namedTerritories = targets.filter((target) => countryAliases.has(target) || euAliases.has(target));
-  if (namedTerritories.length < 2) return true;
-  const observedTerritories = new Set((observations || []).flatMap((item) => [...observationGeographyAliases(item)]));
-  return namedTerritories.every((target) => observedTerritories.has(target));
 };
 
 const spanishRegions = [
@@ -64,6 +58,45 @@ const spanishRegions = [
   { label: 'Región de Murcia', aliases: ['murcia', 'region de murcia'] },
   { label: 'Canarias', aliases: ['canarias'] },
 ];
+
+const normaliseTerritoryPhrase = (value) => normalise(value).replace(/[^a-z0-9]+/g, ' ').trim();
+const phraseContains = (text, phrase) => ` ${normaliseTerritoryPhrase(text)} `.includes(` ${normaliseTerritoryPhrase(phrase)} `);
+const territoryForTarget = (value) => {
+  const text = normaliseTerritoryPhrase(value);
+  if (!text) return undefined;
+  const country = [...countryAliasCodes]
+    .filter(([alias]) => phraseContains(text, alias))
+    .sort(([left], [right]) => right.length - left.length)[0];
+  if (country) {
+    const [alias, code] = country;
+    return { key: `country:${code}`, aliases: [...(countryAliasesByCode.get(code) || []), code.toLocaleLowerCase('es'), alias] };
+  }
+  const region = spanishRegions
+    .flatMap((item) => item.aliases.map((alias) => ({ item, alias: normaliseTerritoryPhrase(alias) })))
+    .filter(({ alias }) => phraseContains(text, alias))
+    .sort((left, right) => right.alias.length - left.alias.length)[0];
+  if (!region) return undefined;
+  return { key: `region:${normaliseTerritoryPhrase(region.item.label)}`, aliases: [...region.item.aliases, region.item.label].map(normaliseTerritoryPhrase) };
+};
+const namedTerritoriesForPropositions = (propositions) => {
+  const found = new Map();
+  for (const proposition of propositions || []) {
+    if (proposition?.type !== 'comparative') continue;
+    for (const value of [proposition.subject, proposition.object]) {
+      const territory = territoryForTarget(value);
+      if (territory && !found.has(territory.key)) found.set(territory.key, territory);
+    }
+  }
+  return [...found.values()];
+};
+
+export const hasNamedTerritoryPair = (propositions) => namedTerritoriesForPropositions(propositions).length >= 2;
+export const rankingCoversNamedTerritories = (propositions, observations) => {
+  const namedTerritories = namedTerritoriesForPropositions(propositions);
+  if (namedTerritories.length < 2) return true;
+  const observedTerritories = new Set((observations || []).flatMap((item) => [...observationGeographyAliases(item)]));
+  return namedTerritories.every(({ aliases }) => aliases.some((alias) => observedTerritories.has(normalise(alias))));
+};
 
 const regionName = (item) => String(item.dimensionLabels?.geo || item.dimensions?.geo || '').trim();
 const regionMatches = (query, region) => {
