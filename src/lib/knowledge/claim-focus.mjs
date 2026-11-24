@@ -618,8 +618,8 @@ const rentalTenantScreeningExclusion = (t) => rentalSubject(t)
   && /\b(fianz\w*|garanti\w*|aval\w*|seguro\w* de impago|solvenci\w*|ingresos? irregulares?|n[oó]min\w*)\b/.test(t)
   && /\b(exclu\w*|dej\w* fuera|rechaz\w*|deneg\w*|impid\w*|barrer\w*|filtr\w*|penaliz\w*|discrimin\w*|no pueden? alquilar|dif[ií]cil\w* alquilar)\b/.test(t);
 const rentalRegulationContractShift = (t) => rentalSubject(t)
-  && /\b(regulaci\w*|topes?\b|control de precios|l[ií]mite\w* (?:al|del) alquiler|ley de vivienda)\b/.test(t)
-  && /\b(empuj\w*|desplaz\w*|desaparec\w*|retir\w*|reduc\w*|convert\w*|pas\w*|temporad\w*|temporal(?:es)?|mercado regulado|oferta)\b/.test(t);
+  && /\b(regulaci\w*|topes?\b|control de (?:precios|rentas?)|l[ií]mite\w* (?:al|del) alquiler|limit\w* (?:el )?precio del alquiler|ley de vivienda)\b/.test(t)
+  && /\b(empuj\w*|desplaz\w*|desaparec\w*|retir\w*|reduc\w*|disminu\w*|anunciad\w*|convert\w*|pas\w*|temporad\w*|temporal(?:es)?|mercado regulado|oferta)\b/.test(t);
 const rentalLandlordMotives = (t) => rentalSubject(t)
   && (/\b(propietari\w*|arrendador\w*|caser\w*|due[nñ]os?|anfitri[oó]n\w*)\b/.test(t)
     || /\b(viviend\w*|piso\w*|casas?|apartament\w*)\b[\w\s]{0,40}\b(vac[ií]a\w*|desocupad\w*|retirad\w*)\b/.test(t))
@@ -2015,8 +2015,15 @@ const focuses = [
     id: 'rental-regulation-contract-shift', label: 'cambios de oferta y contrato atribuidos a la regulación del alquiler',
     when: rentalRegulationContractShift,
     direct: [], context: [], claimType: 'causal',
-    needs: ['viviendas y contratos residenciales por duración y régimen, antes y después de la medida', 'misma zona y periodo, con una zona comparable no afectada', 'análisis que separe la medida de demanda, turismo, estacionalidad y nueva construcción'],
-    explanation: 'Un cambio en contratos o anuncios después de una norma no demuestra por sí solo que la norma lo causara.',
+    needsForClaim: (claim) => [
+      'oferta y contratos residenciales en régimen regulado y no regulado, antes y después de la medida',
+      'misma zona y periodo, con una zona comparable no afectada',
+      'fecha de aplicación y viviendas realmente expuestas a la norma',
+      'comparación que separe la regulación de cambios de demanda y nueva construcción',
+      ...(/\b(turism\w*|turistic\w*|vacacional\w*)\b/.test(normalize(claim))
+        ? ['actividad turística y contratos estacionales en la misma zona y periodo'] : []),
+    ],
+    explanation: 'Los anuncios y contratos pueden cambiar tras una norma sin que eso demuestre que la norma causara el cambio.',
     explanationEvidence: {
       expiresAt: '2027-11-02', territories: ['ES', 'cataluna'],
       when: (claim) => /\b(temporad\w*|temporal(?:es)?|habitual\w*)\b/.test(claim),
@@ -2033,7 +2040,7 @@ const focuses = [
       ],
       sources: [{ id: 'catalonia-seasonal-rental-deposits', title: 'Lloguer de temporada per trimestres fins al segon trimestre de 2026', publisher: 'Agència de l’Habitatge de Catalunya · INCASÒL', url: 'https://habitatge.gencat.cat/ca/dades/indicadors_estadistiques/estadistiques_de_construccio_i_mercat_immobiliari/mercat_de_lloguer/lloguer-de-temporada/', publishedAt: '2026-11-02', retrievedAt: '2026-11-17', role: 'primary' }],
     },
-    limitation: 'Los índices generales de alquiler y el número de anuncios no distinguen viviendas convertidas, retiradas, vacías o nuevas ni aportan el contrafactual necesario para medir el efecto de una regulación.',
+    limitation: 'Las cifras generales de precios o anuncios no muestran cuántas viviendas entran, salen o cambian de régimen. Para atribuirlo a la norma hay que comparar zonas similares no afectadas.',
   },
   {
     id: 'rental-landlord-motives', label: 'motivos de propietarios para retirar o cambiar el uso de una vivienda',
@@ -2203,9 +2210,9 @@ const focuses = [
     id: 'housing-supply', label: 'viviendas disponibles para uso residencial',
     when: (t) => /\b(viviend\w*|piso\w*|alquil\w*|apartament\w*|casas?)\b/.test(t) && /\b(oferta|stock|disponib\w*|retir\w*|vaci[oa]\w*|turistic\w*)\b/.test(t)
       && !/\b(indice|porcentaje|tasa)\b/.test(t),
-    direct: [], context: [], needs: ['número de viviendas por uso', 'entradas y salidas de la oferta residencial', 'mismo municipio y periodo', 'diseño causal si se atribuye el cambio al turismo'],
+    direct: [], context: [], needs: ['número de viviendas disponibles por uso', 'entradas y salidas de la oferta residencial', 'mismo municipio y periodo', 'si se atribuye el cambio a una causa, una comparación que permita separar su efecto de otros factores'],
     explanation: 'La oferta residencial se comprueba con viviendas disponibles y cambios de uso en el mismo territorio y periodo.',
-    limitation: 'Un índice de precios de compraventa o alquiler no cuenta las viviendas retiradas del mercado residencial. Las pernoctaciones turísticas tampoco equivalen a viviendas desplazadas.',
+    limitation: 'Un índice de precios de compraventa o alquiler no cuenta las viviendas que entran, salen o cambian de régimen en el mercado residencial.',
   },
   {
     id: 'subjective-financial-strain', label: 'dificultad declarada para cubrir los gastos habituales',

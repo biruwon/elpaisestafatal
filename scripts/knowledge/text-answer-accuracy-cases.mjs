@@ -2131,6 +2131,28 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'rent-regulation-residential-supply-effect',
+    equivalenceGroup: 'rent-regulation-residential-supply-effect',
+    input: 'Los topes de alquiler hacen que parte de la oferta desaparezca del mercado regulado',
+    expected: {
+      state: 'insufficient', family: 'rental-regulation-contract-shift', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['oferta y contratos residenciales en régimen regulado y no regulado', 'misma zona y periodo', 'fecha de aplicación', 'comparación'],
+      replyExcludes: ['turismo', 'pernoctaciones', 'viviendas turísticas'],
+      evidence: [], maxReplyWords: 110,
+    },
+  },
+  {
+    id: 'rent-regulation-residential-supply-effect-paraphrase',
+    equivalenceGroup: 'rent-regulation-residential-supply-effect',
+    input: 'El control de rentas reduce las viviendas anunciadas en las zonas afectadas',
+    expected: {
+      state: 'insufficient', family: 'rental-regulation-contract-shift', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['oferta y contratos residenciales en régimen regulado y no regulado', 'misma zona y periodo', 'fecha de aplicación', 'comparación'],
+      replyExcludes: ['turismo', 'pernoctaciones', 'viviendas turísticas'],
+      evidence: [], maxReplyWords: 110,
+    },
+  },
+  {
     id: 'tourist-housing-displacement-claim',
     equivalenceGroup: 'tourist-housing-displacement-spain-2026',
     input: 'Los pisos turísticos están retirando demasiada vivienda del alquiler residencial',

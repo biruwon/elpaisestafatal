@@ -1360,8 +1360,8 @@ office complies. Its exceptions—including sanction and inspection proceedings
 and the case where a document cannot exceptionally be retrieved—stay in the
 answer.
 
-The held-out benchmark now passes 190/190 cases across 52
-paraphrase groups. Claim-focus validation covers 318 paraphrases and boundary
+The held-out benchmark now passes 192/192 cases across 53
+paraphrase groups. Claim-focus validation covers 320 paraphrases and boundary
 checks. The full classifier suite and `npm run check` pass; Astro reports no
 errors or warnings and five existing hints. A cross-family regression found
 that “cuarto trimestre” could be read as “room”; room matching now requires
@@ -1373,6 +1373,13 @@ right to reuse documents from one that says resubmission is mandatory, and
 from the correctly negated claim that resubmission is normally unnecessary.
 New wording cases protect those opposite verdicts and keep ambiguous legal
 claims mixed until the applicable rule is clear.
+
+Rent-cap claims about homes leaving the regulated market use the existing
+rental-regulation family. Its evidence request now distinguishes the affected
+area from a comparable area and the period before and after the measure;
+tourism-specific requirements appear only when the claim mentions tourism.
+Generic housing-supply gaps no longer use tourism-specific wording. Tests keep
+these claims separate from tourist-housing and rent-price claims.
 
 The 300-item unverified discovery corpus currently has a metric or focused
 family route for 169 claims (66 metric matches and 150 family matches, with 47

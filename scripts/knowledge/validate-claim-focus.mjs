@@ -146,7 +146,7 @@ const cases = [
   ['healthcare-staffing-causality', ['La falta de médicos en algunas zonas se debe más a las condiciones de trabajo que al número total de titulados', 'Hay vacantes médicas en pueblos porque las plazas ofrecen condiciones poco atractivas', 'Faltan facultativos en la periferia pese a que hay suficientes graduados']],
   ['work-housing-independence', ['Tener un trabajo a jornada completa ya no garantiza poder independizarse', 'Un empleo a tiempo completo no basta para vivir por cuenta propia', 'Trabajar a jornada completa no asegura poder emanciparse']],
   ['rental-tenant-screening-exclusion', ['Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares', 'Los avales y requisitos de solvencia dejan fuera a inquilinos con ingresos variables', 'Personas con nóminas inestables son rechazadas para alquilar por no cumplir las garantías', 'El mercado del alquiler penaliza a autónomos y personas sin nómina indefinida']],
-  ['rental-regulation-contract-shift', ['La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales', 'Los topes de alquiler hacen que parte de la oferta desaparezca del mercado regulado', 'El control de precios provoca que viviendas pasen del alquiler habitual al de temporada']],
+  ['rental-regulation-contract-shift', ['La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales', 'Los topes de alquiler hacen que parte de la oferta desaparezca del mercado regulado', 'El control de precios provoca que viviendas pasen del alquiler habitual al de temporada', 'El control de rentas reduce las viviendas anunciadas en las zonas afectadas', 'Limitar el precio del alquiler hace que algunos propietarios retiren sus pisos']],
   ['rental-landlord-motives', ['El miedo a la okupación y al impago hace que propietarios retiren pisos del alquiler', 'Hay viviendas vacías que no se alquilan por miedo a problemas legales con inquilinos', 'Los propietarios prefieren el alquiler de temporada porque les da más flexibilidad que el alquiler habitual', '¿Qué preocupa a los arrendadores cuando alquilan una vivienda?', 'El temor a los impagos lleva a algunos propietarios a dejar casas fuera del mercado de alquiler']],
   ['sector-wage-comparison', ['El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', 'Los sueldos turísticos son más bajos que en las industrias más productivas', 'En hostelería se pagan menos salarios altos que en otros sectores', 'El empleo aumenta más en sectores de baja productividad que en sectores con salarios elevados', 'La hostelería arrastra hacia abajo el promedio de los sueldos en España', 'La actividad turística reduce la media de los salarios']],
   ['nominal-wages', ['Los salarios españoles son más bajos que los europeos', 'El sueldo ha bajado durante años', 'Las remuneraciones aumentan en España']],
@@ -472,7 +472,11 @@ assert.deepEqual(residentialDisplacementPublic.result.criteria.map((criterion) =
   ['ine-household-income-atlas-methodology-2025'],
 ], 'Atlas and methodology sources must be attributed only to the fact each supports');
 assert.equal(claimFocusFor('Los pisos turísticos están retirando viviendas del alquiler residencial')?.id, 'tourist-housing-supply', 'Tourist-dwelling supply claims must keep their existing measurement contract');
+assert.equal(claimFocusFor('Los topes de alquiler hacen que parte de la oferta desaparezca del mercado regulado')?.id, 'rental-regulation-contract-shift', 'Rent-control effects on regulated rental supply must stay with the rental-regulation causal family');
+assert.equal(claimFocusFor('El control de rentas reduce las viviendas anunciadas en las zonas afectadas')?.id, 'rental-regulation-contract-shift', 'A rent-control paraphrase must reuse the same supply-effect family');
 assert.equal(claimFocusFor('El turismo eleva los alquileres en las ciudades')?.id, 'tourism-urban-housing-cost', 'A tourism and rent claim without resident displacement must remain in the tourism cost family');
+assert.equal(claimFocusFor('Los pisos turísticos reducen la oferta de alquiler residencial')?.id, 'tourist-housing-supply', 'Tourist housing must not cross-route into rent-regulation effects');
+assert.notEqual(claimFocusFor('Las zonas tensionadas han moderado los precios del alquiler')?.id, 'rental-regulation-contract-shift', 'A price-level claim must not inherit a supply-effect answer');
 for (const nearby of [
   'El precio del alquiler subió en España durante 2025',
   'Los vecinos se marchan de los barrios por nuevos empleos',
@@ -821,11 +825,17 @@ assert.equal(claimFocusFor('La tasa de sobrecualificación de inmigrantes obliga
 const rentalRegulationPlan = focusedEvidencePlan('La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales');
 assert.equal(rentalRegulationPlan.answerScope.family, 'rental-regulation-contract-shift');
 assert.doesNotMatch(rentalRegulationPlan.shareableReply, /Como contexto:\s*Como contexto/);
+const rentCapSupplyPlan = focusedEvidencePlan('Los topes de alquiler hacen que parte de la oferta desaparezca del mercado regulado');
+assert.equal(rentCapSupplyPlan.answerScope.family, 'rental-regulation-contract-shift');
+assert.doesNotMatch(rentCapSupplyPlan.shareableReply, /turismo|pernoctaciones|viviendas tur[ií]sticas/i, 'A rent-cap claim must not receive a tourism-specific evidence gap');
 assert.deepEqual([...focusedMetricIdsFor('¿Cuántos pisos turísticos hay en España?')], ['tourist_housing_count']);
 assert.deepEqual([...focusedMetricIdsFor('¿Qué proporción del parque de viviendas es turístico?')], ['tourist_housing_share']);
 assert.deepEqual([...focusedMetricIdsFor('¿Cuántos pisos turísticos han retirado viviendas del alquiler residencial?')], ['tourist_housing_count', 'tourist_housing_share']);
 assert.deepEqual([...focusedMetricIdsFor('¿Cuántos apartamentos turísticos con licencia hay en España?')], ['tourist_housing_count']);
 assert.deepEqual([...focusedMetricIdsFor('¿Cuántas viviendas vacías hay disponibles en la ciudad?')], [], 'Vacant-home claims must not retrieve tourist-housing series');
+const vacantHousingAvailabilityPlan = focusedEvidencePlan('¿Cuántas viviendas vacías hay disponibles en la ciudad?');
+assert.equal(vacantHousingAvailabilityPlan.answerScope.family, 'housing-supply');
+assert.doesNotMatch(vacantHousingAvailabilityPlan.shareableReply, /turismo|pernoctaciones|viviendas tur[ií]sticas/i, 'A vacant-home availability claim must not receive tourism-specific evidence requirements');
 const touristCountSource = { id: 'ine-tourist-count', title: 'Viviendas turísticas, tabla 39364', publisher: 'INE', url: 'https://www.ine.es/jaxiT3/Tabla.htm?t=39364', retrievedAt: '2026-11-17T10:00:00Z' };
 const touristShareSource = { id: 'ine-tourist-share', title: 'Porcentaje de viviendas turísticas, tabla 39365', publisher: 'INE', url: 'https://www.ine.es/jaxiT3/Tabla.htm?t=39365', retrievedAt: '2026-11-17T10:00:00Z' };
 const touristHousingObservations = [
