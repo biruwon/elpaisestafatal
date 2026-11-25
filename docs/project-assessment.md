@@ -1815,3 +1815,35 @@ and nearby scope boundaries. The latest deterministic 300-candidate audit
 routes 178 candidates to a metric or family and leaves 122 without either;
 these remain unverified discovery inputs, not an accuracy score. These checks
 are not an accuracy estimate for arbitrary user text.
+
+## Business size and productivity — 25 November 2026
+
+The 300-claim review set includes a recurring claim that small firms' size
+limits investment, technology adoption, productivity and pay. Eurostat's
+latest available Spanish structural-business table provides a useful
+cross-sectional productivity comparison for 2024: apparent value added per
+person employed ranges from €42,830 in enterprises with 0–9 persons employed
+to €71,950 in enterprises with 250 or more, with higher values in each
+intermediate size class. The large-class value is about 68% above the
+smallest-class value.
+
+The route reports that association as context only. It leaves the causal
+claim unresolved because the aggregate comparison does not show what would
+happen if a company grew, and the table does not measure investment,
+technology adoption or salaries across those same classes. The answer defines
+the indicator as value added per person employed, distinguishes it from pay
+and productivity per hour, and gives the Spanish business-economy coverage.
+The same productivity snapshot now gives context to a separate family of
+large-firm pay-restraint claims, but does not count as evidence about wages or
+firms' pay decisions. Regression cases verify four causal paraphrases, three
+pay-restraint paraphrases, consistent sources, a compound "because"
+formulation, and boundaries for other years, regions, sectors, European pay
+comparisons and claims about firm wages without a size comparison. The
+held-out text-answer benchmark now passes 227/227 cases across 59 paraphrase
+groups; the focused evidence validator and broader classifier suite also
+pass. On the 300 explicitly unverified discovery candidates, the refreshed
+deterministic audit reports 7 complete, 98 limited and 195 uncovered outputs;
+the public states are 263 insufficient and 37 limited. This is a routing and
+coverage snapshot, not an accuracy estimate. Both causal answers remain
+publicly insufficient despite their useful sourced context, which is the
+intended evidence boundary.

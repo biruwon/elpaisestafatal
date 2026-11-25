@@ -31,6 +31,7 @@ import { PUBLIC_SERVICE_DIGITAL_ACCESS_SNAPSHOT, publicServiceDigitalAccessClaim
 import { PUBLIC_DOCUMENT_REUSE_SNAPSHOT, publicDocumentReuseClaimFor, publicDocumentReuseLegalQuestionFor } from './public-document-reuse-snapshot.mjs';
 import { HEALTH_PERCEPTION_OUTCOMES_SNAPSHOT } from './health-perception-outcomes-snapshot.mjs';
 import { PENSION_WAGE_DISTRIBUTION_SNAPSHOT, pensionWageDistributionReply } from './pension-wage-distribution-snapshot.mjs';
+import { BUSINESS_SIZE_PRODUCTIVITY_SNAPSHOT, businessSizeProductivityReply, firmWageCapacityProductivityContextReply } from './business-size-productivity-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -1291,9 +1292,10 @@ const smallBusinessCostPressure = (t) => !housingInvestmentReturnComparison(t)
   && /\b(negocio\w*|comerci\w*|tienda\w*|empresa\w*|pyme\w*|restaurante\w*|bar\w*)\b/.test(t)
   && /\b(desaparec\w*|cerr\w*|cierr\w*|quebr\w*|inviab\w*|sobreviv\w*|margen\w*|rentabil\w*)\b/.test(t)
   && /\b(combinaci\w*|suma|acumulaci\w*|cost\w*|gasto\w*|alquil\w*|rent\w*|energ[ií]a|electricidad|impuest\w*|salari\w*|sueld\w*|cotiz\w*)\b/.test(t);
-const businessSizeProductivityConstraint = (t) => /\b(empresas? peque[nñ]as?|peque[nñ]o tama[nñ]o|tama[nñ]o (?:medio de (?:las )?empresas?|empresari\w*)|pymes?|microempresas?)\b/.test(t)
-  && /\b(inversi\w*|tecnolog\w*|productiv\w*|salari\w*|sueld\w*|innovaci\w*|exportaci\w*)\b/.test(t)
+const businessSizeProductivityConstraint = (t) => /\b(empresas? peque[nñ]as?|empresas? (?:espanolas? )?mas peque[nñ]as?|peque[nñ]o tama[nñ]o|tama[nñ]o (?:medio de (?:las )?empresas?|empresari\w*)|empresas? de menor tama[nñ]o|pymes?|microempresas?)\b/.test(t)
+  && /\b(inversi\w*|tecnolog\w*|productiv\w*|valor anadid\w*|por trabajador|salari\w*|sueld\w*|innovaci\w*|exportaci\w*)\b/.test(t)
   && (/\b(limit\w*|fren\w*|impid\w*|reduc\w*|afect\w*|condicion\w*|explic\w*)\b/.test(t)
+    || /\b(porque|debido a|por culpa|caus\w*)\b/.test(t)
     || /\b(menos|menor\w*)[\s\w]{0,25}\b(capacidad|posibilidad|acceso)\b/.test(t));
 const unpaidOvertime = (t) => /\b(horas? extra\w*|horas? extraordinari\w*)\b/.test(t)
   && /\b(no pag\w*|sin pag\w*|impag\w*|sin cobr\w*|no cobr\w*|gratis|no remuner\w*|sin remuner\w*|trabaj\w* gratis)\b/.test(t);
@@ -2901,15 +2903,21 @@ const focuses = [
     when: businessSizeProductivityConstraint,
     direct: [], context: [], claimType: 'causal',
     needs: ['empresas clasificadas por tamaño y actividad', 'inversión, adopción tecnológica, productividad y salarios con definiciones comparables', 'evolución temporal o diseño que permita atribuir diferencias al tamaño empresarial'],
-    explanation: 'Una diferencia entre empresas pequeñas y grandes no demuestra que su tamaño limite la inversión o los salarios; también pueden variar su actividad, edad, capital y acceso a financiación.',
-    limitation: 'Los salarios nacionales o sectoriales y el tamaño medio de las empresas no identifican por sí solos los mecanismos que relacionan tamaño, tecnología e inversión.',
+    explanationHeadline: 'Las empresas grandes registraron más valor añadido por persona empleada en 2024; el dato no prueba una causa',
+    explanation: 'La productividad aparente puede diferir entre empresas de distinto tamaño, pero la comparación agregada no muestra que el tamaño provoque esa diferencia. También pueden variar la actividad, el capital, la edad de la empresa, su pertenencia a un grupo y la composición de las horas trabajadas.',
+    explanationEvidence: BUSINESS_SIZE_PRODUCTIVITY_SNAPSHOT,
+    shareableReplyForContext: businessSizeProductivityReply,
+    limitation: 'La serie compara clases de tamaño en un agregado empresarial y un solo año. No mide inversión, tecnología ni salarios por esas mismas clases y no permite estimar el efecto causal de crecer.',
   },
   {
     id: 'firm-wage-capacity', label: 'productividad de las empresas y salarios que pagan',
     when: firmWageCapacity,
     direct: [], context: [], claimType: 'causal',
     needs: ['productividad, beneficios y salarios por tamaño, sector y ocupación', 'evolución de salarios y productividad para las mismas empresas', 'evidencia sobre negociación y decisiones salariales que permita comprobar una contención deliberada'],
+    explanationHeadline: 'La productividad aparente fue mayor en empresas grandes en 2024; no muestra sus salarios ni decisiones de pago',
     explanation: 'Una empresa puede tener productividad o beneficios altos sin que eso determine cuánto paga a cada trabajador. Para afirmar que contiene salarios hacen falta datos de productividad, remuneración y decisiones de pago en las mismas empresas.',
+    explanationEvidence: BUSINESS_SIZE_PRODUCTIVITY_SNAPSHOT,
+    shareableReplyForContext: firmWageCapacityProductivityContextReply,
     limitation: 'Una mediana salarial nacional o sectorial no demuestra que grandes empresas puedan pagar más ni que estén frenando los salarios.',
   },
   {

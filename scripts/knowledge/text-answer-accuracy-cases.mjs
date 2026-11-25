@@ -2953,4 +2953,156 @@ export const textAnswerAccuracyCases = [
     now: '2026-11-25T12:00:00Z',
     expected: { state: 'insufficient', family: 'pension-wage-comparison', verdict: 'insufficient', directSourceIds: [], replyExcludes: ['21.964', '21.778', '1.030.308'], evidence: [], maxReplyWords: 100 },
   },
+  {
+    id: 'business-size-productivity-causal-claim',
+    equivalenceGroup: 'business-size-productivity-causal-context',
+    input: 'El pequeño tamaño medio de las empresas frena la inversión y la productividad',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'business-size-productivity', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['42,83 miles de euros', '71,95 miles de euros', '68 %', 'no demuestra que el tamaño cause la diferencia', 'tampoco mide inversión, tecnología o salarios', 'no remuneración ni productividad por hora'],
+      replyExcludes: ['17 €/hora', 'demuestra que el tamaño causa'],
+      evidence: [
+        {
+          familyId: 'business-size-productivity',
+          sourceIds: ['eurostat-business-size-apparent-productivity-spain-2024', 'eurostat-apparent-labour-productivity-definition'],
+          dataIncludes: ['0–9 personas empleadas: 42,83 miles de euros', '250 o más personas empleadas: 71,95 miles de euros', '68 %'],
+          dimensions: { period: '2024', geography: 'España', denominator: 'personas empleadas', unit: 'miles de euros de valor añadido por persona empleada' },
+        },
+        {
+          familyId: 'business-size-productivity',
+          sourceIds: ['eurostat-business-size-apparent-productivity-spain-2024', 'eurostat-apparent-labour-productivity-definition', 'eurostat-structural-business-statistics-metadata'],
+          dataIncludes: ['no es un salario ni una medida por hora', 'no incluye agricultura ni administración pública'],
+          dimensions: { period: '2024', geography: 'España', unit: 'definición metodológica y cobertura sectorial' },
+        },
+      ],
+      maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'business-size-productivity-pyme-paraphrase',
+    equivalenceGroup: 'business-size-productivity-causal-context',
+    input: 'Las pymes tienen menos capacidad para adoptar tecnología y pagar buenos salarios',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'business-size-productivity', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['42,83 miles de euros', '71,95 miles de euros', 'no demuestra que el tamaño cause la diferencia'],
+      evidence: [], maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'business-size-productivity-innovation-paraphrase',
+    equivalenceGroup: 'business-size-productivity-causal-context',
+    input: 'El tamaño empresarial limita la innovación y los sueldos',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'business-size-productivity', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['42,83 miles de euros', '71,95 miles de euros', 'tampoco mide inversión, tecnología o salarios'],
+      evidence: [], maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'business-size-productivity-compound-paraphrase',
+    equivalenceGroup: 'business-size-productivity-causal-context',
+    input: 'Las empresas españolas más pequeñas generan menos valor añadido por trabajador porque no pueden invertir en tecnología',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'business-size-productivity', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['42,83 miles de euros', '71,95 miles de euros', 'no demuestra que el tamaño cause la diferencia'],
+      replyExcludes: ['No hay observaciones compatibles suficientes'],
+      evidence: [], maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'business-size-productivity-wrong-year',
+    input: 'El pequeño tamaño de las pymes frena la productividad entre 2021 y 2025',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'business-size-productivity', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['42,83', '71,95', '68 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'business-size-productivity-regional-neighbour',
+    input: 'El pequeño tamaño de las empresas frena la productividad en Madrid',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'business-size-productivity', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['42,83', '71,95', '68 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'business-size-productivity-sector-neighbour',
+    input: 'El pequeño tamaño de las empresas frena la productividad en hostelería',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'business-size-productivity', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['42,83', '71,95', '68 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'business-size-firm-wage-capacity',
+    equivalenceGroup: 'firm-wage-capacity-size-context',
+    input: 'Las grandes empresas tienen productividad suficiente para pagar más pero contienen salarios',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'firm-wage-capacity', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['42,83 mil euros', '71,95 mil euros', 'no un salario ni productividad por hora', 'ni demuestra que contengan los salarios'],
+      evidence: [
+        {
+          familyId: 'firm-wage-capacity',
+          sourceIds: ['eurostat-business-size-apparent-productivity-spain-2024', 'eurostat-apparent-labour-productivity-definition'],
+          dataIncludes: ['0–9 personas empleadas: 42,83 miles de euros', '250 o más personas empleadas: 71,95 miles de euros', '68 %'],
+          dimensions: { period: '2024', geography: 'España', denominator: 'personas empleadas', unit: 'miles de euros de valor añadido por persona empleada' },
+        },
+        {
+          familyId: 'firm-wage-capacity',
+          sourceIds: ['eurostat-business-size-apparent-productivity-spain-2024', 'eurostat-apparent-labour-productivity-definition', 'eurostat-structural-business-statistics-metadata'],
+          dataIncludes: ['no es un salario ni una medida por hora', 'no incluye agricultura ni administración pública'],
+          dimensions: { period: '2024', geography: 'España', unit: 'definición metodológica y cobertura sectorial' },
+        },
+      ],
+      maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'business-size-firm-wage-capacity-large-firm-paraphrase',
+    equivalenceGroup: 'firm-wage-capacity-size-context',
+    input: 'Las grandes empresas españolas frenan los sueldos pese a su mayor productividad',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'firm-wage-capacity', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['42,83 mil euros', '71,95 mil euros', 'ni demuestra que contengan los salarios'],
+      evidence: [], maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'business-size-firm-wage-capacity-size-paraphrase',
+    equivalenceGroup: 'firm-wage-capacity-size-context',
+    input: 'Las empresas de mayor tamaño frenan los salarios pese a su productividad',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'firm-wage-capacity', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['42,83 mil euros', '71,95 mil euros', 'ni demuestra que contengan los salarios'],
+      evidence: [], maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'business-size-firm-wage-capacity-no-size-neighbour',
+    input: 'Las empresas muy productivas pueden pagar sueldos altos',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'firm-wage-capacity', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['42,83', '71,95', '68 %'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'business-size-small-business-european-pay-neighbour',
+    input: 'Las pequeñas empresas españolas tienen tan poco margen que no pueden pagar salarios europeos',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'small-business-cost-pressure', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['42,83', '71,95', '68 %'], evidence: [], maxReplyWords: 120,
+    },
+  },
 ];

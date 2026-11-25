@@ -734,6 +734,16 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       && propositions.length === 2 && /\b(pero|aunque|mientras)\b/.test(normalizedClaim)
       && (/(?:\b(empres\w*|compa[nñ]i\w*|firmas?|multinacional\w*)\b[\s\w]{0,50}\b(productiv\w*|benefici\w*)\b|\b(productiv\w*|benefici\w*)\b[\s\w]{0,50}\b(empres\w*|compa[nñ]i\w*|firmas?|multinacional\w*)\b)/.test(clauseText)
         || /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*)\b/.test(clauseText));
+    const businessSizeProductivityMechanism = focus.id === 'business-size-productivity'
+      && propositions.length === 2
+      && /\b(porque|ya que|debido a que|por culpa de|al no poder|por no)\b/.test(normalizedClaim)
+      && propositions.some((proposition) => {
+        const text = normalize(proposition.text);
+        return /\b(empresas? (?:espanolas? )?mas pequenas?|empresas? pequenas?|pymes?|microempresas?|pequeno tamano|tamano medio)\b/.test(text)
+          && /\b(productiv\w*|valor anadid\w*|por trabajador)\b/.test(text);
+      })
+      && propositions.some((proposition) => /\b(inversi\w*|tecnolog\w*|innovaci\w*|capital|financiaci\w*)\b/.test(normalize(proposition.text)))
+      && propositions.every((proposition) => /\b(empres\w*|pymes?|microempresas?|productiv\w*|valor anadid\w*|inversi\w*|tecnolog\w*|innovaci\w*|capital|financiaci\w*)\b/.test(normalize(proposition.text)));
     const pensionWageMechanism = focus.id === 'pension-wage-contribution-base'
       && propositions.length === 2 && /\b(pero|aunque|mientras)\b/.test(normalizedClaim)
       && (/(?:\b(pension\w*|jubilaci[oó]n)\b[\s\w]{0,60}\b(salari\w*|sueld\w*|cotiz\w*)\b|\b(salari\w*|sueld\w*|cotiz\w*)\b[\s\w]{0,60}\b(pension\w*|jubilaci[oó]n)\b)/.test(clauseText)
@@ -758,7 +768,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       || sameProductivityComparison && /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(clauseText)) return true;
     if (sameLandlordMotive) return true;
     if (samePensionPrivateSavingsCompound) return true;
-    if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism || samePensionMeiCompound || sameHealthPerceptionOutcomeCompound || unemploymentSupplyExplanation || sameEmployerContributionVisibility) return true;
+    if (housingInvestmentReason || firmWageMechanism || businessSizeProductivityMechanism || pensionWageMechanism || samePensionMeiCompound || sameHealthPerceptionOutcomeCompound || unemploymentSupplyExplanation || sameEmployerContributionVisibility) return true;
     if (educationOutcomeCauseClause) return true;
     if (clauseFocus) return false;
     // A clause such as “una parte se produce más barata” can refer back to

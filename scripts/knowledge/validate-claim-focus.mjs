@@ -1019,6 +1019,38 @@ for (const [family, claim] of crossTopicClaims) {
     assert.equal(publicResponse.state, 'insufficient', 'Aggregate context must not confirm the low-qualification claim');
     assert.equal(publicResponse.result.arguments[0].verdict, 'insufficient');
     assert.deepEqual(publicResponse.result.sources.map((source) => source.id), ['ine-ees-public-private-pay-2022']);
+  } else if (family === 'firm-wage-capacity') {
+    assert.equal(plan.evidenceLevel, 'limited', 'Productivity by firm size may provide context without measuring salaries or restraint');
+    assert.deepEqual(plan.sourceLinks.map((source) => source.id), [
+      'eurostat-business-size-apparent-productivity-spain-2024',
+      'eurostat-apparent-labour-productivity-definition',
+      'eurostat-structural-business-statistics-metadata',
+    ]);
+    assert.match(plan.shareableReply, /42,83 mil euros.*71,95 mil euros/s);
+    assert.match(plan.shareableReply, /ni demuestra que contengan los salarios/i);
+    assert.deepEqual(plan.answerScope.directMetrics, []);
+    assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+    assert.doesNotMatch(plan.shareableReply, /17 €/);
+    const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim);
+    assert.equal(publicResponse.state, 'insufficient', 'Productivity context must not resolve a claim about company pay restraint');
+    assert.equal(publicResponse.result.arguments[0].verdict, 'insufficient');
+    assert.deepEqual(publicResponse.result.sources.map((source) => source.id), [
+      'eurostat-business-size-apparent-productivity-spain-2024',
+      'eurostat-apparent-labour-productivity-definition',
+      'eurostat-structural-business-statistics-metadata',
+    ]);
+  } else if (family === 'business-size-productivity') {
+    assert.equal(plan.evidenceLevel, 'limited', 'Reviewed productivity figures may provide context without proving the claimed mechanism');
+    assert.deepEqual(plan.sourceLinks.map((source) => source.id), [
+      'eurostat-business-size-apparent-productivity-spain-2024',
+      'eurostat-apparent-labour-productivity-definition',
+      'eurostat-structural-business-statistics-metadata',
+    ]);
+    assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+    assert.doesNotMatch(plan.shareableReply, /17 €/);
+    const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: 'gap-' + family, result: plan }, claim);
+    assert.equal(publicResponse.state, 'insufficient', 'Contextual data must not turn the causal business-size claim into a factual verdict');
+    assert.equal(publicResponse.result.arguments[0].verdict, 'insufficient');
   } else {
     assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should leave this claim unsupported: ${claim}`);
     assert.equal(plan.sourceLinks.length, 0, `An unrelated wage survey was attached to this claim: ${claim}`);
