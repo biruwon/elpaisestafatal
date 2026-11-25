@@ -3444,4 +3444,95 @@ export const textAnswerAccuracyCases = [
       maxReplyWords: 150,
     },
   },
+  {
+    id: 'sme-gestoria-cost-context',
+    equivalenceGroup: 'sme-regulatory-burden-context',
+    input: 'Muchos autónomos necesitan pagar una gestoría solo para cumplir correctamente con Hacienda y Seguridad Social',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'sme-regulatory-compliance-burden', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['84 %', '32 %', '421 pymes', 'no se puede confirmar que muchos autónomos deban pagar una gestoría', 'empieza en cinco empleados', 'no mide esos honorarios'],
+      replyExcludes: ['el 84 % de los autónomos', 'el coste real de una gestoría está confirmado'],
+      evidence: [
+        {
+          familyId: 'sme-regulatory-compliance-burden',
+          sourceIds: ['eibis-spain-2025-regulatory-burden'],
+          dataIncludes: ['84 %', '55 %', '29 %', 'obstáculo para invertir'],
+          dimensions: { period: 'EIBIS 2025', geography: 'España', denominator: 'respuestas de pymes' },
+        },
+        {
+          familyId: 'sme-regulatory-compliance-burden',
+          sourceIds: ['eibis-spain-2025-regulatory-burden'],
+          dataIncludes: ['421 pymes', '32 %', '57 %', '11 %', '115 grandes empresas', '3 %'],
+          dimensions: { period: 'EIBIS 2025', geography: 'España', denominator: '421 pymes' },
+        },
+      ],
+      maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'sme-compliance-extra-tax-paraphrase',
+    equivalenceGroup: 'sme-regulatory-burden-context',
+    input: 'La complejidad administrativa funciona como un impuesto adicional para pequeñas empresas y autónomos',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'sme-regulatory-compliance-burden', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['84 %', '32 %', 'no se puede concluir que la normativa equivalga a un impuesto', 'no cuantifica costes en euros'],
+      evidence: [
+        { familyId: 'sme-regulatory-compliance-burden', sourceIds: ['eibis-spain-2025-regulatory-burden'], dataIncludes: ['84 %', '55 %', '29 %'] },
+        { familyId: 'sme-regulatory-compliance-burden', sourceIds: ['eibis-spain-2025-regulatory-burden'], dataIncludes: ['421 pymes', '32 %', '57 %', '11 %'] },
+      ],
+      maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'sme-platform-burden-neighbour',
+    equivalenceGroup: 'sme-regulatory-burden-context',
+    input: 'Los pequeños comercios soportan una carga regulatoria que las grandes plataformas absorben con más facilidad',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'sme-regulatory-compliance-burden', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['32 %', '3 %', 'no se puede confirmar que un comercio soporte más que una plataforma'],
+      replyExcludes: ['las plataformas digitales tienen menos costes regulatorios'],
+      evidence: [
+        { familyId: 'sme-regulatory-compliance-burden', sourceIds: ['eibis-spain-2025-regulatory-burden'], dataIncludes: ['84 %', '55 %', '29 %'] },
+        { familyId: 'sme-regulatory-compliance-burden', sourceIds: ['eibis-spain-2025-regulatory-burden'], dataIncludes: ['421 pymes', '32 %', '57 %', '11 %', '115 grandes empresas', '3 %'] },
+      ],
+      maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'sme-compliance-staff-share-question',
+    input: '¿Qué proporción de las pymes españolas dedica más del 10 % de su plantilla a cumplir requisitos regulatorios?',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'limited', family: 'sme-regulatory-compliance-burden', verdict: 'supported', directSourceIds: ['eibis-spain-2025-regulatory-burden'],
+      replyIncludes: ['32 %', '421 pymes', '57 %', '11 %', '5–249 empleados'],
+      replyExcludes: ['84 %'],
+      evidence: [{
+        familyId: 'sme-regulatory-compliance-burden',
+        sourceIds: ['eibis-spain-2025-regulatory-burden'],
+        dataIncludes: ['421 pymes', '32 %', '57 %', '11 %', 'normas obligatorias o voluntarias'],
+        dimensions: { period: 'EIBIS 2025', geography: 'España', denominator: '421 pymes' },
+      }],
+      maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'sme-regulation-obstacle-share-question',
+    input: '¿Qué porcentaje de pymes españolas considera la regulación empresarial un obstáculo para la inversión?',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'limited', family: 'sme-regulatory-compliance-burden', verdict: 'supported', directSourceIds: ['eibis-spain-2025-regulatory-burden'],
+      replyIncludes: ['84 %', '55 %', '29 %', 'ejercicio anterior'],
+      replyExcludes: ['32 %'],
+      evidence: [{
+        familyId: 'sme-regulatory-compliance-burden',
+        sourceIds: ['eibis-spain-2025-regulatory-burden'],
+        dataIncludes: ['84 %', '55 %', '29 %', 'obstáculo para invertir'],
+        dimensions: { period: 'EIBIS 2025', geography: 'España', denominator: 'respuestas de pymes' },
+      }],
+      maxReplyWords: 100,
+    },
+  },
 ];

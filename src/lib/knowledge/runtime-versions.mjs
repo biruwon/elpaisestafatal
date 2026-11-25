@@ -5,7 +5,7 @@ export const RUNTIME_VERSIONS = Object.freeze({
   evidencePacketSchema: '1',
   compilerContract: '3',
   knowledge: '2026-08-04.2',
-  fallbackKnowledge: 'deterministic-fallback-81-dental-access-context-2026-11',
-  warehouseKnowledge: 'warehouse-2026-11-25.41-business-size-productivity-context',
+  fallbackKnowledge: 'deterministic-fallback-82-sme-regulatory-burden-context-2026-11',
+  warehouseKnowledge: 'warehouse-2026-11-26.42-sme-regulatory-burden-context',
   indexKnowledge: 'index-only-2026-08-05.9',
 });

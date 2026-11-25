@@ -34,6 +34,7 @@ import { PUBLIC_DOCUMENT_REUSE_SNAPSHOT, publicDocumentReuseClaimFor, publicDocu
 import { HEALTH_PERCEPTION_OUTCOMES_SNAPSHOT } from './health-perception-outcomes-snapshot.mjs';
 import { PENSION_WAGE_DISTRIBUTION_SNAPSHOT, pensionWageDistributionReply } from './pension-wage-distribution-snapshot.mjs';
 import { BUSINESS_SIZE_PRODUCTIVITY_SNAPSHOT, businessSizeProductivityReply, firmWageCapacityProductivityContextReply } from './business-size-productivity-snapshot.mjs';
+import { SME_REGULATORY_BURDEN_SNAPSHOT } from './sme-regulatory-burden-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -1488,6 +1489,14 @@ const businessTaxBurdenComparison = (t) => /\b(multinacional\w*|empresa\w*|negoc
   && /\b(impuest\w*|fiscal\w*|tribut\w*|sociedades|iva)\b/.test(t)
   && /\b(menos|mas|mayor|menor|reduc\w*|proporci\w*|efectiv\w*|carg\w*|compar\w*)\b/.test(t)
   && /\b(pag\w*|tribut\w*|carg\w*|contribu\w*|compit\w*|compar\w*)\b/.test(t);
+const smeRegulatoryBurden = (t) => {
+  const directSurveyQuestion = SME_REGULATORY_BURDEN_SNAPSHOT.directClaimEvidence(t);
+  const namesSmallBusiness = /\b(autonom\w*|pymes?|microempresas?|empresas? peque[nñ]as?|peque[nñ]os? negocios?|peque[nñ]os? comercios?|peque[nñ]as? empresas?)\b/.test(t);
+  const namesComplianceBurden = /\b(gestori\w*|asesori\w*|burocrat\w*|complejidad administrativa|carga administrativa|carga regulatoria|costes? administrativos?|coste de cumplimiento|cumplimiento normativo|cumplir (?:con )?(?:la )?normativa|regulaci[oó]n empresarial|requisitos regulatorios)\b/.test(t);
+  const assessesBurden = /\b(carg\w*|cost\w*|pag\w*|necesit\w*|oblig\w*|obst[aá]cul\w*|barrer\w*|dif[ií]cil|dificult\w*|absor[bv]\w*|impuesto adicional|impuesto encubierto|dedic\w*)\b/.test(t);
+  const outsideThisMeasure = /\b(cita\s+previa|citas? (?:p[uú]blicas?|disponibles?)|ayudas? p[uú]blicas?|subvenciones?|licencias?|permisos?|plazos?|tardar|retras\w*|demor\w*|impuestos? (?:sobre|al) (?:comprar|vender|la vivienda|la vivienda)|sistema tributario cambia|cambios? fiscales?|ingresos? extra\w*|costes? de autonom\w*|cuotas? de autonom\w*|no compens\w*|deja de compens\w*|rentabilidad|rendimientos? netos?)\b/.test(t);
+  return !outsideThisMeasure && (directSurveyQuestion || namesSmallBusiness && namesComplianceBurden && assessesBurden);
+};
 const smallBusinessCostPressure = (t) => !housingInvestmentReturnComparison(t)
   && /\b(negocio\w*|comerci\w*|tienda\w*|empresa\w*|pyme\w*|restaurante\w*|bar\w*)\b/.test(t)
   && /\b(desaparec\w*|cerr\w*|cierr\w*|quebr\w*|inviab\w*|sobreviv\w*|margen\w*|rentabil\w*)\b/.test(t)
@@ -3134,6 +3143,17 @@ const focuses = [
     needs: ['impuestos efectivamente pagados por empresas comparables', 'base común como beneficios o valor añadido, separada por tamaño, actividad y tipo de impuesto', 'mismo territorio y periodo'],
     explanation: 'Comparar los impuestos totales de empresas de distinto tamaño no muestra quién soporta una carga mayor. Hay que relacionar los impuestos pagados con una base común y distinguir los tributos incluidos.',
     limitation: 'Sin tipos efectivos y grupos empresariales comparables no se puede concluir que las multinacionales digitales paguen proporcionalmente menos que el comercio local.',
+  },
+  {
+    id: 'sme-regulatory-compliance-burden', label: 'cargas regulatorias y recursos de cumplimiento de pymes',
+    when: smeRegulatoryBurden,
+    direct: [], context: [], claimTypeFor: (claim) => SME_REGULATORY_BURDEN_SNAPSHOT.directClaimEvidence(claim) ? 'descriptive' : 'causal',
+    needs: ['costes monetarios y horas de cumplimiento por tipo y tamaño de empresa', 'gastos en gestoría o asesoría, separando recursos internos y servicios externos', 'datos que incluyan autónomos y empresas con menos de cinco empleados', 'para comparar comercios con plataformas, grupos de actividad y obligaciones equivalentes'],
+    explanationHeadline: 'La encuesta mide barreras de inversión y personal dedicado a cumplimiento; no el coste de gestoría',
+    explanation: 'Las respuestas empresariales y la proporción de plantilla dedicada a requisitos regulatorios dan contexto sobre recursos de cumplimiento. No cuantifican honorarios externos, coste administrativo en euros ni el efecto de esos costes sobre cada autónomo o pequeño negocio.',
+    explanationEvidence: SME_REGULATORY_BURDEN_SNAPSHOT,
+    shareableReplyForContext: SME_REGULATORY_BURDEN_SNAPSHOT.shareableReplyForContext,
+    limitation: 'EIBIS define sus pymes como empresas con 5–249 empleados y pondera resultados por valor añadido. La encuesta no representa a autónomos sin empleados, no mide honorarios de gestoría y no compara directamente comercios con plataformas digitales.',
   },
   {
     id: 'housing-investment-return-comparison', label: 'rentabilidad de la vivienda frente a la inversión productiva',

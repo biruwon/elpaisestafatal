@@ -70,6 +70,14 @@ const cases = [
     '¿La Ley 39/2015 reconoce el derecho a no volver a aportar documentos elaborados por otro organismo público?',
   ]],
   ['business-tax-burden', ['Las multinacionales digitales pagan proporcionalmente menos impuestos que las tiendas locales', 'La carga fiscal efectiva de grandes empresas tecnológicas es menor que la de los comercios pequeños', 'Las empresas digitales compiten con el comercio de barrio con una tributación más baja']],
+  ['sme-regulatory-compliance-burden', [
+    'Muchos autónomos necesitan pagar una gestoría solo para cumplir correctamente con Hacienda y Seguridad Social',
+    'La complejidad administrativa funciona como un impuesto adicional para pequeñas empresas y autónomos',
+    'La carga administrativa añade costes de cumplimiento a las pymes',
+    'Los pequeños comercios soportan una carga regulatoria que las grandes plataformas absorben con más facilidad',
+    '¿Qué proporción de las pymes españolas dedica más del 10 % de su plantilla a cumplir requisitos regulatorios?',
+    '¿Qué porcentaje de pymes españolas considera la regulación empresarial un obstáculo para la inversión?',
+  ]],
   ['small-business-cost-pressure', ['Los comercios de barrio cierran por la suma de alquiler, energía e impuestos', 'El aumento de los costes operativos está haciendo desaparecer pequeños negocios', 'Las tiendas pequeñas no sobreviven cuando suben a la vez salarios, alquileres y electricidad']],
   ['business-size-productivity', ['El pequeño tamaño medio de las empresas frena la inversión y la productividad', 'Las pymes tienen menos capacidad para adoptar tecnología y pagar buenos salarios', 'El tamaño empresarial limita la innovación y los sueldos']],
   ['rail-investment-maintenance', ['España ha invertido mucho en alta velocidad mientras descuidaba parte de la red de cercanías y convencional', 'El mantenimiento ferroviario recibe menos atención política que inaugurar nuevas líneas']],
@@ -194,6 +202,42 @@ const cases = [
 for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
   assert.equal(claimFocusFor(claim)?.id, family, claim);
   assert.equal(broadDomainPacketsFor(claim).length, 0, `A precise claim inherited a broad packet: ${claim}`);
+}
+for (const claim of [
+  'En España es más fácil pagar un impuesto que conseguir una ayuda pública',
+  'La cita previa obligatoria ha convertido trámites básicos en una barrera',
+  'La falta de citas públicas crea un mercado privado de gestorías e intermediarios',
+  'Conseguir una licencia para abrir o reformar un negocio tarda demasiado',
+  'El sistema tributario cambia demasiado y obliga a empresas pequeñas a adaptarse continuamente',
+  'España tiene demasiados trabajadores dedicados a tareas administrativas y demasiado pocos a servicios directos',
+]) assert.notEqual(claimFocusFor(claim)?.id, 'sme-regulatory-compliance-burden', `A nearby tax, licensing, appointment, or public-workforce claim crossed into SME compliance evidence: ${claim}`);
+assert.equal(claimFocusFor('Los ingresos extra pequeños dejan de compensar cuando obligan a asumir costes de autónomo y gestoría')?.id, 'self-employment-cost-viability', 'RETA contributions and side-income viability must keep their own evidence family.');
+
+for (const claim of [
+  'Muchos autónomos necesitan pagar una gestoría solo para cumplir correctamente con Hacienda y Seguridad Social',
+  'La complejidad administrativa funciona como un impuesto adicional para pequeñas empresas y autónomos',
+  'Los pequeños comercios soportan una carga regulatoria que las grandes plataformas absorben con más facilidad',
+]) {
+  const result = focusedEvidencePlan(claim, { now: Date.parse('2026-11-26T12:00:00Z') });
+  assert.equal(result.answerScope.family, 'sme-regulatory-compliance-burden');
+  assert.equal(result.evidenceLevel, 'limited');
+  assert.equal(result.blocks.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict, 'insufficient');
+  assert.equal(result.sourceLinks.length, 1);
+  assert.equal(result.sourceLinks[0].id, 'eibis-spain-2025-regulatory-burden');
+  assert.match(result.shareableReply, /84 %/);
+  assert.match(result.shareableReply, /32 %/);
+  assert.match(result.shareableReply, /no mide por sí sola el coste/);
+}
+const directSmeComplianceMeasure = focusedEvidencePlan('¿Qué proporción de las pymes españolas dedica más del 10 % de su plantilla a cumplir requisitos regulatorios?', { now: Date.parse('2026-11-26T12:00:00Z') });
+assert.equal(directSmeComplianceMeasure.blocks.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict, 'supported');
+assert.match(directSmeComplianceMeasure.shareableReply, /32 %/);
+assert.doesNotMatch(directSmeComplianceMeasure.shareableReply, /84 %/, 'A direct staffing question must select its own measurement rather than the investment-obstacle context.');
+for (const claim of [
+  '¿Qué proporción de las pymes españolas dedica personal a cumplir la normativa en 2024?',
+  '¿Qué proporción de las pymes portuguesas dedica personal a cumplir la normativa en 2025?',
+]) {
+  const outOfScope = focusedEvidencePlan(claim, { now: Date.parse('2026-11-26T12:00:00Z') });
+  assert.deepEqual(outOfScope.sourceLinks, [], `A reviewed Spanish 2025 snapshot must not answer a different period or geography: ${claim}`);
 }
 for (const claim of [
   'Los requisitos para alquilar son más difíciles de cumplir que hace una década',
