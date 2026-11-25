@@ -213,6 +213,18 @@ for (const claim of [
 ]) assert.notEqual(claimFocusFor(claim)?.id, 'sme-regulatory-compliance-burden', `A nearby tax, licensing, appointment, or public-workforce claim crossed into SME compliance evidence: ${claim}`);
 assert.equal(claimFocusFor('Los ingresos extra pequeños dejan de compensar cuando obligan a asumir costes de autónomo y gestoría')?.id, 'self-employment-cost-viability', 'RETA contributions and side-income viability must keep their own evidence family.');
 
+const smeUtcReleaseBoundary = deterministicApiFallback({
+  text: 'Muchos autónomos necesitan pagar una gestoría solo para cumplir correctamente con Hacienda y Seguridad Social',
+  inputType: 'text',
+  now: Date.parse('2026-11-25T23:00:00Z'),
+});
+assert.equal(smeUtcReleaseBoundary.status, 'partial', 'The reviewed SME snapshot must be usable at its UTC release boundary.');
+assert.ok(smeUtcReleaseBoundary.result.sourceLinks.some((source) => source.id === 'eibis-spain-2025-regulatory-burden'), 'The public text fallback must retain its reviewed EIB source.');
+assert.match(smeUtcReleaseBoundary.result.shareableReply, /84 %/);
+const smeUtcReleasePublicResponse = localPublicCheckResponse(smeUtcReleaseBoundary, 'Muchos autónomos necesitan pagar una gestoría solo para cumplir correctamente con Hacienda y Seguridad Social');
+assert.equal(smeUtcReleasePublicResponse.state, 'insufficient', 'Related survey context must not turn an unmeasured gestoría-cost claim into a verified verdict.');
+assert.match(smeUtcReleasePublicResponse.result.reply, /No se puede confirmar que muchos autónomos deban pagar una gestoría/);
+
 for (const claim of [
   'Muchos autónomos necesitan pagar una gestoría solo para cumplir correctamente con Hacienda y Seguridad Social',
   'La complejidad administrativa funciona como un impuesto adicional para pequeñas empresas y autónomos',

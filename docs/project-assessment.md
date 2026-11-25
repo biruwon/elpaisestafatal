@@ -1812,7 +1812,11 @@ without employees or compare local shops directly with online platforms. The
 answer therefore presents the figures as context and leaves the claims about
 mandatory advisor costs, an additional tax, and platform-versus-shop costs
 unconfirmed. Direct questions about the two survey measures receive the
-matching figure and population.
+matching figure and population. A release-boundary audit caught that the first
+snapshot date was one calendar day ahead of the live Cloudflare runtime's UTC
+date, which suppressed the source until the next day. The reviewed and retrieval
+dates now use the UTC date, and the deterministic public fallback is checked at
+that boundary.
 
 The reusable family keeps those two measures distinct and rejects nearby
 questions about appointments, licenses, public aid and tax-system changes.
@@ -1821,10 +1825,15 @@ side-income being outweighed by self-employment costs. Held-out answer checks
 pass 254/254 cases across 67 paraphrase groups; claim-focus validation checks
 380 formulations and negative neighbours. The refreshed 300-claim audit
 routes 187 candidates to a metric or focused family and leaves 113 without a
-deterministic route. It reports 7 complete, 104 limited and 189 uncovered
-answers; public states remain 263 insufficient and 37 limited. These figures
-describe routing and evidence coverage, not factual accuracy for arbitrary
-claims.
+deterministic route. With the snapshot usable at the actual UTC release
+boundary, the deterministic fallback returns 7 complete, 107 limited and 186
+uncovered answers; public states are 263 insufficient and 37 limited. The
+largest uncovered topic groups are employment and wages (26), immigration and
+security (24), tax and public administration (23), health (21), and education
+(21). These are unverified discovery claims, so the counts prioritize evidence
+work; they do not measure factual accuracy. The next data work should target
+those recurring gaps with reviewed sources instead of treating more routes as
+more coverage.
 
 ## Pension and early-career wage comparison — 25 November 2026
 

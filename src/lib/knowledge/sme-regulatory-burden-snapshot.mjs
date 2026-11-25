@@ -4,7 +4,7 @@ const source = {
   publisher: 'European Investment Bank',
   url: 'https://www.eib.org/files/publications/20250218-091225-econ-eibis-2025-spain-en.pdf',
   publishedAt: '2025-12-09',
-  retrievedAt: '2026-11-26',
+  retrievedAt: '2026-11-25',
   role: 'primary',
 };
 
@@ -61,8 +61,8 @@ const factDimensions = [
 export const SME_REGULATORY_BURDEN_SNAPSHOT = Object.freeze({
   schemaVersion: '1',
   owner: 'knowledge-review',
-  createdAt: '2026-11-26',
-  asOf: '2026-11-26',
+  createdAt: '2026-11-25',
+  asOf: '2026-11-25',
   expiresAt: '2026-12-09',
   validationStatus: 'reviewed',
   territories: ['ES'],
