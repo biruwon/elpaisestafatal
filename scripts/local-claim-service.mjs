@@ -9,6 +9,7 @@ import { promisify } from 'node:util';
 import { handlerForInput, handlerForPublishedClaim, handlerForSemanticProfile, hasHouseholdArrangementContrast, visualBlockForHandler } from './knowledge/handlers.mjs';
 import { discoverOfficialDocuments, discoveryObservation } from './knowledge/official-discovery.mjs';
 import { filterObservationsForRequestedGroup, findWarehouseObservations, hasSufficientClaimTermOverlap, populationEvidenceFit, recordedOffenceCategoryForQuery } from './knowledge/warehouse-query.mjs';
+import { sourceForScopedObservations } from './knowledge/scoped-observation-source.mjs';
 import { INPUT_LIMITS, validateInputMetadata, fileMimeType } from '../src/lib/knowledge/input-contract.mjs';
 import { LOCAL_COMPILER_TEXT_LIMIT, textAnalysisLimitFor, textAnalysisLimitPlan } from '../src/lib/knowledge/text-analysis-coverage.mjs';
 import { resolveExtractedSubmission } from './lib/submission-extraction.mjs';
@@ -3523,12 +3524,16 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
     : [];
   const claimRelevantTrustedWeb = trustedWebCandidates.filter((item) => hasSufficientClaimTermOverlap(text, tokens(`${item.metric || ''} ${item.excerpt || ''}`), 3));
   const trustedWeb = filterObservationsForRequestedGroup(text, claimRelevantTrustedWeb);
-  const source = sourceOverride || warehouse.source || liveLegal[0]?.source || (indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined) || discovered[0]?.source || trustedWeb[0]?.source;
+  const candidateSources = [warehouse.source, liveLegal[0]?.source, discovered[0]?.source, trustedWeb[0]?.source];
+  const indexedContextSource = indexedSource ? { id: indexedSource.id, title: `Fuente indexada: ${indexedSource.title}`, url: indexedSource.url } : undefined;
   const broadComplaint = broadComplaintText(text) || /\b(?:espana|pais|este pais)\b[\s\w]{0,48}\b(?:quebrada?|quiebra|bancarrota|impagable|insostenible|fatal|desastre|ruina|peor|mal)\b/.test(normalise(text));
   const selectedObservations = broadComplaint
     ? [...new Map([...(broadPacketAvailable ? warehouse.observations : scorecardObservations), ...(broadPacketAvailable ? scorecardObservations : warehouse.observations)].map((item) => [item.id, item])).values()].slice(0, broadPacketAvailable ? broadPacketEvidenceRowLimit : 96)
     : warehouse.observations.length ? warehouse.observations : liveLegal.length ? liveLegal : discovered.length ? discovered : trustedWeb;
   const observations = filterObservationsForRequestedGroup(text, selectedObservations);
+  const source = sourceOverride
+    || sourceForScopedObservations(candidateSources, observations)
+    || (!observations.length && !warehouse.observations.length ? indexedContextSource : undefined);
   const deterministic = toResolveResult(text, retrievalClassified, source, resultRequestId, observations);
   // Broad rhetorical claims need a reviewed multi-family context packet when
   // the warehouse only found a narrow or unrelated series. Dynamic evidence

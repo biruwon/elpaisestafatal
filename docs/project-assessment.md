@@ -1609,3 +1609,18 @@ discovery no longer inherit the daily or hourly limits by accident. Production
 still needs the repository's Cloudflare account ID and scoped D1 token before
 the scheduled workflow can bring its evidence store up to date. Observation
 period and population remain separate from snapshot retrieval time in answers.
+
+## Text source follows retained evidence — 25 November 2026
+
+The resolver previously chose a source before applying its final population
+filter. An observation could then be removed while its source remained attached
+to the response. Source selection now follows the observations that survive
+that filter; a source with no retained evidence is omitted. The separately
+validated indexed-source path remains available as contextual material when no
+warehouse observation was returned.
+
+The warehouse-query regression checks two paraphrases against the same
+foreign-beneficiary evidence, the adjacent Spanish-beneficiary wording against
+its own evidence, and an empty population match without a source. This protects
+source attribution at the filter boundary; it does not resolve the production
+D1 refresh gap or establish accuracy for arbitrary claims.

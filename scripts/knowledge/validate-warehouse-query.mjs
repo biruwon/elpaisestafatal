@@ -3,6 +3,7 @@ import { claimMeasurementScopeCompatible, constrainMetricIdsToQueryScope, exclud
 import { summarizeWarehouseTrend } from './warehouse-trend.mjs';
 import { handlerForInput } from './handlers.mjs';
 import { observationMatchesAgeScope, requestedAgeScopes } from '../../src/lib/knowledge/age-scope.mjs';
+import { sourceForScopedObservations } from './scoped-observation-source.mjs';
 
 const records = [
   { id: 'obs-1', datasetId: 'Tasa de empleo', metric: 'employment rate', value: 68.2, unit: '%', period: '2026-Q1', dimensions: { geography: 'Spain' }, source: { id: 'source-ine', publisher: 'INE', url: 'https://www.ine.es/' } },
@@ -16,6 +17,27 @@ if (rankWarehouseObservations('unknown metric', records).length) throw new Error
 const modelResearchRecord = { id: 'llm-candidate', kind: 'llm-research-evidence', datasetId: 'Tasa de empleo', metric: 'employment rate', value: 99, unit: '%', period: '2026', finding: 'The model says employment is 99%.', source: { id: 'llm-source', publisher: 'INE', url: 'https://www.ine.es/' } };
 if (rankWarehouseObservations('employment rate Spain', [modelResearchRecord]).length) throw new Error('Warehouse query exposed a model-generated research lead as source evidence');
 if (warehouseEvidenceFit(0.34) !== 'weak' || warehouseEvidenceFit(0.5) !== 'qualified' || warehouseEvidenceFit(0.8) !== 'direct') throw new Error('Warehouse evidence-fit thresholds are invalid');
+
+const foreignBenefitSource = { id: 'sepe-foreign-benefits', url: 'https://source.test/sepe/foreign-benefits' };
+const spanishBenefitSource = { id: 'sepe-spanish-benefits', url: 'https://source.test/sepe/spanish-benefits' };
+const foreignBenefitObservation = { id: 'foreign-benefit-count', metricId: 'unemployment_beneficiaries_by_nationality', dimensions: { group: 'foreign' }, dimensionLabels: { group: 'Extranjera' }, source: foreignBenefitSource };
+const spanishBenefitObservation = { id: 'spanish-benefit-count', metricId: 'unemployment_beneficiaries_by_nationality', dimensions: { group: 'spanish' }, dimensionLabels: { group: 'Española' }, source: spanishBenefitSource };
+const benefitObservations = [foreignBenefitObservation, spanishBenefitObservation];
+const foreignBenefitParaphrases = [
+  '¿Cuántas personas extranjeras cobran prestaciones por desempleo?',
+  'Número de beneficiarios de nacionalidad extranjera del paro',
+];
+const foreignEvidenceSets = foreignBenefitParaphrases.map((query) => filterObservationsForRequestedGroup(query, benefitObservations));
+if (foreignEvidenceSets.some((items) => items.length !== 1 || items[0].id !== 'foreign-benefit-count')) throw new Error('Foreign-benefit paraphrases did not retain the same population-scoped observation');
+for (const items of foreignEvidenceSets) {
+  const source = sourceForScopedObservations([spanishBenefitSource], items);
+  if (source?.id !== 'sepe-foreign-benefits') throw new Error('A population-filtered answer kept the pre-filter source instead of the retained observation source');
+}
+const spanishEvidence = filterObservationsForRequestedGroup('¿Cuántos beneficiarios españoles cobran prestaciones por desempleo?', benefitObservations);
+if (spanishEvidence.length !== 1 || spanishEvidence[0].id !== 'spanish-benefit-count') throw new Error('The nearby Spanish-beneficiary claim inherited the foreign group');
+if (sourceForScopedObservations([foreignBenefitSource], spanishEvidence)?.id !== 'sepe-spanish-benefits') throw new Error('The nearby Spanish-beneficiary claim retained the foreign population source');
+const noMatchingPopulationEvidence = filterObservationsForRequestedGroup('¿Cuántos beneficiarios españoles cobran prestaciones por desempleo?', [foreignBenefitObservation]);
+if (noMatchingPopulationEvidence.length || sourceForScopedObservations([foreignBenefitSource], noMatchingPopulationEvidence)) throw new Error('A source survived after every observation failed the requested-population filter');
 
 const rentTrendSource = { id: 'rent-trend-source', title: 'Eurostat actual rents HICP', retrievedAt: '2026-11-25T00:00:00.000Z', url: 'https://ec.europa.eu/eurostat/' };
 const longRentSeries = [];
