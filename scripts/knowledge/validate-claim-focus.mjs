@@ -147,6 +147,12 @@ const cases = [
   ['healthcare-staffing-causality', ['La falta de médicos en algunas zonas se debe más a las condiciones de trabajo que al número total de titulados', 'Hay vacantes médicas en pueblos porque las plazas ofrecen condiciones poco atractivas', 'Faltan facultativos en la periferia pese a que hay suficientes graduados']],
   ['internship-labour-substitution', ['Las prácticas y becas sustituyen puestos de entrada que antes eran empleos normales', 'Muchas empresas usan becarios para hacer trabajo ordinario con menor coste', 'Las empresas cubren funciones de plantilla con personas en prácticas para pagar menos']],
   ['work-housing-independence', ['Tener un trabajo a jornada completa ya no garantiza poder independizarse', 'Un empleo a tiempo completo no basta para vivir por cuenta propia', 'Trabajar a jornada completa no asegura poder emanciparse']],
+  ['housing-labour-mobility', [
+    'La crisis de vivienda está frenando la movilidad laboral entre ciudades',
+    'El encarecimiento de la vivienda está obligando a profesionales cualificados a marcharse de Madrid, Barcelona y otras ciudades',
+    'El coste del alquiler limita que los trabajadores se muden a provincias con más empleo',
+    'Los precios de la vivienda condicionan los cambios de residencia de los trabajadores entre territorios',
+  ]],
   ['rental-tenant-screening-exclusion', ['Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares', 'Los avales y requisitos de solvencia dejan fuera a inquilinos con ingresos variables', 'Personas con nóminas inestables son rechazadas para alquilar por no cumplir las garantías', 'El mercado del alquiler penaliza a autónomos y personas sin nómina indefinida', 'Las inmobiliarias y los seguros de impago exigen condiciones que dejan fuera a muchos trabajadores normales']],
   ['rental-screening-requirements-trend', ['Los requisitos para alquilar son más difíciles de cumplir que hace una década', 'Ahora cuesta más cumplir las garantías que piden para arrendar una vivienda']],
   ['rental-regulation-contract-shift', ['La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales', 'Los topes de alquiler hacen que parte de la oferta desaparezca del mercado regulado', 'El control de precios provoca que viviendas pasen del alquiler habitual al de temporada', 'El control de rentas reduce las viviendas anunciadas en las zonas afectadas', 'Limitar el precio del alquiler hace que algunos propietarios retiren sus pisos']],
@@ -203,6 +209,56 @@ const publicInternshipResponse = localPublicCheckResponse({
 assert.equal(publicInternshipResponse.state, 'insufficient', 'Contextual inspection counts must not upgrade the causal claim verdict');
 assert.match(publicInternshipResponse.result.reply, /La evidencia no basta.*1\.580\.637.*2\.688/s, 'The public text answer should keep the scoped context instead of collapsing to a generic gap');
 assert.deepEqual(publicInternshipResponse.result.sources.map((source) => source.id).sort(), [...internshipEvidenceSourceIds].sort());
+const housingMobilityParaphrases = [
+  'La crisis de vivienda está frenando la movilidad laboral entre ciudades',
+  'El encarecimiento de la vivienda está obligando a profesionales cualificados a marcharse de Madrid, Barcelona y otras ciudades',
+  'El coste del alquiler limita que los trabajadores se muden a provincias con más empleo',
+  'Los precios de la vivienda condicionan los cambios de residencia de los trabajadores entre territorios',
+];
+const housingMobilitySourceIds = ['bank-spain-housing-mobility-annual-2025'];
+const housingMobilityPlan = focusedEvidencePlan(housingMobilityParaphrases[0], { now: Date.parse('2026-11-25') });
+assert.equal(housingMobilityPlan.answerScope.family, 'housing-labour-mobility');
+assert.equal(housingMobilityPlan.claimType, 'causal');
+assert.deepEqual(housingMobilityPlan.answerScope.directMetrics, []);
+assert.deepEqual(housingMobilityPlan.answerScope.contextMetrics, []);
+assert.equal(housingMobilityPlan.evidenceLevel, 'limited', 'Provincial migration estimates provide context, not a direct count of workers whose mobility is constrained');
+assert.equal(housingMobilityPlan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
+assert.deepEqual(housingMobilityPlan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.evidenceIds, [], 'Contextual migration estimates must not be presented as direct proof of labor mobility');
+assert.deepEqual(housingMobilityPlan.sourceLinks.map((source) => source.id), housingMobilitySourceIds);
+assert.match(housingMobilityPlan.shareableReply, /2014–2024/);
+assert.match(housingMobilityPlan.shareableReply, /0,6 %/);
+assert.match(housingMobilityPlan.shareableReply, /flujo relativo/i);
+assert.match(housingMobilityPlan.shareableReply, /no por profesi[oó]n|no desglosa.*ocupaci[oó]n/i);
+assert.match(housingMobilityPlan.shareableReply, /motivo de cada mudanza/i);
+for (const paraphrase of housingMobilityParaphrases.slice(1)) {
+  const plan = focusedEvidencePlan(paraphrase, { now: Date.parse('2026-11-25') });
+  assert.equal(plan.answerScope.family, 'housing-labour-mobility', `A housing and labor-mobility paraphrase changed family: ${paraphrase}`);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), housingMobilitySourceIds, `A paraphrase changed the primary source: ${paraphrase}`);
+  assert.match(plan.shareableReply, /0,6 %/);
+}
+const skilledHousingMobility = focusedEvidencePlan(housingMobilityParaphrases[1], { now: Date.parse('2026-11-25') });
+assert.match(skilledHousingMobility.shareableReply, /no separa cada provincia o ciudad/i);
+assert.match(skilledHousingMobility.shareableReply, /no demuestra que el encarecimiento cause menos movilidad laboral ni que obligue a profesionales cualificados a marcharse/i);
+const housingMobilityPublic = localPublicCheckResponse({
+  status: 'complete', requestId: 'housing-labour-mobility-text-evidence', result: skilledHousingMobility,
+}, housingMobilityParaphrases[1]);
+assert.equal(housingMobilityPublic.state, 'insufficient', 'A contextual provincial estimate must not confirm the named skilled-worker claim');
+assert.match(housingMobilityPublic.result.reply, /2014–2024.*0,6 %.*no demuestra que el encarecimiento cause menos movilidad laboral/s, 'The public answer should preserve the scoped estimate, period and causal limit');
+assert.deepEqual(housingMobilityPublic.result.sources.map((source) => source.id), housingMobilitySourceIds);
+const housingMobilityOutsidePeriod = focusedEvidencePlan('En 2026 el alquiler está frenando la movilidad laboral entre ciudades', { now: Date.parse('2026-11-25') });
+assert.equal(housingMobilityOutsidePeriod.evidenceLevel, 'insufficient', 'The 2014–2024 estimate must not be shown as evidence for a 2026 claim');
+assert.deepEqual(housingMobilityOutsidePeriod.sourceLinks, []);
+for (const [claim, expected] of [
+  ['La inmigración está haciendo que suban los alquileres en algunas ciudades', 'migration-housing-demand-causality'],
+  ['La vivienda cara retrasa la emancipación de jóvenes con empleo a jornada completa', 'work-housing-independence'],
+  ['Las ciudades con más empleo son aquellas donde la vivienda se come la mejora salarial', 'regional-wage-housing-cost'],
+]) assert.equal(claimFocusFor(claim)?.id, expected, `A neighboring claim crossed into housing labor mobility: ${claim}`);
+for (const claim of [
+  'La falta de empleo obliga a trabajadores cualificados a marcharse de Madrid',
+  'El aumento del alquiler reduce el turismo entre ciudades',
+  'La vivienda cara expulsa a familias de Madrid',
+]) assert.notEqual(claimFocusFor(claim)?.id, 'housing-labour-mobility', `A neighboring claim crossed into housing labor mobility: ${claim}`);
 const publicDigitalBarrier = focusedEvidencePlan('Los trámites online excluyen a personas mayores o con poca competencia digital', { now: Date.parse('2026-11-24T12:00:00Z') });
 assert.equal(publicDigitalBarrier.answerScope.family, 'public-service-digital-access');
 assert.equal(publicDigitalBarrier.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient',

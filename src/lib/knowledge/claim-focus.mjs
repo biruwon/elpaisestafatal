@@ -21,6 +21,7 @@ import { EUROPEAN_PRICE_WAGE_CONVERGENCE_EVIDENCE } from './european-price-wage-
 import { PUBLIC_PRIVATE_PAY_SNAPSHOT } from './public-private-pay-snapshot.mjs';
 import { PUBLIC_SOCIAL_HOUSING_SNAPSHOT, asksForPublicSocialStockCount } from './public-social-housing-snapshot.mjs';
 import { YOUTH_HOUSING_INDEPENDENCE_SNAPSHOT } from './youth-housing-independence-snapshot.mjs';
+import { HOUSING_LABOUR_MOBILITY_EVIDENCE } from './housing-labour-mobility-snapshot.mjs';
 import { ROOM_RENTAL_MARKET_SNAPSHOT, roomRentalMarketClaimFor, roomRentalMarketDirectMeasureFor, roomRentalMarketRequestedMeasureFor } from './room-rental-market-snapshot.mjs';
 import { PUBLIC_SERVICE_DIGITAL_ACCESS_SNAPSHOT, publicServiceDigitalAccessClaimFor, publicServiceDigitalAccessMeasureFor } from './public-service-digital-access-snapshot.mjs';
 import { PUBLIC_DOCUMENT_REUSE_SNAPSHOT, publicDocumentReuseClaimFor, publicDocumentReuseLegalQuestionFor } from './public-document-reuse-snapshot.mjs';
@@ -613,6 +614,14 @@ const workHousingIndependence = (t) => {
 const workHousingCostCausality = (t) => /\b(viviend\w*|alquil\w*|precio\w*|coste\w*|costo\w*|renta\w*)\b/.test(t)
   && /\b(retras\w*|fren\w*|dificult\w*|impid\w*|oblig\w*|alej\w*|reduc\w*|condicion\w*|imposib\w*|encarec\w*|expuls\w*|presion\w*)\b/.test(t);
 const workHousingTrend = (t) => /\b(ya no|cada vez|se ha vuelto|antes|ahora|desde (?:19|20)\d{2}|entre (?:19|20)\d{2} y (?:19|20)\d{2}|ultimos a[nñ]os)\b/.test(t);
+const housingLabourMobility = (t) => {
+  const housing = /\b(viviend\w*|alquil\w*|arrendam\w*|coste de (?:la )?viviend\w*|precio\w* de (?:la )?viviend\w*)\b/.test(t);
+  const housingPressure = /\b(crisis|car\w*|encarec\w*|precio\w*|coste\w*|costo\w*|asequib\w*|inaccesib\w*|gasto\w*|alquil\w*|renta\w*)\b/.test(t);
+  const workerOrJob = /\b(laboral\w*|trabajad\w*|emple\w*|ocupaci\w*|profesional\w*|cualific\w*|puesto\w*|fuerza laboral)\b/.test(t);
+  const relocation = /\b(movil\w*|migr\w*|mud\w*|traslad\w*|march\w*|emigr\w*|reubic\w*|desplaz\w*|irse de|cambi\w* de (?:ciudad|provincia|residencia))\b/.test(t);
+  const causalLink = /\b(fren\w*|reduc\w*|limit\w*|dificult\w*|impid\w*|oblig\w*|expuls\w*|condicion\w*|afect\w*|caus\w*|provoc\w*|forz\w*|empuj\w*|determin\w*|influ\w*)\b/.test(t);
+  return housing && housingPressure && workerOrJob && relocation && causalLink;
+};
 const rentalSubject = (t) => /\b(viviend\w*|alquil\w*|arrendam\w*|inquilin\w*|piso\w*|casas?|apartament\w*)\b/.test(t);
 const rentalScreeningRequirementsTrend = (t) => {
   const explicitRentalContext = /\b(alquil\w*|arrend\w*|inquilin\w*)\b/.test(t);
@@ -2069,6 +2078,22 @@ const focuses = [
       ].join('\n\n');
     },
     limitation: 'La ECV 2025 pregunta por convivencia y motivos entre personas de 26–34 años y desglosa por renta personal, no por estabilidad contractual o jornada. El CJE desglosa la emancipación de jóvenes de 16–29 años por situación de actividad, pero no por tipo de contrato; su esfuerzo de alquiler es una comparación de promedios. Las cifras son transversales y no miden duración ni causa del retraso. Los grupos de edad y denominadores no son intercambiables.',
+  },
+  {
+    id: 'housing-labour-mobility', label: 'coste de vivienda y movilidad residencial de trabajadores',
+    when: housingLabourMobility,
+    direct: [], context: [], claimType: 'causal',
+    needs: [
+      'flujos de cambio de residencia y de empleo por origen, destino, ocupación y nivel de cualificación',
+      'precios reales de alquiler y salarios o empleo en los mismos territorios y periodos',
+      'motivos de mudanza y una comparación que distinga el coste de vivienda de empleo, familia, transporte y otros factores',
+    ],
+    explanationHeadline: 'El alquiler se relaciona con los destinos provinciales; faltan datos laborales por ocupación',
+    explanation: 'El Banco de España estima cómo los alquileres relativos se relacionan con los cambios de residencia entre provincias. El estudio no identifica qué trabajadores o profesiones se mueven ni el motivo de cada mudanza.',
+    evidenceGap: 'La estimación publicada trata flujos residenciales agrupados entre provincias; no aísla la movilidad laboral, el movimiento de profesionales cualificados ni el efecto de una ciudad concreta.',
+    explanationEvidence: HOUSING_LABOUR_MOBILITY_EVIDENCE,
+    shareableReplyForContext: HOUSING_LABOUR_MOBILITY_EVIDENCE.shareableReplyForContext,
+    limitation: 'Los movimientos entre provincias son cambios de residencia, no todos los cambios de empleo o desplazamientos diarios. La estimación es un efecto relativo agrupado para España: no cuenta personas expulsadas, no identifica profesiones ni atribuye cada mudanza a la vivienda.',
   },
   {
     id: 'rental-screening-requirements-trend', label: 'evolución de los requisitos para alquilar',
