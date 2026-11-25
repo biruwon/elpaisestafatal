@@ -1573,6 +1573,15 @@ from its two source rows. All 24 domain feeds in the local refresh report
 succeeded. These are local source-readiness counts; they do not confirm that
 production D1 was synchronized or estimate accuracy for arbitrary text.
 
+The tourism-employment share remains snapshot-backed because INE publishes it
+in the annual Satellite Account release, while the configured `DATOS_TABLA/72970`
+series supplies job counts. The latest release available for this review lists
+2021–2024 shares, with 2023 provisional and 2024 an advance estimate. Refreshing
+that archived page repeatedly would update its retrieval date without adding a
+new observation period, and the job-count series is not a substitute for the
+percentage. Keep the snapshot's period and status visible until the next INE
+release is reviewed.
+
 The composition fixture also removes one required poverty component and checks
 that the aggregate becomes a source gap. The subjective-poverty paraphrase and
 nearby-claim checks pass; the held-out text-answer benchmark remains 199/199
