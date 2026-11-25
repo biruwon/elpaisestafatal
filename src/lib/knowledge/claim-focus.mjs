@@ -212,6 +212,17 @@ const residentialDisplacementEvidence = {
 const healthcareWorkforceCausality = (t) => /\b(medic\w*|facultativ\w*|enfermer\w*|personal sanitario|profesional\w* sanitari\w*)\b/.test(t)
   && /\b(falt\w*|escasez|deficit|poc\w*|insuficient\w*)\b/.test(t)
   && /\b(condicion\w*|t[ií]tul\w*|graduad\w*|homolog\w*|plantilla|vacantes?|plazas?|zonas?|puebl\w*|rural\w*|capital\w*|provinci\w*|territorio|distribuci\w*)\b/.test(t);
+const publicMentalHealthPsychologistContext = (t) => /\b(psicolog\w*)\b/.test(t)
+  && /\b(public\w*|sistema public\w*)\b/.test(t)
+  && /\b(salud mental|sanidad|sistema sanitari\w*|atencion psicologic\w*|psicolog\w* clinic\w*)\b/.test(t);
+const publicMentalHealthPsychologistShortage = (t) => /\b(falt\w*|escasez|deficit|poc\w*|insuficient\w*|demasiad\w*|no cubr\w*|no bast\w*)\b/.test(t)
+  && !/\bno (?:falt\w*|hay (?:tan )?poc\w*|(?:es|resulta|parece) insuficient\w*)\b/.test(t);
+const publicMentalHealthPsychologistCount = (t) => publicMentalHealthPsychologistContext(t)
+  && /\b(cuant\w*|numero\w*|recuent\w*|total\w*|cifra\w*)\b/.test(t)
+  && !publicMentalHealthPsychologistShortage(t);
+const publicMentalHealthPsychologistCapacity = (t) => publicMentalHealthPsychologistContext(t)
+  && publicMentalHealthPsychologistShortage(t)
+  && !/\b(caus\w*|provoc\w*|gener\w*|debido|por falta|hace que|empuj\w*|lleva a|conllev\w*)\b/.test(t);
 const specialistOutpatientComparisonRows = [
   { geography: 'Andalucía', aliases: [], value: 136 },
   { geography: 'Aragón', aliases: [], value: 138 },
@@ -2540,6 +2551,22 @@ const focuses = [
     needs: ['médicos en ejercicio, vacantes y población por especialidad y territorio', 'graduados que se incorporan al sistema y puestos que aceptan', 'condiciones laborales comparables y una medida que permita atribuir las vacantes a esas condiciones'],
     explanation: 'El número de titulados no equivale al número de médicos disponibles en cada zona. También importan la especialidad, la incorporación al sistema, las vacantes y las condiciones de los puestos.',
     limitation: 'Un total nacional de médicos o de graduados no permite establecer por qué faltan profesionales en una zona concreta. Para atribuirlo a las condiciones laborales hacen falta datos territoriales y una comparación del mismo periodo.',
+  },
+  {
+    id: 'public-mental-health-psychologist-count', label: 'recuento de psicólogos clínicos en la sanidad pública',
+    when: publicMentalHealthPsychologistCount,
+    direct: [], context: [], claimType: 'descriptive',
+    needs: ['un recuento oficial de psicólogos clínicos empleados en el sistema público, distinguiendo personas y equivalentes a jornada completa, con territorio y periodo'],
+    explanation: 'Un dato agregado de profesionales sanitarios no responde cuántos psicólogos clínicos trabajan en la sanidad pública; hace falta un recuento por profesión y ámbito asistencial.',
+    limitation: 'Sin un recuento oficial con profesión, sistema, territorio y periodo no se puede dar una cifra de psicólogos clínicos de la sanidad pública.',
+  },
+  {
+    id: 'public-mental-health-psychologist-capacity', label: 'dotación pública de psicología clínica y demanda asistencial',
+    when: publicMentalHealthPsychologistCapacity,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['dotación de psicólogos clínicos del sistema público en equivalentes a jornada completa, por territorio y periodo', 'población atendida y demanda medida mediante solicitudes, derivaciones, pacientes en espera y tiempos de espera', 'un criterio explícito de cobertura suficiente para la misma población y periodo'],
+    explanation: 'El número de psicólogos clínicos por sí solo no permite saber si la atención pública cubre la demanda; hay que medir la dotación y la necesidad asistencial con bases comparables.',
+    limitation: 'Sin datos comparables de dotación, población atendida, demanda no cubierta y un criterio de suficiencia no se puede valorar si faltan profesionales.',
   },
   {
     id: 'public-private-job-conditions', label: 'condiciones laborales y elección entre empleo público y privado',

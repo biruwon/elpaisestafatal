@@ -1723,3 +1723,29 @@ keep their own routes. The current contextual observation is Eurostat's
 does not measure all industrial firms or prove a causal loss of
 competitiveness. These regression checks address the discovered family only;
 they do not score text accuracy across the full claim corpus.
+
+## Health-access text audit — 25 November 2026
+
+A four-claim live sample kept causal claims about primary-care delays and
+regional physician shortages insufficient. The public-access answer for rural
+healthcare was also insufficient, but repeated the same comparison gap in
+three paragraphs. Its family composer now states the missing rural/urban
+measure once and keeps the service, population, territory and period
+requirements together.
+
+The same sample found unrelated official search results for a claim that
+public mental-health services have too few clinical psychologists for demand.
+The public adapter withheld those unverified documents and kept the result
+insufficient. A reusable capacity-versus-demand family now asks for public
+clinical-psychologist staffing, the population served, demand and waiting-time
+measures, territory and period, and an explicit adequacy criterion. Direct
+staffing-count questions use a separate evidence-gap family so broad health or
+employment snapshots cannot stand in for a psychologist count; causal claims
+about waiting lists also stay outside the adequacy comparison. Tests cover
+three paraphrases and those nearby claims.
+The follow-up replay completed both claims: each remained publicly
+insufficient with zero public sources, and the new psychologist-capacity route
+did not expose the unrelated search results. The refreshed 300-candidate
+operational audit now reports 177 candidates with a metric or focused-family
+route and 123 without one; these are routing counts over unverified claims,
+not an accuracy score.

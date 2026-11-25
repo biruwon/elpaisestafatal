@@ -152,6 +152,8 @@ const cases = [
   ['migration-overqualification', ['La tasa de sobrecualificación de extranjeros es mayor que la de españoles', '¿Qué parte de las personas con ciudadanía extranjera y estudios terciarios trabaja en ocupaciones de menor cualificación?', 'La tasa de sobrecualificación de ciudadanos de otros países de la Unión Europea']],
   ['migrant-credential-recognition', ['La homologación lenta de títulos obliga a inmigrantes cualificados a trabajar por debajo de su formación', 'El retraso en convalidar estudios superiores deja a personas migrantes en puestos por debajo de su preparación', 'Los títulos obtenidos fuera de España no se reconocen y los profesionales extranjeros acaban en empleos de baja cualificación']],
   ['healthcare-staffing-causality', ['La falta de médicos en algunas zonas se debe más a las condiciones de trabajo que al número total de titulados', 'Hay vacantes médicas en pueblos porque las plazas ofrecen condiciones poco atractivas', 'Faltan facultativos en la periferia pese a que hay suficientes graduados']],
+  ['public-mental-health-psychologist-count', ['¿Cuántos psicólogos clínicos trabajan en la sanidad pública?', '¿Qué número de psicólogos clínicos atiende la salud mental pública?']],
+  ['public-mental-health-psychologist-capacity', ['La salud mental pública tiene demasiados pocos psicólogos clínicos para la demanda existente', 'En la sanidad pública faltan psicólogos clínicos para atender a quienes los necesitan', 'La plantilla pública de psicología clínica no cubre la demanda de atención']],
   ['internship-labour-substitution', ['Las prácticas y becas sustituyen puestos de entrada que antes eran empleos normales', 'Muchas empresas usan becarios para hacer trabajo ordinario con menor coste', 'Las empresas cubren funciones de plantilla con personas en prácticas para pagar menos']],
   ['work-housing-independence', ['Tener un trabajo a jornada completa ya no garantiza poder independizarse', 'Un empleo a tiempo completo no basta para vivir por cuenta propia', 'Trabajar a jornada completa no asegura poder emanciparse']],
   ['housing-labour-mobility', [
@@ -1602,6 +1604,13 @@ assert.deepEqual(ruralMedicalAccess.answerScope.contextMetrics, []);
 assert.deepEqual(ruralMedicalAccess.sourceLinks, [], 'National healthcare statistics must not stand in for a rural-versus-urban comparison');
 assert.match(ruralMedicalAccess.shareableReply, /disponibilidad de médicos y especialistas o tiempo de acceso, comparados por población rural y urbana/);
 assert.doesNotMatch(ruralMedicalAccess.shareableReply, /vivienda|alquiler|educaci[oó]n|transporte/);
+assert.ok(ruralMedicalAccess.shareableReply.trim().split(/\s+/).length <= 65, 'The rural-versus-urban evidence gap should stay concise');
+for (const paraphrase of ['La disponibilidad de médicos rurales es peor que en las ciudades']) {
+  const plan = focusedEvidencePlan(paraphrase);
+  assert.equal(plan.answerScope.family, 'rural-urban-service-access');
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  assert.equal(plan.shareableReply, ruralMedicalAccess.shareableReply, 'Rural healthcare paraphrases should get the same scoped evidence gap');
+}
 for (const neighbour of [
   'La atención médica rural necesita más profesionales',
   'En los pueblos hay pocos especialistas disponibles',
@@ -2419,6 +2428,44 @@ assert.deepEqual([...focusedMetricIdsFor(migrationWageClaim)], [], 'A total wage
 assert.deepEqual([...focusedMetricIdsFor(migrationFiscalClaim)], [], 'A programme or graduate series must not stand in for group-level net fiscal contribution');
 assert.deepEqual([...focusedMetricIdsFor(migrantCredentialClaim)], ['tertiary_overqualification_rate'], 'Credential claims may use only the citizenship-specific overqualification measure as context');
 assert.deepEqual([...focusedMetricIdsFor(healthcareStaffingClaim)], [], 'Graduate employment must not stand in for regional physician staffing or its causes');
+const publicPsychologistCapacityClaims = [
+  'La salud mental pública tiene demasiados pocos psicólogos clínicos para la demanda existente',
+  'En la sanidad pública faltan psicólogos clínicos para atender a quienes los necesitan',
+  'La plantilla pública de psicología clínica no cubre la demanda de atención',
+];
+let publicPsychologistCapacityReply;
+for (const claim of publicPsychologistCapacityClaims) {
+  const plan = focusedEvidencePlan(claim);
+  assert.equal(plan.answerScope.family, 'public-mental-health-psychologist-capacity');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  assert.equal(plan.evidenceLevel, 'insufficient');
+  assert.deepEqual(plan.sourceLinks, [], 'Unverified or unrelated documents must not become evidence for psychologist staffing adequacy');
+  assert.match(plan.shareableReply, /jornada completa.*territorio y periodo/);
+  assert.match(plan.shareableReply, /solicitudes, derivaciones, pacientes en espera y tiempos de espera/);
+  assert.match(plan.shareableReply, /criterio explícito de cobertura suficiente/);
+  const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: 'psychologist-capacity-gap', result: plan }, claim);
+  assert.equal(publicResponse.state, 'insufficient');
+  assert.equal(publicResponse.result.arguments[0].verdict, 'insufficient');
+  assert.deepEqual(publicResponse.result.sources, []);
+  if (publicPsychologistCapacityReply) assert.equal(plan.shareableReply, publicPsychologistCapacityReply, 'Psychologist-capacity paraphrases should share the same evidence contract');
+  publicPsychologistCapacityReply = plan.shareableReply;
+}
+const publicPsychologistCountClaim = '¿Cuántos psicólogos clínicos trabajan en la sanidad pública?';
+const publicPsychologistCountPlan = focusedEvidencePlan(publicPsychologistCountClaim);
+assert.equal(publicPsychologistCountPlan.answerScope.family, 'public-mental-health-psychologist-count', 'A direct staffing count must not be graded as a claim that staffing is insufficient');
+assert.equal(publicPsychologistCountPlan.evidenceLevel, 'insufficient');
+assert.deepEqual(publicPsychologistCountPlan.sourceLinks, []);
+assert.match(publicPsychologistCountPlan.shareableReply, /recuento oficial de psicólogos clínicos.*territorio y periodo/);
+const publicPsychologistCountResponse = localPublicCheckResponse({ status: 'complete', requestId: 'psychologist-count-gap', result: publicPsychologistCountPlan }, publicPsychologistCountClaim);
+assert.equal(publicPsychologistCountResponse.state, 'insufficient');
+assert.deepEqual(publicPsychologistCountResponse.result.sources, []);
+assert.equal(broadDomainPacketsFor(publicPsychologistCountClaim).length, 0, 'A broad healthcare or employment packet must not substitute for a psychologist count');
+const causalPsychologistWaitClaim = 'La falta de psicólogos clínicos causa largas listas de espera en la sanidad pública';
+assert.equal(claimFocusFor(causalPsychologistWaitClaim), undefined, 'A causal waiting-list claim must not be graded by a comparative capacity family');
+assert.equal(broadDomainPacketsFor(causalPsychologistWaitClaim).length, 0, 'A causal waiting-list claim must not inherit broad healthcare indicators');
+assert.equal(claimFocusFor('La plantilla pública de psicología clínica supera la demanda'), undefined, 'A claim that capacity exceeds demand must not cross-route to a shortage family');
+assert.equal(claimFocusFor('No faltan psicólogos clínicos en la sanidad pública'), undefined, 'Negated shortage wording must not be routed as a shortage');
 const citizenshipOverqualificationSource = (citizen) => ({
   id: `eurostat-overqualification-${citizen.toLocaleLowerCase('en')}`,
   title: 'Over-qualification rates by citizenship · Eurostat', publisher: 'Eurostat',

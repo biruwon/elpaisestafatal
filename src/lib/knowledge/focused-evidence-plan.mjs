@@ -1301,6 +1301,27 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       'Para medirlo hacen falta precios pagados comparables por contrato, consumo, impuestos, cargos, país, sector, tamaño de empresa y periodo; además del peso de la electricidad en los costes y resultados de productividad o precios de venta.',
     ].filter(Boolean).join('\n\n');
   })();
+  const ruralUrbanAccessReply = (() => {
+    if (focus.id !== 'rural-urban-service-access') return undefined;
+    return [
+      'La afirmación exige comparar el acceso rural y urbano; un promedio nacional o un dato de otro servicio no demuestra la diferencia.',
+      `La comparación debe incluir ${needs.join('; ')}.`,
+    ].join('\n\n');
+  })();
+  const mentalHealthPsychologistCountReply = (() => {
+    if (focus.id !== 'public-mental-health-psychologist-count') return undefined;
+    return [
+      'No hay un recuento directo en la evidencia consultada; el total de profesionales sanitarios no identifica esta profesión.',
+      `Para responder hace falta ${needs.join('; ')}.`,
+    ].join('\n\n');
+  })();
+  const mentalHealthPsychologistCapacityReply = (() => {
+    if (focus.id !== 'public-mental-health-psychologist-capacity') return undefined;
+    return [
+      'Un recuento aislado de psicólogos clínicos no permite determinar si la plantilla pública cubre la demanda.',
+      `La comprobación requiere: ${needs.join('; ')}.`,
+    ].join('\n\n');
+  })();
   const tourismEmploymentHeadline = focus.id === 'tourism-employment-contribution'
     ? (() => {
       const share = facts.find((fact) => fact.id === 'tourism_characteristic_employment_share');
@@ -1319,7 +1340,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       return `El dato (${number(directThresholdAssessment.actual, fact.id)}${suffix}) ${position}; ${directThresholdAssessment.verdict === 'supported' ? 'respalda' : 'contradice'} esa parte.`;
     })()
     : '';
-  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || tourismEmploymentReply || workingPovertyEndsMeetReply || touristHousingReply || educationPayReply || electricityIndustryCostsReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || tourismEmploymentReply || workingPovertyEndsMeetReply || touristHousingReply || educationPayReply || electricityIndustryCostsReply || ruralUrbanAccessReply || mentalHealthPsychologistCountReply || mentalHealthPsychologistCapacityReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
     directThresholdComparisonNote,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length ? 'limited' : 'insufficient';
