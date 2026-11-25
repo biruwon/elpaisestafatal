@@ -2,6 +2,7 @@ import { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { actualRentTrendRequested } from './direct-metric-route.mjs';
 import { HOUSING_COMPLETION_EVIDENCE, HOUSING_SUPPLY_PRESSURE_EVIDENCE } from './housing-supply-snapshot.mjs';
 import { MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE } from './mortgage-entry-snapshot.mjs';
+import { TOURIST_HOUSING_SNAPSHOT } from './tourist-housing-snapshot.mjs';
 import { UNPAID_OVERTIME_SNAPSHOT } from './unpaid-overtime-snapshot.mjs';
 import { PENSION_CONTRIBUTOR_RATIO_SNAPSHOT } from './pension-contributor-ratio-snapshot.mjs';
 import { RETIREMENT_AGE_SNAPSHOT } from './retirement-age-snapshot.mjs';
@@ -405,7 +406,29 @@ const tourismUrbanHousingCostPressure = (text) => {
   const hotelRoomClaim = /\b(hotel\w*|habitacion\w*)\b/.test(text)
     && !/\b(viviend\w*|resident\w*|hogar\w*|alquiler residencial|arrendamiento residencial|vivienda habitual)\b/.test(text);
   return mentionsTourism && mentionsResidentHousing && mentionsCostOrAffordability && mentionsCausalPressure
-    && !hotelRoomClaim && !touristHousingDisplacementClaim(text);
+    && !hotelRoomClaim && !touristHousingDisplacementClaim(text) && !secondHomeHousingPressure(text);
+};
+const secondHomeHousingPressure = (text) => {
+  const mentionsSecondHome = /\b(?:segund\w*\s+(?:viviend\w*|residenc\w*)|viviend\w*\s+(?:(?:de\s+)?uso\s+)?secundari\w*|residenc\w*\s+secundari\w*)\b/.test(text);
+  const mentionsHousingMarket = /\b(?:viviend\w*|alquil\w*|arrendam\w*|resident\w*|hogar\w*|precio\w*|coste\w*|oferta|mercado|asequib\w*|acces\w*)\b/.test(text);
+  const assertsPressure = /\b(?:presion\w*|encarec\w*|caus\w*|provoc\w*|aument\w*|sub\w*|reduc\w*|disminu\w*|escasez|desplaz\w*|empuj\w*|impact\w*|afect\w*|expuls\w*)\b/.test(text);
+  return mentionsSecondHome && mentionsHousingMarket && assertsPressure;
+};
+const secondHomeHousingPressureEvidence = {
+  directClaimEvidence: false,
+  expiresAt: TOURIST_HOUSING_SNAPSHOT.expiresAt,
+  territories: ['ES'],
+  dimensions: {
+    subject: 'alcance de la estimación experimental de viviendas turísticas del INE',
+    population: TOURIST_HOUSING_SNAPSHOT.observations[0].population,
+    geography: 'España',
+    period: 'mayo de 2026',
+    unit: 'viviendas turísticas estimadas a partir de anuncios en plataformas',
+  },
+  facts: [
+    'La ficha del INE describe una estimación de anuncios de alojamiento turístico para España en mayo de 2026; no es un recuento de todas las viviendas usadas como segunda residencia.',
+  ],
+  sources: [TOURIST_HOUSING_SNAPSHOT.observations[0].source],
 };
 const residentialGentrificationDisplacement = (text) => {
   const mentionsResidents = /\b(resident\w*|vecin\w*|habitantes?|poblacion local|hogares?|quienes (?:ya )?viv\w*|personas que (?:ya )?viv\w*|gente que (?:ya )?viv\w*)\b/.test(text);
@@ -2244,6 +2267,21 @@ const focuses = [
     needs: ['porcentaje de viviendas turísticas sobre el parque de viviendas', 'denominador del Censo de Población y Viviendas de 2021', 'mismo periodo y nivel geográfico solicitado'],
     explanation: 'El porcentaje compara la estimación de viviendas turísticas del INE con el parque total de viviendas del Censo de 2021.',
     limitation: 'El denominador es el parque total del Censo de 2021, no una estimación actualizada de viviendas disponibles para alquiler. El porcentaje no mide qué viviendas se retiraron del alquiler residencial.',
+  },
+  {
+    id: 'second-home-housing-pressure', label: 'relación entre segundas residencias y acceso a la vivienda habitual',
+    when: secondHomeHousingPressure,
+    direct: [], context: [], claimType: 'causal',
+    needs: [
+      'cuántas segundas residencias hay, dónde y en qué periodo',
+      'cuántas están disponibles para vivir o alquilar todo el año',
+      'precios y oferta de alquiler para residentes en los mismos lugares y periodos',
+      'una comparación que tenga en cuenta el alquiler turístico, la nueva oferta y otros cambios locales',
+    ],
+    explanationHeadline: 'Los datos revisados no miden el efecto de las segundas residencias sobre el alquiler residencial',
+    explanation: 'Las segundas residencias y las viviendas anunciadas para uso turístico son categorías distintas. El dato turístico disponible no mide la cantidad total de segundas residencias ni su efecto sobre la vivienda habitual.',
+    explanationEvidence: secondHomeHousingPressureEvidence,
+    limitation: 'Sin una serie local de segundas residencias, disponibilidad y alquiler residencial no se puede atribuir a esas viviendas un cambio de precios o de oferta. El recuento nacional de anuncios turísticos no sustituye esas medidas.',
   },
   {
     id: 'tourism-urban-housing-cost', label: 'presión turística sobre el coste de la vivienda para residentes',

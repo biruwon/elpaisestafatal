@@ -2,7 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { metricPolicyFor } from './metric-evidence-policy.mjs';
 import { claimFocusFor, focusedMetricIdsFor } from '../../src/lib/knowledge/claim-focus.mjs';
-import { actualRentPaymentsRequested, directMetricIdsForQuery } from '../../src/lib/knowledge/direct-metric-route.mjs';
+import { actualRentPaymentsRequested, directMetricIdsForQuery, metricAliasIsExplicitlyNegated } from '../../src/lib/knowledge/direct-metric-route.mjs';
 import { vacancyMeasurementMetricIdsForQuery } from '../../src/lib/knowledge/vacancy-measurement-route.mjs';
 
 const normalise = (value) => String(value || '')
@@ -71,6 +71,7 @@ export const constrainMetricIdsToQueryScope = (query, metricIds) => {
   const normalized = normalise(query);
   if (isPrivateSectorMultiGroupFinancingClaim(query)) return new Set();
   return new Set([...metricIds].filter((metricId) => {
+    if (metricAliasIsExplicitlyNegated(normalized, metricId)) return false;
     if (['rental_price_index', 'annual_hicp_actual_rent_index'].includes(metricId) && advertisedRentRequested(normalized)) return false;
     if (pensionSpendingMetricIds.has(metricId) && !pensionSpendingRequested(normalized) && !pensionFinancialSustainabilityRequested(normalized)) return false;
     if (pensionDemographyMetricIds.has(metricId) && pensionContextRequested(normalized) && !pensionDemographyRequested(normalized)) return false;

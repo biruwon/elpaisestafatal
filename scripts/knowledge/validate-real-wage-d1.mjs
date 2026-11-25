@@ -114,6 +114,16 @@ try {
   assert.ok(collectiveLookupResult.result.sources.some((source) => source.id === 'mites-collective-agreements-2026-10'));
   await Promise.all(pending);
 
+  const secondHomeClaim = 'Las segundas residencias también presionan la vivienda local aunque no sean pisos turísticos';
+  const secondHomeNoData = await postCheck(secondHomeClaim, {});
+  const secondHomeResult = await secondHomeNoData.json();
+  assert.equal(secondHomeResult.state, 'insufficient', 'A tourist-housing scope note must not become evidence for a second-home claim');
+  assert.equal(secondHomeResult.result.answerScope.family, 'second-home-housing-pressure');
+  assert.deepEqual(secondHomeResult.result.answerScope.contextMetrics, []);
+  assert.doesNotMatch(secondHomeResult.result.reply, /341\.001|1,28 %/, 'The unrelated tourist-housing values must not enter the public API answer');
+  assert.match(secondHomeResult.result.reply, /segundas residencias/i);
+  assert.ok(secondHomeResult.result.sources.some((source) => source.id === 'ine-tourist-count'), 'The API may cite the INE source only to describe the adjacent measure scope');
+
   globalThis.fetch = async (_url, init) => {
     received = JSON.parse(init.body);
     const observations = rankWarehouseObservations(received.text, received.warehouseRecords, 100, { metricIds: new Set(['unemployment_rate']) });

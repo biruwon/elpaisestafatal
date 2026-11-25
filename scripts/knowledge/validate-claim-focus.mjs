@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { utils, write } from 'xlsx';
 import { canSkipLocalCompilerForFocusedMeasurement, claimFocusFor, focusedMetricIdsFor, tertiaryOverqualificationCitizenshipGroupsForClaim } from '../../src/lib/knowledge/claim-focus.mjs';
+import { directMetricIdsForQuery } from '../../src/lib/knowledge/direct-metric-route.mjs';
 import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
 import { broadDomainPacketsFor, broadPacketsCoverRequestedMetrics } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
 import { answerPlanForBroadDomains } from '../../src/lib/knowledge/broad-domain-snapshot.mjs';
@@ -1112,6 +1113,7 @@ const rentCapSupplyPlan = focusedEvidencePlan('Los topes de alquiler hacen que p
 assert.equal(rentCapSupplyPlan.answerScope.family, 'rental-regulation-contract-shift');
 assert.doesNotMatch(rentCapSupplyPlan.shareableReply, /turismo|pernoctaciones|viviendas tur[ií]sticas/i, 'A rent-cap claim must not receive a tourism-specific evidence gap');
 assert.deepEqual([...focusedMetricIdsFor('¿Cuántos pisos turísticos hay en España?')], ['tourist_housing_count']);
+assert.equal(directMetricIdsForQuery('¿Cuántos pisos turísticos hay en España?').has('tourist_housing_count'), true, 'An asserted tourist-housing metric must remain retrievable');
 assert.deepEqual([...focusedMetricIdsFor('¿Qué proporción del parque de viviendas es turístico?')], ['tourist_housing_share']);
 assert.deepEqual([...focusedMetricIdsFor('¿Cuántos pisos turísticos han retirado viviendas del alquiler residencial?')], ['tourist_housing_count', 'tourist_housing_share']);
 assert.deepEqual([...focusedMetricIdsFor('¿Cuántos apartamentos turísticos con licencia hay en España?')], ['tourist_housing_count']);
@@ -1174,6 +1176,30 @@ const tourismCityCentreClaim = 'El turismo masivo ha hecho que vivir en el centr
 const tourismCityCentrePlan = focusedEvidencePlan(tourismCityCentreClaim, { observations: touristHousingObservations });
 assert.equal(tourismCityCentrePlan.answerScope.family, 'tourism-urban-housing-cost');
 assert.equal(tourismCityCentrePlan.sourceLinks.length, 0, 'National and provincial tourist-housing aggregates cannot answer a city-centre housing-cost claim');
+const secondHomePressureClaims = [
+  'Las segundas residencias también presionan la vivienda local aunque no sean pisos turísticos',
+  'Las viviendas secundarias encarecen el alquiler para residentes aunque no se ofrezcan como alojamientos turísticos',
+];
+for (const claim of secondHomePressureClaims) {
+  assert.equal(claimFocusFor(claim)?.id, 'second-home-housing-pressure', `A second-home pressure claim needs its own evidence scope: ${claim}`);
+  assert.deepEqual([...focusedMetricIdsFor(claim)], [], 'Second-home pressure must not inherit tourist-dwelling counts as direct or contextual evidence');
+  assert.equal(directMetricIdsForQuery(claim).has('tourist_housing_count'), false, 'A negated tourist-housing mention must not hydrate that metric');
+  assert.equal(preferredMetricIdsForQuery(claim).has('tourist_housing_count'), false, 'The resolver must not re-add a tourist-housing series through alias fallback');
+}
+const secondHomePressureClaim = secondHomePressureClaims[0];
+const secondHomePressurePlan = focusedEvidencePlan(secondHomePressureClaim, { observations: touristHousingObservations });
+assert.equal(secondHomePressurePlan.answerScope.family, 'second-home-housing-pressure');
+assert.deepEqual(secondHomePressurePlan.answerScope.directMetrics, []);
+assert.deepEqual(secondHomePressurePlan.answerScope.contextMetrics, []);
+assert.equal(secondHomePressurePlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+assert.ok(!secondHomePressurePlan.evidenceIds.includes('tourist-count-es'), 'A nearby tourist-dwelling count cannot answer a second-home pressure claim');
+assert.doesNotMatch(secondHomePressurePlan.shareableReply, /341\.001|1,28 %/, 'The unrelated national tourist-housing values must not appear in the answer');
+assert.match(secondHomePressurePlan.shareableReply, /segundas residencias/i);
+assert.match(secondHomePressurePlan.shareableReply, /estimación de anuncios de alojamiento turístico|no mide la cantidad total/i);
+assert.match(secondHomePressurePlan.shareableReply, /mismo.*periodo|mismo.*lugar/i);
+assert.match(secondHomePressurePlan.headline, /no miden el efecto.*segundas residencias/i);
+assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'second-home-pressure', result: secondHomePressurePlan }, secondHomePressureClaim).state, 'insufficient');
+validateAnswerPlan(secondHomePressurePlan);
 const tourismVisitedZonesPlan = focusedEvidencePlan('El turismo masivo eleva el coste de vivienda y servicios en las zonas más visitadas', { observations: touristHousingObservations });
 assert.equal(tourismVisitedZonesPlan.answerScope.family, 'tourism-urban-housing-cost');
 assert.equal(tourismVisitedZonesPlan.sourceLinks.length, 0, 'A national aggregate cannot answer a claim about more visited zones');

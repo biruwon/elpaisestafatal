@@ -8,6 +8,22 @@ const registryAliases = metricVocabulary.flatMap((metric) =>
     .map((alias) => ({ id: metric.id, normalized: normalize(alias), tokens: normalize(alias).split(' ').filter(Boolean) }))
     .filter(({ normalized, tokens }) => normalized && (tokens.length >= 2 || normalized.length >= 14)),
 );
+const explicitlyNegatedAlias = (normalized, alias) => {
+  let index = normalized.indexOf(alias);
+  while (index >= 0) {
+    const before = normalized.slice(Math.max(0, index - 50), index).trim();
+    const negated = /(?:\bno\s+(?:es|son|sea|sean|ser|era|eran|fue|fueron|constituye|equivale)(?:\s+(?:un|una|unos|unas)\s+)?|\bsin\s+ser(?:\s+(?:un|una|unos|unas)\s+)?|\bno\s+se\s+trata\s+de\s+|\b(?:diferente|distinto|distinta|distintos|distintas)\s+de\s*)$/.test(before);
+    if (!negated) return false;
+    index = normalized.indexOf(alias, index + alias.length);
+  }
+  return true;
+};
+
+export const metricAliasIsExplicitlyNegated = (query, metricId) => {
+  const normalized = normalize(query);
+  const matchingAliases = registryAliases.filter(({ id, normalized: alias }) => id === metricId && normalized.includes(alias));
+  return matchingAliases.length > 0 && matchingAliases.every(({ normalized: alias }) => explicitlyNegatedAlias(normalized, alias));
+};
 
 const advertisedRentRequested = (normalized) => /\b(?:alquiler\w*|arrend\w*|renta\w*|rent\w*)\b/.test(normalized)
   && /\b(?:anunci\w*|ofert\w*|list\w*|asking|advertis\w*|posted|portal(?:es)?|precios? de oferta|oferta de (?:alquiler|renta))\b/.test(normalized);
@@ -31,7 +47,7 @@ export const actualRentTrendRequested = (query) => {
 export const directMetricIdsForQuery = (query) => {
   const normalized = normalize(query);
   const candidates = registryAliases
-    .filter(({ normalized: alias }) => normalized.includes(alias))
+    .filter(({ id, normalized: alias }) => normalized.includes(alias) && !metricAliasIsExplicitlyNegated(normalized, id))
     .sort((left, right) => right.tokens.length - left.tokens.length || right.normalized.length - left.normalized.length);
   if (!candidates.length) return new Set();
   const strongest = candidates[0].tokens.length;

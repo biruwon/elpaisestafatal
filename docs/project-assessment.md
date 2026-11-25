@@ -1659,3 +1659,21 @@ This improves retrieval recall for direct metric paraphrases; it does not
 measure accuracy for arbitrary wording or refresh production D1. Production
 still needs valid Cloudflare sync credentials before the scheduled mirror can
 ingest newer observations.
+
+## Second homes and tourist-housing scope — 25 November 2026
+
+The 300-candidate text audit surfaced a negative-neighbour error: a claim that
+second homes affect local housing while explicitly saying they are not tourist
+flats received the INE tourist-dwelling count as context. A sourced contextual
+number can still mislead when its category is explicitly excluded by the claim.
+
+Second-home pressure claims now use their own evidence-gap family. The answer
+keeps the INE tourist-housing methodology only to explain that the available
+series counts platform-listed tourist dwellings; it does not use the count or
+share as evidence about all second homes, local rental supply or causal effects.
+Metric alias retrieval also ignores a category mention negated by a copula,
+while ordinary tourist-housing counts and supply claims retain their existing
+routes. Two second-home paraphrases, the excluded tourist series, the public
+insufficient verdict and positive tourist-housing neighbours are covered by
+the claim-focus validator. This closes one discovered routing boundary; the
+exploratory corpus is not a measure of factual accuracy across all text.
