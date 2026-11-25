@@ -380,17 +380,29 @@ const populationAliases = [
 
 const causalClaimSignals = [
   'causa', 'causan', 'causal', 'porque', 'ya que', 'debido a', 'a causa de', 'por la poca', 'por falta de', 'por la falta', 'ante la falta de', 'debido a la falta de', 'por escasez de', 'debido a la escasez de', 'por la ausencia de', 'ante la ausencia de', 'debido a la ausencia de', 'por culpa', 'tiene la culpa',
-  'provoca', 'provocando', 'genera', 'crece la', 'hace crecer', 'hace aumentar', 'crea inseguridad', 'crean inseguridad',
+  'provoca', 'provocando', 'genera', 'hace crecer', 'hace aumentar', 'crea inseguridad', 'crean inseguridad',
   'relacion', 'relaciona', 'relacionad', 'vinculo', 'vincula', 'vinculad', 'asociacion', 'asocia', 'asociad', 'correlacion', 'van de la mano',
   'hace que', 'hacen que', 'ha hecho que', 'han hecho que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa',
-  'aumenta la', 'reduce los', 'destruye', 'expulsa', 'expulsando', 'esta detras de', 'es responsable de', 'desde que hay mas', 'desde que llegaron mas',
-  'empuja', 'empujado', 'empujando', 'influir', 'influencia', 'impacta', 'impacto', 'desplaza', 'desplazando', 'transfiere renta',
+  'reduce los', 'destruye', 'expulsa', 'expulsando', 'esta detras de', 'es responsable de', 'desde que hay mas', 'desde que llegaron mas',
+  'empuja', 'empujado', 'empujando', 'influir', 'influencia', 'impacta', 'desplaza', 'desplazando', 'transfiere renta',
   'transferencia de renta', 'redistribuye renta', 'redistribucion de renta', 'a costa de',
 ];
 
 export const hasCausalClaimLanguage = (value) => {
   const text = normalise(value);
-  return includesAny(text, causalClaimSignals)
+  // Match complete words/phrases. A substring check reads “contribuyente” as
+  // the verb “contribuye” and labels ordinary taxpayer claims as causal.
+  const hasSignal = causalClaimSignals.some((signal) => {
+    const normalizedSignal = normalise(signal);
+    if (normalizedSignal === 'contribuye') {
+      return /\bcontribuy(?:e|en|o|eron|endo|amos|ais|ir|iria|iran)\b/.test(text);
+    }
+    if (normalizedSignal.includes(' ')) return containsPhrase(text, normalizedSignal);
+    return new RegExp(`\\b${normalizedSignal}[a-z0-9]*\\b`).test(text);
+  });
+  return hasSignal
+    || /\bimpacto\s+(?:de|del|de la|de los|de las)\b.{1,80}\b(?:en|sobre)\b/.test(text)
+    || splitExplicitClauses(value).some((clause) => propositionShapeFor(clause).predicate === 'causes')
     || /\bexplic(?:a|an|ar[ií]a|ar[ií]an|ado|ada)\b.{0,60}\b(?:subida|aumento|alza|encarecimiento|bajada|ca[ií]da|descenso|reducci[oó]n|problema|crisis)\b/.test(text)
     || /\b(?:influye|influyen|influir|influencia)\b/.test(text)
     || /\b(?:ha|han|est[aá]|est[aá]n|estaba|estaban)?\s*empuj(?:a|an|ado|ando|ar)\b/.test(text);
@@ -406,7 +418,10 @@ const claimTypeFor = (value) => {
   if (includesAny(text, ['ley', 'legal', 'puede desalojar', 'obligatorio', 'prohibido', 'derecho', 'reutilizar', 'reutilizacion', 'documentos publicos', 'informacion publica', 'datos publicos'])) return 'legal';
   if (includesAny(text, ['cada vez', 'sube', 'baja', 'crece', 'creciendo', 'crecimiento', 'aumento', 'aumenta', 'aumentando', 'está aumentando', 'esta aumentando', 'ha aumentado', 'han aumentado', 'ha subido', 'han subido', 'ha bajado', 'han bajado', 'disminuye', 'dispara', 'disparado', 'se ha disparado', 'encarece', 'encarecido', 'encareciendo', 'encareciendose', 'cuesta mas', 'cuesta menos', 'mas caro', 'mas cara', 'mas caros', 'mas caras', 'mucho mas caro', 'mucho mas cara', 'mas costoso', 'mas costosa', 'no alcanza', 'no llega para', 'empeora', 'mejora', 'envejece', 'envejecemos', 'envejecimiento', 'no deja de', 'no dejan de', 'no para de', 'no paran de', 'sigue subiendo', 'sigue bajando', 'sigue creciendo', 'siguen creciendo', 'va en aumento', 'va en descenso', 'va al alza', 'va a la baja', 'va a peor', 'van a peor', 'va peor', 'van peor', 'va mejor', 'va a mejor', 'van mejor', 'record', 'historico', 'se esta volviendo'])) return 'trend';
   if ((includesAny(text, ['inmigracion', 'inmigrantes', 'extranjeros', 'extranjero']) && includesAny(text, ['ayuda', 'ayudas', 'prestacion', 'prestaciones', 'subsidio', 'beneficio']) && includesAny(text, ['mas', 'desproporcionad', 'mayor']))
-    || includesAny(text, ['mas que', 'menos que', 'mejor que', 'peor que', 'igual que', 'distinto de', 'mayor', 'menor', 'desproporcionad', 'por encima de', 'por debajo de', 'supera', 'inferior a', 'superior a', 'el que mas', 'el que menos', 'pais con mas', 'pais con menos', 'primer puesto', 'ultimo puesto', 'ranking', 'puesto', 'lidera', 'encabeza', 'a la cabeza', 'europa']) || /\b(?:mas|menos|mayor|menor)\b.+\bque\b/.test(text)) return 'comparative';
+    || ['mas que', 'menos que', 'mejor que', 'peor que', 'igual que', 'distinto de', 'mayor', 'menor', 'desproporcionad', 'por encima de', 'por debajo de', 'supera', 'inferior a', 'superior a', 'el que mas', 'el que menos', 'pais con mas', 'pais con menos', 'primer puesto', 'ultimo puesto', 'ranking', 'puesto', 'lidera', 'encabeza', 'a la cabeza', 'europa'].some((signal) => containsPhrase(text, signal))
+    || /\b(?:mas|menos|mayor|menor)\b.+\bque\b/.test(text)
+    || /\b(?:mas|menos)\s+(?:impuestos|tributos|carga fiscal|servicios publicos?)\b/.test(text)
+    || /\bpeor(?:es)?\b.{0,60}\bque\s+(?:hace|desde|antes)\b/.test(text)) return 'comparative';
   return 'descriptive';
 };
 

@@ -1749,3 +1749,24 @@ did not expose the unrelated search results. The refreshed 300-candidate
 operational audit now reports 177 candidates with a metric or focused-family
 route and 123 without one; these are routing counts over unverified claims,
 not an accuracy score.
+
+## Tax and service-perception comparisons — 25 November 2026
+
+A text audit found two substring collisions in deterministic claim typing.
+“Contribuyente” contains “contribuye,” so a parallel statement about tax
+payments and perceived public-service quality was labeled causal. “Impuestos”
+contains “puesto,” so even a plain statement that a taxpayer pays taxes could
+be misrouted as a ranking comparison. The compiler now checks causal and
+comparison signals as words or phrases, recognizes “más impuestos” and
+“peores servicios que hace unos años” as comparisons, and keeps an explicit
+tax-to-service causal statement on the causal evidence path.
+
+The public reply for the parallel-trend claim now requests comparable measures,
+periods and denominators without asking for a causal study. It remains
+insufficient: the available evidence does not yet pair a defined tax-burden
+measure with service-perception results for the same population and period.
+Regression coverage checks two paraphrases plus an explicit causal neighbour;
+the held-out text-answer benchmark passes 202/202 cases across 55 paraphrase
+groups. This is a routing and reply regression check, not evidence that the
+underlying public claim is true or false, nor an accuracy estimate for all
+text users may submit.

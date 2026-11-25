@@ -97,6 +97,25 @@ assert(association.semanticSignature !== causal.semanticSignature, 'Association 
 
 const comparison = deterministicFallbackCompiler('España cobra más impuestos que Europa en 2025');
 assert(comparison.claimType === 'comparative' && comparison.period === '2025', 'Comparative claim or period was not detected');
+const taxpayerServices = deterministicFallbackCompiler('El contribuyente medio paga más impuestos pero percibe peores servicios que hace unos años.');
+assert(taxpayerServices.claimType === 'comparative' && taxpayerServices.explicitPropositions.length === 2, 'A claim comparing tax payments with service perceptions was not decomposed as a comparison');
+assert(taxpayerServices.explicitPropositions.every((item) => item.type === 'comparative'), 'Tax and service-perception trends did not retain their temporal comparison');
+assert(!taxpayerServices.evidenceNeeds.includes('causa') && !hasCausalClaimLanguage(taxpayerServices.normalized), 'Parallel tax and service trends were incorrectly treated as causal');
+for (const wording of [
+  'Los contribuyentes pagan más impuestos mientras reciben peores servicios públicos.',
+  'Los contribuyentes soportan más impuestos, aunque perciben peor calidad en los servicios públicos que hace unos años.',
+]) {
+  const parsed = deterministicFallbackCompiler(wording);
+  assert(parsed.claimType !== 'causal' && !parsed.evidenceNeeds.includes('causa'), `A parallel tax/service comparison was misclassified as causal: ${wording}`);
+}
+assert(deterministicFallbackCompiler('El contribuyente paga impuestos').claimType === 'descriptive', 'The word “impuestos” was mistaken for the ranking signal “puesto”');
+assert(!hasCausalClaimLanguage('El impacto fiscal es considerable.'), 'A standalone mention of fiscal impact was mistaken for a causal claim');
+const causalTaxNeighbour = deterministicFallbackCompiler('Pagar más impuestos hace que los servicios públicos empeoren.');
+assert(causalTaxNeighbour.claimType === 'causal' && causalTaxNeighbour.evidenceNeeds.includes('causa'), 'An explicit tax-to-service causal assertion lost causal evidence requirements');
+assert(deterministicFallbackCompiler('La inmigración aumenta la delincuencia en España').claimType === 'causal', 'A direct subject-verb-object causal claim lost its causal route');
+const revenueTrend = deterministicFallbackCompiler('La recaudación aumenta aunque los ciudadanos no noten una mejora equivalente en servicios públicos.');
+assert(revenueTrend.claimType === 'trend' && !hasCausalClaimLanguage(revenueTrend.normalized), 'A revenue trend contrasted with service perception was treated as causal');
+assert(deterministicFallbackCompiler('Aumenta la recaudación pública').claimType === 'trend', 'A standalone increase in public revenue was mistaken for a causal claim');
 const relativePeriod = deterministicFallbackCompiler('El paro bajó el año pasado');
 assert(relativePeriod.period === 'el ano pasado', 'Relative year period was not detected');
 const quarterPeriod = deterministicFallbackCompiler('El empleo subió en el segundo trimestre de 2025');

@@ -2778,4 +2778,36 @@ export const textAnswerAccuracyCases = [
       evidence: [], maxReplyWords: 100,
     },
   },
+  {
+    id: 'tax-and-service-perception-trends',
+    equivalenceGroup: 'tax-and-service-perception-trends',
+    input: 'El contribuyente medio paga más impuestos pero percibe peores servicios que hace unos años.',
+    expected: {
+      state: 'insufficient', family: undefined, verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['No hay observaciones compatibles suficientes', 'denominadores comparables'],
+      replyExcludes: ['causal', 'mecanismo', 'vínculo'],
+      evidence: [], maxReplyWords: 90,
+    },
+  },
+  {
+    id: 'tax-and-service-perception-trends-paraphrase',
+    equivalenceGroup: 'tax-and-service-perception-trends',
+    input: 'Los contribuyentes soportan más impuestos, aunque perciben peor calidad en los servicios públicos que hace unos años.',
+    expected: {
+      state: 'insufficient', family: undefined, verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['No hay observaciones compatibles suficientes', 'denominadores comparables'],
+      replyExcludes: ['causal', 'mecanismo', 'vínculo'],
+      evidence: [], maxReplyWords: 90,
+    },
+  },
+  {
+    id: 'tax-and-service-explicit-causal-neighbour',
+    input: 'Pagar más impuestos hace que los servicios públicos empeoren.',
+    expected: {
+      state: 'insufficient', family: undefined, verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['evidencia del mecanismo o diseño', 'atribuir causalidad'],
+      replyExcludes: ['denominadores comparables'],
+      evidence: [], maxReplyWords: 90,
+    },
+  },
 ];
