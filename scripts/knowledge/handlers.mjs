@@ -52,7 +52,7 @@ export const handlerForInput = (input, claimType = '') => {
   const universalSignal = includesAny(text, ['todos', 'todas', 'todo', 'toda', 'nadie', 'ningun', 'ninguna', 'ninguno']);
   if (hasHouseholdArrangementContrast(text)) return 'group_comparison';
   if (groupSignal && universalSignal) return 'group_comparison';
-  if (groupSignal) return 'group_comparison';
+  if (groupSignal && explicitComparisonIntent) return 'group_comparison';
   if (universalSignal) return 'proportion';
   if (claimType === 'comparative') return 'ranking';
   if (claimType === 'comparative' || includesAny(text, ['mas que', 'menos que', 'mayor', 'menor', 'el que mas', 'europa'])) return 'ranking';

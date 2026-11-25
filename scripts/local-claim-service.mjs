@@ -38,7 +38,7 @@ import { isReusableSemanticFamilyKey, isSpecificSemanticSignature, semanticFamil
 import { domainProfileFor } from './knowledge/domain-handlers.mjs';
 import { compareGroupObservations } from './knowledge/domain-verification.mjs';
 import { resolvePublicHttpsUrl } from './knowledge/safe-url.mjs';
-import { constrainMetricIdsToQueryScope, excludedMetricIdsForQuery, isPrivateSectorMultiGroupFinancingClaim, metricCandidatesForQuery, metricQueryTextForIds, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
+import { claimMeasurementScopeCompatible, constrainMetricIdsToQueryScope, excludedMetricIdsForQuery, isPrivateSectorMultiGroupFinancingClaim, metricCandidatesForQuery, metricQueryTextForIds, preferredMetricIdsForQuery } from './knowledge/metric-query-hints.mjs';
 import { evidenceSummaryForPublic, selectEvidence } from './knowledge/evidence-selection.mjs';
 import { createLocalInferenceProvider } from './local-inference-provider.mjs';
 import { createModelTasks } from './model-tasks.mjs';
@@ -54,6 +54,7 @@ import { answerPlanForBroadDomains, broadDomainPacketsFor, broadMetricIdsFor, br
 import { researchFamilyGaps } from './knowledge/research-family-gaps.mjs';
 import { snapshotLifecycle } from '../src/lib/knowledge/snapshot-lifecycle.mjs';
 import { metricDimensionContractFits } from '../src/lib/knowledge/metric-contract.mjs';
+import { requestedPeriodScope } from '../src/lib/knowledge/period-scope.mjs';
 
 const root = new URL('../', import.meta.url).pathname;
 const builtCatalogPath = new URL('../dist/claim-catalog.json', import.meta.url).pathname;
@@ -126,6 +127,13 @@ let modelLastProbeError = null;
 
 const numberWords = { cero: '0', uno: '1', una: '1', dos: '2', tres: '3', cuatro: '4', cinco: '5', seis: '6', siete: '7', ocho: '8', nueve: '9', diez: '10', once: '11', doce: '12', trece: '13', catorce: '14', quince: '15', veinte: '20', treinta: '30', cuarenta: '40', cincuenta: '50', sesenta: '60', setenta: '70', ochenta: '80', noventa: '90', cien: '100', ciento: '100', doscientos: '200', trescientos: '300', cuatrocientos: '400', quinientos: '500', seiscientos: '600', setecientos: '700', ochocientos: '800', novecientos: '900' };
 const normalise = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n').replace(/\b(cero|uno|una|dos|tres|cuatro|cinco|seis|siete|ocho|nueve|diez|once|doce|trece|catorce|quince|veinte|treinta|cuarenta|cincuenta|sesenta|setenta|ochenta|noventa|cien|ciento|doscientos|trescientos|cuatrocientos|quinientos|seiscientos|setecientos|ochocientos|novecientos)\b/g, (word) => numberWords[word] || word).replace(/[^a-z0-9]+/g, ' ').trim();
+const removeNumericAmountsPreservingTime = (query) => {
+  const periodScope = requestedPeriodScope(query);
+  const temporalYears = periodScope && periodScope.kind !== 'invalid'
+    ? new Set(String(query).match(/\b(?:19|20|21)\d{2}\b/g) || [])
+    : new Set();
+  return String(query).replace(/\b\d[\d.,%]*\b/g, (value) => temporalYears.has(value) ? value : ' ');
+};
 const stripConversationalWrapper = (value) => String(value || '')
   .replace(/^[¿?\s]*(?:es verdad que|en el grupo dicen que|mi cuñado insiste\s*:\s*|según los datos,?|no me creo que|de verdad(?: que)?|he leído esto\s*:\s*|qué hay de cierto en que)\s*/i, '')
   // Evaluation and real users often append a conversational consequence to
@@ -727,7 +735,7 @@ const observationSeriesKey = (item) => {
     .sort(([left], [right]) => left.localeCompare(right))
     .map(([key, value]) => `${key}:${value}`)
     .join('|');
-  return [item.source?.id, item.datasetId, item.metricId, item.metric, item.unit, dimensions].join('::');
+  return [item.source?.id, item.datasetId, item.metricId || item.metric, item.unit, dimensions].join('::');
 };
 
 // Some official snapshots publish the same national metric in separate
@@ -741,20 +749,36 @@ const comparableObservationSeriesKey = (item) => {
     .sort(([left], [right]) => left.localeCompare(right))
     .map(([key, value]) => `${key}:${value}`)
     .join('|');
-  return [item.metricId, item.metric, item.unit, dimensions].join('::');
+  return [item.metricId, item.unit, dimensions].join('::');
 };
 
-// Keep the beginning of a series together with its latest periods. This lets
-// downstream evidence packets report the real covered range without making
-// the bounded runtime payload unreasonably large.
-const boundedSeries = (items, limit = 12) => {
+// Keep explicitly requested trend endpoints together with recent periods.
+// The first observation in a source can predate the user's requested baseline;
+// retaining that row instead of (for example) 2010-01 creates a false gap.
+const boundedSeries = (items, query = '', limit = 12) => {
   // A real-wage comparison needs every annual observation in the requested
   // interval, including source flags for breaks or missing years. These two
   // narrow series remain small enough to retain their complete history.
   if (['annual_hourly_wage_index', 'annual_hicp_index'].includes(items[0]?.metricId)) limit = Math.max(limit, 40);
   const ordered = items.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || '')));
   if (ordered.length <= limit) return ordered;
-  const kept = new Set([ordered[0], ...ordered.slice(-(limit - 1)), ...ordered.filter((item) => observationFlags(item.status))]);
+  const scope = requestedPeriodScope(query);
+  const explicitTrend = scope && ['since', 'range'].includes(scope.kind);
+  const periodYear = (item) => /^((?:19|20|21)\d{2})/.exec(String(item.period || ''))?.[1];
+  const finiteForYear = (year, reverse = false) => (reverse ? ordered.slice().reverse() : ordered)
+    .find((item) => periodYear(item) === String(year) && Number.isFinite(item.value));
+  const endpoints = new Set();
+  if (explicitTrend) {
+    const baseline = finiteForYear(scope.minimum);
+    const endpoint = scope.kind === 'range'
+      ? finiteForYear(scope.maximum, true)
+      : ordered.slice().reverse().find((item) => Number.isFinite(item.value));
+    if (baseline) endpoints.add(baseline);
+    if (endpoint) endpoints.add(endpoint);
+  } else endpoints.add(ordered[0]);
+  const keepCount = Math.max(0, limit - endpoints.size);
+  const tail = keepCount ? ordered.filter((item) => !endpoints.has(item)).slice(-keepCount) : [];
+  const kept = new Set([...endpoints, ...tail, ...ordered.filter((item) => observationFlags(item.status))]);
   return ordered.filter((item) => kept.has(item));
 };
 
@@ -790,7 +814,7 @@ const selectCompatibleWarehouseSeries = (query, observations) => {
     || right.retrievedAt - left.retrievedAt
     || right.score - left.score);
   const selected = ranked[0]?.group || observations;
-  return boundedSeries(selected);
+  return boundedSeries(selected, query);
 };
 
 const findWarehouseEvidence = async (query, compiler, queryEmbedding, warehouseRecords) => {
@@ -1348,6 +1372,8 @@ const classify = async (text, { bypassCache = false } = {}) => {
   if (cached) answerCache.delete(key);
   telemetry.cacheMisses += 1;
   const index = await getIndex();
+  const queryScopedEntries = index.entries.filter((entry) => claimMeasurementScopeCompatible(text, entry));
+  const entryPositions = new Map(index.entries.map((entry, position) => [entry, position]));
   const deterministicCompiler = fallbackCompiler(text);
   const routingCompiler = deterministicFallbackCompiler(text);
   // A forecast or normative consequence must not inherit a present-tense
@@ -1361,7 +1387,7 @@ const classify = async (text, { bypassCache = false } = {}) => {
   // Resolve them before metric or semantic ambiguity can downgrade the
   // answer; approximate wording continues through the guarded family path.
   const wrapperFreeText = stripConversationalWrapper(text);
-  const exactPublishedEntry = !vagueTaxJudgement(text) && index.entries.find((entry) => entry.kind === 'claim' && entry.published
+  const exactPublishedEntry = !vagueTaxJudgement(text) && queryScopedEntries.find((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalise(wrapperFreeText)));
   if (exactPublishedEntry) {
     const result = { status: 'published', input: { original: text, canonical: deterministicCompiler.normalized }, primary: { kind: 'claim', slug: exactPublishedEntry.slug, title: exactPublishedEntry.title, href: exactPublishedEntry.href, confidence: 1, reason: 'La formulación coincide con una afirmación publicada.', answer: exactPublishedEntry.answer || '', assessment: exactPublishedEntry.assessment || '', whatIsTrue: exactPublishedEntry.whatIsTrue || '', whatIsMissing: exactPublishedEntry.whatIsMissing || '', cannotProve: exactPublishedEntry.cannotProve || '', scale: exactPublishedEntry.scale || '', propositionIds: exactPublishedEntry.propositionIds || [], evidenceIds: exactPublishedEntry.evidenceIds || [], sourceRefs: exactPublishedEntry.sourceRefs || [], sourceLinks: exactPublishedEntry.sourceLinks || [] }, relatedClaims: [{ kind: 'claim', slug: exactPublishedEntry.slug, title: exactPublishedEntry.title, href: exactPublishedEntry.href, confidence: 1 }] };
@@ -1372,7 +1398,7 @@ const classify = async (text, { bypassCache = false } = {}) => {
   // spelling error (including transposed letters) without waiting for Ollama.
   // The token-count and one-edit gates prevent a shared topic word from being
   // treated as a claim match.
-  const typoPhraseEntry = !vagueTaxJudgement(text) && index.entries.find((entry) => entry.kind === 'claim' && entry.published
+  const typoPhraseEntry = !vagueTaxJudgement(text) && queryScopedEntries.find((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(entry.aliases || [])].some((phrase) => {
       const expected = tokens(phrase).filter((token) => !lowSignalTokens.has(token));
       const actual = tokens(wrapperFreeText).filter((token) => !lowSignalTokens.has(token));
@@ -1413,9 +1439,9 @@ const classify = async (text, { bypassCache = false } = {}) => {
   const routingHasStructuredFamily = structuredFamily(routingFamilyKeys);
   const hasPublishedSemanticFamily = routingFamilyKeys.size > 0
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
-    && index.entries.some((entry) => entry.kind === 'claim' && entry.published
+    && queryScopedEntries.some((entry) => entry.kind === 'claim' && entry.published
       && (entry.semanticFamilyKeys || []).some((key) => routingFamilyKeys.has(key)));
-  const exactPublishedInput = index.entries.some((entry) => entry.kind === 'claim' && entry.published
+  const exactPublishedInput = queryScopedEntries.some((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalise(text)));
   const normalizedRoutingInput = normalise(routingCompiler.normalized);
   const routingEntityConcepts = new Set(String(routingCompiler.semanticSignature || '').split('|').filter((part) => part.startsWith('entity:')));
@@ -1451,7 +1477,7 @@ const classify = async (text, { bypassCache = false } = {}) => {
   // encontrar trabajo que en Europa” can be swallowed by an employment
   // headline even though it asks for an unemployment comparison.
   const hasExplicitMetricRoute = preferredMetricIdsForQuery(text).size > 0;
-  const directPublishedEntry = index.entries.find((entry) => entry.kind === 'claim' && entry.published
+  const directPublishedEntry = queryScopedEntries.find((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedRoutingInput));
   // A new numerical amount changes what must be checked. Do not let a
   // semantic paraphrase of an unquantified published claim bypass the
@@ -1463,7 +1489,7 @@ const classify = async (text, { bypassCache = false } = {}) => {
   // handler. This is the scalable path for new wording: one evidence family
   // can serve many paraphrases without creating a new claim record.
   const routingSignatureCounts = new Map();
-  for (const entry of index.entries) {
+  for (const entry of queryScopedEntries) {
     if (entry.kind !== 'claim' || !entry.published) continue;
     for (const signature of entry.semanticSignatures || []) routingSignatureCounts.set(signature, (routingSignatureCounts.get(signature) || 0) + 1);
   }
@@ -1472,7 +1498,7 @@ const classify = async (text, { bypassCache = false } = {}) => {
   // made reusable evidence families look uncovered forever. Choose a family
   // representative only when lexical wording clearly favours one owner;
   // genuine ties remain related guidance.
-  const dominantFamilyEntry = (keys, entries = index.entries) => {
+  const dominantFamilyEntry = (keys, entries = queryScopedEntries) => {
     const surfaceCompatible = (entry) => {
       const entryText = searchText(entry);
       const queryText = normalise(text);
@@ -1502,10 +1528,10 @@ const classify = async (text, { bypassCache = false } = {}) => {
     && routingCompiler.explicitPropositions.length <= 1
     && isSpecificSemanticSignature(routingCompiler.semanticSignature)
     && routingSignatureCounts.get(routingCompiler.semanticSignature) === 1
-    ? index.entries.find((entry) => entry.kind === 'claim' && entry.published && (entry.semanticSignatures || []).includes(routingCompiler.semanticSignature))
+    ? queryScopedEntries.find((entry) => entry.kind === 'claim' && entry.published && (entry.semanticSignatures || []).includes(routingCompiler.semanticSignature))
     : undefined;
   const exactPublishedAliasEntry = exactPublishedInput
-    ? index.entries.find((entry) => entry.kind === 'claim' && entry.published
+    ? queryScopedEntries.find((entry) => entry.kind === 'claim' && entry.published
       && [entry.title, ...(entry.aliases || [])].some((phrase) => normalise(phrase) === normalizedRoutingInput))
     : undefined;
   const reusableFamilyEntry = directPublishedEntry || exactPublishedAliasEntry || (!hasUnreviewedNumericClaim && (earlyFamilyEntry || earlySignatureEntry));
@@ -1547,7 +1573,7 @@ const classify = async (text, { bypassCache = false } = {}) => {
     }
   }
   const deterministicHandler = handlerForInput(deterministicCompiler, deterministicCompiler.claimType);
-  const lexicalRanked = index.entries.map((entry, position) => ({ entry, position, lexical: lexicalScore(text, entry) })).sort((left, right) => right.lexical - left.lexical);
+  const lexicalRanked = queryScopedEntries.map((entry) => ({ entry, position: entryPositions.get(entry), lexical: lexicalScore(text, entry) })).sort((left, right) => right.lexical - left.lexical);
   let vector = null;
   // Do not pay for an embedding request for obvious long-tail text. Exact and
   // alias matches are already covered lexically; semantic retrieval is only
@@ -1949,7 +1975,7 @@ const classify = async (text, { bypassCache = false } = {}) => {
     const broadEntryKeywords = broadPoliticalComplaint
       ? new Set(['politica', 'economia', 'inmigracion', 'seguridad', 'vivienda', 'empleo', 'sanidad'])
       : new Set(['economia', 'vivienda', 'empleo', 'impuestos', 'sanidad']);
-    const popularBroadClaims = index.entries
+    const popularBroadClaims = queryScopedEntries
       .filter((entry) => entry.kind === 'claim' && entry.published && (entry.topic === 'Política' || (entry.keywords || []).some((keyword) => broadEntryKeywords.has(normalise(keyword)))))
       .filter((entry) => entry.evidenceStrength !== 'insufficient' && (entry.evidenceIds?.length || entry.sourceRefs?.length))
       .slice(0, 24)
@@ -3246,7 +3272,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
   // A bare number is often a dimension label in statistical indexes (for
   // example, an index with base year 100). Keep exact amounts for budget
   // events, but do not let generic quantities retrieve unrelated numeric rows.
-  const warehouseQuery = handlerId === 'budget_transfer' ? retrievalText : retrievalText.replace(/\b\d[\d.,%]*\b/g, ' ');
+  const warehouseQuery = handlerId === 'budget_transfer' ? retrievalText : removeNumericAmountsPreservingTime(retrievalText);
   const suppressUnrelatedContext = vagueTaxJudgement(text) || localSpecificClaim(text) || evidenceUnavailableSignal(text) || (recordedOffenceRoute && !recordedOffenceCategory);
   let queryEmbedding;
   if (!classified.primary && semanticWarehouseEnabled && !suppressUnrelatedContext) {
@@ -3298,7 +3324,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
           : '';
   const clauseQueries = propositionQueries.map((query) => {
     if (handlerId === 'budget_transfer') return query;
-    const cleanQuery = query.replace(/\b\d[\d.,%]*\b/g, ' ');
+    const cleanQuery = removeNumericAmountsPreservingTime(query);
     const clauseMetricIds = preferredMetricIdsForQuery(cleanQuery);
     return clauseMetricIds.size ? `${cleanQuery} ${metricQueryTextForIds(clauseMetricIds)} España` : cleanQuery;
   });
@@ -3391,7 +3417,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
       metricGroups.push(group.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || ''))));
       groupedByMetric.set(metricId, metricGroups);
     }
-    const metricRows = [...groupedByMetric.values()].map((metricGroups) => metricGroups.flatMap((group) => boundedSeries(group)));
+    const metricRows = [...groupedByMetric.values()].map((metricGroups) => metricGroups.flatMap((group) => boundedSeries(group, text)));
     // Reserve two recent observations for every requested metric before
     // filling the remaining bounded payload. Without this breadth pass, the
     // first high-volume series can consume all 72 rows and hide later

@@ -64,6 +64,13 @@ const livingArrangementComparison = deterministicFallbackCompiler('Alquilar una 
 assert(livingArrangementComparison.claimType === 'comparative' && handlerForInput({ original: livingArrangementComparison.normalized }, livingArrangementComparison.claimType) === 'group_comparison', 'A household-type comparison was routed as a general price trend');
 assert(hasHouseholdArrangementContrast('Las parejas encuentran más fácil alquilar que quienes viven solos'), 'A household-type paraphrase did not keep the pairwise group route');
 assert(!hasHouseholdArrangementContrast('El alquiler sube cada vez más para los jóvenes'), 'A single-population rent trend was misclassified as a household comparison');
+for (const query of [
+  '¿Cómo han cambiado las rentas efectivamente pagadas por los hogares desde 2015?',
+  'How have rents paid by households changed since 2015?',
+]) {
+  if (handlerForInput(query, 'descriptive') === 'group_comparison') throw new Error(`Mentioning one population was mistaken for a group comparison: ${query}`);
+}
+if (handlerForInput('¿Pagan más las parejas que quienes viven solos?', 'comparative') !== 'group_comparison') throw new Error('An explicit household comparison lost its group-comparison handler');
 
 const association = deterministicFallbackCompiler('La inmigración y la delincuencia están relacionadas en España');
 const reversedAssociation = deterministicFallbackCompiler('Existe una relación entre la delincuencia y la inmigración en España');

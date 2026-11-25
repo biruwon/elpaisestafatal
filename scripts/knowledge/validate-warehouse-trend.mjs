@@ -34,6 +34,15 @@ const oldAgeSurvivorsRecords = [
 const oldAgeSurvivors = summarizeWarehouseTrend('¿Cuánto gasta España en pensiones y prestaciones de supervivencia por habitante?', oldAgeSurvivorsRecords);
 if (!oldAgeSurvivors || !oldAgeSurvivors.headline.includes('2015') || !oldAgeSurvivors.headline.includes('2024') || !oldAgeSurvivors.points.some((point) => point.includes('€ por habitante')) || !/no equivale a la pensión media/i.test(oldAgeSurvivors.reply)) throw new Error('Trend handler did not keep old-age benefits distinct, readable, and caveated');
 const prices = (unit, code = '') => [2015, 2020, 2025].map((year, index) => ({ id: `${unit}-${year}`, metricId: 'rental_price_index', datasetId: 'rents', value: [100, 110, 120][index], unit, period: String(year), dimensions: { unit: code, geo: 'ES' }, source }));
+const renamedSeriesLabels = summarizeWarehouseTrend('¿Cómo ha cambiado el índice de alquiler desde 2010?', [
+  { id: 'rent-old-label', metricId: 'rental_price_index', datasetId: 'prc_hicp_minr', metric: 'Índice de precios del alquiler', value: 98.6, unit: 'Index, 2015=100', period: '2010-01', dimensions: { geo: 'ES', unit: 'I15' }, source },
+  { id: 'rent-current-label', metricId: 'rental_price_index', datasetId: 'prc_hicp_minr', metric: 'Actual rentals for housing', value: 117.33, unit: 'Index, 2015=100', period: '2026-10', dimensions: { geo: 'ES', unit: 'I15' }, source },
+]);
+assert.match(renamedSeriesLabels.reply, /98,6.*2010-01.*117,33.*2026-10/s, 'A changed display label must not split one metric, dataset and unit into separate time series');
+const latestActualRent = summarizeWarehouseLatest('¿Cuál es el último índice de alquiler?', prices('Index, 2015=100', 'I15'), ['rental_price_index']);
+assert.match(latestActualRent.reply, /rentas de alquiler efectivamente pagadas/i);
+assert.match(latestActualRent.reply, /no mide los precios anunciados/i);
+assert.match(latestActualRent.reply, /publica un importe mensual en euros/i);
 for (const [unit, label] of [['Index, 1996=100', 'índice (1996=100)'], ['Index, 2025=100', 'índice (2025=100)'], ['Index', 'índice']]) {
   const result = summarizeWarehouseTrend('¿Cómo ha evolucionado el índice de alquiler desde 2015?', prices(unit));
   assert.match(result.reply, new RegExp(label.replace(/[()]/g, '\\$&')));
@@ -46,6 +55,7 @@ assert.match(levelQuery.reply, /tasas de variación/);
 const rateQuery = summarizeWarehouseTrend('¿Cómo ha cambiado la tasa interanual del alquiler desde 2015?', rate);
 assert.match(rateQuery.reply, /% interanual/);
 assert.match(rateQuery.reply, /no implica que hayan bajado/);
+assert.match(rateQuery.reply, /rentas de alquiler efectivamente pagadas/i);
 const missingYear = summarizeWarehouseTrend('¿Qué ocurrió con los alquileres desde 2012?', prices('Index, 1996=100'));
 assert.equal(missingYear.comparisonBlocked, true);
 assert.match(missingYear.reply, /no incluye 2012/);

@@ -43,11 +43,37 @@ const pensionDemographyRequested = (normalized) => pensionContextRequested(norma
   && /\b(?:demograf\w*|envejec\w*|dependenc\w*|poblacion|mayores?|natalidad|fecundidad|edad de trabajar)\b/.test(normalized);
 const pensionFinancialSustainabilityRequested = (normalized) => pensionContextRequested(normalized)
   && /\b(?:insostenib\w*|sostenib\w*|viabilid\w*|inviab\w*|equilibrio financiero|solvencia financiera)\b/.test(normalized);
+export const advertisedRentRequested = (query) => {
+  const normalized = normalise(query);
+  return /\b(?:alquiler\w*|arrend\w*|renta\w*|rent\w*)\b/.test(normalized)
+    && /\b(?:anunci\w*|ofert\w*|list\w*|asking|advertis\w*|posted|portal(?:es)?|precios?\s+de\s+oferta|oferta\s+de\s+(?:alquiler|renta))\b/.test(normalized);
+};
+const actualRentPaymentsRequested = (normalized) => /\b(?:alquiler\w*|renta\w*|rent\w*)\b/.test(normalized)
+  && /\b(?:efectiv\w*\s+pagad\w*|pagad\w*\s+por\s+los?\s+hogares|pag(?:a|an|ado|ados|adas)\s+(?:los\s+)?hogares|actual\s+rent\w*|rent\w*\s+(?:actually\s+)?paid)\b/.test(normalized);
+
+const describesActualRentMeasure = (entry) => {
+  const evidenceText = normalise([
+    entry?.claim,
+    entry?.title,
+    entry?.answer,
+    entry?.explanation,
+    entry?.whatIsTrue,
+    ...(entry?.sources || []).map((source) => source?.title),
+  ].filter(Boolean).join(' '));
+  return /\b(?:alquiler\w*\s+efectiv\w*|renta\w*\s+efectiv\w*(?:\s+pagad\w*)?|rent\w*\s+(?:actually\s+)?paid(?:\s+by\s+households)?|rent\w*\s+paid\s+by\s+households)\b/.test(evidenceText);
+};
+
+// Asking or advertised rents are a different measure from the harmonised
+// index of rents paid by households. Enforce that scope on published claims
+// as well as warehouse observations so semantic family matches cannot cross it.
+export const claimMeasurementScopeCompatible = (query, entry) =>
+  !advertisedRentRequested(query) || entry?.kind !== 'claim' || !describesActualRentMeasure(entry);
 
 export const constrainMetricIdsToQueryScope = (query, metricIds) => {
   const normalized = normalise(query);
   if (isPrivateSectorMultiGroupFinancingClaim(query)) return new Set();
   return new Set([...metricIds].filter((metricId) => {
+    if (['rental_price_index', 'annual_hicp_actual_rent_index'].includes(metricId) && advertisedRentRequested(normalized)) return false;
     if (pensionSpendingMetricIds.has(metricId) && !pensionSpendingRequested(normalized) && !pensionFinancialSustainabilityRequested(normalized)) return false;
     if (pensionDemographyMetricIds.has(metricId) && pensionContextRequested(normalized) && !pensionDemographyRequested(normalized)) return false;
     if (metricId === 'old_age_survivors_benefits_per_capita_europe' && !europeRequested(normalized)) return false;
@@ -425,6 +451,12 @@ export const preferredMetricIdsForQuery = (query) => {
   if (vacancyMeasurements !== undefined) return vacancyMeasurements;
   const focused = focusedMetricIdsFor(query);
   const normalized = normalise(query);
+  if (actualRentPaymentsRequested(normalized)) {
+    const annualActualRentMetric = /\b(?:anual|annual|yearly)\b/.test(normalized)
+      ? 'annual_hicp_actual_rent_index'
+      : 'rental_price_index';
+    return constrainMetricIdsToQueryScope(query, new Set([annualActualRentMetric]));
+  }
   if (focused) {
     // A focused narrative family can deliberately have no direct metrics.
     // If the user then names a reviewed metric alias explicitly, let that
@@ -1007,6 +1039,10 @@ export const excludedMetricIdsForQuery = (query) => {
     && ['espana', 'pais', 'gobierno', 'sanchez', 'politic'].some((term) => normalized.includes(term));
   const priceContext = ['precio', 'precios', 'coste', 'cesta', 'ipc', 'electricidad', 'luz', 'alquiler'].some((term) => normalized.includes(term));
   const excluded = new Set();
+  if (advertisedRentRequested(normalized)) {
+    excluded.add('rental_price_index');
+    excluded.add('annual_hicp_actual_rent_index');
+  }
   if (isPrivateSectorMultiGroupFinancingClaim(query)) {
     for (const id of Object.keys(registry)) excluded.add(id);
   }

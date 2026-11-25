@@ -40,7 +40,7 @@ db.exec(`
 `);
 const retrieved = new Date().toISOString();
 const url = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_minr?geo=ES&coicop18=CP041&unit=I15&unit=RCH_A';
-db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('rent-source', 'Eurostat', 'Índice de precios del alquiler en España', url, retrieved, 'primary', '[]', 'eurostat', 'daily');
+db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('rent-source', 'Eurostat', 'Índice de rentas de alquiler efectivamente pagadas en España', url, retrieved, 'primary', '[]', 'eurostat', 'daily');
 const rentArchiveUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_midx?geo=ES&coicop=CP041';
 db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('rent-archive-source', 'Eurostat', 'Índice histórico de precios del alquiler', rentArchiveUrl, '2025-10-01T00:00:00Z', 'primary', '[]', 'eurostat', 'daily');
 const inflationUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/prc_hicp_minr?geo=ES&coicop18=TOTAL&unit=RCH_A';
@@ -70,6 +70,8 @@ for (const [year, value] of [[2015, 100], [2020, 110], [2025, 120]]) {
 }
 insert.run('I15-2026-09', 'observation', 'rent-data', 'Índice de precios del alquiler', 'rental_price_index', 117.05, 'Index, 2015=100', '2026-09', 'España', null,
   JSON.stringify({ geo: 'ES', unit: 'I15', time: '2026-09' }), JSON.stringify({ geo: 'Spain', unit: 'Index, 2015=100' }), null, null, '{}', 'rent-source', 'índice precios alquiler España evolución');
+insert.run('I15-2010-01', 'observation', 'rent-data', 'Índice de rentas de alquiler efectivamente pagadas', 'rental_price_index', 98.6, 'Index, 2015=100', '2010-01', 'España', null,
+  JSON.stringify({ geo: 'ES', unit: 'I15', time: '2010-01' }), JSON.stringify({ geo: 'Spain', unit: 'Index, 2015=100' }), null, null, '{}', 'rent-source', 'índice rentas alquiler efectivamente pagadas España evolución');
 for (const [year, value] of [['2026-08', 3.1], ['2026-10', 3.4]]) {
   insert.run(`inflation-${year}`, 'observation', 'prc_hicp_minr', 'Inflación armonizada anual de España', 'inflation_rate', value, 'Annual rate of change', year, 'España', null,
     JSON.stringify({ geo: 'ES', coicop18: 'TOTAL', unit: 'RCH_A', time: year }), JSON.stringify({ geo: 'Spain', unit: 'Annual rate of change', coicop18: 'All-items HICP' }), null, null, year === '2026-10' ? '{"status":"e"}' : '{}', 'inflation-source', 'inflación armonizada anual España tasa interanual precios Eurostat');
@@ -614,15 +616,34 @@ try {
   assert.match(currentRentIndex.result.reply, /índice \(2015=100\).*2026-09/);
   assert.deepEqual(currentRentIndex.result.sources.map((source) => source.url), [url]);
   assert.equal(currentRentIndex.result.visual, undefined);
-  const missing = await check('¿Cómo ha cambiado el índice de alquiler desde 2010?');
+  const historicalRentTrend = await check('¿Cómo ha cambiado el índice de alquiler desde 2010?');
+  assert.notEqual(historicalRentTrend.state, 'insufficient', JSON.stringify(historicalRentTrend));
+  assert.match(historicalRentTrend.result.reply, /98,6.*2010-01.*117,05.*2026-09/s, JSON.stringify(historicalRentTrend));
+  assert.match(historicalRentTrend.result.reply, /no mide los precios anunciados/i);
+  assert.deepEqual(historicalRentTrend.result.sources.map((source) => source.url), [url]);
+  const paidRentParaphrase = await check('¿Cómo han cambiado las rentas efectivamente pagadas por los hogares desde 2015?');
+  assert.match(paidRentParaphrase.result.reply, /2026-0[9]|2026-10/, JSON.stringify(paidRentParaphrase));
+  assert.deepEqual(paidRentParaphrase.result.sources.map((source) => source.url), [url]);
+  const missing = await check('¿Cómo ha cambiado el índice de alquiler desde 2012?');
   assert.equal(missing.state, 'insufficient', JSON.stringify(missing));
-  assert.match(missing.result.reply, /serie del mismo indicador que incluya 2010 y el periodo final/);
+  assert.match(missing.result.reply, /serie del mismo indicador que incluya 2012 y el periodo final/);
   assert.doesNotMatch(missing.result.reply, /100|120/, 'A source-free gap should name the missing time coverage without revealing unlinked nearby values');
   assert.equal(missing.result.visual, undefined);
-  const missingParaphrase = await check('¿Qué evolución ha tenido el índice de alquiler desde el año 2010?');
+  const missingParaphrase = await check('¿Qué evolución ha tenido el índice de alquiler desde el año 2012?');
   assert.equal(missingParaphrase.state, 'insufficient');
-  assert.match(missingParaphrase.result.reply, /serie del mismo indicador que incluya 2010 y el periodo final/);
+  assert.match(missingParaphrase.result.reply, /serie del mismo indicador que incluya 2012 y el periodo final/);
   assert.doesNotMatch(missingParaphrase.result.reply, /100|120/);
+  for (const query of [
+    '¿Cómo han cambiado los precios anunciados del alquiler en portales desde 2015?',
+    '¿Qué precio de oferta tienen los alquileres publicados desde 2015?',
+    '¿Qué evolución ha tenido el precio de oferta de las viviendas en alquiler?',
+    'How have advertised asking rents changed since 2015?',
+    'How have listed rental prices changed since 2015?',
+  ]) {
+    const askingRent = await check(query);
+    assert.ok(!askingRent.result?.sources?.some((source) => source.url === url), `Actual-rent HICP must not answer advertised rents: ${JSON.stringify(askingRent)}`);
+    assert.doesNotMatch(askingRent.result?.reply || '', /Índice de rentas de alquiler efectivamente pagadas|117,05 índice/i);
+  }
   for (const query of ['El índice de precios del alquiler subió un 300 % desde 2015', 'El índice del alquiler ha aumentado en un 300 % desde 2015']) {
     const magnitude = await check(query);
     assert.notEqual(magnitude.state, 'supported', JSON.stringify(magnitude));

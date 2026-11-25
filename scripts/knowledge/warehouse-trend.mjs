@@ -24,7 +24,7 @@ const metricLabels = {
   gdp_current_prices: 'Tamaño nominal de la economía española',
   household_electricity_price: 'Precio de la electricidad para los hogares en España',
   household_electricity_price_europe: 'Precio de la electricidad para hogares: España y la Unión Europea',
-  rental_price_index: 'Precios del alquiler en España',
+  rental_price_index: 'Índice de rentas de alquiler efectivamente pagadas en España',
   gdp_real_growth_quarterly: 'Crecimiento interanual del PIB real de España',
   gdp_real_growth_europe: 'Crecimiento interanual del PIB real: España y la Unión Europea',
   gdp_per_capita_europe: 'PIB por habitante: España y la Unión Europea',
@@ -109,7 +109,13 @@ const offenceLabels = {
 };
 export const displayMetric = (item) => {
   if (['house_price_index', 'rental_price_index'].includes(item.metricId)) {
-    const subject = item.metricId === 'rental_price_index' ? 'del alquiler' : 'de la vivienda';
+    if (item.metricId === 'rental_price_index') {
+      const measurement = priceMeasurement(item);
+      return measurement.kind === 'rate' ? `Variación ${measurement.period} de las rentas de alquiler efectivamente pagadas en España`
+        : measurement.kind === 'index' ? 'Índice de rentas de alquiler efectivamente pagadas en España'
+          : 'Medida de rentas de alquiler en España';
+    }
+    const subject = 'de la vivienda';
     const measurement = priceMeasurement(item);
     return measurement.kind === 'rate' ? `Variación ${measurement.period} de los precios ${subject} en España`
       : measurement.kind === 'index' ? `Índice de precios ${subject} en España` : `Medida de precios ${subject} en España`;
@@ -168,6 +174,7 @@ const deltaUnit = (unit) => {
   return unit;
 };
 const metricReplyCaveats = {
+  rental_price_index: ' La serie sigue las rentas de alquiler pagadas por los hogares; no mide los precios anunciados ni publica un importe mensual en euros.',
   social_protection_benefits_per_capita: ' No indica quién recibe cada prestación ni cuáles son sus requisitos.',
   old_age_survivors_benefits_per_capita: ' No equivale a la pensión media de una persona ni demuestra por sí solo la sostenibilidad del sistema.',
 };
@@ -187,7 +194,8 @@ const comparableDimensions = (item) => Object.entries(item.dimensions || {})
 
 const seriesKey = (item) => JSON.stringify({
   source: item.source?.id || item.sourceId || '',
-  metric: item.metric || item.datasetId || '',
+  dataset: item.datasetId || '',
+  metric: item.metricId || item.metric || item.datasetId || '',
   unit: item.unit || '',
   dimensions: comparableDimensions(item),
 });
@@ -294,6 +302,8 @@ export const summarizeWarehouseLatest = (text, observations, metricIds = []) => 
   const value = `${formatNumber(latest.value, latest.metricId)}${suffix}`;
   const meaning = measurement?.kind === 'rate'
     ? `Es una tasa ${measurement.period}; describe cuánto variaron los precios frente al periodo de comparación, no su nivel.`
+    : latest.metricId === 'rental_price_index'
+      ? 'El índice sigue las rentas de alquiler pagadas por los hogares; no mide los precios anunciados ni publica un importe mensual en euros.'
     : ['inflation_rate', 'inflation_rate_europe'].includes(latest.metricId)
       ? 'Es la variación frente al mismo periodo del año anterior, no el nivel del índice ni el coste exacto de cada hogar.'
       : '';

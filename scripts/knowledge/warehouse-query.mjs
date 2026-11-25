@@ -4,7 +4,7 @@ import { sourceFreshness } from './source-freshness.mjs';
 import { searchAliasesForMetric } from './metric-search-aliases.mjs';
 import { preferLatestSourceRevisions } from '../../src/lib/knowledge/source-revisions.mjs';
 import { ageScopeMatcherFor } from '../../src/lib/knowledge/age-scope.mjs';
-import { periodScopeMatcherFor } from '../../src/lib/knowledge/period-scope.mjs';
+import { periodScopeMatcherFor, requestedPeriodScope } from '../../src/lib/knowledge/period-scope.mjs';
 import { geographyScopeMatcherFor } from '../../src/lib/knowledge/geography-scope.mjs';
 import { sexScopeMatcherFor } from '../../src/lib/knowledge/sex-scope.mjs';
 import { tertiaryOverqualificationCitizenshipFitsClaim, tertiaryOverqualificationCitizenshipGroupsForClaim } from '../../src/lib/knowledge/claim-focus.mjs';
@@ -30,6 +30,43 @@ export const hasSufficientClaimTermOverlap = (claim, matchedTerms = [], minimumT
   return overlap >= Math.min(Math.max(1, minimumTerms), subjectTerms.length);
 };
 export const warehouseEvidenceFit = (score) => score >= 0.67 ? 'direct' : score >= 0.5 ? 'qualified' : 'weak';
+
+const temporalDimensionKeys = new Set(['time', 'period', 'year', 'anyo', 'date', 'fecha']);
+const warehouseSeriesKey = (item) => JSON.stringify({
+  dataset: item.datasetId || item.metricId || item.metric || '',
+  metric: item.metricId || item.metric || '',
+  unit: item.unit || '',
+  geography: item.geography || item.dimensionLabels?.geo || item.dimensions?.geo || '',
+  dimensions: Object.entries(item.dimensions || {})
+    .filter(([key]) => !temporalDimensionKeys.has(normalise(key)))
+    .sort(([left], [right]) => left.localeCompare(right)),
+});
+
+// Relevance ranking can otherwise spend its entire row budget on the
+// requested start year (the year token is a strong match) or on recent rows.
+// Reserve both endpoints of explicit trends before applying the cap.
+const preserveRequestedTrendEndpoints = (ordered, query, limit) => {
+  const scope = requestedPeriodScope(query);
+  if (!scope || !['since', 'range'].includes(scope.kind)) return ordered.slice(0, limit);
+  const firstYear = scope.minimum;
+  const lastYear = scope.kind === 'range' ? scope.maximum : undefined;
+  const groups = new Map();
+  for (const item of ordered) {
+    const key = warehouseSeriesKey(item);
+    groups.set(key, [...(groups.get(key) || []), item]);
+  }
+  const reserved = new Set();
+  for (const group of groups.values()) {
+    const byPeriod = group.slice().sort((left, right) => String(left.period || '').localeCompare(String(right.period || '')));
+    const first = byPeriod.find((item) => String(item.period || '').startsWith(String(firstYear)) && Number.isFinite(item.value));
+    const last = lastYear === undefined
+      ? byPeriod.slice().reverse().find((item) => Number.isFinite(item.value))
+      : byPeriod.slice().reverse().find((item) => String(item.period || '').startsWith(String(lastYear)) && Number.isFinite(item.value));
+    if (first) reserved.add(first);
+    if (last) reserved.add(last);
+  }
+  return [...reserved, ...ordered.filter((item) => !reserved.has(item))].slice(0, Math.max(limit, reserved.size));
+};
 
 const recordedOffenceCategories = [
   { terms: ['homicidio', 'asesinato'], labels: ['intentional homicide', 'attempted intentional homicide'] },
@@ -406,7 +443,7 @@ export const rankWarehouseObservations = (query, records, limit = 12, { metricId
     const reserved = new Set(latestByRequestedGroup);
     return [...latestByRequestedGroup, ...ordered.filter((item) => !reserved.has(item))].slice(0, Math.max(limit, latestByRequestedGroup.length));
   }
-  return ordered.slice(0, limit);
+  return preserveRequestedTrendEndpoints(ordered, query, limit);
 };
 
 export const findWarehouseObservations = async (query, limit = 12, { metricIds, records, useProvidedRecords = false } = {}) => {

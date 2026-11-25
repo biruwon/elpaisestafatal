@@ -1,5 +1,6 @@
 import { filterObservationsForRequestedGroup, indexLegacyWarehouseRecordPayload, indexWarehouseRecordFiles, populationEvidenceFit, rankWarehouseObservations, recordedOffenceCategoryForQuery, selectWarehouseRecordFiles, warehouseEvidenceFit } from './warehouse-query.mjs';
-import { excludedMetricIdsForQuery, metricCandidatesForQuery, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
+import { claimMeasurementScopeCompatible, constrainMetricIdsToQueryScope, excludedMetricIdsForQuery, metricCandidatesForQuery, preferredMetricIdsForQuery } from './metric-query-hints.mjs';
+import { summarizeWarehouseTrend } from './warehouse-trend.mjs';
 import { handlerForInput } from './handlers.mjs';
 import { observationMatchesAgeScope, requestedAgeScopes } from '../../src/lib/knowledge/age-scope.mjs';
 
@@ -15,6 +16,52 @@ if (rankWarehouseObservations('unknown metric', records).length) throw new Error
 const modelResearchRecord = { id: 'llm-candidate', kind: 'llm-research-evidence', datasetId: 'Tasa de empleo', metric: 'employment rate', value: 99, unit: '%', period: '2026', finding: 'The model says employment is 99%.', source: { id: 'llm-source', publisher: 'INE', url: 'https://www.ine.es/' } };
 if (rankWarehouseObservations('employment rate Spain', [modelResearchRecord]).length) throw new Error('Warehouse query exposed a model-generated research lead as source evidence');
 if (warehouseEvidenceFit(0.34) !== 'weak' || warehouseEvidenceFit(0.5) !== 'qualified' || warehouseEvidenceFit(0.8) !== 'direct') throw new Error('Warehouse evidence-fit thresholds are invalid');
+
+const rentTrendSource = { id: 'rent-trend-source', title: 'Eurostat actual rents HICP', retrievedAt: '2026-11-25T00:00:00.000Z', url: 'https://ec.europa.eu/eurostat/' };
+const longRentSeries = [];
+for (let year = 1996; year <= 2026; year += 1) {
+  const lastMonth = year === 2026 ? 10 : 12;
+  for (let month = 1; month <= lastMonth; month += 1) {
+    const period = `${year}-${String(month).padStart(2, '0')}`;
+    for (const unit of ['I15', 'RCH_A']) {
+      longRentSeries.push({
+        id: `rent-${unit}-${period}`,
+        datasetId: 'prc_hicp_minr',
+        metricId: 'rental_price_index',
+        metric: 'Actual rent index Spain',
+        value: unit === 'I15' ? 80 + (year - 1996) + month / 100 : 1.2,
+        unit: unit === 'I15' ? 'Index, 2015=100' : 'Annual rate of change',
+        period,
+        dimensions: { geo: 'ES', coicop18: 'CP041', unit },
+        source: rentTrendSource,
+      });
+    }
+  }
+}
+for (const query of [
+  '¿Cómo ha cambiado el índice de alquiler desde 2010?',
+  '¿Cómo ha evolucionado el índice de alquiler a partir de 2010?',
+]) {
+  const ranked = rankWarehouseObservations(query, longRentSeries, 12, { metricIds: new Set(['rental_price_index']) });
+  for (const unit of ['I15', 'RCH_A']) {
+    const points = ranked.filter((item) => item.dimensions?.unit === unit);
+    if (!points.some((item) => item.period === '2010-01') || !points.some((item) => item.period === '2026-10')) {
+      throw new Error(`A ranked trend omitted a requested start or latest endpoint for ${unit}: ${query}`);
+    }
+  }
+  const indexPoints = ranked.filter((item) => item.dimensions?.unit === 'I15');
+  const summary = summarizeWarehouseTrend(query, indexPoints);
+  if (!summary?.reply.includes('2010-01') || !summary.reply.includes('2026-10')) throw new Error(`A bounded trend did not answer from the requested baseline through the latest month: ${query}`);
+}
+const rangedRent = rankWarehouseObservations('Compara el índice de alquiler entre 2010 y 2020', longRentSeries, 12, { metricIds: new Set(['rental_price_index']) });
+for (const unit of ['I15', 'RCH_A']) {
+  const points = rangedRent.filter((item) => item.dimensions?.unit === unit);
+  if (!points.some((item) => item.period === '2010-01') || !points.some((item) => item.period === '2020-12') || points.some((item) => item.period === '2026-10')) {
+    throw new Error(`A bounded range did not retain exactly its requested endpoints for ${unit}`);
+  }
+}
+const missingRentStart = rankWarehouseObservations('¿Cómo cambió el índice del alquiler desde 2010?', longRentSeries.filter((item) => item.period >= '2012-01'), 12, { metricIds: new Set(['rental_price_index']) });
+if (missingRentStart.some((item) => item.period.startsWith('2010'))) throw new Error('Trend endpoint reservation invented a missing start year');
 
 const ageSource = { id: 'source-age-rates', title: 'Unemployment by age', url: 'https://example.org/unemployment-by-age' };
 const ageRows = [
@@ -170,6 +217,51 @@ const monetaryRentQuestion = preferredMetricIdsForQuery('¿Cuál es el importe e
 if (!monetaryRentQuestion.has('rental_price_index') || monetaryRentQuestion.has('house_price_index')) throw new Error('Metric hints did not keep a monetary rent request on the rent measure or protect it from home-sale prices');
 const rentVerbAmountQuestion = preferredMetricIdsForQuery('¿Qué último dato oficial indica cuánto cuesta alquilar una vivienda al mes, en euros, en España?');
 if (!rentVerbAmountQuestion.has('rental_price_index') || rentVerbAmountQuestion.has('house_price_index') || rentVerbAmountQuestion.has('housing_cost_overburden_rate')) throw new Error('Metric hints routed a monthly rent amount to home-sale or affordability measures');
+for (const query of [
+  '¿Cómo han cambiado los precios anunciados del alquiler en portales desde 2015?',
+  'How have advertised asking rents changed since 2015?',
+  '¿Qué precio de oferta tienen los alquileres publicados?',
+]) {
+  if (preferredMetricIdsForQuery(query).has('rental_price_index') || !excludedMetricIdsForQuery(query).has('rental_price_index')) {
+    throw new Error(`Advertised rent wording was routed to the actual-rents index: ${query}`);
+  }
+  if (constrainMetricIdsToQueryScope(query, new Set(['rental_price_index'])).has('rental_price_index')) {
+    throw new Error(`An explicit compiler metric bypassed the advertised-rent scope: ${query}`);
+  }
+}
+for (const query of [
+  'Evolución de los alquileres efectivamente pagados por los hogares desde 2015',
+  '¿Cómo han cambiado las rentas efectivamente pagadas por los hogares desde 2015?',
+  'How have actual rents paid by households changed since 2015?',
+]) {
+  if (!preferredMetricIdsForQuery(query).has('rental_price_index') || excludedMetricIdsForQuery(query).has('rental_price_index')) {
+    throw new Error(`Actual rent wording lost its compatible HICP route: ${query}`);
+  }
+}
+const actualRentPublishedClaim = {
+  kind: 'claim',
+  claim: 'Los alquileres han subido en España desde 2015.',
+  explanation: 'La serie armonizada mide los alquileres efectivos pagados por los hogares.',
+  sources: [{ title: 'Índice armonizado de rentas efectivamente pagadas · Eurostat' }],
+};
+for (const query of [
+  '¿Cómo han cambiado los precios anunciados del alquiler en portales desde 2015?',
+  '¿Qué evolución ha tenido el precio de oferta de las viviendas en alquiler?',
+  'How have advertised asking rents changed since 2015?',
+  'How have listed rental prices changed since 2015?',
+]) {
+  if (claimMeasurementScopeCompatible(query, actualRentPublishedClaim)) {
+    throw new Error(`A published actual-rent claim crossed into advertised-rent scope: ${query}`);
+  }
+}
+for (const query of [
+  '¿Cómo han cambiado las rentas efectivamente pagadas por los hogares desde 2015?',
+  'How have actual rents paid by households changed since 2015?',
+]) {
+  if (!claimMeasurementScopeCompatible(query, actualRentPublishedClaim)) {
+    throw new Error(`An actual-rent paraphrase was blocked from its matching published evidence: ${query}`);
+  }
+}
 if (!preferredMetricIdsForQuery('gasto sanitario por habitante').has('health_expenditure_per_capita')) throw new Error('Metric hints did not prefer health expenditure for resource wording');
 if (!preferredMetricIdsForQuery('¿España paga más por la electricidad que Europa?').has('household_electricity_price_europe')) throw new Error('Metric hints did not prefer the Spain/EU household electricity comparison');
 if (preferredMetricIdsForQuery('¿España paga más por la electricidad que Europa?').has('household_electricity_price')) throw new Error('Metric hints kept Spain-only household electricity alongside European comparison wording');

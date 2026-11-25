@@ -23,6 +23,15 @@ assert(workflow.includes("steps.coverage.outcome == 'failure'") && workflow.incl
 const refreshConfig = JSON.parse(await readFile(new URL('../../config/source-refresh.json', import.meta.url), 'utf8'));
 const priceFeeds = Object.values(refreshConfig).flat().filter((item) => ['inflation_rate', 'inflation_rate_europe', 'rental_price_index', 'harmonised_price_index'].includes(item.metricId));
 assert(priceFeeds.length === 4 && priceFeeds.every((item) => new URL(item.url).pathname.endsWith('/prc_hicp_minr')), 'Current HICP feeds must use the active ECOICOP v2 dataset, not the frozen 1996–2025 tables');
+const monthlyRentFeed = priceFeeds.find((item) => item.metricId === 'rental_price_index');
+const monthlyRentUrl = new URL(monthlyRentFeed.url);
+assert(monthlyRentUrl.searchParams.get('geo') === 'ES' && monthlyRentUrl.searchParams.get('coicop18') === 'CP041', 'Monthly rent index must select Spain and actual rentals in the active HICP classification');
+assert(monthlyRentUrl.searchParams.getAll('unit').includes('I15') && monthlyRentUrl.searchParams.getAll('unit').includes('RCH_A'), 'Monthly rent index must retain both the fixed-base index and annual rate series');
+assert(!monthlyRentUrl.searchParams.has('sinceTimePeriod') || Number(monthlyRentUrl.searchParams.get('sinceTimePeriod')) <= 1996, 'Monthly rent index must preserve its full available history');
+assert(monthlyRentFeed.aliases.some((alias) => /rentas efectivamente pagadas/i.test(alias)), 'Monthly rent source aliases must expose the measured actual-rent population');
+const rentSourceNote = await readFile(new URL('../../content/sources/alquileres-indice-eurostat.md', import.meta.url), 'utf8');
+assert(rentSourceNote.includes('/prc_hicp_minr') && !rentSourceNote.includes('/prc_hicp_midx'), 'The published rent source note must point to the active HICP feed');
+assert(rentSourceNote.includes('enero de 1996') && rentSourceNote.includes('octubre de 2026') && rentSourceNote.includes('precios anunciados'), 'The rent source note must state its covered period and distinguish paid from advertised rents');
 for (const item of priceFeeds) {
   const url = new URL(item.url);
   assert(url.searchParams.get('coicop18') === (item.metricId === 'rental_price_index' ? 'CP041' : 'TOTAL'), `Wrong HICP consumption group for ${item.metricId}`);
