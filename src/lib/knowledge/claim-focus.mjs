@@ -22,6 +22,7 @@ import { PUBLIC_PRIVATE_PAY_SNAPSHOT } from './public-private-pay-snapshot.mjs';
 import { PUBLIC_SOCIAL_HOUSING_SNAPSHOT, asksForPublicSocialStockCount } from './public-social-housing-snapshot.mjs';
 import { YOUTH_HOUSING_INDEPENDENCE_SNAPSHOT } from './youth-housing-independence-snapshot.mjs';
 import { HOUSING_LABOUR_MOBILITY_EVIDENCE } from './housing-labour-mobility-snapshot.mjs';
+import { SEASONAL_RENTAL_SHIFT_EVIDENCE } from './seasonal-rental-shift-snapshot.mjs';
 import { ROOM_RENTAL_MARKET_SNAPSHOT, roomRentalMarketClaimFor, roomRentalMarketDirectMeasureFor, roomRentalMarketRequestedMeasureFor } from './room-rental-market-snapshot.mjs';
 import { PUBLIC_SERVICE_DIGITAL_ACCESS_SNAPSHOT, publicServiceDigitalAccessClaimFor, publicServiceDigitalAccessMeasureFor } from './public-service-digital-access-snapshot.mjs';
 import { PUBLIC_DOCUMENT_REUSE_SNAPSHOT, publicDocumentReuseClaimFor, publicDocumentReuseLegalQuestionFor } from './public-document-reuse-snapshot.mjs';
@@ -641,6 +642,22 @@ const rentalTenantScreeningExclusion = (t) => {
 const rentalRegulationContractShift = (t) => rentalSubject(t)
   && /\b(regulaci\w*|topes?\b|control de (?:precios|rentas?)|l[ií]mite\w* (?:al|del) alquiler|limit\w* (?:el )?precio del alquiler|ley de vivienda)\b/.test(t)
   && /\b(empuj\w*|desplaz\w*|desaparec\w*|retir\w*|reduc\w*|disminu\w*|anunciad\w*|convert\w*|pas\w*|temporad\w*|temporal(?:es)?|mercado regulado|oferta)\b/.test(t);
+const seasonalRentalSubstitution = (t) => {
+  const seasonal = '(?:temporad\\w*|temporal\\w*|estacional\\w*|corta duraci[oó]n)';
+  const usual = '(?:larga duraci[oó]n|habitual\\w*|residencial\\w*|larga estancia|permanent\\w*)';
+  const seasonalReplacesUsual = new RegExp(`\\b${seasonal}\\b[\\s\\w]{0,80}\\b(?:sustitui\\w*|sustituy\\w*|reemplaz\\w*|desplaz\\w*|desbanc\\w*)\\b[\\s\\w]{0,80}\\b${usual}\\b`);
+  const usualChangesToSeasonal = new RegExp(`\\b${usual}\\b[\\s\\w]{0,55}\\b(?:sustituci\\w*|reemplaz\\w*|convert\\w*|transform\\w*)\\b[\\s\\w]{0,45}\\b(?:por|a|al|en)\\b[\\s\\w]{0,35}\\b${seasonal}\\b`);
+  const usualPassesToSeasonal = new RegExp(`\\b(?:pas\\w*|convert\\w*|transform\\w*)\\b[\\s\\w]{0,55}\\b${usual}\\b[\\s\\w]{0,40}\\b(?:a|al|en)\\b[\\s\\w]{0,35}\\b${seasonal}\\b`);
+  const seasonalSubstitutionDirection = seasonalReplacesUsual.test(t)
+    || usualChangesToSeasonal.test(t)
+    || usualPassesToSeasonal.test(t);
+  const result = rentalSubject(t)
+    && seasonalSubstitutionDirection
+    && /\b(temporad\w*|temporal\w*|estacional\w*|corta duraci[oó]n)\b/.test(t)
+    && /\b(larga duraci[oó]n|habitual\w*|residencial\w*|larga estancia|permanent\w*)\b/.test(t)
+    && !/\b(regulaci\w*|topes?\b|control de (?:precios|rentas?)|l[ií]mite\w* (?:al|del) alquiler|ley de vivienda|turism\w*|tur[ií]stic\w*|vacacional\w*|flexibil\w*|prefier\w*|preferenc\w*|mied\w*|temor\w*)\b/.test(t);
+  return result;
+};
 const rentalLandlordMotives = (t) => rentalSubject(t)
   && (/\b(propietari\w*|arrendador\w*|caser\w*|due[nñ]os?|anfitri[oó]n\w*)\b/.test(t)
     || /\b(viviend\w*|piso\w*|casas?|apartament\w*)\b[\w\s]{0,40}\b(vac[ií]a\w*|desocupad\w*|retirad\w*)\b/.test(t))
@@ -2125,6 +2142,23 @@ const focuses = [
     },
     explanation: 'Que una inmobiliaria exija garantías no indica cuántas solicitudes se rechazan ni si esos requisitos excluyen más a un perfil laboral concreto.',
     limitation: 'El precio y el esfuerzo medio del alquiler describen viviendas u hogares que ya alquilan; no miden solicitudes rechazadas ni qué requisito influyó en cada decisión.',
+  },
+  {
+    id: 'seasonal-rental-substitution', label: 'sustitución del alquiler habitual por contratos de temporada',
+    when: seasonalRentalSubstitution,
+    direct: [], context: [], claimType: 'causal',
+    needs: [
+      'contratos de temporada y habituales comparables en el mismo territorio y periodo',
+      'seguimiento de las mismas viviendas o una medida directa de conversión entre regímenes',
+      'denominador representativo de todos los contratos o viviendas de alquiler',
+      'definición homogénea de las zonas de alta demanda mencionadas',
+    ],
+    explanationHeadline: 'El registro cuenta contratos de temporada, pero no viviendas que cambian de régimen',
+    explanation: 'Los depósitos registrados permiten describir los contratos de temporada; no enlazan esos contratos con el alquiler anterior de una misma vivienda.',
+    evidenceGap: 'La serie disponible no mide cuántas viviendas pasaron del alquiler habitual al temporal ni si el cambio se concentra en zonas de alta demanda.',
+    explanationEvidence: SEASONAL_RENTAL_SHIFT_EVIDENCE,
+    shareableReplyForContext: SEASONAL_RENTAL_SHIFT_EVIDENCE.shareableReplyForContext,
+    limitation: 'Un aumento o descenso de contratos de temporada no demuestra sustitución del alquiler habitual: los registros no identifican viviendas enlazadas entre periodos y no ofrecen una proporción comparable de todos los alquileres.',
   },
   {
     id: 'rental-regulation-contract-shift', label: 'cambios de oferta y contrato atribuidos a la regulación del alquiler',

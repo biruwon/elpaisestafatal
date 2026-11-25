@@ -155,6 +155,13 @@ const cases = [
   ]],
   ['rental-tenant-screening-exclusion', ['Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares', 'Los avales y requisitos de solvencia dejan fuera a inquilinos con ingresos variables', 'Personas con nóminas inestables son rechazadas para alquilar por no cumplir las garantías', 'El mercado del alquiler penaliza a autónomos y personas sin nómina indefinida', 'Las inmobiliarias y los seguros de impago exigen condiciones que dejan fuera a muchos trabajadores normales']],
   ['rental-screening-requirements-trend', ['Los requisitos para alquilar son más difíciles de cumplir que hace una década', 'Ahora cuesta más cumplir las garantías que piden para arrendar una vivienda']],
+  ['seasonal-rental-substitution', [
+    'El alquiler temporal está sustituyendo al alquiler de larga duración en zonas de alta demanda',
+    'Los pisos de temporada están reemplazando al alquiler habitual en los mercados más tensionados',
+    'Algunos pisos pasan del alquiler habitual al de temporada en áreas con mucha demanda',
+    'El arrendamiento temporal desplaza al alquiler permanente en áreas de alta demanda',
+    'Los alquileres de corta duración están sustituyendo al alquiler residencial habitual en las ciudades más demandadas',
+  ]],
   ['rental-regulation-contract-shift', ['La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales', 'Los topes de alquiler hacen que parte de la oferta desaparezca del mercado regulado', 'El control de precios provoca que viviendas pasen del alquiler habitual al de temporada', 'El control de rentas reduce las viviendas anunciadas en las zonas afectadas', 'Limitar el precio del alquiler hace que algunos propietarios retiren sus pisos']],
   ['rental-landlord-motives', ['El miedo a la okupación y al impago hace que propietarios retiren pisos del alquiler', 'Hay viviendas vacías que no se alquilan por miedo a problemas legales con inquilinos', 'Los propietarios prefieren el alquiler de temporada porque les da más flexibilidad que el alquiler habitual', '¿Qué preocupa a los arrendadores cuando alquilan una vivienda?', 'El temor a los impagos lleva a algunos propietarios a dejar casas fuera del mercado de alquiler']],
   ['sector-wage-comparison', ['El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', 'Los sueldos turísticos son más bajos que en las industrias más productivas', 'En hostelería se pagan menos salarios altos que en otros sectores', 'El empleo aumenta más en sectores de baja productividad que en sectores con salarios elevados', 'La hostelería arrastra hacia abajo el promedio de los sueldos en España', 'La actividad turística reduce la media de los salarios']],
@@ -331,6 +338,60 @@ const seasonalFlexibilityOnly = focusedEvidencePlan('Los propietarios prefieren 
 assert.equal(seasonalFlexibilityOnly.answerScope.family, 'rental-landlord-motives');
 assert.ok(!seasonalFlexibilityOnly.sourceLinks.some((source) => source.id === 'observatorio-alquiler-landlord-profile-2025'),
   'A survey of fears about non-payment must not be reused as evidence for owners preferring temporary contracts');
+const seasonalRentalClaims = [
+  'El alquiler temporal está sustituyendo al alquiler de larga duración en zonas de alta demanda',
+  'Los pisos de temporada están reemplazando al alquiler habitual en los mercados más tensionados',
+  'Algunos pisos pasan del alquiler habitual al de temporada en áreas con mucha demanda',
+  'El arrendamiento temporal desplaza al alquiler permanente en áreas de alta demanda',
+  'Los alquileres de corta duración están sustituyendo al alquiler residencial habitual en las ciudades más demandadas',
+];
+const seasonalRentalSourceIds = ['catalonia-seasonal-rental-deposits-q2-2026'];
+const seasonalRentalPlan = focusedEvidencePlan(seasonalRentalClaims[0], { now: Date.parse('2026-11-25') });
+assert.equal(seasonalRentalPlan.answerScope.family, 'seasonal-rental-substitution');
+assert.equal(seasonalRentalPlan.claimType, 'causal');
+assert.deepEqual(seasonalRentalPlan.answerScope.directMetrics, []);
+assert.deepEqual(seasonalRentalPlan.answerScope.contextMetrics, []);
+assert.equal(seasonalRentalPlan.evidenceLevel, 'limited', 'Deposit counts provide context but do not measure homes switching rental regime');
+assert.equal(seasonalRentalPlan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
+assert.deepEqual(seasonalRentalPlan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.evidenceIds, []);
+assert.deepEqual(seasonalRentalPlan.sourceLinks.map((source) => source.id), seasonalRentalSourceIds);
+assert.match(seasonalRentalPlan.shareableReply, /9\.330.*2023.*13\.517.*2024.*13\.152.*2025/s);
+assert.match(seasonalRentalPlan.shareableReply, /2026.*4\.191.*6\.594.*2025/s);
+assert.match(seasonalRentalPlan.shareableReply, /no viviendas seguidas en el tiempo|no enlaza un contrato temporal con el contrato previo de larga duraci[oó]n/i);
+assert.match(seasonalRentalPlan.shareableReply, /no permiten concluir que el alquiler temporal est[eé] sustituyendo/i);
+assert.doesNotMatch(seasonalRentalPlan.shareableReply, /36,4\s*%/i, 'A derived change must not imply a measured transition into seasonal rental');
+for (const paraphrase of seasonalRentalClaims.slice(1)) {
+  const plan = focusedEvidencePlan(paraphrase, { now: Date.parse('2026-11-25') });
+  assert.equal(plan.answerScope.family, 'seasonal-rental-substitution', `A seasonal rental paraphrase changed family: ${paraphrase}`);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), seasonalRentalSourceIds, `A paraphrase changed seasonal-rental evidence: ${paraphrase}`);
+  assert.match(plan.shareableReply, /no enlaza|no confirma/i);
+}
+const seasonalRentalPublic = localPublicCheckResponse({
+  status: 'complete', requestId: 'seasonal-rental-shift-text-evidence', result: seasonalRentalPlan,
+}, seasonalRentalClaims[0]);
+assert.equal(seasonalRentalPublic.state, 'insufficient');
+assert.match(seasonalRentalPublic.result.reply, /9\.330.*2023.*13\.517.*2024.*13\.152.*2025.*no permiten concluir que el alquiler temporal est[eé] sustituyendo/s);
+assert.deepEqual(seasonalRentalPublic.result.sources.map((source) => source.id), seasonalRentalSourceIds);
+const seasonalRentalCatalonia = focusedEvidencePlan('En Cataluña, el alquiler temporal está sustituyendo al de larga duración', { now: Date.parse('2026-11-25') });
+assert.deepEqual(seasonalRentalCatalonia.sourceLinks.map((source) => source.id), seasonalRentalSourceIds);
+assert.match(seasonalRentalCatalonia.shareableReply, /totales regionales no demuestran.*zona concreta/i);
+const seasonalRentalBarcelona = focusedEvidencePlan('En Barcelona, el alquiler temporal está sustituyendo al de larga duración', { now: Date.parse('2026-11-25') });
+assert.deepEqual(seasonalRentalBarcelona.sourceLinks, [], 'A Catalonia-wide aggregate must not answer a Barcelona-specific claim');
+const seasonalRentalOutsidePeriod = focusedEvidencePlan('En 2022 el alquiler temporal sustituyó al de larga duración en España', { now: Date.parse('2026-11-25') });
+assert.deepEqual(seasonalRentalOutsidePeriod.sourceLinks, [], 'The seasonal-contract series starts in 2023');
+for (const [claim, expectedFamily] of [
+  ['La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales', 'rental-regulation-contract-shift'],
+  ['Los propietarios prefieren el alquiler temporal al habitual porque les da más flexibilidad', 'rental-landlord-motives'],
+  ['Los pisos turísticos están retirando viviendas del alquiler residencial', 'tourist-housing-supply'],
+]) assert.equal(claimFocusFor(claim)?.id, expectedFamily, `A neighboring rental claim crossed into seasonal rental substitution: ${claim}`);
+for (const nearby of [
+  'El alquiler temporal es más caro que el alquiler de larga duración',
+  'El alquiler habitual está sustituyendo al alquiler temporal',
+  'Los contratos temporales de trabajo sustituyen los empleos permanentes',
+  'El precio del alquiler habitual subió en Cataluña durante 2025',
+]) assert.notEqual(claimFocusFor(nearby)?.id, 'seasonal-rental-substitution', `A nearby claim crossed into seasonal rental substitution: ${nearby}`);
+validateAnswerPlan(seasonalRentalPlan);
 const localLandlordFear = focusedEvidencePlan('En Barcelona, el miedo a los impagos hace que propietarios retiren viviendas del alquiler', { now: Date.parse('2026-11-24T12:00:00Z') });
 assert.equal(localLandlordFear.answerScope.family, 'rental-landlord-motives');
 assert.ok(!localLandlordFear.sourceLinks.some((source) => source.id === 'observatorio-alquiler-landlord-profile-2025'),
