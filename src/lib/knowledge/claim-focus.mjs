@@ -614,9 +614,21 @@ const workHousingCostCausality = (t) => /\b(viviend\w*|alquil\w*|precio\w*|coste
   && /\b(retras\w*|fren\w*|dificult\w*|impid\w*|oblig\w*|alej\w*|reduc\w*|condicion\w*|imposib\w*|encarec\w*|expuls\w*|presion\w*)\b/.test(t);
 const workHousingTrend = (t) => /\b(ya no|cada vez|se ha vuelto|antes|ahora|desde (?:19|20)\d{2}|entre (?:19|20)\d{2} y (?:19|20)\d{2}|ultimos a[nñ]os)\b/.test(t);
 const rentalSubject = (t) => /\b(viviend\w*|alquil\w*|arrendam\w*|inquilin\w*|piso\w*|casas?|apartament\w*)\b/.test(t);
-const rentalTenantScreeningExclusion = (t) => rentalSubject(t)
-  && /\b(fianz\w*|garanti\w*|aval\w*|seguro\w* de impago|solvenci\w*|ingresos? irregulares?|n[oó]min\w*)\b/.test(t)
-  && /\b(exclu\w*|dej\w* fuera|rechaz\w*|deneg\w*|impid\w*|barrer\w*|filtr\w*|penaliz\w*|discrimin\w*|no pueden? alquilar|dif[ií]cil\w* alquilar)\b/.test(t);
+const rentalScreeningRequirementsTrend = (t) => {
+  const explicitRentalContext = /\b(alquil\w*|arrend\w*|inquilin\w*)\b/.test(t);
+  const screeningRequirements = /\b(fianz\w*|garanti\w*|aval\w*|seguro\w* de impago|solvenci\w*|ingresos? irregulares?|n[oó]min\w*|requisit\w*|condicion\w*)\b/.test(t);
+  const increasedDifficulty = /\b(mas dificil\w*|mas complicad\w*|mas exigent\w*|cuesta mas cumplir|dificil\w* de cumplir|complicad\w* de cumplir)\b/.test(t);
+  const temporalComparison = /\b(antes|ahora|hace (?:una? )?(?:decada|a[nñ]os?)|desde (?:19|20)\d{2}|ultim\w* a[nñ]os|cada vez|se ha vuelto|han cambiado)\b/.test(t);
+  return explicitRentalContext && screeningRequirements && increasedDifficulty && temporalComparison;
+};
+const rentalTenantScreeningExclusion = (t) => {
+  const directRentalTerms = /\b(alquil\w*|arrend\w*|inquilin\w*)\b/.test(t);
+  const explicitRentalContext = directRentalTerms
+    || /\b(inmobiliari\w*)\b/.test(t) && /\b(seguro\w* de impago|impag\w*)\b/.test(t);
+  const screeningRequirements = /\b(fianz\w*|garanti\w*|aval\w*|seguro\w* de impago|solvenci\w*|ingresos? irregulares?|n[oó]min\w*|requisit\w*|condicion\w*)\b/.test(t);
+  const accessBarrier = /\b(exclu\w*|dej\w* fuera|rechaz\w*|deneg\w*|impid\w*|barrer\w*|filtr\w*|penaliz\w*|discrimin\w*|no pueden? alquilar|dif[ií]cil\w* alquilar)\b/.test(t);
+  return explicitRentalContext && screeningRequirements && accessBarrier;
+};
 const rentalRegulationContractShift = (t) => rentalSubject(t)
   && /\b(regulaci\w*|topes?\b|control de (?:precios|rentas?)|l[ií]mite\w* (?:al|del) alquiler|limit\w* (?:el )?precio del alquiler|ley de vivienda)\b/.test(t)
   && /\b(empuj\w*|desplaz\w*|desaparec\w*|retir\w*|reduc\w*|disminu\w*|anunciad\w*|convert\w*|pas\w*|temporad\w*|temporal(?:es)?|mercado regulado|oferta)\b/.test(t);
@@ -2004,12 +2016,35 @@ const focuses = [
     limitation: 'La ECV 2025 pregunta por convivencia y motivos entre personas de 26–34 años y desglosa por renta personal, no por estabilidad contractual o jornada. El CJE desglosa la emancipación de jóvenes de 16–29 años por situación de actividad, pero no por tipo de contrato; su esfuerzo de alquiler es una comparación de promedios. Las cifras son transversales y no miden duración ni causa del retraso. Los grupos de edad y denominadores no son intercambiables.',
   },
   {
+    id: 'rental-screening-requirements-trend', label: 'evolución de los requisitos para alquilar',
+    when: rentalScreeningRequirementsTrend,
+    direct: [], context: [], claimType: 'trend',
+    needs: [
+      'requisitos y garantías exigidos para alquilar, medidos con el mismo criterio en los periodos comparados',
+      'tasas de aceptación y rechazo, con motivos y perfil de quienes solicitan una vivienda',
+      'mismo territorio, tipo de vivienda y población en ambos periodos',
+    ],
+    explanation: 'Que hoy parezca más difícil cumplir los requisitos no demuestra que hayan cambiado: hace falta comparar qué se exigía y qué proporción de solicitantes podía cumplirlo en ambos periodos.',
+    explanationHeadline: 'Falta una comparación de los requisitos de alquiler a lo largo del tiempo',
+    evidenceGap: 'No hay una serie comparable de requisitos de alquiler y resultados de las solicitudes para los periodos que afirma el enunciado.',
+    limitation: 'Los precios del alquiler y el esfuerzo medio de hogares que ya alquilan no miden los requisitos de selección ni qué proporción de solicitantes puede cumplirlos.',
+  },
+  {
     id: 'rental-tenant-screening-exclusion', label: 'requisitos de acceso y rechazo de inquilinos',
     when: rentalTenantScreeningExclusion,
     direct: [], context: [], claimType: 'causal',
-    needs: ['solicitudes y rechazos de alquiler desglosados por estabilidad de ingresos', 'requisitos de fianza, aval, seguro o solvencia aplicados en cada caso', 'misma población de solicitantes, territorio y periodo'],
-    explanation: 'Que se pidan garantías no indica cuántas personas con ingresos irregulares son rechazadas ni por qué.',
-    limitation: 'El esfuerzo medio del alquiler describe a hogares que ya alquilan; no mide solicitudes rechazadas ni selección por estabilidad de ingresos.',
+    needsForClaim: (claim) => {
+      const namesIncomeGroup = /\b(autonom\w*|tempor\w*|ingresos? (?:irregulares?|variables?)|n[oó]min\w*)\b/.test(normalize(claim));
+      return [
+        namesIncomeGroup
+          ? 'solicitudes y rechazos desglosados por la situación laboral o estabilidad de ingresos mencionada'
+          : 'recuento de solicitudes, aceptaciones y rechazos de alquiler para medir a cuántas personas afecta',
+        'garantías y criterios de solvencia aplicados en cada solicitud',
+        'misma población solicitante, territorio y periodo',
+      ];
+    },
+    explanation: 'Que una inmobiliaria exija garantías no indica cuántas solicitudes se rechazan ni si esos requisitos excluyen más a un perfil laboral concreto.',
+    limitation: 'El precio y el esfuerzo medio del alquiler describen viviendas u hogares que ya alquilan; no miden solicitudes rechazadas ni qué requisito influyó en cada decisión.',
   },
   {
     id: 'rental-regulation-contract-shift', label: 'cambios de oferta y contrato atribuidos a la regulación del alquiler',
