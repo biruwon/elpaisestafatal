@@ -1701,3 +1701,25 @@ insufficient, shows no unsupported number or unattributed public source, and
 keeps the two causal evidence needs. These checks fix one discovered semantic
 boundary; the 300-candidate audit and this replay do not estimate accuracy for
 arbitrary user wording.
+
+## Industrial electricity and competitiveness replies — 25 November 2026
+
+A live text audit found that the industrial-electricity competitiveness family
+correctly treated Eurostat's non-household price as context and returned an
+insufficient result, but repeated caveats in a long answer. Its shared
+composer now gives the observed measure once, with Spain, semester, unit,
+consumption band and tax treatment; it then states that a consumption-band
+average cannot establish sector-specific costs or a competitiveness effect.
+The final sentence identifies the missing comparable company prices, cost
+shares and business outcomes. If the observation does not carry the expected
+band and tax dimensions, its number is omitted rather than presented with an
+assumed scope.
+
+The focus validator checks three causal phrasings receive the same evidence and
+answer, while household electricity and direct large-consumer price questions
+keep their own routes. The current contextual observation is Eurostat's
+2026-S1 rate for Spanish non-household consumers using 2,000 to less than
+20,000 MWh per year, excluding VAT and other recoverable taxes and levies. It
+does not measure all industrial firms or prove a causal loss of
+competitiveness. These regression checks address the discovered family only;
+they do not score text accuracy across the full claim corpus.

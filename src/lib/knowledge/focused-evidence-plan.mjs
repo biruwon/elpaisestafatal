@@ -1279,6 +1279,28 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       'Son medias brutas, no una distribución salarial ni una comparación entre el salario y los requisitos del puesto. Para comprobar ese ajuste hacen falta salarios y cualificaciones exigidas comparables por ocupación, jornada, experiencia, sector, territorio y periodo.',
     ].join('\n\n');
   })();
+  const electricityIndustryCostsReply = (() => {
+    if (focus.id !== 'electricity-industry-costs') return undefined;
+    const price = primaryFacts.find((fact) => fact.id === 'industrial_electricity_price');
+    const expectedBandAndTaxScope = price?.latest.dimensions?.nrg_cons === 'MWH2000-19999'
+      && price.latest.dimensions?.tax === 'X_VAT';
+    const contextualPrice = expectedBandAndTaxScope
+      ? `${price.latest.source?.publisher || 'Eurostat'} (España, ${periodLabel(price.latest.period)}): precio medio de ${number(price.latest.value, price.id)} €/kWh para consumidores no domésticos de la banda ID (2.000 a menos de 20.000 MWh al año); excluye el IVA y otros impuestos y gravámenes recuperables.`
+      : '';
+    const qualityNotes = price ? [
+      price.latest.freshness === 'stale' ? 'La fuente no se ha actualizado en el plazo previsto y puede no incluir revisiones recientes.' : '',
+      price.latest.freshness === 'unknown' ? 'No se ha podido comprobar cuándo se consultó esta fuente.' : '',
+      ...observationFlagNotes(price.latest.status),
+      price.latest.dimensions?.provisional === true ? 'El dato es provisional.' : '',
+    ].filter(Boolean) : [];
+    return [
+      'La evidencia disponible no basta para confirmar que el coste eléctrico reduzca la competitividad de la industria española.',
+      contextualPrice,
+      ...(expectedBandAndTaxScope ? ['Ese promedio agrupa por consumo: no identifica sectores, contratos o empresas, ni demuestra un efecto sobre su competitividad.'] : []),
+      ...qualityNotes,
+      'Para medirlo hacen falta precios pagados comparables por contrato, consumo, impuestos, cargos, país, sector, tamaño de empresa y periodo; además del peso de la electricidad en los costes y resultados de productividad o precios de venta.',
+    ].filter(Boolean).join('\n\n');
+  })();
   const tourismEmploymentHeadline = focus.id === 'tourism-employment-contribution'
     ? (() => {
       const share = facts.find((fact) => fact.id === 'tourism_characteristic_employment_share');
@@ -1297,7 +1319,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       return `El dato (${number(directThresholdAssessment.actual, fact.id)}${suffix}) ${position}; ${directThresholdAssessment.verdict === 'supported' ? 'respalda' : 'contradice'} esa parte.`;
     })()
     : '';
-  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || tourismEmploymentReply || workingPovertyEndsMeetReply || touristHousingReply || educationPayReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || tourismEmploymentReply || workingPovertyEndsMeetReply || touristHousingReply || educationPayReply || electricityIndustryCostsReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
     directThresholdComparisonNote,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length ? 'limited' : 'insufficient';

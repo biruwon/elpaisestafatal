@@ -3123,8 +3123,13 @@ assert.deepEqual(industryElectricity.answerScope.contextMetrics, ['industrial_el
 assert.ok(industryElectricity.sourceLinks.some((source) => source.id === industrialElectricitySource.id), 'A scoped non-household rate should appear as context for an industrial competitiveness claim');
 assert.ok(industryElectricity.shareableReply.includes('0,1177 €/kWh'));
 assert.doesNotMatch(industryElectricity.shareableReply, /0,2739|0,1559/);
-assert.match(industryElectricity.shareableReply, /no mide por separado cada sector/);
-assert.match(industryElectricity.shareableReply, /Falta una medición directa/);
+assert.match(industryElectricity.shareableReply, /Eurostat \(España, 2026-S1\): precio medio de 0,1177 €\/kWh/);
+assert.match(industryElectricity.shareableReply, /banda ID \(2\.000 a menos de 20\.000 MWh al año\)/);
+assert.match(industryElectricity.shareableReply, /excluye el IVA y otros impuestos y gravámenes recuperables/);
+assert.match(industryElectricity.shareableReply, /no identifica sectores, contratos o empresas, ni demuestra un efecto sobre su competitividad/);
+assert.match(industryElectricity.shareableReply, /precios pagados comparables por contrato, consumo, impuestos, cargos/);
+assert.match(industryElectricity.shareableReply, /productividad o precios de venta/);
+assert.ok(industryElectricity.shareableReply.trim().split(/\s+/).length <= 110, 'The industrial competitiveness answer should stay concise');
 for (const paraphrase of [
   'La factura eléctrica reduce la competitividad de las fábricas españolas',
   'La electricidad encarece la producción de muchas empresas industriales',
@@ -3133,7 +3138,7 @@ for (const paraphrase of [
   assert.equal(plan.answerScope.family, industryElectricity.answerScope.family, `An industrial electricity paraphrase crossed into a household price route: ${paraphrase}`);
   assert.deepEqual(plan.answerScope.directMetrics, []);
   assert.deepEqual(plan.answerScope.contextMetrics, ['industrial_electricity_price']);
-  assert.ok(plan.shareableReply.includes('0,1177 €/kWh'));
+  assert.equal(plan.shareableReply, industryElectricity.shareableReply, 'Causal paraphrases should receive the same scoped evidence and evidence-gap explanation');
   assert.doesNotMatch(plan.shareableReply, /0,2739/);
 }
 const householdElectricityClaim = '¿Cómo ha cambiado el precio de la electricidad para los hogares en España?';
@@ -3142,6 +3147,9 @@ assert.deepEqual(householdElectricityAnswer.answerScope.directMetrics, ['househo
 assert.deepEqual(householdElectricityAnswer.answerScope.contextMetrics, []);
 assert.ok(householdElectricityAnswer.shareableReply.includes('0,2739 €/kWh'));
 assert.doesNotMatch(householdElectricityAnswer.shareableReply, /0,1177|0,1559/);
+const householdCompetitiveness = focusedEvidencePlan('El precio de la electricidad resta competitividad a los hogares españoles', { observations: allElectricityRows });
+assert.notEqual(householdCompetitiveness.answerScope.family, 'electricity-industry-costs', 'Household competitiveness must not inherit the industrial evidence-gap family');
+assert.doesNotMatch(householdCompetitiveness.shareableReply, /0,1177|banda ID/);
 const energyPassThroughClaims = [
   'Las bajadas del precio mayorista tardan en trasladarse a muchos contratos de consumidores',
   'La electricidad tarda en reflejar en las facturas las variaciones del mercado mayorista',
