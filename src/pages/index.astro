@@ -21,7 +21,7 @@ import BaseLayout from '../layouts/BaseLayout.astro';
             <textarea id="conversation-input" name="q" rows="4" maxlength="12000" autocomplete="off" placeholder="Escribe o pega aquí la afirmación…" aria-describedby="conversation-help"></textarea>
             <button type="submit">Comprobar <span aria-hidden="true">→</span></button>
           </div>
-          <p id="conversation-help" class="conversation-help"><span data-input-help>Pega la afirmación completa; añade fecha, lugar o fuente si los conoces.</span><span id="conversation-counter" aria-live="polite">0/12000</span></p>
+          <p id="conversation-help" class="conversation-help"><span data-input-help>Pega la afirmación completa; añade fecha, lugar o fuente si los conoces.</span><span>El analizador local admite hasta 4.000 caracteres; lo que exceda no se contrastará.</span><span id="conversation-counter" aria-live="polite">0/12000</span></p>
         </form>
         <details class="checker-suggestions" id="checker-suggestions">
           <summary><span>¿No sabes qué probar? Mira ejemplos</span><span aria-hidden="true">+</span></summary>

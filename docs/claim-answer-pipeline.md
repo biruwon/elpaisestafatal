@@ -106,8 +106,13 @@ the coverage assessment without blocking the import of valid source snapshots.
 The browser, Pages Function and resolver share `input-contract.mjs`. Supported
 inputs are text, HTTPS pages, PNG/JPEG/WebP/GIF images, the listed audio formats,
 PDF/DOCX/text documents and MP4/WebM/MOV video. Files are limited to 8 MB; audio
-and video to two minutes. PDF extraction reads up to 20 pages and all extracted
-text is bounded to 12,000 characters. Truncation is explicit. Scanned PDFs
+and video to two minutes. Direct text submissions are accepted up to 12,000
+characters. The local claim compiler analyzes at most 4,000 characters, so a
+longer submission gets an explicit insufficient-evidence response and no
+verdict; the browser explains this before submission. PDF extraction reads up
+to 20 pages and extracted text is bounded to 12,000 characters; the local
+resolver applies the same 4,000-character analysis limit to extracted text, so
+longer extractions also stop without a verdict. Scanned PDFs
 without extractable text currently require an image or pasted transcription.
 
 Extraction produces a public envelope with the original caption, read text,

@@ -597,8 +597,9 @@ export const evidenceNeedsFor = (value, claimType, propositions = []) => {
 
 export const FALLBACK_CLAIM_MAX_CHARS = 300;
 
-export const deterministicFallbackCompiler = (text) => {
-  const original = String(text || '').trim().slice(0, FALLBACK_CLAIM_MAX_CHARS);
+export const deterministicFallbackCompiler = (text, { maxChars = FALLBACK_CLAIM_MAX_CHARS } = {}) => {
+  const boundedMaxChars = Number.isFinite(maxChars) ? Math.max(0, Math.floor(maxChars)) : FALLBACK_CLAIM_MAX_CHARS;
+  const original = String(text || '').trim().slice(0, boundedMaxChars);
   // Conversation wrappers are presentation, not claim semantics. Strip a
   // bounded set before extracting entities, propositions, and family keys so
   // “¿Es verdad que X?” reuses exactly the same evidence as “X”.

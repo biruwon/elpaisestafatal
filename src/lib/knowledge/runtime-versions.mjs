@@ -3,7 +3,7 @@
 export const RUNTIME_VERSIONS = Object.freeze({
   answerPlanSchema: '1',
   evidencePacketSchema: '1',
-  compilerContract: '2',
+  compilerContract: '3',
   knowledge: '2026-08-04.2',
   fallbackKnowledge: 'deterministic-fallback-75-smi-wage-concentration-2026-11',
   warehouseKnowledge: 'warehouse-2026-11-24.39-smi-wage-concentration',

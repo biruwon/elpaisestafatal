@@ -5,6 +5,7 @@ const required = [
   ['id="conversation-input"', 'checker input'],
   ['Escribe o pega una afirmación sobre España.', 'text-first input explanation'],
   ['Pega la afirmación completa; añade fecha, lugar o fuente si los conoces.', 'scope-aware text input guidance'],
+  ['El analizador local admite hasta 4.000 caracteres; lo que exceda no se contrastará.', 'full-text analysis boundary'],
   ['id="conversation-result"', 'result region'],
   ['id="recent-checks"', 'recent checks'],
   ['id="checker-suggestions"', 'suggestions disclosure'],

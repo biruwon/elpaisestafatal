@@ -10,6 +10,7 @@ import { handlerForInput, handlerForPublishedClaim, handlerForSemanticProfile, h
 import { discoverOfficialDocuments, discoveryObservation } from './knowledge/official-discovery.mjs';
 import { filterObservationsForRequestedGroup, findWarehouseObservations, hasSufficientClaimTermOverlap, populationEvidenceFit, recordedOffenceCategoryForQuery } from './knowledge/warehouse-query.mjs';
 import { INPUT_LIMITS, validateInputMetadata, fileMimeType } from '../src/lib/knowledge/input-contract.mjs';
+import { LOCAL_COMPILER_TEXT_LIMIT, textAnalysisLimitFor, textAnalysisLimitPlan } from '../src/lib/knowledge/text-analysis-coverage.mjs';
 import { resolveExtractedSubmission } from './lib/submission-extraction.mjs';
 import { alignPropositionOutcomes, comparableObservationGroups, composePropositionFindings, contextualPropositionEvidence, propositionPlanCompatible } from './lib/compound-evidence.mjs';
 import { measurementMeaningPlan } from '../src/lib/knowledge/measurement-meaning.mjs';
@@ -508,7 +509,7 @@ const normalizeAnswerPlan = (plan) => {
 // contract. In particular, fallback results must carry registry metric IDs as
 // well; otherwise later retrieval can infer metrics from noisy generated
 // hints and select a neighbouring series.
-const fallbackCompiler = (text) => normalizeCompilerOutput(null, text);
+const fallbackCompiler = (text, options) => normalizeCompilerOutput(null, text, options);
 
 const cosineProfile = (left, right) => left.reduce((sum, value, index) => sum + value * (right[index] || 0), 0);
 const criteriaProfileFor = async (compiled) => {
@@ -539,7 +540,7 @@ const compileClaim = async (text, candidates = []) => {
   telemetry.compilerCacheMisses += 1;
   const work = (async () => {
     const candidateText = formatCompilerCandidates(candidates) || 'ninguno';
-    const prompt = `${compilerInstruction}\n\nAfirmación:\n${text.slice(0, 4000)}\n\nCandidatos:\n${candidateText.slice(0, 5000)}`;
+    const prompt = `${compilerInstruction}\n\nAfirmación:\n${text.slice(0, LOCAL_COMPILER_TEXT_LIMIT)}\n\nCandidatos:\n${candidateText.slice(0, 5000)}`;
     let value;
     const compilerStartedAt = Date.now();
     try {
@@ -555,7 +556,8 @@ const compileClaim = async (text, candidates = []) => {
       if (process.env.LOCAL_DEBUG === '1') console.error(`[local-compiler] ${error instanceof Error ? error.message : String(error)}`);
     }
     recordStage('compiler', compilerStartedAt);
-    const result = await criteriaProfileFor(value ? normalizeCompilerOutput(value, text) : fallbackCompiler(text));
+    const fullTextOptions = { maxChars: LOCAL_COMPILER_TEXT_LIMIT };
+    const result = await criteriaProfileFor(value ? normalizeCompilerOutput(value, text, fullTextOptions) : fallbackCompiler(text, fullTextOptions));
     compilerCache.set(cacheKey, { value: result, expiresAt: Date.now() + cacheTtlMs });
     while (compilerCache.size > maxCompilerCacheEntries) compilerCache.delete(compilerCache.keys().next().value);
     return result;
@@ -1358,7 +1360,16 @@ const classify = async (text, { bypassCache = false } = {}) => {
   // the whole stack. The timestamp is only used as an internal cache key and
   // is never added to the submitted claim.
   const identity = claimCacheIdentity(text);
-  const key = bypassCache ? `${identity}|fresh:${Date.now()}` : identity;
+  const key = bypassCache ? `${RUNTIME_VERSIONS.compilerContract}|${identity}|fresh:${Date.now()}` : `${RUNTIME_VERSIONS.compilerContract}|${identity}`;
+  const textAnalysisLimit = textAnalysisLimitFor(text);
+  if (textAnalysisLimit) {
+    return {
+      status: 'uncovered',
+      input: { original: text },
+      textAnalysisLimit,
+      alternatives: [],
+    };
+  }
   const broadComplaintInput = broadComplaintText(text)
     || /\bdeuda publica\b[\s\w]{0,24}\b(?:impagable|quebrada?|insostenible)\b/.test(normalise(text));
   const broadPacketInput = broadDomainPacketsFor(text).length > 0 && !hasSpecificVacancyMeasurement(text);
@@ -1374,8 +1385,9 @@ const classify = async (text, { bypassCache = false } = {}) => {
   const index = await getIndex();
   const queryScopedEntries = index.entries.filter((entry) => claimMeasurementScopeCompatible(text, entry));
   const entryPositions = new Map(index.entries.map((entry, position) => [entry, position]));
-  const deterministicCompiler = fallbackCompiler(text);
-  const routingCompiler = deterministicFallbackCompiler(text);
+  const fullTextCompilerOptions = { maxChars: LOCAL_COMPILER_TEXT_LIMIT };
+  const deterministicCompiler = fallbackCompiler(text, fullTextCompilerOptions);
+  const routingCompiler = deterministicFallbackCompiler(text, fullTextCompilerOptions);
   // A forecast or normative consequence must not inherit a present-tense
   // factual family merely because it shares nouns with it. Exact published
   // predictions still resolve above; approximate predictions use the
@@ -1764,7 +1776,7 @@ const classify = async (text, { bypassCache = false } = {}) => {
     return handlerForEntry(entry) === deterministicHandler;
   };
   const normalizedQuery = normalise(text);
-  const deterministicRoutingCompiler = deterministicFallbackCompiler(text);
+  const deterministicRoutingCompiler = deterministicFallbackCompiler(text, fullTextCompilerOptions);
   const broadDeterministicDescription = deterministicRoutingCompiler.claimType === 'descriptive'
     && deterministicRoutingCompiler.propositions.length <= 1
     && !isSpecificSemanticSignature(deterministicRoutingCompiler.semanticSignature);
@@ -2022,7 +2034,7 @@ const classify = async (text, { bypassCache = false } = {}) => {
   const needsModelCompilation = !focusedSingleProposition && modelCompilationRequested;
   const compiledCandidate = !broadPacketInput && localCompilerEnabled && !evidenceUnavailableSignal(text) && needsModelCompilation
     ? await compileClaim(text, hasPlausibleCandidate ? ranked.slice(0, 8).map(({ entry }) => entry) : [])
-    : fallbackCompiler(text);
+    : fallbackCompiler(text, fullTextCompilerOptions);
   const reconciledCompiled = reconcileCompilerSafety(deterministicCompiler, compiledCandidate);
   const modelFamilyKeys = new Set(semanticFamilyKeys(reconciledCompiled?.semanticSignature || ''));
   // The local model may enrich a known family, but it must not replace a
@@ -2088,11 +2100,13 @@ const classify = async (text, { bypassCache = false } = {}) => {
   return result;
 };
 
-const resolveCacheVersion = [RUNTIME_VERSIONS.fallbackKnowledge, RUNTIME_VERSIONS.warehouseKnowledge, RUNTIME_VERSIONS.indexKnowledge].join('|');
+const resolveCacheVersion = [RUNTIME_VERSIONS.compilerContract, RUNTIME_VERSIONS.fallbackKnowledge, RUNTIME_VERSIONS.warehouseKnowledge, RUNTIME_VERSIONS.indexKnowledge].join('|');
 const requestId = (text) => digest(`${resolveCacheVersion}|${claimCacheIdentity(text)}`).slice(0, 24);
 
 const startResolveJob = (text, origin = 'runtime', bypassCache = false, warehouseRecords) => {
   const id = bypassCache ? `${requestId(text)}-${Date.now().toString(36)}` : requestId(text);
+  const textAnalysisLimit = textAnalysisLimitFor(text);
+  if (textAnalysisLimit) return { status: 'complete', requestId: id, claim: text, inputType: 'text', result: textAnalysisLimitPlan(textAnalysisLimit), relatedClaims: [] };
   const meaning = measurementMeaningPlan(text);
   if (meaning) return { status: 'complete', requestId: id, claim: text, inputType: 'text', result: meaning, relatedClaims: [] };
   const numericIdentity = (String(text).match(/[+-]?\d+(?:[.,]\d+)*/g) || []).join('|');
@@ -2211,6 +2225,7 @@ const startMediaResolveJob = (text, inputType, media, origin = 'runtime') => {
 const startUrlResolveJob = (url) => startMediaResolveJob(url, 'url');
 
 const toResolveResult = (text, classified, source, resultRequestId = requestId(text), observations = [], eventPackets = undefined) => {
+  if (classified?.textAnalysisLimit) return { status: 'complete', requestId: resultRequestId, result: textAnalysisLimitPlan(classified.textAnalysisLimit), relatedClaims: [] };
   const householdArrangementContrast = hasHouseholdArrangementContrast(text);
   const focus = claimFocusFor(text);
   const educationMetricIds = focus?.id === 'education-employment-outcomes' ? [...focusedMetricIdsFor(text)] : [];
@@ -2256,7 +2271,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
   const predictionWording = /\b(?:pagaran|pagaremos|acabaran|acabaremos|sera|seran|terminaran|terminaremos)\b/.test(broadTopicText);
   const explicitMetricRoute = metricIdsForInput(text, classified.compiler || {}).size > 0 && !vagueTaxJudgement(text);
   const fallbackTopicSlugs = { immigration: 'inmigracion', crime: 'seguridad', housing: 'vivienda', employment: 'empleo', healthcare: 'sanidad', taxes: 'impuestos', public_finance: 'economia' };
-  const fallbackRoutingSignature = `${classified.compiler?.semanticSignature || ''}|${deterministicFallbackCompiler(text).semanticSignature}`;
+  const fallbackRoutingSignature = `${classified.compiler?.semanticSignature || ''}|${deterministicFallbackCompiler(text, { maxChars: LOCAL_COMPILER_TEXT_LIMIT }).semanticSignature}`;
   const fallbackTopicSlug = Object.entries(fallbackTopicSlugs).find(([domain]) => fallbackRoutingSignature.includes(domain))?.[1]
     || (/(?:econom[ií]a)/.test(broadTopicText) && /(?:empleo|trabaj|paro|salario|sueldo)/.test(broadTopicText) ? 'empleo' : undefined);
   const fallbackTopic = fallbackTopicSlug && !classified.primary && !vagueTaxJudgement(text)
@@ -3097,6 +3112,9 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
 };
 
 const enrichResolve = async (text, classified, sourceOverride, resultRequestId, warehouseRecords) => {
+  if (classified?.textAnalysisLimit || textAnalysisLimitFor(text)) {
+    return { status: 'complete', requestId: resultRequestId, result: textAnalysisLimitPlan(classified?.textAnalysisLimit || LOCAL_COMPILER_TEXT_LIMIT), relatedClaims: [] };
+  }
   const householdArrangementContrast = hasHouseholdArrangementContrast(text);
   const meaning = measurementMeaningPlan(text);
   if (meaning) return { status: 'complete', requestId: resultRequestId, result: meaning, relatedClaims: [] };
@@ -3121,7 +3139,7 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
       } catch { /* deterministic ambiguity remains safer than a model guess */ }
     }
   }
-  const enrichmentCompiler = deterministicFallbackCompiler(text);
+  const enrichmentCompiler = deterministicFallbackCompiler(text, { maxChars: LOCAL_COMPILER_TEXT_LIMIT });
   const enrichmentCanonical = normalise(enrichmentCompiler.normalized);
   const canonicalPublished = !vagueTaxJudgement(text) && enrichmentIndex.entries.find((entry) => entry.kind === 'claim' && entry.published
     && [entry.title, ...(claimFocusFor(text) ? [] : entry.aliases || [])].some((phrase) => normalise(phrase) === enrichmentCanonical));

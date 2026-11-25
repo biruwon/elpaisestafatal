@@ -212,10 +212,12 @@ argument. For claims with multiple explicit clauses, it now preserves the full
 statement and shows each clause separately. A causal statement remains visible
 as a whole, and the missing-evidence request includes the causal link. Every
 item remains insufficient and has no attached evidence or sources. The result
-screen labels this as what is missing to check each part. When the generic
-uncovered fallback receives a claim longer than the compiler's 300-character
-limit, it says that the whole text was not analyzed and asks for a shorter
-claim.
+screen labels this as what is missing to check each part. The API-only
+deterministic fallback keeps its conservative 300-character bound and says
+when later text was not checked. The local resolver uses a separate full-text
+parser window of 4,000 characters. Longer text is accepted by the form but
+stops with an explicit insufficient-evidence response instead of routing on a
+prefix. The form states this analysis limit.
 
 The claim parser also recognizes inflected Spanish future-tense verbs as
 predictions, so the fallback asks for a forecast horizon and published

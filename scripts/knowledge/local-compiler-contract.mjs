@@ -137,8 +137,8 @@ const evidenceNeedsList = (value) => [...new Set(safeList(value, 8, 120)
   .map((item) => item.toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').trim())
   .filter((item) => allowedEvidenceNeeds.has(item)))].slice(0, 8);
 
-export const normalizeCompilerOutput = (value, text) => {
-  const deterministic = deterministicFallbackCompiler(text);
+export const normalizeCompilerOutput = (value, text, { maxChars } = {}) => {
+  const deterministic = deterministicFallbackCompiler(text, { maxChars });
   const metricIdsForPropositions = (inputText, propositions = []) => [...new Set([
     inputText,
     ...propositions.map((item) => item?.text).filter(Boolean),
