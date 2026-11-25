@@ -21,10 +21,12 @@ try {
   ] };
   const clustersPath = join(dir, 'clusters.json');
   const auditPath = join(dir, 'audit.json');
+  const incompleteCompositionAuditPath = join(dir, 'audit-incomplete-composition.json');
   const promotedPath = join(dir, 'promoted.json');
   const promotedAgainPath = join(dir, 'promoted-again.json');
   const researchPath = join(dir, 'research.json');
   const refreshPath = join(dir, 'refresh.json');
+  const domainsPath = join(dir, 'domains.json');
   const recordsDir = join(dir, 'records');
   await mkdir(recordsDir, { recursive: true });
   await writeFile(join(recordsDir, 'government-revenue.json'), JSON.stringify({ source: { metricId: 'government_revenue_ratio', recordCount: 1, retrievedAt: new Date().toISOString(), publisher: 'fixture', role: 'primary' } }));
@@ -45,9 +47,30 @@ try {
       { id: 'vacancy-rate-change', metricId: 'job_vacancy_rate_quarterly_change', period: '2025-Q4', value: 0 },
     ],
   }));
+  const subjectiveComponents = [
+    ['DIF', 'subjective_poverty_difficulty_rate', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes09?geo=ES&lev_diff=DIF'],
+    ['GRT', 'subjective_poverty_great_difficulty_rate', 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/ilc_mdes09?geo=ES&lev_diff=GRT'],
+  ];
+  for (const [level, metricId, url] of subjectiveComponents) await writeFile(join(recordsDir, `subjective-${level}.json`), JSON.stringify({
+    source: { id: `subjective-${level}`, title: `Eurostat response ${level}`, publisher: 'Eurostat', retrievedAt: new Date().toISOString(), url },
+    records: [{ id: `subjective-${level}-2025`, metricId, period: '2025', value: level === 'DIF' ? 12.1 : 8.5 }],
+  }));
+  const touristFeeds = [
+    { id: 'ine-tourist-housing-count', metricId: 'tourist_housing_count', domain: 'tourist_housing', url: 'https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/39364.csv', schedule: 'semiannual', mode: 'active', title: 'INE tourist dwellings count' },
+    { id: 'ine-tourist-housing-share', metricId: 'tourist_housing_share', domain: 'tourist_housing', url: 'https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/39365.csv', schedule: 'semiannual', mode: 'active', title: 'INE tourist dwellings share' },
+  ];
+  await writeFile(domainsPath, JSON.stringify({ feeds: touristFeeds }));
+  for (const [index, metricId] of ['tourist_housing_count', 'tourist_housing_share'].entries()) {
+    const feed = touristFeeds[index];
+    await writeFile(join(recordsDir, `tourist-${index}.json`), JSON.stringify({
+      source: { id: `tourist-${index}`, title: feed.title, publisher: 'INE', retrievedAt: new Date().toISOString(), url: feed.url },
+      records: [{ id: `tourist-${index}-2026`, metricId, period: '2026M05', value: index ? 1.28 : 341001 }],
+    }));
+  }
   await writeFile(refreshPath, JSON.stringify({ eurostat: [
     { url: 'https://example.org/government-revenue?geo=ES', metricId: 'government_revenue_ratio' },
     { url: vacancyUrl, metricId: 'job_vacancy_rate', metricIdByDimension: vacancyMetricMap },
+    ...subjectiveComponents.map(([, metricId, url]) => ({ url, metricId })),
   ] }));
   await writeFile(clustersPath, JSON.stringify(clusters));
   await writeFile(researchPath, JSON.stringify({ results: [
@@ -55,7 +78,7 @@ try {
     { id: 'cluster:llm-candidate', status: 'partially_covered_by_llm', source: { title: 'Labour survey', publisher: 'Fixture office', url: 'https://example.org/labour-survey' } },
     { id: 'cluster:llm-no-match', status: 'unsupported_after_llm_review', source: { title: 'Youth labour statistics', publisher: 'Fixture office', url: 'https://example.org/youth-labour' } },
   ] }));
-  await run(process.execPath, ['scripts/knowledge/audit-coverage.mjs', '--clusters', clustersPath, '--records', recordsDir, '--llm-research', researchPath, '--refresh', refreshPath, '--output', auditPath], { cwd: root });
+  await run(process.execPath, ['scripts/knowledge/audit-coverage.mjs', '--clusters', clustersPath, '--records', recordsDir, '--llm-research', researchPath, '--refresh', refreshPath, '--domains', domainsPath, '--output', auditPath], { cwd: root });
   const audit = JSON.parse(await readFile(auditPath, 'utf8'));
   const classes = new Map(audit.clusters.map((item) => [item.clusterId, item.auditClass]));
   if (classes.get('metric') !== 'covered_existing_evidence') throw new Error(`existing metric was not promoted: ${classes.get('metric')}`);
@@ -81,6 +104,32 @@ try {
   const vacancyFeed = audit.feeds.find((feed) => feed.url === vacancyUrl);
   if (vacancyFeed?.metricIds?.length !== 4 || vacancyMetrics.some((metricId) => !vacancyFeed.metricIds.includes(metricId))) {
     throw new Error('dimension-mapped feed inventory did not show every indicator family');
+  }
+  const composedPoverty = audit.metrics.find((item) => item.id === 'subjective_poverty_rate');
+  if (composedPoverty?.status !== 'ready' || composedPoverty.coverageMode !== 'derived_from_inputs'
+    || composedPoverty.inputMetricIds?.length !== 2 || composedPoverty.materializedRecordCount !== 2) {
+    throw new Error(`composed metric did not inherit complete, fresh input coverage (${JSON.stringify(composedPoverty)})`);
+  }
+  for (const metricId of ['tourist_housing_count', 'tourist_housing_share']) {
+    const metric = audit.metrics.find((item) => item.id === metricId);
+    if (metric?.configuredFeedCount !== 1 || metric.materializedRecordCount !== 1 || metric.status !== 'ready') {
+      throw new Error(`${metricId}: domain source was not counted as configured and materialized (${JSON.stringify(metric)})`);
+    }
+  }
+  for (const feed of audit.feeds.filter((item) => item.domain === 'tourist_housing')) {
+    if (feed.metricIds?.length !== 1 || !['tourist_housing_count', 'tourist_housing_share'].includes(feed.metricIds[0])) {
+      throw new Error(`tourist-housing domain feed inventory omitted its metric mapping (${JSON.stringify(feed)})`);
+    }
+  }
+  const incompleteRefreshPath = join(dir, 'refresh-incomplete-composition.json');
+  const incompleteRefresh = JSON.parse(await readFile(refreshPath, 'utf8'));
+  incompleteRefresh.eurostat = incompleteRefresh.eurostat.filter((feed) => feed.metricId !== 'subjective_poverty_great_difficulty_rate');
+  await writeFile(incompleteRefreshPath, JSON.stringify(incompleteRefresh));
+  await run(process.execPath, ['scripts/knowledge/audit-coverage.mjs', '--clusters', clustersPath, '--records', recordsDir, '--llm-research', researchPath, '--refresh', incompleteRefreshPath, '--domains', domainsPath, '--output', incompleteCompositionAuditPath], { cwd: root });
+  const incompleteCompositionAudit = JSON.parse(await readFile(incompleteCompositionAuditPath, 'utf8'));
+  const incompletePoverty = incompleteCompositionAudit.metrics.find((item) => item.id === 'subjective_poverty_rate');
+  if (incompletePoverty?.status !== 'missing_configuration' || incompletePoverty.action !== 'find_source') {
+    throw new Error(`derived metric appeared ready after losing a required component feed (${JSON.stringify(incompletePoverty)})`);
   }
   await run(process.execPath, ['scripts/knowledge/promote-existing-coverage.mjs', '--audit', auditPath, '--clusters', clustersPath, '--output', promotedPath], { cwd: root });
   const promoted = JSON.parse(await readFile(promotedPath, 'utf8'));

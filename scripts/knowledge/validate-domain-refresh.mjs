@@ -4,6 +4,7 @@ import { X509Certificate } from 'node:crypto';
 
 const file = path.resolve('config/domain-source-refresh.json');
 const config = JSON.parse(fs.readFileSync(file, 'utf8'));
+const metricRegistry = JSON.parse(fs.readFileSync(path.resolve('config/metric-registry.json'), 'utf8'));
 const feeds = config.feeds;
 const errors = [];
 
@@ -20,6 +21,7 @@ for (const feed of feeds ?? []) {
   if (ids.has(feed.id)) errors.push(`duplicate feed id: ${feed.id}`);
   ids.add(feed.id);
   if (!domains.has(feed.domain)) errors.push(`unsupported domain: ${feed.domain}`);
+  if (feed.metricId !== undefined && (typeof feed.metricId !== 'string' || !metricRegistry[feed.metricId])) errors.push(`unknown metricId for feed ${feed.id}`);
   if (!schedules.has(feed.schedule)) errors.push(`unsupported schedule for ${feed.id}`);
   if (!modes.has(feed.mode)) errors.push(`unsupported mode for ${feed.id}`);
   try {

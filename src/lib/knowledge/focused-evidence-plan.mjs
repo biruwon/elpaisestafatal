@@ -181,20 +181,24 @@ const factsForMetric = (id, observations, fitsClaim) => {
   }).filter(Boolean);
 };
 
-const SUBJECTIVE_POVERTY_COMPONENT_METRICS = Object.freeze({
-  DIF: 'subjective_poverty_difficulty_rate',
-  GRT: 'subjective_poverty_great_difficulty_rate',
-});
+const SUBJECTIVE_POVERTY_COMPOSITION = measurementDefinitions.subjective_poverty_rate?.sourceComposition;
+const SUBJECTIVE_POVERTY_COMPONENT_METRICS = Object.freeze(SUBJECTIVE_POVERTY_COMPOSITION?.inputMetricsByDimensionValue || {});
+const SUBJECTIVE_POVERTY_COMPONENT_LEVELS = Object.keys(SUBJECTIVE_POVERTY_COMPONENT_METRICS);
+const SUBJECTIVE_POVERTY_JOIN_DIMENSIONS = new Set(SUBJECTIVE_POVERTY_COMPOSITION?.joinDimensions || []);
 const subjectivePovertyFactsFromComponents = (observations, fitsClaim) => {
+  if (SUBJECTIVE_POVERTY_COMPOSITION?.operation !== 'sum' || SUBJECTIVE_POVERTY_COMPONENT_LEVELS.length < 2) return [];
   const groups = new Map();
   for (const item of observations) {
     const level = Object.entries(SUBJECTIVE_POVERTY_COMPONENT_METRICS).find(([, metricId]) => metricId === item.metricId)?.[0];
     const dimensions = item.dimensions || {};
     if (!level || !validNumber(item.value) || !item.period || item.freshness === 'invalid'
       || ['projected', 'budget'].includes(item.dataKind) || !sourceValid(item.source) || !fitsClaim(item)
-      || !String(item.source.url || '').includes('/ilc_mdes09')
-      || dimensions.freq !== 'A' || dimensions.unit !== 'PC' || dimensions.geo !== 'ES'
-      || dimensions.hhcomp !== 'TOTAL' || dimensions.rskpovth !== 'TOTAL' || dimensions.lev_diff !== level) continue;
+      || !String(item.source.url || '').includes(SUBJECTIVE_POVERTY_COMPOSITION.sourceDatasetPath)
+      || Object.entries(SUBJECTIVE_POVERTY_COMPOSITION.requiredDimensions || {}).some(([name, value]) => dimensions[name] !== value)
+      || [...SUBJECTIVE_POVERTY_JOIN_DIMENSIONS].some((name) => name === 'time'
+        ? String(dimensions[name] || '') !== String(item.period)
+        : dimensions[name] === undefined || dimensions[name] === null || dimensions[name] === '')
+      || dimensions.lev_diff !== level) continue;
     const key = JSON.stringify({
       geography: item.geography || dimensions.geo,
       population: item.population || '', denominator: item.denominator || '', unit: item.unit || '',
@@ -202,7 +206,7 @@ const subjectivePovertyFactsFromComponents = (observations, fitsClaim) => {
         .filter(([name]) => !['lev_diff', 'time'].includes(name)).sort(([left], [right]) => left.localeCompare(right))),
     });
     const periods = groups.get(key) || new Map();
-    const components = periods.get(item.period) || { DIF: [], GRT: [] };
+    const components = periods.get(item.period) || Object.fromEntries(SUBJECTIVE_POVERTY_COMPONENT_LEVELS.map((value) => [value, []]));
     components[level].push(item);
     periods.set(item.period, components);
     groups.set(key, periods);
@@ -212,7 +216,7 @@ const subjectivePovertyFactsFromComponents = (observations, fitsClaim) => {
     for (const [period, components] of periods) {
       const selected = {};
       let invalidPair = false;
-      for (const level of ['DIF', 'GRT']) {
+      for (const level of SUBJECTIVE_POVERTY_COMPONENT_LEVELS) {
         const candidates = components[level].sort((left, right) => (Date.parse(right.source?.retrievedAt || '') || 0) - (Date.parse(left.source?.retrievedAt || '') || 0)
           || String(left.id || '').localeCompare(String(right.id || '')));
         if (!candidates.length) { invalidPair = true; break; }
@@ -221,38 +225,41 @@ const subjectivePovertyFactsFromComponents = (observations, fitsClaim) => {
         if (newest.some((item) => item.value !== newest[0].value || String(item.status || '') !== String(newest[0].status || ''))) { invalidPair = true; break; }
         selected[level] = newest[0];
       }
-      if (invalidPair || selected.DIF.unit !== selected.GRT.unit
-        || Math.abs((Date.parse(selected.DIF.source?.retrievedAt || '') || 0) - (Date.parse(selected.GRT.source?.retrievedAt || '') || 0)) > 86_400_000) continue;
-      let difficultyUrl; let greatDifficultyUrl;
-      try {
-        difficultyUrl = new URL(selected.DIF.source.url);
-        greatDifficultyUrl = new URL(selected.GRT.source.url);
-      } catch { continue; }
-      if (difficultyUrl.hostname !== greatDifficultyUrl.hostname || difficultyUrl.pathname !== greatDifficultyUrl.pathname) continue;
-      const difficultyValue = selected.DIF.value;
-      const greatDifficultyValue = selected.GRT.value;
-      const base = selected.DIF;
+      const selectedItems = Object.entries(selected).map(([dimensionValue, item]) => ({ dimensionValue, item }));
+      const [baseEntry] = selectedItems;
+      if (invalidPair || selectedItems.some(({ item }) => item.unit !== baseEntry.item.unit)
+        || Math.max(...selectedItems.map(({ item }) => Date.parse(item.source?.retrievedAt || '') || 0))
+          - Math.min(...selectedItems.map(({ item }) => Date.parse(item.source?.retrievedAt || '') || 0))
+          > SUBJECTIVE_POVERTY_COMPOSITION.maxRetrievedAtSkewHours * 3_600_000) continue;
+      let componentUrls;
+      try { componentUrls = selectedItems.map(({ item }) => new URL(item.source.url)); } catch { continue; }
+      if (componentUrls.some((url) => url.hostname !== componentUrls[0].hostname || url.pathname !== componentUrls[0].pathname)) continue;
+      const componentValues = Object.fromEntries(selectedItems.map(({ dimensionValue, item }) => [dimensionValue, item.value]));
+      const base = baseEntry.item;
+      const aggregateValue = Object.values(componentValues).reduce((sum, value) => sum + value, 0);
+      const componentIds = selectedItems.map(({ item }) => item.id);
+      const componentSources = selectedItems.map(({ item }) => item.source);
       const aggregate = {
         ...base,
-        id: `subjective-poverty-${period}-${selected.DIF.id}-${selected.GRT.id}`,
+        id: `subjective-poverty-${period}-${componentIds.join('-')}`,
         metricId: 'subjective_poverty_rate',
         metric: 'Población en hogares que declaran dificultad o gran dificultad para llegar a fin de mes',
-        value: Number((difficultyValue + greatDifficultyValue).toFixed(2)),
+        value: Number(aggregateValue.toFixed(2)),
         population: base.population || 'Personas residentes en hogares privados, clasificadas según la respuesta del hogar sobre cubrir gastos habituales',
         denominator: base.denominator || 'Población residente en hogares privados',
         dimensions: {
           ...base.dimensions,
-          lev_diff: ['DIF', 'GRT'],
-          lev_diff_values: { DIF: difficultyValue, GRT: greatDifficultyValue },
-          calculation: `${difficultyValue} + ${greatDifficultyValue} puntos porcentuales`,
+          lev_diff: SUBJECTIVE_POVERTY_COMPONENT_LEVELS,
+          lev_diff_values: componentValues,
+          calculation: `${Object.values(componentValues).join(' + ')} puntos porcentuales`,
         },
         dimensionLabels: { ...base.dimensionLabels, lev_diff: 'Difficulty or great difficulty' },
-        sourceLinks: [selected.DIF.source, selected.GRT.source],
-        freshness: [selected.DIF.freshness, selected.GRT.freshness].includes('stale') ? 'stale'
-          : [selected.DIF.freshness, selected.GRT.freshness].includes('unknown') ? 'unknown' : 'fresh',
-        status: [...new Set([selected.DIF.status, selected.GRT.status].filter(Boolean).join('').split(''))].sort().join(''),
+        sourceLinks: componentSources,
+        freshness: selectedItems.some(({ item }) => item.freshness === 'stale') ? 'stale'
+          : selectedItems.some(({ item }) => item.freshness === 'unknown') ? 'unknown' : 'fresh',
+        status: [...new Set(selectedItems.map(({ item }) => item.status).filter(Boolean).join('').split(''))].sort().join(''),
       };
-      pairs.push({ aggregate, components: [selected.DIF, selected.GRT] });
+      pairs.push({ aggregate, components: selectedItems.map(({ item }) => item) });
     }
     pairs.sort((left, right) => String(left.aggregate.period).localeCompare(String(right.aggregate.period)));
     if (!pairs.length) return [];

@@ -77,20 +77,32 @@ const domainMetricIds = {
   immigration_benefits: ['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality', 'imv_comparable_population_by_nationality', 'imv_title_holder_rate_by_nationality', 'unemployment_rate_by_nationality', 'unemployment_beneficiaries_by_nationality', 'unemployment_beneficiaries_by_programme_nationality', 'unemployment_benefit_share_by_nationality', 'unemployment_benefit_coverage_by_nationality', 'survey_selected_social_transfer_rate_by_nationality', 'imv_beneficiary_average_age'],
   immigration_crime: ['crime_rate_by_group', 'crime_detentions_investigations_by_nationality', 'crime_standardised_conviction_offence_rate_by_nationality', 'crime_convictions_by_nationality', 'crime_convictions_by_sex_nationality', 'resident_population_18_plus_by_sex_nationality', 'crime_conviction_rate_by_nationality', 'crime_conviction_rate_by_sex_nationality', 'crime_conviction_rate_minor_by_nationality'],
   public_housing_allocation: ['public_housing_allocations_by_group', 'public_housing_allocations_by_programme', 'public_housing_allocation_rate_by_programme', 'public_housing_allocations_by_nationality', 'public_housing_allocations_by_documentation', 'public_housing_actions', 'public_housing_applications', 'public_housing_applications_by_nationality', 'housing_tenure_by_household_nationality', 'housing_tenure_by_reference_nationality'],
+  tourist_housing: ['tourist_housing_count', 'tourist_housing_share'],
   wildfire_statistics: ['wildfire_incidents', 'wildfire_surface_affected'],
   health_emergency_wait: ['emergency_wait_declared'],
   health_primary_care: ['primary_care_wait_days', 'primary_care_wait_over_one_day_rate'],
   pension_finance: ['social_security_contributory_pension_expenditure', 'social_security_current_revenue', 'social_security_current_expenditure', 'social_security_current_balance', 'social_security_contributions', 'social_security_current_transfers', 'social_security_budget_total_balance', 'pension_contributory_income_projected', 'pension_public_transfers_projected', 'pension_contributory_expenditure_projected', 'pension_noncontributory_expenditure_projected', 'pension_system_income_projected', 'pension_system_expenditure_projected', 'pension_system_balance_projected', 'pension_implicit_transfers_projected', 'social_security_contributory_pension_budget', 'social_security_pension_complements_minimum_budget', 'social_security_noncontributory_pension_budget', 'social_security_pension_budget_total', 'social_security_minimum_complements_transfer_budget', 'social_security_noncontributory_transfer_budget', 'social_security_pact_toledo_transfer_budget'],
 };
+const metricIdsForFeed = (feed) => [...new Set([
+  ...configuredMetricIdsFor(feed),
+  ...(feed.metricId ? [] : domainMetricIds[feed.domain] || []),
+].filter((metricId) => typeof metricId === 'string' && metricId))];
 const incompleteDomainMetrics = new Set(['benefit_recipients_by_group', 'crime_rate_by_group', 'public_housing_allocations_by_group']);
-for (const feed of domainFeeds) for (const id of domainMetricIds[feed.domain] || []) {
+for (const feed of domainFeeds) for (const id of feed.metricId ? [feed.metricId] : domainMetricIds[feed.domain] || []) {
   if (!recordByMetric.has(id)) recordByMetric.set(id, [feed]);
   configByMetric.set(id, [...(configByMetric.get(id) || []), feed]);
 }
 const now = Date.now();
 const metricAudit = Object.entries(registry).map(([id, metric]) => {
-  const feeds = configByMetric.get(id) || [];
-  const materialized = recordByMetric.get(id) || [];
+  const directFeeds = configByMetric.get(id) || [];
+  const sourceComposition = metric.sourceComposition;
+  const inputMetricIds = sourceComposition?.inputMetricsByDimensionValue
+    ? [...new Set(Object.values(sourceComposition.inputMetricsByDimensionValue))] : [];
+  const derived = directFeeds.length === 0 && inputMetricIds.length > 0;
+  const inputFeeds = inputMetricIds.map((inputId) => configByMetric.get(inputId) || []);
+  const inputRecords = inputMetricIds.map((inputId) => recordByMetric.get(inputId) || []);
+  const feeds = derived ? inputFeeds.flat() : directFeeds;
+  const materialized = derived ? inputRecords.flat() : recordByMetric.get(id) || [];
   const invalid = materialized.filter((record) => !record.recordCount || !record.retrievedAt || !record.publisher || !record.metricId);
   const freshMaterialized = materialized.filter((record) => sourceFreshness(record, now) === 'fresh');
   const stale = freshMaterialized.length ? [] : materialized.filter((record) => sourceFreshness(record, now) === 'stale' || sourceFreshness(record, now) === 'unknown');
@@ -100,13 +112,27 @@ const metricAudit = Object.entries(registry).map(([id, metric]) => {
   let status = 'ready';
   let action = 'none';
   if (incompleteDomainMetrics.has(id) && feeds.length) { status = 'partial_domain_evidence'; action = 'source_research'; }
+  else if (derived && inputFeeds.some((items) => !items.length)) { status = 'missing_configuration'; action = 'find_source'; }
+  else if (derived && inputRecords.some((items) => !items.length)) { status = 'source_configured_not_refreshed'; action = 'refresh_source'; }
+  else if (derived && invalid.length) { status = 'data_quality_failure'; action = 'repair_source'; }
+  else if (derived && inputRecords.some((items) => !items.some((record) => sourceFreshness(record, now) === 'fresh'))) { status = 'stale'; action = 'refresh_source'; }
   else if (!feeds.length) { status = 'missing_configuration'; action = 'find_source'; }
   else if (!materialized.length) { status = 'source_configured_not_refreshed'; action = 'refresh_source'; }
   else if (invalid.length) { status = 'data_quality_failure'; action = 'repair_source'; }
   else if (stale.length) { status = 'stale'; action = 'refresh_source'; }
   else if (!hasSpain) { status = 'missing_national_variant'; action = 'find_source'; }
   else if (!hasSpainAndEurope) { status = 'missing_comparative_variant'; action = 'find_source'; }
-  return { id, name: metric.name, status, action, configuredFeedCount: feeds.length, materializedRecordCount: materialized.length, recordCounts: materialized.map((item) => item.recordCount || 0), staleReasons: stale.map((item) => staleSourceReason(item, now)), dimensions: metric.dimensions || [], hasNationalFeed: hasSpain, hasEuropeVariant: hasEurope, hasSpainAndEurope };
+  return {
+    id, name: metric.name, status, action,
+    configuredFeedCount: feeds.length,
+    materializedRecordCount: materialized.length,
+    recordCounts: materialized.map((item) => item.recordCount || 0),
+    ...(derived ? { coverageMode: 'derived_from_inputs', inputMetricIds } : {}),
+    staleReasons: derived
+      ? inputRecords.flat().filter((record) => sourceFreshness(record, now) !== 'fresh').map((item) => staleSourceReason(item, now))
+      : stale.map((item) => staleSourceReason(item, now)),
+    dimensions: metric.dimensions || [], hasNationalFeed: hasSpain, hasEuropeVariant: hasEurope, hasSpainAndEurope,
+  };
 });
 const metricById = new Map(metricAudit.map((item) => [item.id, item]));
 const classifyCluster = (cluster) => {
@@ -224,7 +250,7 @@ const scoreSourceWork = (item) => {
 };
 for (let index = 0; index < sourceWorkItems.length; index += 1) sourceWorkItems[index] = scoreSourceWork(sourceWorkItems[index]);
 sourceWorkItems.sort((a, b) => b.rankScore - a.rankScore || b.priorityScore - a.priorityScore || b.recentVelocity - a.recentVelocity || b.recurrence - a.recurrence);
-const report = { schemaVersion: '1', generatedAt: new Date().toISOString(), summary: { registryMetrics: metricAudit.length, configuredFeeds: allFeeds.length, configuredMetricCount: metricAudit.filter((item) => item.configuredFeedCount > 0).length, warehouseRecords: records.length, clusters: clusterAudit.length, newlyCoveredClusters: clusterAudit.filter((item) => item.newlyCovered).length, clusterClasses: counts(clusterAudit, 'auditClass'), metricStatuses: counts(metricAudit, 'status'), sourceWorkCandidates: sourceWork.length, sourceWorkItems: sourceWorkItems.length, refreshAttempted: Number(refreshReport.attempted || 0), refreshSucceeded: Number(refreshReport.succeeded || 0), refreshFailed: Number(refreshReport.failed || 0) }, metrics: metricAudit, clusters: clusterAudit, sourceWorkCandidates: sourceWork, sourceWorkItems, domainGaps: gapContracts.gaps || [], operationalFailures: refreshReport.failures || [], feeds: allFeeds.map((feed) => ({ sourceId: feed.sourceId, metricId: feed.metricId, metricIds: configuredMetricIdsFor(feed), ...(feed.metricIdByDimension ? { metricIdByDimension: feed.metricIdByDimension } : {}), url: feed.url, schedule: feed.schedule, mode: feed.mode, domain: feed.domain })) };
+const report = { schemaVersion: '1', generatedAt: new Date().toISOString(), summary: { registryMetrics: metricAudit.length, configuredFeeds: allFeeds.length, configuredMetricCount: metricAudit.filter((item) => item.configuredFeedCount > 0).length, warehouseRecords: records.length, clusters: clusterAudit.length, newlyCoveredClusters: clusterAudit.filter((item) => item.newlyCovered).length, clusterClasses: counts(clusterAudit, 'auditClass'), metricStatuses: counts(metricAudit, 'status'), sourceWorkCandidates: sourceWork.length, sourceWorkItems: sourceWorkItems.length, refreshAttempted: Number(refreshReport.attempted || 0), refreshSucceeded: Number(refreshReport.succeeded || 0), refreshFailed: Number(refreshReport.failed || 0) }, metrics: metricAudit, clusters: clusterAudit, sourceWorkCandidates: sourceWork, sourceWorkItems, domainGaps: gapContracts.gaps || [], operationalFailures: refreshReport.failures || [], feeds: allFeeds.map((feed) => ({ sourceId: feed.sourceId, metricId: feed.metricId, metricIds: metricIdsForFeed(feed), ...(feed.metricIdByDimension ? { metricIdByDimension: feed.metricIdByDimension } : {}), url: feed.url, schedule: feed.schedule, mode: feed.mode, domain: feed.domain })) };
 const output = pathArg('output', '.local/coverage-audit.json');
 await mkdir(join(output, '..'), { recursive: true });
 await writeFile(output, JSON.stringify(report, null, 2));

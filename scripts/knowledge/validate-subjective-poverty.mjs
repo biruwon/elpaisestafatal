@@ -99,6 +99,10 @@ const mismatchedRefresh = focusedEvidencePlan('En España, en 2025, más del 20 
   observations: [liveComponents[2], { ...liveComponents[3], source: { ...greatDifficultySource, retrievedAt: '2026-11-20T15:12:58Z' } }], now,
 });
 assert.ok(!mismatchedRefresh?.evidenceIds.includes('DIF-2025'), 'Component categories from different refreshes must not be added together.');
+const mismatchedTimeDimension = focusedEvidencePlan('En España, en 2025, más del 20 % de la población declaró pobreza subjetiva.', {
+  observations: [liveComponents[2], { ...liveComponents[3], dimensions: { ...liveComponents[3].dimensions, time: '2024' } }], now,
+});
+assert.ok(!mismatchedTimeDimension?.evidenceIds.includes('DIF-2025'), 'Component rows whose explicit time dimension disagrees with their period must not be added together.');
 
 for (const [paraphrase, expectedValue] of [
   ['¿Qué porcentaje de personas vivía en España en 2025 en hogares que podían cubrir los gastos habituales con dificultad?', '12,1 %'],

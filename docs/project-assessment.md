@@ -1550,3 +1550,32 @@ validation remains 339. These are reviewed regression sets, not an estimate
 of accuracy for arbitrary submissions. The local warehouse refresh is not a
 verification that production D1 has been mirrored; the deployment's scheduled
 refresh must populate that store before production can use these rows.
+
+## Text source-composition coverage — 25 November 2026
+
+The local coverage report had treated the subjective-poverty total as
+unconfigured even though runtime answers compose it from Eurostat's mutually
+exclusive “difficulty” and “great difficulty” rows. It also missed both INE
+tourist-housing metrics because the domain feeds had no explicit metric mapping.
+The metric registry now declares the poverty sum, its input metric IDs, source
+dimension values, required dimensions and refresh-time tolerance. Runtime
+aggregation and the local coverage audit use that same composition contract;
+the audit requires every component to be configured, materialized, valid and
+fresh. The two INE feeds now name their individual metrics.
+
+After regeneration, the local audit recognizes 228 of 229 metrics as
+configured: 220 ready, five stale, three with partial domain evidence, and one
+metric without a warehouse feed configuration (tourism-characteristic
+employment share). That metric still has a reviewed 2021–2024 snapshot, which
+expires on 21 December 2026; it lacks automatic feed refresh. The audit marks
+both tourist-housing series ready and treats subjective poverty as derived
+from its two source rows. All 24 domain feeds in the local refresh report
+succeeded. These are local source-readiness counts; they do not confirm that
+production D1 was synchronized or estimate accuracy for arbitrary text.
+
+The composition fixture also removes one required poverty component and checks
+that the aggregate becomes a source gap. The subjective-poverty paraphrase and
+nearby-claim checks pass; the held-out text-answer benchmark remains 199/199
+across 54 paraphrase groups, and `npm run check` reports zero errors. These
+checks cover reviewed claims and source boundaries, not the full range of user
+wording.

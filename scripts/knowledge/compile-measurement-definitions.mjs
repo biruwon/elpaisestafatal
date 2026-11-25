@@ -2,8 +2,12 @@ import { readFile, writeFile } from 'node:fs/promises';
 
 export const compileMeasurementDefinitions = async () => {
   const registry = JSON.parse(await readFile(new URL('../../config/metric-registry.json', import.meta.url), 'utf8'));
-  const definitions = Object.fromEntries(Object.entries(registry).filter(([, metric]) => metric.definition)
-    .map(([id, metric]) => [id, { aliases: metric.aliases, definition: metric.definition }]));
+  const definitions = Object.fromEntries(Object.entries(registry).filter(([, metric]) => metric.definition || metric.sourceComposition)
+    .map(([id, metric]) => [id, {
+      ...(metric.aliases ? { aliases: metric.aliases } : {}),
+      ...(metric.definition ? { definition: metric.definition } : {}),
+      ...(metric.sourceComposition ? { sourceComposition: metric.sourceComposition } : {}),
+    }]));
   const vocabulary = Object.entries(registry).map(([id, metric]) => ({
     id, name: metric.displayName || metric.name, aliases: metric.aliases || [],
     unit: metric.unit, population: metric.population, dimensions: metric.dimensions || [],

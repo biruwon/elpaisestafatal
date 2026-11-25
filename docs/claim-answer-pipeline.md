@@ -142,6 +142,11 @@ denominator and source IDs, and labels a mixed-freshness family conservatively.
 Distinct statistical series remain labelled separately. Proposition evidence
 is assigned through explicit relationships rather than its position in an
 array.
+When a published indicator is defined by combining component series, its metric
+contract declares the inputs and matching dimensions. The runtime combines only
+complete, same-period rows from the specified dataset with compatible units and
+refresh times; the coverage audit checks every required input instead of
+looking for a nonexistent direct aggregate feed.
 
 Before this change, the refresh job generated a SQL artifact but never loaded
 it into D1, and the export referenced columns missing from the applied schema.

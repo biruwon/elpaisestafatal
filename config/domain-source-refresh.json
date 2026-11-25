@@ -198,6 +198,7 @@
     },
     {
       "id": "ine-tourist-housing-count",
+      "metricId": "tourist_housing_count",
       "domain": "tourist_housing",
       "url": "https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/39364.csv",
       "schedule": "semiannual",
@@ -206,6 +207,7 @@
     },
     {
       "id": "ine-tourist-housing-share",
+      "metricId": "tourist_housing_share",
       "domain": "tourist_housing",
       "url": "https://www.ine.es/jaxiT3/files/t/es/csv_bdsc/39365.csv",
       "schedule": "semiannual",

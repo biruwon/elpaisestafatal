@@ -206,6 +206,30 @@ export default {
           "retrievedAt": "2026-11-23"
         }
       ]
+    },
+    "sourceComposition": {
+      "operation": "sum",
+      "inputMetricsByDimensionValue": {
+        "DIF": "subjective_poverty_difficulty_rate",
+        "GRT": "subjective_poverty_great_difficulty_rate"
+      },
+      "sourceDatasetPath": "/ilc_mdes09",
+      "requiredDimensions": {
+        "freq": "A",
+        "unit": "PC",
+        "geo": "ES",
+        "hhcomp": "TOTAL",
+        "rskpovth": "TOTAL"
+      },
+      "joinDimensions": [
+        "freq",
+        "unit",
+        "geo",
+        "hhcomp",
+        "rskpovth",
+        "time"
+      ],
+      "maxRetrievedAtSkewHours": 24
     }
   }
 };
