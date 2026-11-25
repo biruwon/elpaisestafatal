@@ -1841,9 +1841,35 @@ formulation, and boundaries for other years, regions, sectors, European pay
 comparisons and claims about firm wages without a size comparison. The
 held-out text-answer benchmark now passes 227/227 cases across 59 paraphrase
 groups; the focused evidence validator and broader classifier suite also
-pass. On the 300 explicitly unverified discovery candidates, the refreshed
-deterministic audit reports 7 complete, 98 limited and 195 uncovered outputs;
-the public states are 263 insufficient and 37 limited. This is a routing and
-coverage snapshot, not an accuracy estimate. Both causal answers remain
-publicly insufficient despite their useful sourced context, which is the
-intended evidence boundary.
+pass. At this update, the deterministic audit of 300 explicitly unverified
+discovery candidates reported 7 complete, 98 limited and 195 uncovered
+outputs; the public states were 263 insufficient and 37 limited. This is a
+routing and coverage snapshot, not an accuracy estimate. Both causal answers
+remain publicly insufficient despite their useful sourced context, which is
+the intended evidence boundary.
+
+## Railway investment and maintenance — 25 November 2026
+
+Two recurring text claims compare high-speed rail investment with neglect of
+conventional lines or political attention to maintenance. ADIF's [2023 execution
+report](https://www.adif.es/w/adif-bate-r%C3%A9cord-hist%C3%B3rico-de-inversiones-en-la-red-convencional-en-2023-1.430-millones-de-euros-1-7-veces-lo-ejecutado-en-2022)
+records €1,429.8 million of executed investment in the conventional network and
+€1,974.5 million in new lines and the operating high-speed network. It reports
+€974.3 million of operating expenditure for conservation and maintenance:
+€600.6 million on the conventional network and €373.7 million on high-speed
+lines. The published amounts exclude VAT.
+
+The answer labels these as context. Capital investment and operating
+maintenance expenditure are different budget categories; absolute totals do
+not show network condition, traffic, kilometres, maintenance need or political
+attention. Both claims therefore remain insufficient, even though users get
+the dated figures and a clear description of what they cannot establish. Two
+paraphrases share one source; tests reject other years, Madrid-specific and
+service-specific readings, and claims about punctuality. The held-out
+text-answer benchmark now passes 233/233 cases across 60 paraphrase groups.
+
+The refreshed deterministic audit routes 180 of the 300 explicitly unverified
+discovery claims to a metric or focused family and leaves 120 without either;
+it reports 7 complete, 100 limited and 193 uncovered answers. Public states
+remain 263 insufficient and 37 limited. This measures current routing and
+coverage, not factual accuracy for arbitrary user claims.

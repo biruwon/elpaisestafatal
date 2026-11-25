@@ -14,6 +14,7 @@ import { MINIMUM_WAGE_COMPRESSION_SNAPSHOT } from './minimum-wage-compression-sn
 import { EDUCATION_SOCIOECONOMIC_SNAPSHOT } from './education-socioeconomic-snapshot.mjs';
 import { UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT } from './university-graduate-outcomes-snapshot.mjs';
 import { RAIL_PUNCTUALITY_EVIDENCE, railPunctualityShareableReply } from './rail-punctuality-snapshot.mjs';
+import { RAIL_INVESTMENT_MAINTENANCE_SNAPSHOT, railInvestmentMaintenanceReply } from './rail-investment-maintenance-snapshot.mjs';
 import { GDP_HOUSEHOLD_WELFARE_SNAPSHOT } from './gdp-household-welfare-snapshot.mjs';
 import { HOUSEHOLD_BUDGET_SNAPSHOT, HOUSEHOLD_SAVING_SNAPSHOT } from './household-budget-snapshot.mjs';
 import { FOOD_CHAIN_PRICE_SPREAD_EVIDENCE } from './food-chain-price-spread-snapshot.mjs';
@@ -1297,6 +1298,11 @@ const businessSizeProductivityConstraint = (t) => /\b(empresas? peque[nñ]as?|em
   && (/\b(limit\w*|fren\w*|impid\w*|reduc\w*|afect\w*|condicion\w*|explic\w*)\b/.test(t)
     || /\b(porque|debido a|por culpa|caus\w*)\b/.test(t)
     || /\b(menos|menor\w*)[\s\w]{0,25}\b(capacidad|posibilidad|acceso)\b/.test(t));
+const railInvestmentMaintenanceComparison = (t) => /\b(ferroviar\w*|adif|ave|alta velocidad|cercanias|red convencional|trenes?)\b/.test(t)
+  && /\b(inversion\w*|invert\w*|invirt\w*|gasto\w*|presupuest\w*|nuevas? lineas?|obras|construcc\w*|inaugur\w*)\b/.test(t)
+  && /\b(manten\w*|conserv\w*|descuid\w*|abandon\w*|red convencional|cercanias)\b/.test(t)
+  && /\b(mientras|frente a|menos|mas|mayor|menor|prioriz\w*|atencion|politic\w*|descuid\w*|abandon\w*|inaugur\w*)\b/.test(t)
+  && !/\b(rodalies|metro|tranvia|media distancia|mercancias|puntual\w*|retras\w*|cancel\w*|pasajer\w*)\b/.test(t);
 const unpaidOvertime = (t) => /\b(horas? extra\w*|horas? extraordinari\w*)\b/.test(t)
   && /\b(no pag\w*|sin pag\w*|impag\w*|sin cobr\w*|no cobr\w*|gratis|no remuner\w*|sin remuner\w*|trabaj\w* gratis)\b/.test(t);
 const internshipLabourSubstitution = (t) => {
@@ -3418,6 +3424,17 @@ const focuses = [
     needs: ['precio por kWh y banda de consumo', 'impuestos incluidos o excluidos', 'país y semestre'],
     explanation: 'El precio doméstico por kWh permite comparar una tarifa media con el mismo consumo y tratamiento fiscal.',
     limitation: 'Es una media semestral para hogares; no es el precio mayorista horario ni la factura total de cada hogar, que también depende del consumo y la potencia.',
+  },
+  {
+    id: 'rail-investment-maintenance', label: 'inversión y mantenimiento ferroviario',
+    when: railInvestmentMaintenanceComparison,
+    direct: [], context: [], claimType: 'comparative',
+    needs: ['inversión ejecutada separada por red y tipo de obra', 'gastos de explotación en conservación y mantenimiento, sin mezclarlos con inversión de capital', 'kilómetros, uso, estado y necesidades de conservación comparables', 'presupuestos y decisiones que permitan evaluar una prioridad política'],
+    explanationHeadline: 'En 2023 se ejecutó más inversión en alta velocidad; los datos no miden si el mantenimiento fue suficiente',
+    explanation: 'La inversión ejecutada y los gastos de explotación en conservación son partidas distintas. Sus importes totales no indican cuánto necesitaba cada red ni la atención política que recibieron.',
+    explanationEvidence: RAIL_INVESTMENT_MAINTENANCE_SNAPSHOT,
+    shareableReplyForContext: railInvestmentMaintenanceReply,
+    limitation: 'Las cifras son importes absolutos de España en 2023. No comparan el estado de las vías, la necesidad de renovación, los kilómetros o el tráfico, ni documentan la prioridad política o las decisiones de inaugurar nuevas líneas.',
   },
   {
     id: 'rail-punctuality', label: 'puntualidad y retrasos ferroviarios',

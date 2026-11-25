@@ -3041,6 +3041,82 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'rail-investment-maintenance-neglect-claim',
+    equivalenceGroup: 'rail-investment-maintenance-context',
+    input: 'España ha invertido mucho en alta velocidad mientras descuidaba parte de la red de cercanías y convencional',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'rail-investment-maintenance', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['1.429,8 millones de euros', '1.974,5 millones', '974,3 millones', '600,6 millones', '373,7 millones', 'partidas distintas', 'no miden si el mantenimiento bastaba'],
+      replyExcludes: ['prueba que se descuidó la red', 'demuestra una prioridad política'],
+      evidence: [
+        {
+          familyId: 'rail-investment-maintenance',
+          sourceIds: ['adif-rail-investment-maintenance-2023'],
+          dataIncludes: ['1.429,8 millones de euros de inversión en la red convencional', '1.974,5 millones en nuevas líneas y en la red de alta velocidad en explotación'],
+          dimensions: { period: '2023', geography: 'España', unit: 'millones de euros, sin IVA' },
+        },
+        {
+          familyId: 'rail-investment-maintenance',
+          sourceIds: ['adif-rail-investment-maintenance-2023'],
+          dataIncludes: ['974,3 millones de euros de gastos de explotación', '600,6 millones en la red convencional', '373,7 millones en la de alta velocidad'],
+          dimensions: { period: '2023', geography: 'España', unit: 'millones de euros, sin IVA' },
+        },
+      ],
+      maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'rail-investment-maintenance-neglect-paraphrase',
+    equivalenceGroup: 'rail-investment-maintenance-context',
+    input: 'España destinó más inversión a la alta velocidad mientras atendía menos al mantenimiento de Cercanías y la red convencional',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'rail-investment-maintenance', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['1.429,8 millones de euros', '1.974,5 millones', '974,3 millones', 'la comparación da contexto'],
+      replyExcludes: ['prueba que se descuidó la red', 'demuestra una prioridad política'],
+      evidence: [], maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'rail-investment-maintenance-political-attention',
+    input: 'El mantenimiento ferroviario recibe menos atención política que inaugurar nuevas líneas',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'rail-investment-maintenance', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['1.429,8 millones de euros', '1.974,5 millones', '974,3 millones', 'la comparación da contexto'],
+      replyExcludes: ['prueba que se descuidó la red', 'demuestra una prioridad política'],
+      evidence: [], maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'rail-investment-maintenance-wrong-year',
+    input: 'En 2024, España invirtió más en alta velocidad mientras descuidaba la red convencional',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'rail-investment-maintenance', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['1.429,8', '1.974,5', '974,3', '600,6', '373,7'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'rail-investment-maintenance-regional-neighbour',
+    input: 'En Madrid, España invirtió más en alta velocidad que en mantener Cercanías',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'rail-investment-maintenance', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['1.429,8', '1.974,5', '974,3', '600,6', '373,7'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'rail-punctuality-investment-neighbour',
+    input: 'Los retrasos de Cercanías aumentan mientras crece la inversión en alta velocidad',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['1.429,8', '1.974,5', '974,3', '600,6', '373,7'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
     id: 'business-size-firm-wage-capacity',
     equivalenceGroup: 'firm-wage-capacity-size-context',
     input: 'Las grandes empresas tienen productividad suficiente para pagar más pero contienen salarios',

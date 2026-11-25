@@ -744,6 +744,19 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       })
       && propositions.some((proposition) => /\b(inversi\w*|tecnolog\w*|innovaci\w*|capital|financiaci\w*)\b/.test(normalize(proposition.text)))
       && propositions.every((proposition) => /\b(empres\w*|pymes?|microempresas?|productiv\w*|valor anadid\w*|inversi\w*|tecnolog\w*|innovaci\w*|capital|financiaci\w*)\b/.test(normalize(proposition.text)));
+    const railInvestmentMaintenanceCompound = focus.id === 'rail-investment-maintenance'
+      && propositions.length === 2 && /\b(mientras|pero|aunque|frente a)\b/.test(normalizedClaim)
+      && propositions.some((proposition) => {
+        const text = normalize(proposition.text);
+        return /\b(alta velocidad|ave|red ferroviaria)\b/.test(text)
+          && /\b(inversion\w*|invert\w*|invirt\w*|construcc\w*|obras|lineas?)\b/.test(text);
+      })
+      && propositions.some((proposition) => {
+        const text = normalize(proposition.text);
+        return /\b(red convencional|cercanias|manten\w*|conserv\w*)\b/.test(text)
+          && /\b(descuid\w*|abandon\w*|manten\w*|conserv\w*|prioriz\w*|menos|neglig\w*)\b/.test(text);
+      })
+      && propositions.every((proposition) => /\b(ferroviar\w*|alta velocidad|ave|red convencional|cercanias|red ferroviaria)\b/.test(normalize(proposition.text)));
     const pensionWageMechanism = focus.id === 'pension-wage-contribution-base'
       && propositions.length === 2 && /\b(pero|aunque|mientras)\b/.test(normalizedClaim)
       && (/(?:\b(pension\w*|jubilaci[oó]n)\b[\s\w]{0,60}\b(salari\w*|sueld\w*|cotiz\w*)\b|\b(salari\w*|sueld\w*|cotiz\w*)\b[\s\w]{0,60}\b(pension\w*|jubilaci[oó]n)\b)/.test(clauseText)
@@ -768,7 +781,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       || sameProductivityComparison && /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(clauseText)) return true;
     if (sameLandlordMotive) return true;
     if (samePensionPrivateSavingsCompound) return true;
-    if (housingInvestmentReason || firmWageMechanism || businessSizeProductivityMechanism || pensionWageMechanism || samePensionMeiCompound || sameHealthPerceptionOutcomeCompound || unemploymentSupplyExplanation || sameEmployerContributionVisibility) return true;
+    if (housingInvestmentReason || firmWageMechanism || businessSizeProductivityMechanism || railInvestmentMaintenanceCompound || pensionWageMechanism || samePensionMeiCompound || sameHealthPerceptionOutcomeCompound || unemploymentSupplyExplanation || sameEmployerContributionVisibility) return true;
     if (educationOutcomeCauseClause) return true;
     if (clauseFocus) return false;
     // A clause such as “una parte se produce más barata” can refer back to
