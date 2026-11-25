@@ -1,5 +1,6 @@
 import { INPUT_LIMITS, validateInputMetadata, inputErrorMessage } from '../lib/knowledge/input-contract.mjs';
 import type { InputExtraction } from '../lib/knowledge/public-check';
+import { isMissingTextClaim } from '../lib/knowledge/text-claim-intent.mjs';
 import { shouldRetainReviewedPreview } from '../lib/knowledge/reviewed-answer-stability.mjs';
 import { publicDirectionLabel, publicMetricLabel } from '../lib/knowledge/public-presentation';
 import { trackAnalyticsEvent } from '../lib/analytics';
@@ -88,9 +89,10 @@ const finishLoading = (): void => {
 };
 const renderClarification = (response: Extract<CheckResponse, { state: 'clarification' }>): void => {
   if (!result) return; setMode(true);
-  result.innerHTML = `<article class="claim-result claim-clarification">${renderExtraction(response.extraction)}<span class="eyebrow">Antes de comprobar</span><p class="claim-original">${escapeHtml(response.claim)}</p><h2>${escapeHtml(response.question)}</h2><div class="clarification-options">${response.options.map((option) => `<button type="button" data-clarification-id="${escapeHtml(option.id)}" data-clarification-kind="${escapeHtml(option.interpretation.kind || 'specific_fact')}" data-clarification-prompt="${escapeHtml(option.interpretation.normalizedClaim)}">${escapeHtml(option.label)}<span aria-hidden="true">→</span></button>`).join('')}</div><label class="clarification-custom">Otra precisión<textarea rows="2" data-clarification-custom placeholder="Añade una precisión"></textarea></label><button type="button" class="clarification-submit" data-clarification-submit>Continuar</button></article>`;
+  const needsClaim = response.options.length === 0;
+  result.innerHTML = `<article class="claim-result claim-clarification">${renderExtraction(response.extraction)}<span class="eyebrow">Antes de comprobar</span><p class="claim-original">${escapeHtml(response.claim)}</p><h2>${escapeHtml(response.question)}</h2><div class="clarification-options">${response.options.map((option) => `<button type="button" data-clarification-id="${escapeHtml(option.id)}" data-clarification-kind="${escapeHtml(option.interpretation.kind || 'specific_fact')}" data-clarification-prompt="${escapeHtml(option.interpretation.normalizedClaim)}">${escapeHtml(option.label)}<span aria-hidden="true">→</span></button>`).join('')}</div><label class="clarification-custom">${needsClaim ? 'Afirmación concreta' : 'Otra precisión'}<textarea rows="2" data-clarification-custom placeholder="${needsClaim ? 'Escribe la frase que quieres contrastar' : 'Añade una precisión'}"></textarea></label><button type="button" class="clarification-submit" data-clarification-submit>${needsClaim ? 'Comprobar afirmación' : 'Continuar'}</button></article>`;
   result.querySelectorAll<HTMLButtonElement>('[data-clarification-id]').forEach((button) => button.addEventListener('click', () => { result.querySelectorAll('[data-clarification-id]').forEach((item) => item.removeAttribute('aria-pressed')); button.setAttribute('aria-pressed', 'true'); clarificationContext = { id: button.dataset.clarificationId || '', prompt: button.dataset.clarificationPrompt || '', interpretation: { kind: button.dataset.clarificationKind || 'specific_fact', normalizedClaim: button.dataset.clarificationPrompt || '' } }; }));
-  result.querySelector<HTMLButtonElement>('[data-clarification-submit]')?.addEventListener('click', () => { const custom = result.querySelector<HTMLTextAreaElement>('[data-clarification-custom]')?.value.trim(); if (custom) clarificationContext = { id: 'custom', prompt: custom }; if (!clarificationContext) return; if (response.extraction && input) { selectInputMode('text'); input.value = response.claim.slice(0, INPUT_LIMITS.maxTextCharacters); } form?.requestSubmit(); });
+  result.querySelector<HTMLButtonElement>('[data-clarification-submit]')?.addEventListener('click', () => { const field = result.querySelector<HTMLTextAreaElement>('[data-clarification-custom]'); const custom = field?.value.trim(); if (needsClaim && !custom) { field?.setCustomValidity('Escribe una afirmación concreta.'); field?.reportValidity(); field?.addEventListener('input', () => field.setCustomValidity(''), { once: true }); return; } if (custom) clarificationContext = { id: 'custom', prompt: custom }; if (!clarificationContext) return; if (response.extraction && input) { selectInputMode('text'); input.value = response.claim.slice(0, INPUT_LIMITS.maxTextCharacters); } form?.requestSubmit(); });
   bindExtractionCorrection(response.extraction);
   focusResult();
 };
@@ -419,7 +421,8 @@ const submit = async (event: SubmitEvent): Promise<void> => {
   const inputType = selectedInputMode === 'url' || /^https:\/\//i.test(original) ? 'url' : 'text';
   const valid = validateInputMetadata({ text: original, inputType });
   if (!valid.ok) { trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: valid.code }); finishLoading(); request = undefined; renderUnavailable({ state: 'unavailable', id: `invalid-${Date.now()}`, claim: original, message: inputErrorMessage(valid.code), retryable: false }); return; }
-  if (!clarificationContext) writeRecent(original); setLoading(original, submission);
+  if (!clarificationContext && !(inputType === 'text' && isMissingTextClaim(original))) writeRecent(original);
+  setLoading(original, submission);
   trackAnalyticsEvent('claim_submit', { input_type: inputType });
   const payload = JSON.stringify({ text: original, inputType, clarification: clarificationContext });
   let initialPreview: Extract<CheckResponse, { state: 'supported' | 'limited' | 'insufficient' }> | undefined;

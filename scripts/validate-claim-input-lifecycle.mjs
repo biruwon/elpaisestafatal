@@ -6,6 +6,7 @@ const required = [
   "fetchJson(`/api/check/${encodeURIComponent(response.id)}`",
   "state: 'clarification'",
   'validateInputMetadata',
+  'isMissingTextClaim(original)',
   "form?.addEventListener('submit', submit)",
   "selectedInputMode === 'url' || /^https:",
   "? 'url' : 'text'",

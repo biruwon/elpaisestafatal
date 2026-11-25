@@ -54,7 +54,7 @@
     "backup:validate": "node scripts/validate-backup-config.mjs",
     "backup:artifact:validate": "node scripts/validate-backup-artifact.mjs",
     "origin:validate": "node scripts/validate-local-origin.mjs",
-    "input:validate": "node scripts/validate-input-contract.mjs && node scripts/validate-submission-api.mjs",
+    "input:validate": "node scripts/validate-input-contract.mjs && node scripts/validate-text-claim-intent.mjs && node scripts/validate-submission-api.mjs",
     "learning:validate": "node scripts/validate-learning-capture.mjs",
     "deploy:pages": "node scripts/deploy-pages.mjs",
     "smoke:local-resolver": "node scripts/smoke-local-resolver.mjs",

@@ -11,13 +11,14 @@ await build({ entryPoints: ['functions/api/check.ts'], outfile: path, bundle: tr
 const api = await import(pathToFileURL(path));
 const originalFetch = globalThis.fetch;
 let upstreamCalls = 0;
+let waitUntilCalls = 0;
 let lastExtraction;
 const plan = (claim) => ({ schemaVersion: '1', headline: 'Resultado de prueba', summary: claim, evidenceLevel: 'supported',
   blocks: [{ type: 'data_finding', propositionIds: ['p1'], evidenceIds: ['source-1'], points: [claim] }, { type: 'conversation_reply', evidenceIds: ['source-1'], text: claim }],
   evidenceIds: ['source-1'], sourceIds: ['source-1'], sourceLinks: [{ id: 'source-1', title: 'Fuente de prueba', url: 'https://www.ine.es/' }], knowledgeVersion: 'test' });
 const pending = [];
 const env = { LOCAL_CLASSIFIER_ENDPOINT: 'https://resolver.test', LOCAL_CLASSIFIER_TOKEN: 'test' };
-const waitUntil = (promise) => pending.push(promise);
+const waitUntil = (promise) => { waitUntilCalls += 1; pending.push(promise); };
 const focusedContext = {
   state: 'limited', id: 'pension-indexation',
   result: {
@@ -81,6 +82,13 @@ try {
   assert.equal(upstreamCalls, 5, 'Numeric punctuation must survive response cache identity');
   await post({ text: 'Valor 1.2' });
   assert.equal(upstreamCalls, 5, 'An identical text request should still use its bounded cache');
+  const upstreamBeforeGreeting = upstreamCalls;
+  const demandCaptureBeforeGreeting = waitUntilCalls;
+  const greeting = await post({ text: 'hola' });
+  assert.equal(greeting.body.state, 'clarification', 'A greeting must ask for a claim instead of receiving an evidence verdict');
+  assert.deepEqual(greeting.body.options, [], 'A missing claim must leave the user free to enter the statement they want checked');
+  assert.equal(upstreamCalls, upstreamBeforeGreeting, 'A greeting must not consume a resolver call');
+  assert.equal(waitUntilCalls, demandCaptureBeforeGreeting, 'A greeting must not be counted as research demand');
   const clarified = await post({ text: 'Original caption', clarification: { prompt: 'Specific measure 42', interpretation: { normalizedClaim: 'Specific measure 42' } } });
   assert.equal(clarified.body.result.reply, 'Specific measure 42', 'Clarification must re-enter retrieval with the selected meaning');
   assert.equal((await post({ text: 'Claim', inputType: 'unknown' })).status, 400);

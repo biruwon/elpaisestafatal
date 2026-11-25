@@ -4,6 +4,7 @@ type InputType = 'text' | 'image' | 'audio' | 'document' | 'video' | 'url';
 
 import { allowRateLimitedRequest } from '../lib/rate-limit';
 import { INPUT_LIMITS, validateInputMetadata, inputErrorMessage } from '../../src/lib/knowledge/input-contract.mjs';
+import { isMissingTextClaim, missingTextClaimResponse } from '../../src/lib/knowledge/text-claim-intent.mjs';
 import { boundedRequest, RequestTooLargeError } from '../../src/lib/knowledge/bounded-request.mjs';
 import { attachExtraction, extractedClaim } from '../../src/lib/knowledge/submission.mjs';
 import { measurementMeaningPlan } from '../../src/lib/knowledge/measurement-meaning.mjs';
@@ -270,6 +271,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
   if (!validation.ok) return json(unavailableCheck(body.text, inputErrorMessage(validation.code)), validation.code === 'file_too_large' || validation.code === 'text_too_large' ? 413 : 400);
   const effectiveClaim = body.clarification?.interpretation?.normalizedClaim || body.clarification?.prompt || body.text;
   if (effectiveClaim.length > INPUT_LIMITS.maxTextCharacters || (body.clarification?.prompt.length || 0) > INPUT_LIMITS.maxTextCharacters) return json(unavailableCheck('', inputErrorMessage('text_too_large')), 413);
+  if (body.inputType === 'text' && isMissingTextClaim(effectiveClaim)) return json(missingTextClaimResponse(body.text));
   const vacancyRoute = body.inputType === 'text' ? vacancyMeasurementMetricIdsForQuery(effectiveClaim) : undefined;
   if (vacancyRoute && vacancyRoute.size === 0) return json(vacancyClarificationFor(effectiveClaim));
   const vacancyMetrics = [...(vacancyRoute || [])].filter((id) => vacancyMetricIds.has(id));
