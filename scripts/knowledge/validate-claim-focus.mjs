@@ -2120,11 +2120,53 @@ assert.deepEqual(nonEuMatchedPay.sourceLinks, [], 'An EU-only salary calculator 
 assert.equal(nonEuMatchedPay.evidenceLevel, 'insufficient');
 assert.equal(claimFocusFor('Los salarios pierden poder adquisitivo frente al coste de la vida')?.id, 'real-wages', 'Real-wage claims must not inherit unemployment/wage-bargaining context');
 
-const pensionPayGap = focusedEvidencePlan('Hay jubilados con pensiones superiores al sueldo de muchos trabajadores jóvenes');
+const pensionPayGap = focusedEvidencePlan('Hay jubilados con pensiones superiores al sueldo de muchos trabajadores jóvenes', { now: Date.parse('2026-11-25T12:00:00Z') });
+const pensionWageNow = Date.parse('2026-11-25T12:00:00Z');
+const pensionWageSources = [
+  'aeat-labour-pension-statistics-methodology',
+  'aeat-retirement-pension-average-2025',
+  'aeat-salary-decile-ranges-2025',
+  'aeat-salaried-age-deciles-2025',
+].sort();
 assert.equal(pensionPayGap.answerScope.family, 'pension-wage-comparison');
-assert.match(pensionPayGap.shareableReply, /misma unidad y periodo/);
-assert.match(pensionPayGap.shareableReply, /distribuciones comparables/);
-assert.equal(pensionPayGap.sourceLinks.length, 0, 'A pension/salary comparison must not cite unrelated youth housing figures');
+assert.equal(pensionPayGap.evidenceLevel, 'limited');
+assert.equal(pensionPayGap.evidenceSummary.mode, 'snapshot');
+assert.deepEqual(pensionPayGap.sourceLinks.map((source) => source.id).sort(), pensionWageSources);
+assert.equal(pensionPayGap.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'supported');
+assert.match(pensionPayGap.shareableReply, /21\.964 euros/);
+assert.match(pensionPayGap.shareableReply, /1\.030\.308 de 3\.094\.196/);
+assert.match(pensionPayGap.shareableReply, /33,3 %/);
+assert.match(pensionPayGap.shareableReply, /21\.778 euros/);
+assert.match(pensionPayGap.shareableReply, /[Aa]l menos ese grupo/);
+assert.match(pensionPayGap.shareableReply, /360/);
+const pensionWageParaphrases = [
+  'Hay jubilados con pensiones superiores al sueldo de muchos trabajadores jóvenes',
+  'Muchos asalariados de 26 a 35 años ganan menos que la pensión pública media de jubilación',
+  'Algunos pensionistas reciben más que muchos asalariados jóvenes',
+];
+for (const claim of pensionWageParaphrases) {
+  const plan = focusedEvidencePlan(claim, { now: pensionWageNow });
+  assert.equal(plan.answerScope.family, 'pension-wage-comparison', `A pension/salary paraphrase changed family: ${claim}`);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'supported');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id).sort(), pensionWageSources);
+}
+const deniedPensionWage = focusedEvidencePlan('No hay jubilados con pensiones superiores al sueldo de muchos trabajadores jóvenes', { now: pensionWageNow });
+assert.deepEqual(deniedPensionWage.sourceLinks.map((source) => source.id).sort(), pensionWageSources);
+assert.equal(deniedPensionWage.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'contradicted');
+assert.match(deniedPensionWage.shareableReply, /contradice negar que exista/);
+for (const claim of [
+  'La pensión media supera los ingresos mensuales de muchos trabajadores jóvenes',
+  'La pensión media supera el salario medio de los trabajadores jóvenes',
+  'En 2024, hay jubilados con pensiones superiores al sueldo de muchos trabajadores jóvenes',
+  'Los jubilados cobran más que los trabajadores jóvenes',
+  '¿Qué porcentaje de jubilados cobra más que los trabajadores jóvenes?',
+  'La pensión media supera el salario mínimo interprofesional',
+]) {
+  const plan = focusedEvidencePlan(claim, { now: pensionWageNow });
+  assert.equal(plan.answerScope.family, 'pension-wage-comparison', `A nearby pension/salary claim changed its family: ${claim}`);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient', `A nearby pension/salary claim was over-answered: ${claim}`);
+  assert.deepEqual(plan.sourceLinks, [], `An out-of-scope pension/salary claim received the 2025 comparison: ${claim}`);
+}
 const pensionIndexationClaim = 'Las pensiones contributivas se revalorizan según el IPC';
 const pensionIndexation = focusedEvidencePlan(pensionIndexationClaim, { now: Date.parse('2026-11-17') });
 assert.equal(pensionIndexation.answerScope.family, 'pension-price-indexation');

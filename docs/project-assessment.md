@@ -1790,3 +1790,28 @@ text-answer benchmark passes 205/205 cases across 56 paraphrase groups; the
 claim-focus validator passes 351 paraphrases and its negative-neighbour checks.
 These are evidence and reply regression checks, not an estimate of accuracy
 across arbitrary user text.
+
+## Pension and early-career wage comparison — 25 November 2026
+
+A recurring text claim says that some public retirement pensions exceed the
+pay of many young workers. The 2025 AEAT tables support that existential
+comparison in a narrow scope: the public retirement-pension mean was €21,964
+for 5,983,366 pensioners in the common fiscal territory, while 1,030,308 of
+3,094,196 salaried people aged 26–35 in AEAT's annual-estimated-salary module
+were in the three lowest overall salary deciles, whose upper boundary was
+€21,778. This establishes a useful lower bound on the young-worker side and,
+because the pension mean exceeds that boundary, implies at least one public
+retirement pension above it.
+
+The answer states that the 33.3% is a lower bound for workers below the
+pension mean, not the exact share; it does not infer how many pensioners exceed
+those wages or link particular pensioners to workers. It identifies the
+2025/common-fiscal-territory scope, explains that the AEAT salary estimate
+annualizes workdays to 360 and excludes estimates below the SMI, and avoids
+mean-to-mean, monthly, minimum-wage and other-year claims. The text benchmark
+now passes 215/215 cases across 57 paraphrase groups; family validation passes
+351 paraphrases and checks the positive paraphrases, an existential negation,
+and nearby scope boundaries. The latest deterministic 300-candidate audit
+routes 178 candidates to a metric or family and leaves 122 without either;
+these remain unverified discovery inputs, not an accuracy score. These checks
+are not an accuracy estimate for arbitrary user text.

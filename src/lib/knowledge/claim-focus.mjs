@@ -30,6 +30,7 @@ import { ROOM_RENTAL_MARKET_SNAPSHOT, roomRentalMarketClaimFor, roomRentalMarket
 import { PUBLIC_SERVICE_DIGITAL_ACCESS_SNAPSHOT, publicServiceDigitalAccessClaimFor, publicServiceDigitalAccessMeasureFor } from './public-service-digital-access-snapshot.mjs';
 import { PUBLIC_DOCUMENT_REUSE_SNAPSHOT, publicDocumentReuseClaimFor, publicDocumentReuseLegalQuestionFor } from './public-document-reuse-snapshot.mjs';
 import { HEALTH_PERCEPTION_OUTCOMES_SNAPSHOT } from './health-perception-outcomes-snapshot.mjs';
+import { PENSION_WAGE_DISTRIBUTION_SNAPSHOT, pensionWageDistributionReply } from './pension-wage-distribution-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -1590,10 +1591,14 @@ const asksForBroadProtectedHousingTotal = (claim) => {
   return /\b(viviend\w*|parque)\b[\w\s]{0,34}\b(protegid\w*|vpo|proteccion oficial|precio limitado)\b/.test(t)
     && /\b(cuant\w*|numero|cantidad|recuento|total|stock)\b/.test(t);
 };
-const pensionWageComparison = (t) => /\b(pension\w*|jubilad\w*|jubilacion\w*)\b/.test(t)
-  && (/\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w*)\b/.test(t)
-    || /\b(cobr\w*|pagan?)\b/.test(t) && /\b(trabajador\w*|emplead\w*|ocupad\w*)\b/.test(t))
-  && /\b(mas que|mas (?:alt\w*|elevad\w*|grand\w*) que|menos que|por encima|por debajo|superior\w*|inferior\w*|super\w*|mayor\w*|menor\w*|compar\w*|frente a|mejor pagad\w*)\b/.test(t);
+const pensionWageComparison = (t) => {
+  const pensioner = /\b(pension\w*|jubilad\w*|jubilacion\w*)\b/.test(t);
+  const wageOrSalaryRecipient = /\b(salari\w*|asalariad\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w*)\b/.test(t)
+    || /\b(cobr\w*|pagan?|recib\w*|gan\w*|percib\w*)\b/.test(t)
+      && /\b(trabajador\w*|emplead\w*|ocupad\w*|joven\w*|asalariad\w*)\b/.test(t);
+  return pensioner && wageOrSalaryRecipient
+    && /\b(mas que|mas (?:alt\w*|elevad\w*|grand\w*) que|menos que|por encima|por debajo|superior\w*|inferior\w*|super\w*|mayor\w*|menor\w*|compar\w*|frente a|mejor pagad\w*)\b/.test(t);
+};
 
 // Measurement contracts are reusable semantic families, not answer templates.
 // Direct measures and contextual proxies stay distinct all the way to the
@@ -1950,7 +1955,10 @@ const focuses = [
     when: pensionWageComparison,
     direct: [], context: [],
     needs: ['importe de pensiones y salarios en la misma unidad y periodo', 'población trabajadora y pensionista definida por edad y tipo de prestación', 'distribución de importes si se afirma que muchas personas superan a otras'],
+    explanationHeadline: 'En 2025, la pensión pública media superó el salario anual estimado de muchos asalariados de 26–35 años',
     explanation: 'Comparar pensiones con salarios exige fijar si los importes son brutos o netos y mensuales o anuales, además de usar el mismo periodo. Una pensión media y un salario medio no indican cuántas personas de un grupo cobran más que las del otro.',
+    explanationEvidence: PENSION_WAGE_DISTRIBUTION_SNAPSHOT,
+    shareableReplyForContext: pensionWageDistributionReply,
     limitation: 'Sin distribuciones comparables por población, tipo de pensión, jornada y periodo no se puede cuantificar cuántas personas jubiladas reciben más que trabajadores jóvenes.',
   },
   {
