@@ -95,6 +95,16 @@ const migrationWageEffects = (t) => migrationPopulation.test(t)
   && /\b(presion\w*|conteng\w*|contener|baj\w*|reduc\w*|afect\w*|compar\w*|menor\w*|mayor\w*|diferenc\w*|mas|menos|a la baja|por debajo)\b/.test(t)
   && /\b(sector\w*|poblacion nativa|trabajador\w* nativ\w*|emplead\w* nativ\w*|trabajador\w* local\w*|resto de trabajador\w*|otro\w* trabajador\w*|otra\w* persona\w*)\b/.test(t)
   && !/\b(fiscal\w*|impuest\w*|recaud\w*|tribut\w*|cotiz\w*)\b/.test(t);
+const adultConvictionRateByNationality = (t) => /\b(tasa|por cada mil|por cada 1000|por mil|por 1000)\b/.test(t)
+  && /\b(condenad\w*|condena firme|sentencia firme)\b/.test(t)
+  && /\b(nacionalidad|extranjer\w*|espanol\w*)\b/.test(t)
+  && /\b(resident\w*|habitante\w*)\b/.test(t)
+  && /\b(adult\w*|18 y mas|18 anos|mayor\w* de edad)\b/.test(t)
+  && !/\b(menor\w*|juvenil|adolescent\w*|14 a 17|hombre\w*|mujer\w*|sexo|region\w*|provincia\w*|municip\w*|ciudad\w*|barri\w*|distrit\w*)\b/.test(t)
+  && !/\b(deteni\w*|investigad\w*|arrestad\w*|denunciad\w*|delincuenc\w*|rob\w*|hurto\w*|homicid\w*|asesinat\w*|violaci\w*|agresi\w*|trafic\w*|terroris\w*)\b/.test(t)
+  && !/\b(caus\w*|provoc\w*|gener\w*|responsable\w*|por culpa|debido a|consecuencia de|\bmas\b(?! anos)|\bmayor\w*\b(?! de edad)|\bmenor\w*\b(?! de edad)|(?:superior|inferior)\w*.{0,20}\b(?:que|a)\b|compar\w*|diferenc\w*|brecha|frente a|versus|\bvs\b)\b/.test(t)
+  && !/\b(cada vez|evoluci\w*|tendencia|aument\w*|sub\w*|disminu\w*|baj\w*|crec\w*|increment\w*|descend\w*|caid\w*|vari\w*|desde (?:19|20)\d{2}|entre (?:19|20)\d{2})\b/.test(t)
+  && !requestedGeographyScopes(t).some(({ type }) => type === 'region');
 const unemploymentWagePressure = (t) => !migrationPopulation.test(t)
   && /\b(paro|desemple\w*|desocupad\w*|exceso de mano de obra|oferta de trabajadores|candidat\w*|demandantes? de empleo|abundancia de trabajadores|muchos aspirantes)\b/.test(t)
   && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|pagan?|cobr\w*|wage\w*)\b/.test(t)
@@ -2440,6 +2450,15 @@ const focuses = [
     explanation: 'La relación entre paro y salarios depende del mercado y del ciclo; estos estudios no justifican una regla para todas las empresas.',
     explanationEvidence: unemploymentWagePressureEvidence,
     limitation: 'Son estudios históricos y de poblaciones específicas; no miden el desempleo estructural actual, los candidatos por vacante ni la política salarial de todas las empresas.',
+  },
+  {
+    id: 'adult-conviction-rate-by-nationality', label: 'tasa de personas adultas condenadas por nacionalidad',
+    when: adultConvictionRateByNationality,
+    direct: ['crime_conviction_rate_by_nationality'], context: [], claimType: 'descriptive',
+    needs: ['personas adultas con sentencia firme y residentes adultos del mismo grupo de nacionalidad', 'año y territorio de la tasa'],
+    explanationHeadline: 'Tasa de personas adultas condenadas por nacionalidad',
+    explanation: 'La tasa cuenta personas adultas con sentencia firme por cada 1.000 residentes del mismo grupo de nacionalidad y de 18 años o más.',
+    limitation: 'Mide personas adultas condenadas, no todos los delitos registrados ni detenciones. Clasifica por nacionalidad, no por país de nacimiento o situación administrativa; una diferencia entre grupos no demuestra que la inmigración cause delincuencia.',
   },
   {
     id: 'migration-fiscal-contribution', label: 'aportación fiscal de la población migrante por nivel laboral',

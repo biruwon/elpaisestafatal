@@ -5,7 +5,7 @@ export const RUNTIME_VERSIONS = Object.freeze({
   evidencePacketSchema: '1',
   compilerContract: '3',
   knowledge: '2026-08-04.2',
-  fallbackKnowledge: 'deterministic-fallback-75-smi-wage-concentration-2026-11',
-  warehouseKnowledge: 'warehouse-2026-11-24.39-smi-wage-concentration',
+  fallbackKnowledge: 'deterministic-fallback-76-adult-conviction-rate-nationality-2026-11',
+  warehouseKnowledge: 'warehouse-2026-11-24.40-adult-conviction-rate-nationality',
   indexKnowledge: 'index-only-2026-08-05.9',
 });

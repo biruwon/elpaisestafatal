@@ -140,6 +140,12 @@ const cases = [
   ]],
   ['foreign-housing-price-causality', ['Las compras de vivienda por extranjeros no residentes están encareciendo el mercado en zonas costeras', 'Las adquisiciones de compradores extranjeros elevan los precios de las casas en la costa']],
   ['migration-housing-demand-causality', ['La inmigración está haciendo que suban los alquileres en algunas ciudades', 'El aumento de población migrante eleva los precios de la vivienda local', 'Los extranjeros encarecen los alquileres en las ciudades']],
+  ['adult-conviction-rate-by-nationality', [
+    '¿Cuál es la tasa de personas adultas condenadas por cada 1.000 residentes según nacionalidad?',
+    '¿Qué tasa de condenados con sentencia firme hay por mil habitantes adultos de nacionalidad extranjera y española?',
+    '¿Cuántas personas adultas reciben condena firme por cada 1000 residentes adultos según su nacionalidad?',
+    '¿Cuál fue la tasa de personas mayores de edad con sentencia firme por cada mil residentes de nacionalidad extranjera?',
+  ]],
   ['migration-wage-effects', ['La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores', 'La llegada de mano de obra extranjera ha reducido los sueldos en sectores con baja cualificación', 'La inmigración presiona los salarios en los sectores con sueldos bajos', 'La entrada de trabajadores extranjeros puede contener los sueldos de empleados nativos']],
   ['migration-fiscal-contribution', ['La inmigración cualificada aporta más fiscalmente que la inmigración atrapada en empleos de bajos salarios', 'Los inmigrantes aportan más a la Hacienda pública de lo que reciben en prestaciones', 'El balance fiscal de la población migrante depende del empleo y de cuánto cotiza']],
   ['migration-overqualification', ['La tasa de sobrecualificación de extranjeros es mayor que la de españoles', '¿Qué parte de las personas con ciudadanía extranjera y estudios terciarios trabaja en ocupaciones de menor cualificación?', 'La tasa de sobrecualificación de ciudadanos de otros países de la Unión Europea']],
@@ -709,6 +715,61 @@ const migrationSafetyNeighbor = 'La llegada de inmigrantes ha provocado más rob
 assert.notEqual(claimFocusFor(migrationSafetyNeighbor)?.id, 'local-safety-trend', 'A migration-causality claim must not inherit the local safety route');
 assert.deepEqual(broadDomainPacketsFor(migrationSafetyNeighbor).map((packet) => packet.id), ['broad-immigration-security']);
 assert.equal(claimFocusFor('La Seguridad Social ha subido en mi ciudad este mes'), undefined, 'Social Security is an institution, not a local crime trend');
+for (const claim of [
+  'La inmigración causa más robos y delitos en España',
+  '¿Cuál es la tasa de menores condenados por cada 1.000 habitantes de 14 a 17 años según nacionalidad?',
+  '¿Cuál es la tasa de robos registrados por cada 1.000 residentes adultos en España?',
+  '¿Qué tasa de personas detenidas por cada 1.000 residentes adultos tiene cada nacionalidad?',
+  '¿Cuál es la tasa de personas adultas condenadas por cada 1.000 residentes de cada nacionalidad y sexo?',
+  '¿Cuál es la tasa de adultos condenados por cada 1.000 residentes entre inmigrantes y nativos?',
+  '¿Cuál es la tasa de adultos condenados por cada 1.000 residentes extranjeros en Madrid?',
+  '¿La tasa de adultos condenados por cada 1.000 residentes extranjeros demuestra que la inmigración causa delincuencia?',
+  'La tasa de adultos condenados por cada 1.000 residentes extranjeros ha aumentado este año',
+]) assert.notEqual(claimFocusFor(claim)?.id, 'adult-conviction-rate-by-nationality', `A neighboring claim crossed into adult conviction rates: ${claim}`);
+assert.deepEqual(broadDomainPacketsFor('La inmigración causa más robos y delitos en España').map((packet) => packet.id), ['broad-immigration-security'], 'Causal migration-crime claims should retain the reviewed contextual family');
+const adultConvictionRateSource = {
+  id: 'ine-adult-conviction-rates-2025',
+  title: 'Estadística de Condenados: Adultos / Menores · 2025',
+  publisher: 'Instituto Nacional de Estadística',
+  url: 'https://www.ine.es/dyngs/Prensa/EPCAEPCM2025.htm',
+  retrievedAt: '2026-11-16',
+};
+const adultConvictionRateObservations = [
+  { id: 'ine-adult-conviction-rate-foreign-2025', metricId: 'crime_conviction_rate_by_nationality', value: 15.3, period: '2025', geography: 'España', population: 'personas adultas de 18 y más años', denominator: 'residents aged 18 and over', unit: 'personas condenadas por 1.000 habitantes de 18 y más años', dimensions: { geo: 'ES', group: 'Extranjera', measure: 'conviction rate', legalStage: 'conviction', category: 'all offences', denominator: 'residents aged 18 and over' }, source: adultConvictionRateSource },
+  { id: 'ine-adult-conviction-rate-spanish-2025', metricId: 'crime_conviction_rate_by_nationality', value: 6.1, period: '2025', geography: 'España', population: 'personas adultas de 18 y más años', denominator: 'residents aged 18 and over', unit: 'personas condenadas por 1.000 habitantes de 18 y más años', dimensions: { geo: 'ES', group: 'Española', measure: 'conviction rate', legalStage: 'conviction', category: 'all offences', denominator: 'residents aged 18 and over' }, source: adultConvictionRateSource },
+];
+const adultConvictionRateClaim = '¿Cuál es la tasa de personas adultas condenadas por cada 1.000 residentes según nacionalidad?';
+const adultConvictionRatePlan = focusedEvidencePlan(adultConvictionRateClaim, { observations: adultConvictionRateObservations, now: Date.parse('2026-11-24') });
+assert.equal(adultConvictionRatePlan.answerScope.family, 'adult-conviction-rate-by-nationality');
+assert.equal(adultConvictionRatePlan.evidenceLevel, 'limited');
+assert.deepEqual(adultConvictionRatePlan.answerScope.directMetrics, ['crime_conviction_rate_by_nationality']);
+assert.deepEqual(adultConvictionRatePlan.answerScope.contextMetrics, []);
+assert.deepEqual(adultConvictionRatePlan.sourceIds, [adultConvictionRateSource.id]);
+assert.match(adultConvictionRatePlan.shareableReply, /2025.*15,3 personas adultas con nacionalidad extranjera condenadas por cada 1\.000 residentes de 18 años o más de nacionalidad extranjera.*6,1 personas adultas con nacionalidad española condenadas por cada 1\.000 residentes adultos de nacionalidad española/s);
+assert.match(adultConvictionRatePlan.shareableReply, /sentencia firme.*no todos los delitos registrados.*no por país de nacimiento o situación administrativa.*no demuestra que la inmigración cause delincuencia/s);
+assert.ok(validateAnswerPlan(adultConvictionRatePlan).ok, JSON.stringify(validateAnswerPlan(adultConvictionRatePlan).errors));
+const adultConvictionRatePublicResponse = localPublicCheckResponse({ status: 'partial', requestId: 'adult-conviction-rate-nationality', result: adultConvictionRatePlan }, adultConvictionRateClaim);
+assert.equal(adultConvictionRatePublicResponse.state, 'limited');
+assert.match(adultConvictionRatePublicResponse.result.reply, /15,3 personas adultas.*6,1 personas adultas/s);
+for (const paraphrase of cases.find(([family]) => family === 'adult-conviction-rate-by-nationality')[1]) {
+  const plan = focusedEvidencePlan(paraphrase, { observations: adultConvictionRateObservations, now: Date.parse('2026-11-24') });
+  assert.equal(plan.answerScope.family, adultConvictionRatePlan.answerScope.family, 'A conviction-rate paraphrase changed evidence family');
+  assert.deepEqual(plan.sourceIds, adultConvictionRatePlan.sourceIds, 'A conviction-rate paraphrase changed its source');
+  assert.match(plan.shareableReply, /15,3 personas adultas.*6,1 personas adultas/s);
+}
+const missingAdultConvictionRatePlan = focusedEvidencePlan(adultConvictionRateClaim, { observations: [], now: Date.parse('2026-11-24') });
+assert.equal(missingAdultConvictionRatePlan.evidenceLevel, 'insufficient', 'Missing rows must not receive a numeric conviction-rate answer');
+assert.deepEqual(missingAdultConvictionRatePlan.sourceIds, []);
+assert.doesNotMatch(missingAdultConvictionRatePlan.shareableReply, /15,3|6,1|2025/, 'Missing rows must not fall back to a remembered conviction-rate value');
+const priorYearConvictionRatePlan = focusedEvidencePlan('¿Cuál era en 2024 la tasa de personas adultas condenadas por cada 1.000 residentes según nacionalidad?', { observations: adultConvictionRateObservations, now: Date.parse('2026-11-24') });
+assert.equal(priorYearConvictionRatePlan.evidenceLevel, 'insufficient', 'A requested year without matching rows must not use the 2025 rate');
+assert.deepEqual(priorYearConvictionRatePlan.sourceIds, []);
+assert.doesNotMatch(priorYearConvictionRatePlan.shareableReply, /15,3|6,1/, 'A prior-year request must not be answered with the current-year rates');
+const adultConvictionFallback = deterministicApiFallback({ text: adultConvictionRateClaim, inputType: 'text', now: Date.parse('2026-11-24') });
+assert.equal(adultConvictionFallback.status, 'uncovered');
+assert.equal(adultConvictionFallback.result.evidenceLevel, 'insufficient');
+assert.deepEqual(adultConvictionFallback.result.sourceIds, []);
+assert.doesNotMatch(adultConvictionFallback.result.shareableReply, /15,3|6,1|2025/, 'The offline text fallback must not invent current conviction-rate values');
 const focusedTextClaim = 'La tasa de paro de titulados universitarios ha subido';
 const focusedTextCompilation = deterministicFallbackCompiler(focusedTextClaim);
 assert.equal(canSkipLocalCompilerForFocusedMeasurement(focusedTextClaim, { propositions: focusedTextCompilation.explicitPropositions, clarificationRequired: focusedTextCompilation.clarificationRequired, claimType: focusedTextCompilation.claimType }), true, 'A reviewed descriptive measurement claim can use deterministic interpretation');

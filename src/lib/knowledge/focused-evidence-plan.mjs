@@ -171,9 +171,12 @@ const factsForMetric = (id, observations, fitsClaim) => {
     const value = `${number(latest.value, id)} ${unitFor(latest)}`.trim();
     const metric = vocabulary.get(id);
     const citizenship = citizenshipGroupLabel(latest);
-    const scope = [latest.geography || latest.dimensionLabels?.geo, citizenship, latest.population || metric?.population].filter(Boolean).join(' · ');
+    const nationalityGroup = id === 'crime_conviction_rate_by_nationality'
+      ? ({ Extranjera: 'nacionalidad extranjera', Española: 'nacionalidad española' }[String(latest.dimensions?.group || '')])
+      : undefined;
+    const scope = [latest.geography || latest.dimensionLabels?.geo, citizenship || nationalityGroup, latest.population || metric?.population].filter(Boolean).join(' · ');
     const place = placeLabel(latest);
-    const finding = `${labels[id] || metric?.name || latest.metric}${place ? ` · ${place}` : ''}${citizenship ? ` · ${citizenship}` : ''}: ${value} (${periodLabel(latest.period)}).`;
+    const finding = `${labels[id] || metric?.name || latest.metric}${place ? ` · ${place}` : ''}${citizenship || nationalityGroup ? ` · ${citizenship || nationalityGroup}` : ''}: ${value} (${periodLabel(latest.period)}).`;
     // Primary-care answers cite the latest matching wave. Its source
     // attribution must not imply that older waves were also cited.
     const answerItems = /^primary_care_wait_/.test(id) ? [latest] : rows;
@@ -1223,6 +1226,23 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       !findings.length ? gapForReply : '',
     ].filter(Boolean).join('\n\n');
   })();
+  const adultConvictionRateNationalityReply = (() => {
+    if (focus.id !== 'adult-conviction-rate-by-nationality') return undefined;
+    const foreign = facts.find((fact) => fact.id === 'crime_conviction_rate_by_nationality' && fact.latest.dimensions?.group === 'Extranjera');
+    const spanish = facts.find((fact) => fact.id === 'crime_conviction_rate_by_nationality' && fact.latest.dimensions?.group === 'Española');
+    const comparableDimensions = (item) => JSON.stringify(Object.fromEntries(Object.entries(item.dimensions || {})
+      .filter(([key]) => !['group', 'time', 'period', 'year'].includes(key)).sort(([left], [right]) => left.localeCompare(right))));
+    if (!foreign || !spanish || foreign.latest.period !== spanish.latest.period
+      || foreign.latest.geography !== spanish.latest.geography || foreign.latest.unit !== spanish.latest.unit
+      || foreign.latest.denominator !== spanish.latest.denominator || foreign.latest.population !== spanish.latest.population
+      || foreign.latest.dataKind !== spanish.latest.dataKind || foreign.latest.source?.id !== spanish.latest.source?.id
+      || foreign.latest.source?.url !== spanish.latest.source?.url
+      || comparableDimensions(foreign.latest) !== comparableDimensions(spanish.latest)) return undefined;
+    return [
+      `${foreign.latest.source?.publisher || 'El INE'} (${foreign.latest.geography}, ${periodLabel(foreign.latest.period)}): ${number(foreign.latest.value, foreign.id)} personas adultas con nacionalidad extranjera condenadas por cada 1.000 residentes de 18 años o más de nacionalidad extranjera; ${number(spanish.latest.value, spanish.id)} personas adultas con nacionalidad española condenadas por cada 1.000 residentes adultos de nacionalidad española.`,
+      'La estadística cuenta personas con sentencia firme, no todos los delitos registrados. El desglose es por nacionalidad, no por país de nacimiento o situación administrativa, y no demuestra que la inmigración cause delincuencia.',
+    ].join('\n\n');
+  })();
   const workingPovertyEndsMeetReply = (() => {
     if (focus.id !== 'working-poverty' || !asksAboutMakingEndsMeet) return undefined;
     const povertyFact = primaryFacts.find((fact) => /^in_work_poverty_/.test(fact.id));
@@ -1277,7 +1297,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       return `El dato (${number(directThresholdAssessment.actual, fact.id)}${suffix}) ${position}; ${directThresholdAssessment.verdict === 'supported' ? 'respalda' : 'contradice'} esa parte.`;
     })()
     : '';
-  const reply = primaryCareCausalityReply || tourismEmploymentReply || workingPovertyEndsMeetReply || touristHousingReply || educationPayReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || tourismEmploymentReply || workingPovertyEndsMeetReply || touristHousingReply || educationPayReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
     directThresholdComparisonNote,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length ? 'limited' : 'insufficient';
