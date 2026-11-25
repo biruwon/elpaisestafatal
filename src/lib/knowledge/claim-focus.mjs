@@ -15,6 +15,7 @@ import { EDUCATION_SOCIOECONOMIC_SNAPSHOT } from './education-socioeconomic-snap
 import { UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT } from './university-graduate-outcomes-snapshot.mjs';
 import { RAIL_PUNCTUALITY_EVIDENCE, railPunctualityShareableReply } from './rail-punctuality-snapshot.mjs';
 import { RAIL_INVESTMENT_MAINTENANCE_SNAPSHOT, railInvestmentMaintenanceReply } from './rail-investment-maintenance-snapshot.mjs';
+import { ELECTRICITY_BILL_COMPONENTS_SNAPSHOT, electricityBillComponentsReply } from './electricity-bill-components-snapshot.mjs';
 import { GDP_HOUSEHOLD_WELFARE_SNAPSHOT } from './gdp-household-welfare-snapshot.mjs';
 import { HOUSEHOLD_BUDGET_SNAPSHOT, HOUSEHOLD_SAVING_SNAPSHOT } from './household-budget-snapshot.mjs';
 import { FOOD_CHAIN_PRICE_SPREAD_EVIDENCE } from './food-chain-price-spread-snapshot.mjs';
@@ -528,6 +529,16 @@ const energyPricePassThrough = (t) => {
     || /\b(consumidor\w*|cliente\w*|hogar\w*|famil\w*)\b[\s\w]{0,45}\b(contrat\w*|ofert\w*)\b/.test(t);
   return wholesaleReference && retailContract && lagOrPassThrough && !nonEnergyProduct
     && (energyNamed || genericConsumerContract);
+};
+const electricityBillComponentsVsWholesale = (t) => {
+  const finalBill = /\b(factur\w*|recibo\w*|precio final|importe final)\b/.test(t);
+  const wholesale = /\b(mayorist\w*|spot)\b/.test(t);
+  const components = /\b(impuest\w*|tribut\w*|peaj\w*|carg\w*|costes? regulad\w*|costes? de red|redes? de (?:transporte|distribucion))\b/.test(t);
+  const electricityNamed = has(t, electricity);
+  const tollsAndCharges = /\bpeaj\w*\b/.test(t) && /\bcarg\w*\b/.test(t);
+  const movement = /\b(cambi\w*|muev\w*|vari\w*|reflej\w*|traslad\w*|repercut\w*|distint\w*|diferent\w*|depend\w*)\b/.test(t);
+  const anotherProduct = /\b(gas natural|butano|propano|gasolin\w*|petrole\w*|diesel|gasoleo|trigo|harina|alquil\w*|viviend\w*|telefon\w*)\b/.test(t);
+  return finalBill && wholesale && components && movement && (electricityNamed || tollsAndCharges) && !anotherProduct;
 };
 const ruralUrbanAccessCategories = [
     /\b(viviend\w*|alquil\w*|piso\w*|casas?)\b/,
@@ -3385,6 +3396,17 @@ const focuses = [
     needs: ['flujos de exportación e importación por hora y sentido de la interconexión', 'precios mayoristas horarios del mismo mercado y periodo', 'generación disponible, demanda y zona de intercambio para identificar las horas con renovables'],
     explanation: 'El precio medio que pagan los hogares no indica a qué horas España exporta o importa electricidad ni qué precio tuvo cada intercambio.',
     limitation: 'Sin flujos transfronterizos y precios mayoristas alineados por hora no se puede verificar si se exportó energía barata y se importó energía más cara en otros momentos.',
+  },
+  {
+    id: 'electricity-bill-components', label: 'componentes de la factura eléctrica y el precio mayorista',
+    when: electricityBillComponentsVsWholesale,
+    direct: [], context: [], claimType: 'causal',
+    needs: ['precio mayorista y precio minorista del mismo periodo', 'componentes de red, impuestos, tasas, gravámenes y cargos para la misma banda de consumo', 'condiciones del contrato que definan cómo se traslada el precio a la factura'],
+    explanationHeadline: 'La factura incluye varios componentes; el desglose no mide por sí solo el traslado del precio mayorista',
+    explanation: 'Eurostat publica promedios anuales de precio minorista y componentes para una banda de consumo. Esa composición sirve para ver qué suma el precio final, pero no equivale a una serie del precio mayorista ni a un recibo individual.',
+    explanationEvidence: ELECTRICITY_BILL_COMPONENTS_SNAPSHOT,
+    shareableReplyForContext: electricityBillComponentsReply,
+    limitation: 'El corte compara una banda doméstica nacional en 2024 y 2025. El componente de energía y suministro no es el precio spot mayorista; sin una serie mayorista y facturas del mismo contrato no se aísla qué causó la diferencia.',
   },
   {
     id: 'energy-price-pass-through-lag', label: 'traslado de precios mayoristas a ofertas y contratos de energía',

@@ -1873,3 +1873,36 @@ discovery claims to a metric or focused family and leaves 120 without either;
 it reports 7 complete, 100 limited and 193 uncovered answers. Public states
 remain 263 insufficient and 37 limited. This measures current routing and
 coverage, not factual accuracy for arbitrary user claims.
+
+## Household electricity bill components and wholesale prices — 25 November 2026
+
+The text audit also surfaced a recurring claim that taxes, network tolls and
+other charges make a household electricity bill move differently from the
+wholesale price. Eurostat's annual [household electricity price-components
+dataset](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nrg_pc_204_c?freq=A&geo=ES&nrg_cons=KWH2500-4999&currency=EUR&time=2024&time=2025)
+reports Spain's 2,500 to less than 5,000 kWh/year consumption band. The three
+published aggregate components—energy and supply, network, and taxes/fees/
+levies/charges—sum to €0.2383/kWh in 2024 and €0.2638/kWh in 2025. Energy and
+supply remained at €0.1108/kWh; network rose from €0.0701 to €0.0712; and
+taxes, fees, levies and charges rose from €0.0574 to €0.0818. The
+[CNMC's bill explanation](https://www.cnmc.es/ca/node/406175) also describes
+network costs, other regulated items, retailer margin, taxes and contract
+terms.
+
+This is useful context about how retail components can move differently, but
+energy and supply is not the wholesale spot price. The annual component table
+does not pair wholesale prices with bills for the same contract and period, so
+it cannot show that taxes caused a difference or describe a particular
+household's bill. The answer stays insufficient and says which matched data
+would be needed. Paraphrases share one explanation; tests cover split-clause
+claims, reject unsupported years, regions, named customers and tariff-specific
+readings, and keep generic wholesale pass-through questions in their prior
+family. The held-out text benchmark passes 239/239 cases across 61 paraphrase
+groups; the claim-focus validator covers 357 paraphrases and negative
+neighbours.
+
+The refreshed deterministic audit routes 181 of 300 explicitly unverified
+discovery claims to a metric or focused family and leaves 119 without either;
+it reports 7 complete, 101 limited and 192 uncovered answers. Public states
+remain 263 insufficient and 37 limited. These figures describe routing and
+coverage, not factual accuracy across user text.

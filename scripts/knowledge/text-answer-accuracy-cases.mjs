@@ -2437,6 +2437,86 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'electricity-bill-components-vs-wholesale',
+    equivalenceGroup: 'electricity-bill-components-vs-wholesale-spain',
+    input: 'Los impuestos, peajes y cargos hacen que la factura final se mueva de forma distinta al precio mayorista',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'electricity-bill-components', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['0,2383 €/kWh en 2024', '0,2638 €/kWh en 2025', 'se mantuvo en 0,1108 €/kWh', '0,0701 a 0,0712', '0,0574 a 0,0818', 'no es el precio mayorista spot', 'no prueban por sí solos'],
+      replyExcludes: ['0,2638 €/kWh es el precio mayorista', 'demuestra que los cargos causaron la diferencia frente al mercado mayorista'],
+      evidence: [
+        {
+          familyId: 'electricity-bill-components',
+          sourceIds: ['eurostat-household-electricity-components-spain-2024-2025', 'eurostat-electricity-price-components-methodology-spain'],
+          dataIncludes: ['energía y suministro', '0,2383 €/kWh en 2024', '0,2638 €/kWh en 2025', 'se mantuvo en 0,1108 €/kWh', '0,0701 a 0,0712', '0,0574 a 0,0818'],
+          dimensions: { period: '2024 y 2025', geography: 'España', population: '2.500 a menos de 5.000 kWh', unit: 'euros por kWh' },
+        },
+        {
+          familyId: 'electricity-bill-components',
+          sourceIds: ['cnmc-electricity-bill-components-and-contracts'],
+          dataIncludes: ['costes regulados de redes', 'margen de comercialización', 'haya fijado un precio'],
+          dimensions: { population: 'consumidores de electricidad en España', geography: 'España' },
+        },
+      ],
+      maxReplyWords: 190,
+    },
+  },
+  {
+    id: 'electricity-bill-components-wholesale-paraphrase',
+    equivalenceGroup: 'electricity-bill-components-vs-wholesale-spain',
+    input: 'Los cambios del precio mayorista no se reflejan igual en la factura de la luz debido a los peajes y demás cargos',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'electricity-bill-components', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['0,2383 €/kWh en 2024', '0,2638 €/kWh en 2025', 'no es el precio mayorista spot'],
+      replyExcludes: ['demuestra que los cargos causaron la diferencia frente al mercado mayorista'],
+      evidence: [], maxReplyWords: 190,
+    },
+  },
+  {
+    id: 'electricity-bill-components-explicit-period',
+    equivalenceGroup: 'electricity-bill-components-vs-wholesale-spain',
+    input: 'Entre 2024 y 2025, los impuestos, peajes y cargos hacen que la factura final se mueva de forma distinta al precio mayorista',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'electricity-bill-components', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['0,2383 €/kWh en 2024', '0,2638 €/kWh en 2025', 'no es el precio mayorista spot'],
+      replyExcludes: ['demuestra que los cargos causaron la diferencia frente al mercado mayorista'],
+      evidence: [], maxReplyWords: 190,
+    },
+  },
+  {
+    id: 'electricity-bill-components-wrong-year',
+    input: 'En 2023, los impuestos, peajes y cargos hacen que la factura final se mueva de forma distinta al precio mayorista',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'electricity-bill-components', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['0,2383', '0,2638', '0,1108', '0,0818'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
+    id: 'electricity-bill-components-split-clauses',
+    equivalenceGroup: 'electricity-bill-components-vs-wholesale-spain',
+    input: 'El precio mayorista cambia, pero la factura final se mueve de forma distinta debido a peajes y cargos',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'electricity-bill-components', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['0,2383 €/kWh en 2024', '0,2638 €/kWh en 2025', 'no es el precio mayorista spot'],
+      replyExcludes: ['demuestra que los cargos causaron la diferencia frente al mercado mayorista'],
+      evidence: [], maxReplyWords: 190,
+    },
+  },
+  {
+    id: 'electricity-bill-components-regional-neighbour',
+    input: 'En Madrid, los impuestos, peajes y cargos hacen que la factura final se mueva de forma distinta al precio mayorista',
+    now: '2026-11-25T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'electricity-bill-components', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['0,2383', '0,2638', '0,1108', '0,0818'], evidence: [], maxReplyWords: 120,
+    },
+  },
+  {
     id: 'public-private-pay-aggregate-mean-2022',
     equivalenceGroup: 'public-private-pay-aggregate-spain-2022',
     input: 'En 2022, el salario bruto medio anual fue mayor en las empresas de control público que en las empresas de control privado.',
