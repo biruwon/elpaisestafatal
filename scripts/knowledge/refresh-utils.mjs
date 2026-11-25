@@ -1,4 +1,8 @@
+import { isBoeLegalDiscoveryUrl } from '../../src/lib/knowledge/freshness-policy.mjs';
+
 const boeDatePattern = /\/sumario\/(\d{8})$/;
+
+export { isBoeLegalDiscoveryUrl };
 
 export const isBoeSummaryUrl = (value) => {
   try {
@@ -27,13 +31,4 @@ export const boeSummaryCandidates = (value, { maxDays = 7 } = {}) => {
     next.pathname = url.pathname.replace(match[1], stamp);
     return next.toString();
   });
-};
-
-export const isBoeLegalDiscoveryUrl = (value) => {
-  try {
-    const url = new URL(String(value));
-    return url.hostname.endsWith('boe.es') && url.pathname.includes('/legislacion-consolidada/');
-  } catch {
-    return false;
-  }
 };

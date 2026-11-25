@@ -373,8 +373,10 @@ try {
     'Por no hallar un empleo de su nivel, los jóvenes titulados acaban aceptando trabajos de menor cualificación',
     'Los jóvenes ocupan empleos por debajo de sus estudios debido a que hay pocas oportunidades acordes',
   ];
-  const youthOverqualificationSourceId = EDUCATION_EMPLOYMENT_SNAPSHOT.observations
-    .find((item) => item.metricId === 'tertiary_overqualification_rate_age_20_34')?.source.id;
+  const youthOverqualificationSnapshot = EDUCATION_EMPLOYMENT_SNAPSHOT.observations
+    .find((item) => item.metricId === 'tertiary_overqualification_rate_age_20_34');
+  const youthOverqualificationSourceId = youthOverqualificationSnapshot?.source.id;
+  const youthOverqualificationSourceUrl = youthOverqualificationSnapshot?.source.url;
   let youthEmploymentCauseSourceIds;
   for (const query of youthEmploymentCauseQueries) {
     const result = await check(query, undefined, { DB: emptyD1 });
@@ -389,7 +391,20 @@ try {
     assert.match(result.result.reply, /denominador son solo las personas ocupadas de ese grupo/);
     assert.match(result.result.reply, /definici[oó]n de este dato difiere/);
     assert.deepEqual(result.result.criteria.map((criterion) => criterion.label), ['Contexto']);
-    assert.deepEqual(result.result.sources.map((source) => source.id), [youthOverqualificationSourceId]);
+    const [overqualificationSource] = result.result.sources;
+    assert.equal(result.result.sources.length, 1);
+    const overqualificationUrl = new URL(overqualificationSource.url);
+    const reviewedSnapshotSource = overqualificationSource.id === youthOverqualificationSourceId
+      && overqualificationSource.url === youthOverqualificationSourceUrl;
+    const currentEurostatSource = overqualificationUrl.hostname === 'ec.europa.eu'
+      && overqualificationUrl.pathname.endsWith('/data/lfsa_eoqgan')
+      && overqualificationUrl.searchParams.get('freq') === 'A'
+      && overqualificationUrl.searchParams.get('citizen') === 'TOTAL'
+      && overqualificationUrl.searchParams.get('age') === 'Y20-34'
+      && overqualificationUrl.searchParams.get('sex') === 'T'
+      && overqualificationUrl.searchParams.get('unit') === 'PC'
+      && overqualificationUrl.searchParams.get('geo') === 'ES';
+    assert.ok(reviewedSnapshotSource || currentEurostatSource, `Overqualification context must cite its reviewed snapshot or matching Eurostat series: ${JSON.stringify(overqualificationSource)}`);
     const sourceIds = result.result.sources.map((source) => source.id);
     if (youthEmploymentCauseSourceIds) assert.deepEqual(sourceIds, youthEmploymentCauseSourceIds, `A causal paraphrase changed its evidence source: ${query}`);
     youthEmploymentCauseSourceIds = sourceIds;

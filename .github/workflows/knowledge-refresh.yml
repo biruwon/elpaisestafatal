@@ -69,7 +69,7 @@ jobs:
       - name: Validate and export the derived warehouse
         run: |
           npm run knowledge:warehouse
-          npm run knowledge:freshness
+          npm run knowledge:freshness -- --allow-partial-refresh
           npm run knowledge:warehouse:sql
 
       # A missing feed is a coverage failure, not evidence that successful

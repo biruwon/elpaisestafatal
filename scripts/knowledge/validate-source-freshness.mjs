@@ -6,15 +6,27 @@ const fixtureNow = Date.parse('2026-07-19T12:00:00Z');
 if (sourceFreshness({ schedule: 'daily', retrievedAt: '2026-07-18T12:00:00Z' }, fixtureNow) !== 'fresh') throw new Error('Recent daily source was marked stale');
 if (sourceFreshness({ schedule: 'hourly', retrievedAt: '2026-07-10T12:00:00Z' }, fixtureNow) !== 'stale') throw new Error('Old hourly source was not marked stale');
 if (sourceFreshness({ schedule: 'weekly', retrievedAt: '2026-07-01T12:00:00Z' }, fixtureNow) !== 'fresh') throw new Error('Recent weekly source was marked stale');
+if (sourceFreshness({ schedule: 'monthly', retrievedAt: '2026-04-10T12:00:00Z' }, fixtureNow) !== 'fresh') throw new Error('Recent monthly source was marked stale');
+if (sourceFreshness({ schedule: 'quarterly', retrievedAt: '2025-12-31T12:00:00Z' }, fixtureNow) !== 'fresh') throw new Error('Recent quarterly source was marked stale');
 if (sourceFreshness({ schedule: 'semiannual', retrievedAt: '2026-01-01T12:00:00Z' }, Date.parse('2026-07-01T12:00:00Z')) !== 'fresh') throw new Error('Semiannual source was marked stale before its next release');
 if (sourceFreshness({ schedule: 'semiannual', retrievedAt: '2025-10-01T12:00:00Z' }, Date.parse('2026-07-01T12:00:00Z')) !== 'stale') throw new Error('Outdated semiannual source was not marked stale');
 if (sourceFreshness({ schedule: 'yearly', retrievedAt: '2025-07-01T12:00:00Z' }, Date.parse('2026-07-19T12:00:00Z')) !== 'fresh') throw new Error('Annual source was marked stale before its next release');
+if (sourceFreshness({ schedule: 'yearly', retrievedAt: '2025-07-01T12:00:00Z' }, Date.parse('2026-08-03T12:00:00Z')) !== 'fresh') throw new Error('Annual source was marked stale before its freshness window ended');
 if (sourceFreshness({ schedule: 'daily' }, fixtureNow) !== 'unknown') throw new Error('Source without retrieval timestamp was not marked unknown');
 if (!staleSourceReason({ schedule: 'hourly', retrievedAt: '2026-07-10T12:00:00Z' }, fixtureNow).includes('older')) throw new Error('Stale source reason was not informative');
 if (sourceFreshness({ url: 'https://www.boe.es/datosabiertos/api/legislacion-consolidada/id/BOE-A-2007-19814/metadatos', schedule: 'hourly', retrievedAt: '2026-07-19T12:00:00Z' }, Date.parse('2026-08-03T12:00:00Z')) !== 'fresh') throw new Error('Ad-hoc BOE legal discovery inherited the daily-summary cadence');
 if (sourceFreshness({ sourceRegistryId: 'eurostat', retrievedAt: '2026-06-01T12:00:00Z' }, Date.parse('2026-08-03T12:00:00Z')) !== 'stale') throw new Error('Freshness fixture did not classify an old discovery snapshot');
 const now = process.env.SOURCE_FRESHNESS_NOW ? Date.parse(process.env.SOURCE_FRESHNESS_NOW) : Date.now();
 if (!Number.isFinite(now)) throw new Error('SOURCE_FRESHNESS_NOW must be a valid timestamp');
+const allowPartialRefresh = process.argv.includes('--allow-partial-refresh');
+const incompleteReportFailure = (label, report, allowPartial) => Number(report?.failed || 0) > 0 && !allowPartial
+  ? `${label} refresh report records ${report.failed} failed feed(s)`
+  : undefined;
+if (!incompleteReportFailure('fixture', { failed: 2 }, false)
+  || incompleteReportFailure('fixture', { failed: 2 }, true)
+  || incompleteReportFailure('fixture', { failed: 0 }, false)) {
+  throw new Error('Partial-refresh policy must allow successful snapshots while preserving strict validation by default');
+}
 
 const manifestDirectory = new URL('../../.local/source-warehouse/manifests/', import.meta.url).pathname;
 let files = [];
@@ -53,7 +65,9 @@ if (hasRefreshReport) {
       failures.push(`${report.label} refresh report has no successes list`);
       continue;
     }
-    if (Number(value.failed || 0) > 0) failures.push(`${report.label} refresh report records ${value.failed} failed feed(s)`);
+    const incompleteFailure = incompleteReportFailure(report.label, value, allowPartialRefresh);
+    if (incompleteFailure) failures.push(incompleteFailure);
+    else if (Number(value.failed || 0) > 0) console.warn(`${report.label} refresh report records ${value.failed} failed feed(s); validating successful snapshots and leaving failed feeds visible in the refresh report`);
     for (const success of value.successes) {
       const matches = manifests.filter((manifest) => report.kind === 'source'
         ? manifest.sourceRegistryId === success.sourceId

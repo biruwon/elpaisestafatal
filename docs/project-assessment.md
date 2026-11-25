@@ -1579,3 +1579,24 @@ nearby-claim checks pass; the held-out text-answer benchmark remains 199/199
 across 54 paraphrase groups, and `npm run check` reports zero errors. These
 checks cover reviewed claims and source boundaries, not the full range of user
 wording.
+
+## Production text-evidence freshness audit — 25 November 2026
+
+A read-only query of production D1 found 195 source documents and 635,418
+observations across 188 metrics; the newest source snapshot was retrieved on
+15 November. The production migration ledger ends at `0010`, while the current
+warehouse loader depends on migration `0011_warehouse_source_imports`. The
+24 November refresh run also showed empty Cloudflare credentials, so migration
+and warehouse-import steps were skipped. Its local export stopped earlier
+because four domain feeds had failed; one timed out, one returned 403 and two
+returned 404. The freshness gate had treated any failed feed as a reason to
+reject all otherwise valid snapshots.
+
+The scheduled workflow now validates each successful feed and may continue to
+export/import those snapshots when other feeds fail. The failed-feed report
+still causes the run to finish as failed. D1 freshness classification also now
+uses the same schedule rules as the local audit; yearly sources and BOE legal
+discovery no longer inherit the daily or hourly limits by accident. Production
+still needs the repository's Cloudflare account ID and scoped D1 token before
+the scheduled workflow can bring its evidence store up to date. Observation
+period and population remain separate from snapshot retrieval time in answers.
