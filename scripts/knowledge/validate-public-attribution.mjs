@@ -324,6 +324,32 @@ const sourceFreeLimited = checkFromPlan(exactClaim, { ...sourceFreePlan, evidenc
 assert.equal(sourceFreeLimited.state, 'insufficient', 'A limited response without any source must not be presented as an evidence finding');
 assert.match(sourceFreeLimited.result.reply, /no hemos podido recuperar datos y fuentes verificables/i);
 
+const limitedContextGapPlan = {
+  schemaVersion: '1', evidenceLevel: 'limited', headline: 'Hace falta evidencia directa',
+  summary: 'Se localizó un indicador relacionado, pero no mide esta afirmación.', coverage: 'qualified', claimType: 'causal',
+  blocks: [
+    { type: 'claim_breakdown', propositionIds: ['claim-1'], items: [{ text: 'Los salarios explican la emigración profesional', type: 'causal', explicit: true, verdict: 'insufficient', evidenceLevel: 'none', evidenceIds: [], sourceIds: [] }] },
+    { type: 'data_finding', dataKind: 'context', evidenceIds: ['unattributed-context'], points: ['Tasa nacional de empleo: indicador contextual sin vínculo con la emigración profesional.'] },
+    { type: 'evidence_gap', missing: ['emigración y motivos salariales'], needed: ['flujos de salida por nivel educativo y ocupación', 'salarios comparables por ocupación y país de destino', 'una medición de los motivos de salida'], nextAction: 'Buscar una fuente que relacione salidas profesionales, salarios y motivos para el mismo periodo.' },
+  ],
+  evidenceIds: ['unattributed-context'], sourceIds: [], sourceLinks: [], knowledgeVersion: 'test',
+};
+const limitedContextGapPages = checkFromPlan('Los salarios explican la emigración profesional', limitedContextGapPlan, 'limited-context-gap');
+const limitedContextGapLocal = localPublicCheckResponse({ status: 'draft', requestId: 'limited-context-gap', result: limitedContextGapPlan }, 'Los salarios explican la emigración profesional');
+for (const response of [limitedContextGapPages, limitedContextGapLocal]) {
+  assert.equal(response.state, 'insufficient', 'Unrelated context without an attributable source must not appear as a limited finding');
+  assert.match(response.result.reply, /No hay observaciones compatibles suficientes vinculadas a una fuente consultable/i);
+  assert.match(response.result.reply, /flujos de salida por nivel educativo y ocupaci[oó]n/i, 'The answer must retain the claim-specific evidence requirements');
+  assert.match(response.result.reply, /una medición de los motivos de salida/i);
+  assert.match(response.result.reply, /Qué se necesita para comprobarla:\n\n• /, 'Evidence requirements should be visibly separated from the conclusion');
+  assert.match(response.result.reply, /\n\n• salarios comparables por ocupación y país de destino\n\n• una medición de los motivos de salida/i, 'Each evidence requirement should be a separate readable list item');
+  assert.match(response.result.reply, /Buscar una fuente que relacione salidas profesionales/i);
+  assert.doesNotMatch(response.result.reply, /Tasa nacional de empleo|13,2/ , 'Unattributed contextual values must not enter the public reply');
+  assert.doesNotMatch(response.result.reply, /\.\.|\.;|;\./, 'Evidence gap punctuation must stay readable after list composition');
+  assert.deepEqual(response.result.sources, []);
+  assert.equal(response.result.shareableReply, undefined);
+}
+
 const exactReference = { kind: 'claim', slug: 'poblacion-residente-supera-49m', title: exactClaim, href: '/afirmaciones/poblacion-residente-supera-49m', confidence: 1 };
 const localExact = localPublicCheckResponse({ status: 'complete', requestId: 'source-free-exact', result: sourceFreePlan, relatedClaims: [exactReference] }, exactClaim);
 assert.equal(localExact.state, 'supported');
@@ -414,7 +440,7 @@ const causalGapAnswers = causalGapClaims.map((text, index) => {
   assert.equal(local.state, pages.state);
   assert.equal(local.result.reply, pages.result.reply, 'Local and Pages answers must compose the same evidence gap');
   assert.match(pages.result.reply, /no demuestra que la afirmación sea falsa/i);
-  assert.match(pages.result.reply, /medidas comparables.*evidencia del mecanismo o diseño que permita atribuir causalidad/i);
+  assert.match(pages.result.reply, /• medidas comparables[^\n]*\n\n• evidencia del mecanismo o diseño que permita atribuir causalidad/i);
   assert.match(pages.result.reply, /Siguiente paso: Separar los hechos relacionados/);
   assert.deepEqual(pages.result.sources, [], 'An evidence gap must not invent a source');
   assert.ok(pages.result.reply.trim().split(/\s+/).length < 100, 'The unsupported reply should stay digestible');

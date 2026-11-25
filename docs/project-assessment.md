@@ -1677,3 +1677,27 @@ routes. Two second-home paraphrases, the excluded tourist series, the public
 insufficient verdict and positive tourist-housing neighbours are covered by
 the claim-focus validator. This closes one discovered routing boundary; the
 exploratory corpus is not a measure of factual accuracy across all text.
+
+## Text causal-gap routing and replies — 25 November 2026
+
+The 300-candidate text audit is an operational routing/retrieval report, not an
+accuracy benchmark: it reported seven complete, 94 limited and 199 uncovered
+results. A live replay of the claim that Spanish-trained professionals work
+abroad because salaries are not competitive exposed a semantic ordering bug:
+“terminan trabajando” made the claim a trend before “por falta de” was read as
+a causal attribution. Search also found unrelated official snippets containing
+the word “profesionales”; they had no claim-linked observation, so the public
+adapter withheld them and returned an insufficient result.
+
+The deterministic compiler and query signature now recognize reusable Spanish
+reason-for-absence connectors, including “por falta de” and “debido a la falta
+de”, as causal. A causal gap asks for a source measuring the proposed factor
+and outcome over the same population, territory and period, plus an analysis
+that considers other explanations. Public evidence-gap replies show each
+requirement as a separate bullet paragraph. Paraphrases use the causal evidence
+contract; a migration trend without an asserted reason and a standalone wage
+comparison remain outside that causal route. The live replay stays
+insufficient, shows no unsupported number or unattributed public source, and
+keeps the two causal evidence needs. These checks fix one discovered semantic
+boundary; the 300-candidate audit and this replay do not estimate accuracy for
+arbitrary user wording.

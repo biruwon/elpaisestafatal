@@ -4,16 +4,14 @@ const meaningfulLimitation = (value) => {
   return limitation;
 };
 
-const joinNeeds = (values) => {
-  if (values.length < 2) return values[0] || '';
-  if (values.length === 2) return `${values[0]} y ${values[1]}`;
-  return `${values.slice(0, -1).join('; ')}; y ${values.at(-1)}`;
-};
+const cleanNeeds = (values) => [...new Set(values
+  .map((value) => String(value || '').trim().replace(/[.;!?]+$/u, ''))
+  .filter(Boolean))];
 
 /** Turn a structured evidence gap into a short, useful public answer. */
 export const publicEvidenceGapReply = (plan, { attributionUnavailable = false, claim = '' } = {}) => {
   const gap = plan?.blocks?.find((block) => block?.type === 'evidence_gap');
-  if (!gap || plan?.evidenceLevel !== 'insufficient') return undefined;
+  if (!gap || plan?.evidenceLevel !== 'insufficient' && !attributionUnavailable) return undefined;
 
   const limitation = meaningfulLimitation(plan.limitation);
   const opening = attributionUnavailable
@@ -22,8 +20,8 @@ export const publicEvidenceGapReply = (plan, { attributionUnavailable = false, c
   const cautiousOpening = /\b(?:no demuestra|no permite confirmar|no confirma ni descarta|no se puede confirmar ni descartar)\b/i.test(opening)
     ? opening
     : `${opening} Esto no permite confirmar ni descartar la afirmación.`;
-  const needs = (Array.isArray(gap.needed) && gap.needed.length ? gap.needed : gap.missing || [])
-    .filter((item) => typeof item === 'string' && item.trim());
+  const needs = cleanNeeds((Array.isArray(gap.needed) && gap.needed.length ? gap.needed : gap.missing || [])
+    .filter((item) => typeof item === 'string' && item.trim()));
   const normalizedClaim = String(claim || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
   const requestedStartYear = attributionUnavailable && /\bdesde\b/.test(normalizedClaim)
     ? normalizedClaim.match(/\bdesde\s+(?:el\s+)?(?:ano\s+)?(19\d{2}|20\d{2})\b/)?.[1]
@@ -33,7 +31,9 @@ export const publicEvidenceGapReply = (plan, { attributionUnavailable = false, c
   const publicNeeds = requestedStartYear && !alreadyNamesStartYear
     ? [`serie del mismo indicador que incluya ${requestedStartYear} y el periodo final, con territorio y unidad compatibles`, ...needs.filter((item) => !genericNeed.test(item))]
     : needs;
-  const requirements = publicNeeds.length ? `Qué se necesita para comprobarla: ${joinNeeds(publicNeeds)}.` : '';
+  const requirements = publicNeeds.length
+    ? `Qué se necesita para comprobarla:\n\n${cleanNeeds(publicNeeds).map((need) => `• ${need}`).join('\n\n')}`
+    : '';
   const nextAction = requestedStartYear && !alreadyNamesStartYear
     ? `Buscar una serie del mismo indicador que incluya ${requestedStartYear} y comparar los periodos con la misma definición, territorio y unidad.`
     : typeof gap.nextAction === 'string' ? gap.nextAction.trim() : '';

@@ -3,6 +3,7 @@ import { spawn } from 'node:child_process';
 import { once } from 'node:events';
 import { createServer as createHttpServer } from 'node:http';
 import { createServer as createTcpServer } from 'node:net';
+import { localPublicCheckResponse } from './lib/local-public-check-response.mjs';
 
 const prompts = [];
 const model = createHttpServer(async (request, response) => {
@@ -54,6 +55,11 @@ try {
   assert.ok(!prompts.some((prompt) => prompt.startsWith('Adapta únicamente la presentación')), 'A model was asked to rewrite the evidence-based answer');
   assert.doesNotMatch(JSON.stringify(result.result), /La cifra de 25 millones está confirmada|La cifra es 25 millones/, 'An unsupported model answer reached the result');
   assert.notEqual(result.result.evidenceLevel, 'supported', 'An unsupported claim became supported');
+  assert.ok(result.result.blocks.some((block) => block.type === 'evidence_gap'), 'An unresolved text claim must keep its evidence requirements in the resolver result');
+  const publicResult = localPublicCheckResponse(result, 'En 2025 el consumo de té azul en España fue de 2,5 millones de litros.');
+  assert.equal(publicResult.state, 'insufficient', 'Unattributed context must not appear as a limited public finding');
+  assert.match(publicResult.result.reply, /Qu[eé] se necesita para comprobarla:/, 'The public answer should preserve the structured evidence gap');
+  assert.match(publicResult.result.reply, /Siguiente paso:/, 'The public answer should explain a concrete research step');
 } finally {
   child.kill('SIGTERM');
   await Promise.race([once(child, 'exit').catch(() => {}), new Promise((resolve) => setTimeout(resolve, 2000))]);

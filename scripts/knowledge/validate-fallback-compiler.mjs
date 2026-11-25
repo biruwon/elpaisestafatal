@@ -35,6 +35,20 @@ assert(subgroup.claimType === 'comparative' && subgroup.entities.includes('inmig
 assert(causal.propositions.some((item) => item.explicit === false && item.type === 'causal'), 'Causal implication was not created');
 assert(causal.explicitPropositions.length === 1 && causal.impliedPropositions.length === 1, 'Explicit/implied proposition groups were not created');
 
+const professionalEmigrationCausal = deterministicFallbackCompiler('España forma profesionales que terminan trabajando en otros países por falta de salarios competitivos');
+const professionalEmigrationParaphrases = [
+  'La falta de salarios competitivos hace que profesionales formados en España trabajen en otros países',
+  'Profesionales formados en España trabajan fuera debido a la falta de sueldos competitivos',
+];
+for (const wording of [professionalEmigrationCausal.normalized, ...professionalEmigrationParaphrases]) {
+  const compiled = deterministicFallbackCompiler(wording);
+  assert(compiled.claimType === 'causal', `A wage-attributed professional emigration claim was routed as a trend or description: ${wording}`);
+  assert(compiled.evidenceNeeds.includes('causa') && compiled.evidenceNeeds.includes('comparacion'), `A causal claim did not require causal and comparable evidence: ${wording}`);
+  assert(handlerForInput(compiled, compiled.claimType) === 'causal', `A causal claim did not use the causal handler: ${wording}`);
+}
+assert(deterministicFallbackCompiler('Cada vez más profesionales formados en España trabajan en otros países').claimType === 'trend', 'A migration trend without an asserted reason was incorrectly routed as causal');
+assert(deterministicFallbackCompiler('Los salarios españoles son menos competitivos que los de otros países').claimType === 'comparative', 'A wage comparison without an emigration claim was incorrectly routed as causal');
+
 const rentalCausalParaphrases = [
   'La falta de vivienda nueva explica buena parte de la subida del alquiler',
   'La escasez de nuevas viviendas causa el encarecimiento de los alquileres',

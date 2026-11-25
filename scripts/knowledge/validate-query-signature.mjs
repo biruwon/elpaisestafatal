@@ -51,6 +51,9 @@ if (module.semanticQuerySignature('La vivienda sigue encareciéndose') !== modul
 if (module.semanticQuerySignature('Los precios no dejan de subir') !== module.semanticQuerySignature('Los precios suben')) throw new Error('Idiomatic persistent-rise wording produced a different signature');
 if (module.semanticQuerySignature('Los precios no dejan de subir') === module.semanticQuerySignature('Los precios bajan')) throw new Error('Persistent-rise wording collapsed with the opposing trend');
 if (!module.semanticQuerySignature('Los alquileres suben porque faltan viviendas').includes('causal:causes')) throw new Error('Porque connector did not preserve a causal semantic relation');
+const professionalEmigrationCausal = module.semanticQuerySignature('España forma profesionales que terminan trabajando en otros países por falta de salarios competitivos');
+if (!professionalEmigrationCausal.includes('causal:causes')) throw new Error('Por-falta-de wording did not preserve the causal relation in a professional-emigration claim');
+if (module.semanticQuerySignature('Cada vez más profesionales formados en España trabajan en otros países').includes('causal:')) throw new Error('A migration trend without an asserted cause was routed as causal');
 if (module.semanticQuerySignature('España está por encima de Europa en impuestos') === module.semanticQuerySignature('Europa está por encima de España en impuestos')) throw new Error('Reversed positional comparisons produced the same signature');
 if (module.semanticQuerySignature('España tiene el paro más alto de Europa') !== module.semanticQuerySignature('España es el país con más paro de Europa')) throw new Error('Equivalent highest-ranking wording produced different signatures');
 if (module.semanticQuerySignature('España tiene el paro más alto de Europa') !== module.semanticQuerySignature('España es el país con más paro')) throw new Error('Compressed highest-ranking wording produced different signatures');

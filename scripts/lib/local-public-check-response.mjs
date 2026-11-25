@@ -134,7 +134,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   const missingPublicEvidence = (sources.length === 0 && (hasVisibleFindings || plan.evidenceLevel !== 'insufficient'))
     || (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length));
   const coverageGap = blocks.find((block) => block?.type === 'evidence_gap');
-  const coverageGapReply = plan.evidenceLevel === 'insufficient' && !sources.length && coverageGap
+  const coverageGapReply = !sources.length && coverageGap
     ? publicEvidenceGapReply(plan, { attributionUnavailable: true, claim }) || plan.limitation?.trim() || coverageGap.nextAction
     : undefined;
   const claimNeedsQualification = requiresPublicClaimQualification(plan, argumentsList);

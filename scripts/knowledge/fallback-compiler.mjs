@@ -379,7 +379,7 @@ const populationAliases = [
 ];
 
 const causalClaimSignals = [
-  'causa', 'causan', 'causal', 'porque', 'ya que', 'debido a', 'a causa de', 'por la poca', 'por la falta', 'por culpa', 'tiene la culpa',
+  'causa', 'causan', 'causal', 'porque', 'ya que', 'debido a', 'a causa de', 'por la poca', 'por falta de', 'por la falta', 'ante la falta de', 'debido a la falta de', 'por escasez de', 'debido a la escasez de', 'por la ausencia de', 'ante la ausencia de', 'debido a la ausencia de', 'por culpa', 'tiene la culpa',
   'provoca', 'provocando', 'genera', 'crece la', 'hace crecer', 'hace aumentar', 'crea inseguridad', 'crean inseguridad',
   'relacion', 'relaciona', 'relacionad', 'vinculo', 'vincula', 'vinculad', 'asociacion', 'asocia', 'asociad', 'correlacion', 'van de la mano',
   'hace que', 'hacen que', 'ha hecho que', 'han hecho que', 'vuelve insegur', 'trae', 'lleva', 'contribuye', 'influye', 'incrementa',
@@ -611,7 +611,7 @@ export const deterministicFallbackCompiler = (text, { maxChars = FALLBACK_CLAIM_
   const explicitTexts = splitExplicitClauses(routingText);
   const explicitPropositions = explicitTexts.map((clause) => ({ text: clause, type: claimTypeFor(clause), explicit: true, ...propositionShapeFor(clause) }));
   const explicitTypes = [...new Set(explicitPropositions.map((item) => item.type))];
-  const causalConnector = /\b(?:porque|ya que|debido a que|por culpa de(?:l| la)?)\b/.test(normalized);
+  const causalConnector = /\b(?:porque|ya que|debido a que|por culpa de(?:l| la)?|por falta de|por la falta de|ante la falta de|debido a la falta de|a causa de la falta de|por escasez de|debido a la escasez de|por la ausencia de|ante la ausencia de|debido a la ausencia de)\b/.test(normalized);
   const trendCompound = explicitTypes.length > 1
     && explicitTypes.includes('trend')
     && explicitTypes.every((type) => type === 'trend' || type === 'descriptive');

@@ -176,7 +176,7 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   const missingPublicEvidence = (sources.length === 0 && (hasVisibleFindings || plan.evidenceLevel !== 'insufficient'))
     || (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length));
   const coverageGap = plan.blocks.find((block) => block.type === 'evidence_gap');
-  const coverageGapReply = plan.evidenceLevel === 'insufficient' && !sources.length && coverageGap
+  const coverageGapReply = !sources.length && coverageGap
     ? publicEvidenceGapReply(plan, { attributionUnavailable: true, claim }) || plan.limitation?.trim() || coverageGap.nextAction
     : undefined;
   const publicReply = coverageGapReply || (missingPublicEvidence

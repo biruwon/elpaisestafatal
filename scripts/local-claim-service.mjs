@@ -339,12 +339,19 @@ const evidenceGapForCompiler = (compiler, handlerId = '') => {
   const needs = [...new Set((requested.length ? requested : (defaults[handlerId] || defaults[compiler?.claimType] || defaults.mixed)).filter((need) => evidenceNeedLabels.has(need)))].slice(0, 5);
   const missing = needs.map((need) => evidenceNeedLabels.get(need)?.[0]).filter(Boolean);
   const needed = needs.map((need) => evidenceNeedLabels.get(need)?.[1]).filter(Boolean);
+  const causal = handlerId === 'causal' || compiler?.claimType === 'causal' || compiler?.propositions?.some((item) => item.type === 'causal');
   const householdArrangement = handlerId === 'group_comparison' && hasHouseholdArrangementContrast(compiler?.normalized || '');
   return {
     type: 'evidence_gap',
-    missing: missing.length ? missing : ['Una fuente que mida directamente la afirmación'],
-    needed: needed.length ? needed : ['Un documento o serie pública atribuible y compatible con la frase.'],
-    nextAction: householdArrangement
+    missing: causal
+      ? ['Medición del resultado y del factor propuesto', 'Población, territorio y periodo comparables', 'Diseño que permita evaluar causalidad']
+      : missing.length ? missing : ['Una fuente que mida directamente la afirmación'],
+    needed: causal
+      ? ['Una fuente que mida el factor propuesto y el resultado para la misma población, territorio y periodo.', 'Un estudio o comparación que evalúe si el factor explica el resultado y considere otras causas posibles.']
+      : needed.length ? needed : ['Un documento o serie pública atribuible y compatible con la frase.'],
+    nextAction: causal
+      ? 'Buscar una fuente que mida el factor propuesto y el resultado en ámbitos comparables, y un análisis que distinga causalidad de coincidencia y otras explicaciones.'
+      : householdArrangement
       ? 'Buscar una medida de coste o acceso al alquiler por tipo de hogar, con ingresos, territorio, periodo y denominador comparables.'
       : 'La siguiente búsqueda debe fijar el indicador, el periodo, el territorio y la población antes de extraer una conclusión.',
   };
@@ -3052,7 +3059,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     } : undefined,
     evidenceLevel: changeMagnitudeCheck?.verified ? (changeMagnitudeCheck.matches ? 'supported' : 'limited') : comparisonNeedsPair || directComparison?.comparisonBlocked || (quantityClaim && !quantity && !primary) || (isGroupComparison && !groupComparison?.comparable && !primary) ? 'insufficient' : quantity?.periodScopeGap ? 'limited' : !compoundClaim && !isCausal && !isGroupComparison && !['causal', 'predictive', 'normative'].includes(resolvedClaimType) && (primary || broadConditionRequested || (warehouseSeries && explicitMetricRoute && evidenceSelection?.selected?.some((item) => item.freshness === 'fresh'))) ? 'supported' : currentEvent || answerObservations.length ? 'limited' : 'insufficient',
     asOf: currentEvent || answerObservations.length ? new Date().toISOString() : undefined,
-    headline: comparisonNeedsPair ? 'Faltan datos comparables para los dos territorios' : scorecardRequested ? 'Un país no se puede resumir en un veredicto partidista: este es el cuadro de indicadores' : currentEvent ? `Investigación provisional sobre el evento en ${currentEvent.geography}` : compoundClaim ? 'La frase mezcla varias afirmaciones y cada una necesita su propio dato' : primaryHeadline || changeMagnitudeCheck?.headline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || latestObservation?.headline || metricContext?.headline || budgetContext?.headline || (isGovernmentEvent ? 'La afirmación se refiere a un acto oficial' : undefined) || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || localContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (metricEvidenceGap ? 'Hemos identificado el indicador, pero todavía falta su evidencia' : relatedTopic ? 'La conversación apunta a un tema político amplio' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
+    headline: comparisonNeedsPair ? 'Faltan datos comparables para los dos territorios' : scorecardRequested ? 'Un país no se puede resumir en un veredicto partidista: este es el cuadro de indicadores' : currentEvent ? `Investigación provisional sobre el evento en ${currentEvent.geography}` : compoundClaim ? 'La frase mezcla varias afirmaciones y cada una necesita su propio dato' : primaryHeadline || changeMagnitudeCheck?.headline || valuesContext?.headline || groupContext?.headline || quantityContext?.headline || latestObservation?.headline || metricContext?.headline || budgetContext?.headline || (isGovernmentEvent ? 'La afirmación se refiere a un acto oficial' : undefined) || predictionContext?.headline || legalContext?.headline || definitionContext?.headline || localContext?.headline || recordedOffenceContext?.headline || causalContext?.headline || ranking?.headline || trend?.headline || (metricEvidenceGap ? 'Hemos identificado el indicador, pero todavía falta su evidencia' : usableSource ? 'Hemos localizado una fuente, pero todavía falta comprobar la afirmación.' : 'Todavía no tenemos una comprobación publicada para esta afirmación.'),
     summary: answerSummary,
     ...(!primary && causalContext ? { shareableReply: causalContext.reply } : compoundClaim && compoundAnswer ? { shareableReply: compoundAnswer } : changeMagnitudeCheck ? { shareableReply: changeMagnitudeCheck.reply } : quantityContext && quantityClaim && !quantity && hasClaimedChangeAmount(text) ? { shareableReply: quantityContext.summary } : !primary && quantity && quantityClaim ? { shareableReply: quantity.reply } : directComparison ? { shareableReply: `${directComparison.reply}${latestObservation ? '' : comparisonFreshness}` } : {}),
     coverage: status === 'complete' && !latestObservation ? 'strong' : status === 'partial' || causalContext || ranking || trend || latestObservation || quantityContext || budgetContext || (publicReuseClaim && legalObservations.length) ? 'qualified' : valuesContext ? 'values' : 'insufficient',
@@ -3083,7 +3090,13 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     knowledgeVersion: answerObservations.length ? RUNTIME_VERSIONS.warehouseKnowledge : RUNTIME_VERSIONS.indexKnowledge,
     ...(warehouseSeries ? { warehouseSeries } : {}),
   };
-  if (result.evidenceLevel === 'insufficient' && !result.blocks.some((block) => block.type === 'evidence_gap')) {
+  const resultBreakdown = result.blocks.find((block) => block.type === 'claim_breakdown');
+  const breakdownItems = resultBreakdown && 'items' in resultBreakdown && Array.isArray(resultBreakdown.items) ? resultBreakdown.items : [];
+  const hasTraceableClaimFinding = breakdownItems.some((item) => ['supported', 'contradicted', 'mixed'].includes(item.verdict || '')
+    && Boolean(item.evidenceIds?.length) && Boolean(item.sourceIds?.length));
+  const hasUntracedClaimFinding = breakdownItems.length > 0 && !hasTraceableClaimFinding;
+  if (!result.blocks.some((block) => block.type === 'evidence_gap')
+    && (result.evidenceLevel === 'insufficient' || hasUntracedClaimFinding && !primary && !currentEvent && !broadConditionRequested)) {
     result.blocks = [...result.blocks, evidenceGapForCompiler(classified.compiler, handlerId)];
   }
   const normalizedResult = normalizeAnswerPlan(result);
