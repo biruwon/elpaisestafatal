@@ -303,6 +303,40 @@ const postcodeTreatmentAccessClaimType = (t) => {
   if (/\b(vari\w*|diferenc\w*|desigual\w*|brecha\w*|compar\w*|mayor\w*|menor\w*)\b/.test(t)) return 'comparative';
   return 'descriptive';
 };
+const dentalCareMentioned = (t) => /\b(dent\w*|odontolog\w*|bucodental|salud oral)\b/.test(t);
+const unmetDentalCareCost = (t) => {
+  const unmetNeed = /\b(retras\w*|demor\w*|pospon\w*|aplaz\w*|renunci\w*|sin (?:atender|tratar|recibir)|necesidad\w* no satisfecha|necesidad\w* (?:dent\w* )?no atendid\w*|dent\w* no atendid\w*|no (?:\w+ )?(?:recib\w*|atend\w*|acced\w*|consig\w*|pud\w*|pued\w*|acud\w*)[^.]{0,70}(?:dent\w*|tratamient\w*|atenci\w*|examen\w*))\b/.test(t);
+  const costBarrier = /\b(cost\w*|car[oa]s?|caris\w*|preci\w*|economic\w*|dinero|pag\w*|asequib\w*|copag\w*|financi\w*)\b/.test(t);
+  const years = [...t.matchAll(/\b20\d{2}\b/g)].map(([year]) => year);
+  const geography = requestedGeographyScopes(t);
+  return dentalCareMentioned(t) && unmetNeed && costBarrier
+    && years.every((year) => year === '2025')
+    && geography.every(({ id, type }) => id === 'ES' && type === 'country');
+};
+const asksUnmetDentalCareCostMeasure = (t) => /\b(cuant\w*|porcent\w*|proporci\w*|fracci\w*|tasa)\b/.test(normalize(t))
+  && /\b(necesidad\w* no satisfecha|no (?:\w+ )?(?:recib\w*|atend\w*|acced\w*|pud\w*|pued\w*|acud\w*)|sin (?:atender|tratar|recibir)|renunci\w*)\b/.test(normalize(t))
+  && !/\b(retras\w*|demor\w*|pospon\w*|aplaz\w*|diagnostic\w*|privad\w*|segur\w*)\b/.test(normalize(t));
+const unmetDentalCareCostClaimType = (t) => asksUnmetDentalCareCostMeasure(t) ? 'descriptive'
+  : /\b(porque|debido|por culpa|caus\w*|provoc\w*|impid\w*|por (?:el )?(?:cost\w*|preci\w*|lo caro)|no pued\w* pagar)\b/.test(t)
+  ? 'causal' : 'descriptive';
+const publicDentalCoverage = (t) => {
+  const publicCoverage = /\b(cobert\w*|carter\w*|cubrir|cubre|cubren|inclu\w*|exclu\w*|prestacion\w*|financi\w*|fuera de|deja fuera|dejan fuera)\b/.test(t)
+    && /\b(p[uú]blic\w*|sns|sanitari\w*|sistema nacional de salud)\b/.test(t);
+  const years = [...t.matchAll(/\b20\d{2}\b/g)].map(([year]) => year);
+  const geography = requestedGeographyScopes(t);
+  return dentalCareMentioned(t) && publicCoverage && !unmetDentalCareCost(t)
+    && years.every((year) => year === '2026')
+    && geography.every(({ id, type }) => id === 'ES' && type === 'country')
+    && !/\b(privad\w*|segur\w*|asegurador\w*)\b/.test(t);
+};
+const publicDentalCoverageLegalQuestion = (claim) => {
+  const t = normalize(claim);
+  return /\b(que|cual|cuales)\b/.test(t)
+    && /\b(servicios|prestaciones|tratamientos|cubre|cubren|incluye|excluye|cartera)\b/.test(t)
+    && !/\b(demasiad\w*|excesiv\w*|insuficien\w*|limitad\w*|poc\w*|much\w*|falta de)\b/.test(t);
+};
+const publicDentalCoverageClaimType = (t) => /\b(demasiad\w*|excesiv\w*|insuficien\w*|limitad\w*|poc\w*|falta de)\b/.test(t)
+  ? 'normative' : 'descriptive';
 const specialistOutpatientWaitEvidence = {
   expiresAt: '2027-03-24', territories: ['ES', ...specialistOutpatientComparisonRows.flatMap((row) => [row.geography, ...row.aliases].map(normalize))],
   comparisonRows: specialistOutpatientComparisonRows,
@@ -350,6 +384,112 @@ const postcodeTreatmentAccessReply = ({ claim, facts }) => {
     facts[0],
     facts[1],
     `Esto da contexto sobre diferencias entre comunidades, pero ${limitation}: el informe no desglosa por barrio, municipio o paciente ni compara tratamientos con la misma urgencia y gravedad. Para medirlo hacen falta esperas por código postal y especialidad, fechas de derivación y cita, urgencia y gravedad comparables, y un criterio explícito de qué significa «demasiado».`,
+  ].join('\n\n');
+};
+const unmetDentalCareCostDimensions = {
+  subject: 'personas que declararon una necesidad de examen o tratamiento dental no atendida y señalaron el coste como motivo principal',
+  population: 'personas de 16 años o más residentes en hogares privados en España',
+  period: '2025', geography: 'España',
+  denominator: 'toda la población de 16 años o más en hogares privados; no solo quienes declararon necesitar atención',
+  unit: '% de la población',
+};
+const unmetDentalCareCostEvidence = {
+  expiresAt: '2027-10-20', territories: ['ES'],
+  directClaimEvidence: (claim) => asksUnmetDentalCareCostMeasure(claim),
+  claimVerdict: 'supported',
+  evidenceLabel: 'Necesidades dentales no atendidas por coste, España, 2025',
+  supportedScope: 'Indicador anual de EU-SILC sobre personas de 16 años o más que declararon una necesidad de examen o tratamiento dental no atendida y señalaron el coste como motivo principal.',
+  unsupportedScope: 'Diagnósticos o problemas dentales concretos; duración del retraso; proveedor público o privado; precio de un tratamiento; menores de 16 años; proporción entre quienes sí declararon necesitar atención.',
+  when: unmetDentalCareCost,
+  dimensions: unmetDentalCareCostDimensions,
+  facts: [
+    'En 2025, el 4,0 % de toda la población de 16 años o más en hogares privados de España declaró una necesidad dental no atendida y señaló el coste como motivo principal.',
+    'EU-SILC pregunta por necesidades de los 12 meses anteriores. Mide lo que declara cada persona; no identifica proveedor, diagnóstico ni duración de una demora.',
+  ],
+  factSourceIds: [
+    ['eurostat-unmet-dental-care-es-2025'],
+    ['eurostat-unmet-dental-care-es-2025', 'eurostat-silc-health-methodology'],
+  ],
+  factDimensions: [unmetDentalCareCostDimensions, unmetDentalCareCostDimensions],
+  sources: [
+    { id: 'eurostat-unmet-dental-care-es-2025', title: 'Necesidades dentales no atendidas por motivo principal, edad, sexo y quintil de ingresos (hlth_silc_09): España, 2025', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_silc_09?freq=A&unit=PC&quant_inc=TOTAL&reason=TXP&age=Y_GE16&sex=T&geo=ES&time=2025', publishedAt: '2026-10-20', retrievedAt: '2026-11-25', role: 'primary' },
+    { id: 'eurostat-silc-health-methodology', title: 'Variables de salud de EU-SILC: metodología', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Health_variables_in_SILC_-_methodology', retrievedAt: '2026-11-25', role: 'primary' },
+  ],
+};
+const unmetDentalCareCostReply = ({ claim, facts }) => asksUnmetDentalCareCostMeasure(claim)
+  ? [
+    facts[0], facts[1],
+    'El indicador usa como denominador toda la población de 16 años o más en hogares privados; no solo quienes declararon una necesidad dental no atendida.',
+  ].join('\n\n')
+  : [
+    facts[0], facts[1],
+    'Esto aporta contexto sobre el coste, pero no demuestra retrasos en problemas diagnosticados ni que fueran tratamientos privados. Para comprobarlo hacen falta diagnósticos, tratamientos recomendados, fechas, precios y proveedor; «muchos» requiere un umbral.',
+  ].join('\n\n');
+const publicDentalCoverageDimensions = {
+  subject: 'prestaciones bucodentales incluidas en la cartera común y cobertura reportada para colectivos priorizados',
+  population: 'toda la población para prestaciones básicas; menores y otros colectivos definidos para prestaciones adicionales',
+  period: 'texto consolidado vigente a 2026-07-31; cifras de cobertura reportadas el 2026-05-26',
+  geography: 'España: cartera común del SNS',
+  denominator: 'para las tasas, cada colectivo citado; la nota ministerial no describe el cálculo operativo de cobertura',
+  unit: 'prestaciones legales y % de cobertura reportada',
+};
+const publicDentalCoverageEvidence = {
+  expiresAt: '2027-07-31', territories: ['ES'], directClaimEvidence: false,
+  evidenceLabel: 'Cartera común y despliegue de servicios de salud bucodental del SNS',
+  supportedScope: 'Contenido legal vigente de la cartera común y cifras ministeriales comunicadas para colectivos priorizados en 2026.',
+  unsupportedScope: 'Cobertura efectiva de cada procedimiento en cada comunidad autónoma; necesidades dentales satisfechas en toda la población; comparación normativa de qué cobertura sería suficiente.',
+  when: publicDentalCoverage,
+  dimensions: publicDentalCoverageDimensions,
+  facts: [
+    'El Real Decreto 1030/2006, vigente a 31 de julio de 2026, incluye para toda la población consejo odontológico, atención de procesos agudos, extracciones, cirugía oral menor y detección de lesiones premalignas. Añade prestaciones para colectivos como menores de 0 a 14 años, embarazadas, ciertas personas con discapacidad y pacientes con cáncer cervicofacial.',
+    'La cartera común excluye, entre otras prestaciones, ortodoncia, tratamientos solo estéticos e implantes o prótesis dentales, salvo excepciones previstas en la norma.',
+    'El 26 de mayo de 2026, Sanidad comunicó una cobertura del 30,4 % entre la población infantojuvenil, del 25 % entre embarazadas y cercana al 3 % inicial entre mayores de 65 años, incorporados desde 2025.',
+    'El comunicado no define el periodo ni cómo calculó «cobertura». Son tasas de colectivos priorizados, no de toda la población ni de todos los tratamientos.',
+  ],
+  factSourceIds: [
+    ['sns-common-dental-basket-2026'],
+    ['sns-common-dental-basket-2026'],
+    ['sanidad-dental-coverage-update-2026'],
+    ['sanidad-dental-coverage-update-2026'],
+  ],
+  factDimensions: [
+    publicDentalCoverageDimensions,
+    publicDentalCoverageDimensions,
+    publicDentalCoverageDimensions,
+    publicDentalCoverageDimensions,
+  ],
+  sources: [
+    { id: 'sns-common-dental-basket-2026', title: 'Real Decreto 1030/2006: cartera común de servicios del SNS, texto consolidado a 31/07/2026', publisher: 'Boletín Oficial del Estado', url: 'https://www.boe.es/buscar/act.php?id=BOE-A-2006-16212&p=20260731&tn=2', retrievedAt: '2026-11-25', role: 'primary' },
+    { id: 'sanidad-dental-coverage-update-2026', title: 'El Consejo de Ministros autoriza la distribución de 60 millones de euros para ampliar la cartera de salud bucodental', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/gabinete/notasPrensa.do?id=6917', publishedAt: '2026-05-26', retrievedAt: '2026-11-25', role: 'primary' },
+  ],
+};
+const publicDentalCoverageLegalAnswerEvidence = {
+  ...publicDentalCoverageEvidence,
+  directClaimEvidence: true,
+  facts: publicDentalCoverageEvidence.facts.slice(0, 2),
+  factSourceIds: publicDentalCoverageEvidence.factSourceIds.slice(0, 2),
+  factDimensions: publicDentalCoverageEvidence.factDimensions.slice(0, 2),
+  sources: publicDentalCoverageEvidence.sources.filter((source) => source.id === 'sns-common-dental-basket-2026'),
+  selectForClaim: undefined,
+};
+publicDentalCoverageEvidence.selectForClaim = ({ claim }) => publicDentalCoverageLegalQuestion(claim)
+  ? publicDentalCoverageLegalAnswerEvidence
+  : publicDentalCoverageEvidence;
+publicDentalCoverageLegalAnswerEvidence.claimVerdict = 'supported';
+const publicDentalCoverageReply = ({ claim, facts }) => {
+  const normative = publicDentalCoverageClaimType(normalize(claim)) === 'normative';
+  if (facts.length <= 2) return [
+    facts[0], facts[1],
+    'Esto describe la cartera común definida por ley; no muestra cómo se presta cada servicio en cada comunidad ni cuántas necesidades se atienden en la práctica.',
+  ].join('\n\n');
+  return [
+    facts[0],
+    facts[1],
+    facts[2],
+    facts[3],
+    normative
+      ? 'La cartera pública está delimitada y se amplía por colectivos. Estos datos no permiten concluir si está demasiado limitada sin precisar qué tratamientos, población y nivel de cobertura se consideran suficientes.'
+      : 'Estas cifras de colectivos priorizados no equivalen al porcentaje de todas las necesidades dentales que el SNS cubre ni describen la disponibilidad de cada tratamiento en cada territorio.',
   ].join('\n\n');
 };
 const bankSpainRentEffortSource = {
@@ -2053,6 +2193,38 @@ const focuses = [
     explanationEvidence: postcodeTreatmentAccessEvidence,
     shareableReplyForContext: postcodeTreatmentAccessReply,
     limitation: 'Las cifras agregan diez especialidades por comunidad y ciudad autónoma. No identifican códigos postales, tiempos individuales, urgencia o gravedad y no permiten atribuir diferencias a la zona postal.',
+  },
+  {
+    id: 'dental-care-cost-barrier', label: 'necesidad dental no atendida por coste',
+    when: unmetDentalCareCost,
+    direct: [], context: [], claimType: 'causal',
+    claimTypeFor: unmetDentalCareCostClaimType,
+    needs: [
+      'problemas dentales diagnosticados y fecha del tratamiento recomendado',
+      'fechas de atención y coste del tratamiento por proveedor público o privado',
+      'un umbral definido para evaluar cuántas personas son «muchas»',
+    ],
+    explanationHeadline: 'El coste aparece como barrera, pero no mide los retrasos de problemas concretos',
+    explanation: 'EU-SILC mide necesidades dentales que las personas dicen no haber atendido y cuyo motivo principal fue el coste. No identifica si la atención prevista era privada ni si se retrasó un problema ya diagnosticado.',
+    explanationEvidence: unmetDentalCareCostEvidence,
+    shareableReplyForContext: unmetDentalCareCostReply,
+    limitation: 'La encuesta es autodeclarada y no mide diagnóstico dental, precio de un procedimiento, proveedor previsto ni duración de la demora.',
+  },
+  {
+    id: 'public-dental-coverage', label: 'cobertura pública y cartera común de salud bucodental',
+    when: publicDentalCoverage,
+    direct: [], context: [], claimType: 'descriptive',
+    claimTypeFor: publicDentalCoverageClaimType,
+    needs: [
+      'cobertura efectiva por prestación y colectivo',
+      'tasas de acceso comparables entre comunidades autónomas',
+      'un criterio explícito para decidir qué nivel de cobertura sería suficiente',
+    ],
+    explanationHeadline: 'La cartera incluye servicios básicos y prestaciones delimitadas por colectivo',
+    explanation: 'El texto legal delimita qué servicios dentales comunes ofrece el SNS y qué tratamientos excluye; las tasas de implantación publicadas corresponden a colectivos priorizados, no a todos los tratamientos ni a toda la población.',
+    explanationEvidence: publicDentalCoverageEvidence,
+    shareableReplyForContext: publicDentalCoverageReply,
+    limitation: 'La cartera legal y las tasas para colectivos priorizados no cuantifican las necesidades dentales satisfechas de toda la población ni permiten juzgar si la cobertura es «demasiado» limitada.',
   },
   {
     id: 'specialist-outpatient-regional-waits', label: 'demoras de consultas externas del SNS por territorio',

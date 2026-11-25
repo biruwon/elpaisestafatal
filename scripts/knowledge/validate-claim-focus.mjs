@@ -3780,5 +3780,115 @@ for (const claim of [
 ]) {
   assert.notEqual(claimFocusFor(claim)?.id, 'health-perception-outcomes', `A standalone opinion, service-specific, waiting-list or outcome-only claim crossed into the perception-versus-outcomes family: ${claim}`);
 }
-const paraphraseCount = cases.reduce((count, [, paraphrases]) => count + paraphrases.length, 0) + workHousingParaphrases.length;
+const dentalCostContextParaphrases = [
+  'Muchos problemas dentales se retrasan porque el tratamiento privado es caro',
+  'Muchas personas posponen un tratamiento dental porque no pueden asumir su precio',
+  'El precio del tratamiento odontológico lleva a posponerlo',
+  'Muchos hogares dejan sin atender tratamientos de dentista porque no pueden pagarlos',
+];
+let dentalCostContextSourceIds;
+for (const claim of dentalCostContextParaphrases) {
+  assert.equal(claimFocusFor(claim)?.id, 'dental-care-cost-barrier', `A dental cost-barrier paraphrase lost its family: ${claim}`);
+  const plan = focusedEvidencePlan(claim, { now: Date.parse('2026-11-25') });
+  assert.equal(plan.answerScope.family, 'dental-care-cost-barrier');
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].sourceIds, [], 'Cost-barrier prevalence must remain context for private treatment delay claims');
+  assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, []);
+  const familyRecords = plan.evidenceSummary.families.filter((family) => family.familyId === 'dental-care-cost-barrier');
+  assert.equal(familyRecords.length, 2, 'The population rate and survey definition should stay separately traceable');
+  assert.ok(familyRecords.every((family) => family.dataKind === 'context'));
+  assert.ok(familyRecords.some((family) => family.sourceIds.includes('eurostat-unmet-dental-care-es-2025')));
+  assert.ok(familyRecords.some((family) => family.sourceIds.includes('eurostat-silc-health-methodology')));
+  for (const family of familyRecords) {
+    assert.equal(family.dimensions.period, '2025');
+    assert.equal(family.dimensions.geography, 'España');
+    assert.equal(family.dimensions.population, 'personas de 16 años o más residentes en hogares privados en España');
+    assert.equal(family.dimensions.denominator, 'toda la población de 16 años o más en hogares privados; no solo quienes declararon necesitar atención');
+    assert.equal(family.dimensions.unit, '% de la población');
+  }
+  const sources = plan.sourceLinks.map((source) => source.id);
+  if (dentalCostContextSourceIds) assert.deepEqual(sources, dentalCostContextSourceIds, `A dental cost paraphrase changed sources: ${claim}`);
+  dentalCostContextSourceIds = sources;
+  assert.match(plan.shareableReply, /4,0 %/);
+  assert.match(plan.shareableReply, /no demuestra retrasos en problemas diagnosticados/);
+  assert.match(plan.shareableReply, /tratamientos privados/);
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'dental-cost-context', result: plan }, claim).state, 'insufficient');
+}
+const directDentalCostQuestions = [
+  '¿Qué porcentaje de personas declara necesidades dentales no atendidas por coste en España?',
+  '¿Qué proporción de población de 16 años o más no ha recibido atención dental porque era demasiado cara?',
+];
+for (const claim of directDentalCostQuestions) {
+  assert.equal(claimFocusFor(claim)?.id, 'dental-care-cost-barrier', `A direct survey question lost the dental cost family: ${claim}`);
+  const plan = focusedEvidencePlan(claim, { now: Date.parse('2026-11-25') });
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].sourceIds, ['eurostat-unmet-dental-care-es-2025', 'eurostat-silc-health-methodology']);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported');
+  assert.match(plan.shareableReply, /4,0 %/);
+  assert.match(plan.shareableReply, /denominador toda la poblaci[oó]n/);
+  assert.match(plan.shareableReply, /no identifica proveedor/);
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'dental-cost-direct', result: plan }, claim).state, 'limited');
+}
+for (const claim of [
+  'La atención dental privada es cara',
+  'Muchos problemas dentales se retrasan por las listas de espera',
+  'En Portugal, muchas personas posponen tratamientos dentales porque son caros',
+  'En 2024, muchas personas pospusieron tratamientos dentales por su precio',
+  'Muchos pacientes posponen una operación porque es cara',
+]) assert.notEqual(claimFocusFor(claim)?.id, 'dental-care-cost-barrier', `An unrelated or out-of-scope claim crossed into the dental cost-barrier family: ${claim}`);
+
+const publicDentalCoverageContextClaims = [
+  'La odontología está demasiado fuera de la cobertura sanitaria pública',
+  'La sanidad pública deja fuera demasiados tratamientos dentales en España',
+  'El SNS excluye demasiadas prestaciones odontológicas',
+];
+let publicDentalContextSources;
+for (const claim of publicDentalCoverageContextClaims) {
+  assert.equal(claimFocusFor(claim)?.id, 'public-dental-coverage', `A public dental coverage claim lost its family: ${claim}`);
+  const plan = focusedEvidencePlan(claim, { now: Date.parse('2026-11-25') });
+  assert.equal(plan.answerScope.family, 'public-dental-coverage');
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].sourceIds, [], 'A normative or vague coverage claim must not be marked directly proven by legal scope');
+  const familyRecords = plan.evidenceSummary.families.filter((family) => family.familyId === 'public-dental-coverage');
+  assert.equal(familyRecords.length, 4);
+  assert.ok(familyRecords.every((family) => family.dataKind === 'context'));
+  assert.ok(familyRecords.some((family) => family.sourceIds.includes('sns-common-dental-basket-2026')));
+  assert.ok(familyRecords.some((family) => family.sourceIds.includes('sanidad-dental-coverage-update-2026')));
+  assert.ok(plan.shareableReply.includes('30,4 %'));
+  assert.ok(plan.shareableReply.includes('25 %'));
+  assert.ok(plan.shareableReply.includes('3 %'));
+  assert.match(plan.shareableReply, /no define el periodo/);
+  assert.match(plan.shareableReply, /no permiten concluir si est[aá] demasiado limitada/);
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'public-dental-context', result: plan }, claim).state, 'insufficient');
+  const sources = plan.sourceLinks.map((source) => source.id);
+  if (publicDentalContextSources) assert.deepEqual(sources, publicDentalContextSources, `A public dental coverage paraphrase changed sources: ${claim}`);
+  publicDentalContextSources = sources;
+}
+const publicDentalLegalQuestions = [
+  '¿Qué servicios dentales incluye y excluye la cartera pública española?',
+  '¿Qué tratamientos odontológicos cubre la sanidad pública?',
+  '¿Qué prestaciones dentales incluye la cartera común del SNS?',
+];
+for (const claim of publicDentalLegalQuestions) {
+  assert.equal(claimFocusFor(claim)?.id, 'public-dental-coverage', `A public dental-basket question lost its family: ${claim}`);
+  const plan = focusedEvidencePlan(claim, { now: Date.parse('2026-11-25') });
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].sourceIds, ['sns-common-dental-basket-2026']);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported');
+  assert.match(plan.shareableReply, /para toda la poblaci[oó]n/);
+  assert.match(plan.shareableReply, /extracciones/);
+  assert.match(plan.shareableReply, /ortodoncia/);
+  assert.doesNotMatch(plan.shareableReply, /30,4 %|25 %|3 %/, 'A legal-scope question should not mix in rates for selected cohorts');
+  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'public-dental-legal', result: plan }, claim).state, 'limited');
+}
+for (const claim of [
+  'La sanidad pública deja fuera demasiados tratamientos dentales en Portugal',
+  '¿Qué tratamientos dentales cubre el SNS en 2025?',
+  '¿Qué cubre el seguro dental privado?',
+  'La atención dental privada es cara',
+  'Las listas de espera de dentistas han empeorado',
+]) assert.notEqual(claimFocusFor(claim)?.id, 'public-dental-coverage', `An incompatible claim crossed into public dental coverage: ${claim}`);
+
+const paraphraseCount = cases.reduce((count, [, paraphrases]) => count + paraphrases.length, 0) + workHousingParaphrases.length
+  + dentalCostContextParaphrases.length + directDentalCostQuestions.length + publicDentalCoverageContextClaims.length + publicDentalLegalQuestions.length;
 console.log(`Claim focus validated: ${paraphraseCount} paraphrases, negative neighbours, survey bases, scope rejection, denominator and source boundaries, missing values and preview replacement.`);

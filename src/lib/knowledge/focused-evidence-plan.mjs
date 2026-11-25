@@ -669,6 +669,15 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const sameHealthPerceptionOutcomeCompound = focus.id === 'health-perception-outcomes'
     && propositions.length >= 2 && propositions.length <= 3
     && propositions.every((proposition) => /\b(sanidad|sanitari\w*|salud|esperanza de vida|mortalidad|resultad\w*)\b/.test(normalize(proposition.text)));
+  const dentalCostBarrierCompound = focus.id === 'dental-care-cost-barrier'
+    && propositions.length === 2
+    && /\b(porque|ya que|debido a que|por culpa de)\b/.test(normalizedClaim)
+    && propositions.some((proposition) => {
+      const text = normalize(proposition.text);
+      return /\b(dent\w*|odontolog\w*|bucodental|salud oral)\b/.test(text)
+        && /\b(retras\w*|demor\w*|pospon\w*|aplaz\w*|renunci\w*|sin atender|sin tratar|sin recibir)\b/.test(text);
+    })
+    && propositions.some((proposition) => /\b(cost\w*|car\w*|preci\w*|economic\w*|dinero|pag\w*|privad\w*)\b/.test(normalize(proposition.text)));
   const continuesSameSubject = (item) => {
     const clauseFocus = claimFocusFor(item.text);
     if (clauseFocus?.id === focus.id) return true;
@@ -790,7 +799,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       || sameProductivityComparison && /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(clauseText)) return true;
     if (sameLandlordMotive) return true;
     if (samePensionPrivateSavingsCompound) return true;
-    if (housingInvestmentReason || firmWageMechanism || businessSizeProductivityMechanism || railInvestmentMaintenanceCompound || electricityBillComponentsCompound || pensionWageMechanism || samePensionMeiCompound || sameHealthPerceptionOutcomeCompound || unemploymentSupplyExplanation || sameEmployerContributionVisibility) return true;
+    if (housingInvestmentReason || firmWageMechanism || businessSizeProductivityMechanism || railInvestmentMaintenanceCompound || electricityBillComponentsCompound || pensionWageMechanism || samePensionMeiCompound || sameHealthPerceptionOutcomeCompound || dentalCostBarrierCompound || unemploymentSupplyExplanation || sameEmployerContributionVisibility) return true;
     if (educationOutcomeCauseClause) return true;
     if (clauseFocus) return false;
     // A clause such as “una parte se produce más barata” can refer back to

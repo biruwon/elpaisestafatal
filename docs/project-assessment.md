@@ -1938,3 +1938,43 @@ discovery claims to a metric or focused family and leaves 118 without either;
 it reports 7 complete, 102 limited and 191 uncovered answers. Public states
 remain 263 insufficient and 37 limited. These figures describe routing and
 coverage, not factual accuracy across user text.
+
+## Dental access, cost barriers and public coverage — 26 November 2026
+
+Two recurring text claims needed different evidence routes: that dental problems
+are delayed because private treatment costs too much, and that dental care is
+too far outside public coverage. Eurostat's [EU-SILC dental unmet-needs
+dataset](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/hlth_silc_09?freq=A&unit=PC&quant_inc=TOTAL&reason=TXP&age=Y_GE16&sex=T&geo=ES&time=2025)
+reports 4.0% for Spain in 2025. The denominator is the full population aged 16
+and over living in private households, not only people who reported needing
+dental care. The indicator is self-reported, covers needs during the previous
+12 months and records cost as the main reason for unmet dental need, as set out
+in [Eurostat's EU-SILC methodology](https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Health_variables_in_SILC_-_methodology).
+It does not identify the intended provider, diagnosed problems, treatment
+prices or delay length. The answer therefore uses the figure as context and
+keeps the stronger claim about many diagnosed problems delayed by private
+prices insufficient.
+
+For public coverage, the [consolidated common SNS service basket](https://www.boe.es/buscar/act.php?id=BOE-A-2006-16212&p=20260731&tn=2),
+current through 31 July 2026, includes basic dental advice, acute care,
+extractions, minor oral surgery and early lesion detection for the whole
+population. It defines additional services for specified groups and excludes,
+among other items, orthodontics and purely cosmetic care, with exceptions in
+the law. Separately, the Ministry of Health's [26 May 2026 update](https://www.sanidad.gob.es/gabinete/notasPrensa.do?id=6917)
+reported coverage of 30.4% for children and young people, 25% for pregnant
+women and an initial level near 3% for people over 65. The release does not
+define the exact measurement period or calculation. These subgroup figures do
+not describe all people or all dental procedures. The legal question “what is
+covered?” can be answered from the BOE; the evaluative claim that coverage is
+“too limited” remains insufficient without a specified treatment, population
+and adequacy threshold.
+
+Held-out answer checks now pass 249/249 cases across 66 paraphrase groups; the
+claim-focus validator checks 374 formulations, including dental-cost
+paraphrases, direct measurement questions, legal-scope questions and nearby
+claims that should not inherit this evidence. The refreshed deterministic
+audit routes 184 of 300 explicitly unverified discovery claims to a metric or
+focused family and leaves 116 without either route. It reports 7 complete, 104
+limited and 189 uncovered answers; public states remain 263 insufficient and
+37 limited. These figures measure routing and coverage, not factual accuracy
+across arbitrary user text.
