@@ -1497,3 +1497,20 @@ The mortgage paraphrase and reversed-direction validator passes, along with
 339 claim-focus boundary checks. This confirms the reviewed route and its
 scope regressions, not accuracy for arbitrary user submissions. No image, PDF
 or audio work was included in this text-only pass.
+
+## Causal evidence fit — 25 November 2026
+
+The generic causal evidence ladder no longer treats two different measures in
+the same period as a like-for-like comparison. Time trends must share a metric
+and scope; geographic or group comparisons must also align on metric, unit,
+population, denominator and period. A title containing words such as
+“research” or “impact” is not enough to classify a statistical series as a
+causal study. Causal summaries now use observations selected for the claim,
+plus records explicitly typed as causal studies, so unrelated retrieved rows
+cannot enter the causal context by default.
+
+The causal-evidence validator checks a wage-pressure paraphrase group against
+its nearby unemployment-rate question, and covers mixed metrics, a research-
+and-development time series, and a causal-study estimate beside an unrelated
+trend. These are regression boundaries for evidence selection; they do not
+establish accuracy for arbitrary claims or measure live resolver latency.

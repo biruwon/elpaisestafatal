@@ -30,7 +30,7 @@ import { selectCurrentLegalRule } from './knowledge/legal-rules.mjs';
 import { discoverBoeLegalRules, isPublicReuseQuery } from './knowledge/boe-legal-discovery.mjs';
 import { discoveryQueryTextFor } from './knowledge/discovery-query.mjs';
 import { enrichTrustedWebResults, searchTrustedWeb, trustedWebObservation } from './knowledge/trusted-web-discovery.mjs';
-import { causalEvidenceProfile, causalEvidenceSteps } from './knowledge/causal-evidence.mjs';
+import { causalContextObservations, causalEvidenceProfile, causalEvidenceSteps } from './knowledge/causal-evidence.mjs';
 import { predictionSpecFor, predictionStepsFor } from './knowledge/prediction-evidence.mjs';
 import { legalEvidenceProfile, legalEvidenceSteps } from './knowledge/legal-evidence.mjs';
 import { numericThresholdOperator, numericThresholdRelation, satisfiesNumericThreshold, unitCompatible } from './knowledge/numeric-evidence.mjs';
@@ -2523,7 +2523,7 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
     && (ranking?.observations?.length >= 2 || trend?.observations?.length >= 2 || observations.some((item) => typeof item.value === 'number' && Number.isFinite(item.value)));
   if (changeMagnitudeCheck?.verified && !primary) status = 'complete';
   else if (status === 'draft' && directWarehouseAnswer) status = 'complete';
-  const causalObservations = isCausal ? observations.filter((item) => typeof item.value === 'number' && Number.isFinite(item.value)).slice(-12) : [];
+  const causalObservations = isCausal ? causalContextObservations({ observations, evidenceSelection }).slice(-12) : [];
   const causalProfile = isCausal ? causalEvidenceProfile(causalObservations) : null;
   const causalMeasureLabels = [...new Set(causalObservations.map((item) => displayMetric(item)))].slice(0, 4);
   const causalMeasureSummary = causalMeasureLabels.length
