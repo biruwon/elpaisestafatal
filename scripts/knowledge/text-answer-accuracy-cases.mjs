@@ -664,6 +664,73 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'postcode-treatment-access-context',
+    equivalenceGroup: 'postcode-treatment-access-boundary',
+    input: 'El código postal influye demasiado en el tiempo de acceso a determinados tratamientos',
+    expected: {
+      state: 'insufficient', family: 'postcode-treatment-access', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['A 31 de diciembre de 2025', '16 días en Melilla a 162 días en Canarias', 'no por código postal', 'no se puede confirmar ni descartar que el código postal influya', 'urgencia y gravedad'],
+      evidence: [
+        {
+          familyId: 'postcode-treatment-access', sourceIds: ['sisle-sns-regional-consultations-dec-2025'],
+          dataIncludes: ['16 días en Melilla a 162 días en Canarias'],
+          dimensions: {
+            period: '2025-12-31', geography: 'España: comunidades autónomas y ciudades autónomas',
+            population: 'pacientes registrados en listas estructurales de espera de consultas externas del SNS',
+            denominator: 'pacientes registrados en la lista estructural de consultas externas de cada territorio', unit: 'días de espera media',
+          },
+        },
+        {
+          familyId: 'postcode-treatment-access', sourceIds: ['sisle-sns-regional-consultations-dec-2025', 'sisle-sns-latest-data'],
+          dataIncludes: ['no por código postal', '24 de septiembre de 2026', 'cada comunidad remite sus propios datos'],
+        },
+      ],
+      maxReplyWords: 160,
+    },
+  },
+  {
+    id: 'postcode-treatment-access-direct-question',
+    equivalenceGroup: 'postcode-treatment-access-boundary',
+    input: '¿Cuánto se tarda en acceder a una primera consulta hospitalaria según el código postal?',
+    expected: {
+      state: 'insufficient', family: 'postcode-treatment-access', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['A 31 de diciembre de 2025', '16 días en Melilla a 162 días en Canarias', 'no por código postal', 'no permiten decir cuánto se espera por un tratamiento según el código postal', 'urgencia y gravedad'],
+      evidence: [
+        {
+          familyId: 'postcode-treatment-access', sourceIds: ['sisle-sns-regional-consultations-dec-2025'],
+          dataIncludes: ['16 días en Melilla a 162 días en Canarias'],
+          dimensions: { period: '2025-12-31', geography: 'España: comunidades autónomas y ciudades autónomas', unit: 'días de espera media' },
+        },
+        {
+          familyId: 'postcode-treatment-access', sourceIds: ['sisle-sns-regional-consultations-dec-2025', 'sisle-sns-latest-data'],
+          dataIncludes: ['no por código postal', '24 de septiembre de 2026', 'cada comunidad remite sus propios datos'],
+        },
+      ],
+      maxReplyWords: 160,
+    },
+  },
+  {
+    id: 'postcode-treatment-access-locality-paraphrase',
+    equivalenceGroup: 'postcode-treatment-access-boundary',
+    input: 'Las demoras para consultar con especialistas varían según la localidad de residencia',
+    expected: {
+      state: 'insufficient', family: 'postcode-treatment-access', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['A 31 de diciembre de 2025', '16 días en Melilla a 162 días en Canarias', 'no por código postal', 'no permiten comparar las esperas por código postal', 'urgencia y gravedad'],
+      evidence: [
+        {
+          familyId: 'postcode-treatment-access', sourceIds: ['sisle-sns-regional-consultations-dec-2025'],
+          dataIncludes: ['16 días en Melilla a 162 días en Canarias'],
+          dimensions: { period: '2025-12-31', geography: 'España: comunidades autónomas y ciudades autónomas', unit: 'días de espera media' },
+        },
+        {
+          familyId: 'postcode-treatment-access', sourceIds: ['sisle-sns-regional-consultations-dec-2025', 'sisle-sns-latest-data'],
+          dataIncludes: ['no por código postal', '24 de septiembre de 2026', 'cada comunidad remite sus propios datos'],
+        },
+      ],
+      maxReplyWords: 160,
+    },
+  },
+  {
     id: 'specialist-outpatient-named-region-comparison',
     equivalenceGroup: 'specialist-outpatient-canarias-melilla-2025',
     input: 'La espera media de consultas externas fue mayor en Canarias que en Melilla en 2025',

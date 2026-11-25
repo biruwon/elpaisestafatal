@@ -106,6 +106,7 @@ const cases = [
   ['local-safety-trend', ['En mi barrio ha subido la inseguridad este mes', 'La delincuencia ha empeorado en mi calle estas semanas', 'En la zona hay cada vez más robos', 'En mi municipio han aumentado los hurtos este trimestre']],
   ['primary-care-waits', ['Hay que esperar demasiado para conseguir cita con el médico de familia', '¿Cuántos días tarda una cita en atención primaria?', 'La cita con el médico de cabecera llega con mucha demora']],
   ['private-healthcare-access', ['Se contrata seguro privado para evitar esperas de especialistas', '¿La sanidad privada permite acceder antes a las pruebas?', 'El seguro privado se compra por la rapidez de las citas']],
+  ['postcode-treatment-access', ['El código postal influye demasiado en el tiempo de acceso a determinados tratamientos', 'El lugar de residencia, medido por código postal, condiciona las esperas de consultas hospitalarias', 'Los CP determinan cuánto tardan los pacientes en acceder a tratamientos médicos', '¿Cuánto se tarda en acceder a una primera consulta hospitalaria según el código postal?', 'Las demoras para consultar con especialistas varían según la localidad de residencia']],
   ['electricity-price-transmission', ['El gas encarece la electricidad en el sistema marginalista', 'Los hogares no notan la electricidad barata de las renovables', 'El precio mayorista no llega íntegro a la factura de la luz']],
   ['electricity-bill-components', ['Los impuestos, peajes y cargos hacen que la factura final se mueva de forma distinta al precio mayorista', 'Los cambios del precio mayorista no se reflejan igual en la factura de la luz debido a los peajes y demás cargos', 'Entre 2024 y 2025, los impuestos, peajes y cargos hacen que la factura final se mueva de forma distinta al precio mayorista', 'El precio mayorista cambia, pero la factura final se mueve de forma distinta debido a peajes y cargos']],
   ['energy-price-pass-through-lag', ['Las bajadas del precio mayorista tardan en trasladarse a muchos contratos de consumidores', 'La electricidad tarda en reflejar en las facturas las variaciones del mercado mayorista', 'Los precios minoristas de la luz se ajustan más despacio que los precios mayoristas']],
@@ -2613,6 +2614,55 @@ for (const claim of [migrationWageClaim, migrationFiscalClaim, healthcareStaffin
 }
 assert.equal(claimFocusFor('Los jóvenes con estudios superiores están sobrecualificados en su empleo')?.id, 'education-employment-outcomes', 'A youth overqualification claim must retain its reviewed education family');
 assert.equal(claimFocusFor('¿Cuántos días se espera para una cita con el médico de familia?')?.id, 'primary-care-waits', 'Appointment delays must remain separate from staffing shortage causes');
+const postcodeTreatmentAccessParaphrases = [
+  { claim: 'El código postal influye demasiado en el tiempo de acceso a determinados tratamientos', type: 'causal' },
+  { claim: 'El lugar de residencia, medido por código postal, condiciona las esperas de consultas hospitalarias', type: 'causal' },
+  { claim: 'Los CP determinan cuánto tardan los pacientes en acceder a tratamientos médicos', type: 'causal' },
+  { claim: '¿Cuánto se tarda en acceder a una primera consulta hospitalaria según el código postal?', type: 'descriptive' },
+  { claim: 'Las demoras para consultar con especialistas varían según la localidad de residencia', type: 'comparative' },
+];
+for (const [index, { claim, type }] of postcodeTreatmentAccessParaphrases.entries()) {
+  assert.equal(claimFocusFor(claim)?.id, 'postcode-treatment-access', `A postal-area access paraphrase lost its evidence family: ${claim}`);
+  const answer = focusedEvidencePlan(claim);
+  assert.equal(answer.answerScope.family, 'postcode-treatment-access');
+  assert.equal(answer.claimType, type, `A postal-area access claim received the wrong interpretation: ${claim}`);
+  assert.equal(answer.evidenceLevel, 'limited', 'Regional comparisons should inform the answer without being treated as direct postal-area evidence');
+  const breakdown = answer.blocks.find((block) => block.type === 'claim_breakdown').items[0];
+  assert.equal(breakdown.verdict, 'insufficient');
+  assert.deepEqual(breakdown.evidenceIds, [], 'Regional wait figures must not become direct evidence of a postal-code effect');
+  assert.deepEqual(breakdown.sourceIds, [], 'Context sources must not be attributed to the postal-code claim');
+  const contextFindings = answer.blocks.filter((block) => block.type === 'data_finding');
+  assert.ok(contextFindings.length > 0 && contextFindings.every((block) => block.dataKind === 'context'));
+  const families = answer.evidenceSummary.families.filter((family) => family.familyId === 'postcode-treatment-access');
+  assert.ok(families.length > 0 && families.every((family) => family.dataKind === 'context'));
+  for (const family of families) {
+    assert.equal(family.dimensions.period, '2025-12-31');
+    assert.equal(family.dimensions.geography, 'España: comunidades autónomas y ciudades autónomas');
+    assert.equal(family.dimensions.denominator, 'pacientes registrados en la lista estructural de consultas externas de cada territorio');
+    assert.equal(family.dimensions.unit, 'días de espera media');
+  }
+  const publicAnswer = localPublicCheckResponse({ status: 'partial', requestId: `postcode-access-${index}`, result: answer }, claim);
+  assert.equal(publicAnswer.state, 'insufficient', 'Contextual regional data must not elevate the unsupported postal-code claim');
+  assert.match(publicAnswer.result.reply, /16 d[ií]as en Melilla a 162 d[ií]as en Canarias/);
+  assert.match(publicAnswer.result.reply, /no por c[oó]digo postal/);
+  if (type === 'causal') assert.match(publicAnswer.result.reply, /no se puede confirmar ni descartar que el c[oó]digo postal influya/);
+  if (type === 'comparative') assert.match(publicAnswer.result.reply, /no permiten comparar las esperas por c[oó]digo postal/);
+  if (type === 'descriptive') assert.match(publicAnswer.result.reply, /no permiten decir cu[aá]nto se espera por un tratamiento seg[uú]n el c[oó]digo postal/);
+  assert.match(publicAnswer.result.reply, /urgencia y gravedad/);
+  assert.ok(publicAnswer.result.sources.some((source) => source.id === 'sisle-sns-regional-consultations-dec-2025'));
+  assert.ok(publicAnswer.result.criteria.every((criterion) => criterion.label === 'Contexto'));
+}
+for (const claim of [
+  'En Portugal, el código postal influye en el acceso a tratamientos médicos',
+  'En 2024, el código postal influía en la espera de tratamientos médicos',
+  'El código postal influye en la cita de atención primaria',
+  'El código postal influye en las demoras de dermatología',
+  'El código postal influye en la espera de tratamientos oncológicos',
+  'El código postal condiciona el acceso a medicamentos',
+  'El código postal de Madrid condiciona la espera para recibir tratamientos',
+  'La espera media de consultas externas varía entre comunidades autónomas',
+]) assert.notEqual(claimFocusFor(claim)?.id, 'postcode-treatment-access', `An incompatible or broader claim crossed into postal-area access context: ${claim}`);
+assert.equal(claimFocusFor('La espera media de consultas externas varía entre comunidades autónomas')?.id, 'specialist-outpatient-regional-waits', 'A directly measured regional comparison must retain its own evidence family');
 const specialistWaitParaphrases = [
   'Las listas de espera varían demasiado entre comunidades autónomas',
   '¿Qué diferencias hay en la espera media de las consultas externas del SNS entre comunidades autónomas?',

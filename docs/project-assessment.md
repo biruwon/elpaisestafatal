@@ -1906,3 +1906,35 @@ discovery claims to a metric or focused family and leaves 119 without either;
 it reports 7 complete, 101 limited and 192 uncovered answers. Public states
 remain 263 insufficient and 37 limited. These figures describe routing and
 coverage, not factual accuracy across user text.
+
+## Postal-area healthcare access — 25 November 2026
+
+The text audit also surfaced a claim that a patient's postal code can affect
+access to treatment. The Ministry of Health's [rectified December 2025 SNS
+waiting-list report](https://www.sanidad.gob.es/ca/estadEstudios/estadisticas/inforRecopilaciones/docs/LISTAS_PUBLICACION_Dic_2025_rectificado.pdf)
+reports that, on 31 December 2025, the average wait for patients on structural
+lists for first outpatient consultations ranged from 16 days in Melilla to 162
+days in the Canary Islands, aggregated across ten specialties. The Ministry
+said in the report, published on 24 September 2026, that December 2025 was the
+latest available snapshot; each autonomous community supplies its own figures.
+The Ministry's [latest-data page](https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/listaEspera.htm)
+provides the current release status.
+
+These regional averages provide context only. The sources do not break waits
+down by postal code, neighbourhood, municipality or individual patient, and do
+not compare patients with the same treatment, urgency and severity. The answer
+therefore remains insufficient and explains the specific linked wait-list,
+referral, appointment, urgency and severity data needed to assess the claim.
+Paraphrases and direct questions use the same sources, while the explanation
+adapts to causal claims, comparisons or requests for a local wait. Nearby tests
+keep Portugal, 2024, primary care, named specialties and region-specific
+postal-code claims out of this family while preserving the separate regional
+comparison route. The held-out text benchmark passes 242/242 cases across 62
+paraphrase groups; the claim-focus validator covers 362 paraphrases and
+negative neighbours, and the classifier suite passes.
+
+The refreshed deterministic audit routes 182 of 300 explicitly unverified
+discovery claims to a metric or focused family and leaves 118 without either;
+it reports 7 complete, 102 limited and 191 uncovered answers. Public states
+remain 263 insufficient and 37 limited. These figures describe routing and
+coverage, not factual accuracy across user text.

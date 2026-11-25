@@ -285,6 +285,24 @@ const specialistOutpatientRegionalWaits = (t) => {
   return wait && regionalComparison && !incompatibleService && !causalOrTrend && !specificSpecialty && (!specificTerritory || namedRegionalPairComparison)
     && (!years.length || years.every((year) => year === '2025'));
 };
+const postcodeTreatmentAccess = (t) => {
+  const postalArea = /\b(codigo postal|c p|cp|barrios?|distritos?|municipios?|localidad(?:es)?)\b/.test(t);
+  const healthcareService = /\b(tratamient\w*|consultas? externas?|atencion especializada|especialistas?|hospital\w*|medic\w*|sanidad|salud)\b/.test(t);
+  const accessMeasure = /\b(tiempo\w*|espera\w*|demora\w*|acces\w*|cita\w*|tard\w*)\b/.test(t);
+  const unsupportedService = /\b(atencion primaria|medic\w* de (?:familia|cabecera)|medicament\w*|medicacion|farmaci\w*|farmaceut\w*|recet\w*|cirug\w*|quirurg\w*|operacion\w*|urgencias?|pruebas? diagnosticas?|odontolog\w*|dental|privad\w*|seguro\w*)\b/.test(t);
+  const specificSpecialty = /\b(dermatolog\w*|traumatolog\w*|oftalmolog\w*|neurolog\w*|cardiolog\w*|ginecolog\w*|urolog\w*|digestiv\w*|otorrinolaringolog\w*|oncolog\w*|hematolog\w*|nefrolog\w*|neumolog\w*|reumatolog\w*|endocrinolog\w*|psiquiatr\w*|pediatr\w*|geriatr\w*|alergolog\w*|rehabilitaci\w*|salud mental)\b/.test(t);
+  const years = [...t.matchAll(/\b20\d{2}\b/g)].map(([year]) => year);
+  const geography = requestedGeographyScopes(t);
+  return postalArea && healthcareService && accessMeasure
+    && !unsupportedService && !specificSpecialty
+    && years.every((year) => year === '2025')
+    && geography.every(({ id, type }) => id === 'ES' && type === 'country');
+};
+const postcodeTreatmentAccessClaimType = (t) => {
+  if (/\b(influy\w*|depende\w*|determin\w*|condicion\w*|afect\w*|caus\w*)\b/.test(t)) return 'causal';
+  if (/\b(vari\w*|diferenc\w*|desigual\w*|brecha\w*|compar\w*|mayor\w*|menor\w*)\b/.test(t)) return 'comparative';
+  return 'descriptive';
+};
 const specialistOutpatientWaitEvidence = {
   expiresAt: '2027-03-24', territories: ['ES', ...specialistOutpatientComparisonRows.flatMap((row) => [row.geography, ...row.aliases].map(normalize))],
   comparisonRows: specialistOutpatientComparisonRows,
@@ -303,6 +321,36 @@ const specialistOutpatientWaitEvidence = {
     { id: 'sisle-sns-regional-consultations-dec-2025', title: 'Listas de espera del SNS: datos por comunidades autónomas, diciembre de 2025 (rectificado)', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/ca/estadEstudios/estadisticas/inforRecopilaciones/docs/LISTAS_PUBLICACION_Dic_2025_rectificado.pdf', publishedAt: '2026-09-24', retrievedAt: '2026-11-23' },
     { id: 'sisle-sns-latest-data', title: 'Sistema de Información de Listas de Espera del SNS: últimos datos disponibles', publisher: 'Ministerio de Sanidad', url: 'https://www.sanidad.gob.es/estadEstudios/estadisticas/inforRecopilaciones/listaEspera.htm', retrievedAt: '2026-11-23' },
   ],
+};
+const postcodeTreatmentAccessEvidence = {
+  ...specialistOutpatientWaitEvidence,
+  directClaimEvidence: false,
+  evidenceLabel: 'Contexto territorial de demoras en consultas externas del SNS, diciembre de 2025',
+  supportedScope: 'Promedios de espera de primeras consultas externas del SNS agregados por comunidad y ciudad autónoma para diez especialidades, a 31 de diciembre de 2025; sirve solo como contexto de variación territorial.',
+  unsupportedScope: 'código postal, barrio o municipio; espera de cada paciente o de un tratamiento específico; acceso a atención primaria, cirugía, pruebas diagnósticas o sanidad privada; efecto causal de la residencia y umbral de espera excesiva.',
+  when: postcodeTreatmentAccess,
+  facts: [
+    'A 31 de diciembre de 2025, la espera media de los pacientes inscritos en las listas estructurales de primeras consultas externas del SNS, agregada para diez especialidades, iba de 16 días en Melilla a 162 días en Canarias.',
+    'El informe ofrece medias por comunidad autónoma y ciudad autónoma, no por código postal. El Ministerio indicó el 24 de septiembre de 2026 que diciembre de 2025 eran los últimos datos disponibles y advierte que cada comunidad remite sus propios datos.',
+  ],
+  factSourceIds: [
+    ['sisle-sns-regional-consultations-dec-2025'],
+    ['sisle-sns-regional-consultations-dec-2025', 'sisle-sns-latest-data'],
+  ],
+  factDimensions: [specialistOutpatientWaitEvidence.dimensions, specialistOutpatientWaitEvidence.dimensions],
+};
+const postcodeTreatmentAccessReply = ({ claim, facts }) => {
+  const claimType = postcodeTreatmentAccessClaimType(normalize(claim));
+  const limitation = claimType === 'causal'
+    ? 'con estos datos no se puede confirmar ni descartar que el código postal influya en el acceso'
+    : claimType === 'comparative'
+      ? 'estos datos no permiten comparar las esperas por código postal'
+      : 'estos datos no permiten decir cuánto se espera por un tratamiento según el código postal';
+  return [
+    facts[0],
+    facts[1],
+    `Esto da contexto sobre diferencias entre comunidades, pero ${limitation}: el informe no desglosa por barrio, municipio o paciente ni compara tratamientos con la misma urgencia y gravedad. Para medirlo hacen falta esperas por código postal y especialidad, fechas de derivación y cita, urgencia y gravedad comparables, y un criterio explícito de qué significa «demasiado».`,
+  ].join('\n\n');
 };
 const bankSpainRentEffortSource = {
   id: 'bank-spain-housing-annual-2025',
@@ -1989,6 +2037,22 @@ const focuses = [
     needs: ['impuestos y cotizaciones atribuibles al mismo hogar', 'primas y pagos directos del seguro privado', 'cobertura, servicios y periodo comparables'],
     explanation: 'Pagar impuestos y una prima privada son dos vías de financiación; eso por sí solo no mide si un hogar paga dos veces por el mismo servicio ni cuánto soporta en total.',
     limitation: 'Las listas de espera públicas no miden primas privadas, pagos directos, solapamiento de coberturas ni la carga total por hogar.',
+  },
+  {
+    id: 'postcode-treatment-access', label: 'acceso a consultas y tratamientos según la zona postal',
+    when: postcodeTreatmentAccess,
+    direct: [], context: [], claimType: 'causal',
+    claimTypeFor: postcodeTreatmentAccessClaimType,
+    needs: [
+      'esperas de primeras consultas externas por código postal y especialidad',
+      'fechas de derivación y cita junto con urgencia y gravedad comparables',
+      'un criterio definido para evaluar si la diferencia es excesiva',
+    ],
+    explanationHeadline: 'Hay diferencias entre territorios, pero el informe no mide el código postal',
+    explanation: 'El Ministerio publica promedios autonómicos y de ciudades autónomas para diez especialidades. Es contexto sobre variación territorial, no una medición de los tiempos por código postal ni una explicación de sus causas.',
+    explanationEvidence: postcodeTreatmentAccessEvidence,
+    shareableReplyForContext: postcodeTreatmentAccessReply,
+    limitation: 'Las cifras agregan diez especialidades por comunidad y ciudad autónoma. No identifican códigos postales, tiempos individuales, urgencia o gravedad y no permiten atribuir diferencias a la zona postal.',
   },
   {
     id: 'specialist-outpatient-regional-waits', label: 'demoras de consultas externas del SNS por territorio',
