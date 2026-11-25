@@ -1,4 +1,5 @@
 import { metricVocabulary } from './measurement-definitions.generated.mjs';
+import { actualRentTrendRequested } from './direct-metric-route.mjs';
 import { HOUSING_COMPLETION_EVIDENCE, HOUSING_SUPPLY_PRESSURE_EVIDENCE } from './housing-supply-snapshot.mjs';
 import { MORTGAGE_ENTRY_VS_PAYMENT_EVIDENCE } from './mortgage-entry-snapshot.mjs';
 import { UNPAID_OVERTIME_SNAPSHOT } from './unpaid-overtime-snapshot.mjs';
@@ -2913,7 +2914,7 @@ const focuses = [
   },
   {
     id: 'rental-affordability', label: 'alquiler e ingresos',
-    when: (t) => !householdSavingsCapacity(t) && has(t, rents) && (has(t, rentalBurden) || has(t, wages) && !has(t, absoluteRentAmount)),
+    when: (t) => !actualRentTrendRequested(t) && !householdSavingsCapacity(t) && has(t, rents) && (has(t, rentalBurden) || has(t, wages) && !has(t, absoluteRentAmount)),
     direct: [], context: ['rental_price_index', 'housing_cost_overburden_rate', 'median_equivalised_income'],
     needs: ['alquiler de vivienda completa y renta neta comparables', 'ciudad, tipo de hogar y periodo', 'porcentaje de ingresos destinado al alquiler'],
     explanationHeadline: 'El dato disponible no permite saber si un sueldo normal alcanza para alquilar solo',

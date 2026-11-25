@@ -1634,3 +1634,28 @@ URL classifier. The refresh-configuration and resilience validators, plus the
 source-freshness validator, pass locally. The same workflow run also reported
 that production D1 sync credentials are absent, so this fix enables the next
 refresh attempt but does not update the production evidence mirror.
+
+## Direct metric retrieval for text paraphrases — 25 November 2026
+
+The clean CI runtime exposed a gap in the text path: an accurately phrased
+request about rents paid by households was recognized as the rental index by
+the local resolver, but the Pages API only fetched metric-specific D1 rows for
+preconfigured claim families. Its generic full-text lookup did not match the
+fixture's warehouse search text, so the resolver received no usable evidence.
+
+Metric alias matching now uses the generated measurement vocabulary in both
+the API and local resolver. The API hydrates D1 by the matched metric when a
+claim has no preconfigured family route; the resolver still filters the rows
+against the claim's population, period, unit and metric scope. Advertised or
+asking-rent wording remains excluded from the actual-rent index. A second
+paraphrase also exposed an intent collision: “rents households pay” matched a
+rent-affordability rule because “pay” was treated as an income cue. Dated rent
+trend intent now takes precedence there; rent-to-income questions keep their
+affordability route. The runtime regression compares two paraphrases for the
+same rental-index evidence, source and latest period, and checks advertised-
+rent neighbors separately.
+
+This improves retrieval recall for direct metric paraphrases; it does not
+measure accuracy for arbitrary wording or refresh production D1. Production
+still needs valid Cloudflare sync credentials before the scheduled mirror can
+ingest newer observations.

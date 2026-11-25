@@ -2,6 +2,7 @@ import { readFileSync } from 'node:fs';
 import { fileURLToPath } from 'node:url';
 import { metricPolicyFor } from './metric-evidence-policy.mjs';
 import { claimFocusFor, focusedMetricIdsFor } from '../../src/lib/knowledge/claim-focus.mjs';
+import { actualRentPaymentsRequested, directMetricIdsForQuery } from '../../src/lib/knowledge/direct-metric-route.mjs';
 import { vacancyMeasurementMetricIdsForQuery } from '../../src/lib/knowledge/vacancy-measurement-route.mjs';
 
 const normalise = (value) => String(value || '')
@@ -48,9 +49,6 @@ export const advertisedRentRequested = (query) => {
   return /\b(?:alquiler\w*|arrend\w*|renta\w*|rent\w*)\b/.test(normalized)
     && /\b(?:anunci\w*|ofert\w*|list\w*|asking|advertis\w*|posted|portal(?:es)?|precios?\s+de\s+oferta|oferta\s+de\s+(?:alquiler|renta))\b/.test(normalized);
 };
-const actualRentPaymentsRequested = (normalized) => /\b(?:alquiler\w*|renta\w*|rent\w*)\b/.test(normalized)
-  && /\b(?:efectiv\w*\s+pagad\w*|pagad\w*\s+por\s+los?\s+hogares|pag(?:a|an|ado|ados|adas)\s+(?:los\s+)?hogares|actual\s+rent\w*|rent\w*\s+(?:actually\s+)?paid)\b/.test(normalized);
-
 const describesActualRentMeasure = (entry) => {
   const evidenceText = normalise([
     entry?.claim,
@@ -100,22 +98,7 @@ const finalEnergyPerCapitaMetricIds = new Set(Object.entries(registry)
     return /(?:final energy|energy consumption|energy use)/.test(text) && /(?:per capita|per inhabitant|por habitante|por persona)/.test(text);
   })
   .map(([id]) => id));
-const registryAliases = Object.entries(registry).flatMap(([id, definition]) =>
-  [...new Set([definition.name, ...(definition.aliases || [])])]
-    .map((alias) => ({ id, alias, normalized: normalise(alias), tokens: normalise(alias).split(' ').filter(Boolean) }))
-    .filter(({ tokens, normalized }) => normalized && (tokens.length >= 2 || normalized.length >= 14)),
-);
-
-const registryMetricIdsForQuery = (normalized) => {
-  const candidates = registryAliases
-    .filter(({ normalized: alias }) => normalized.includes(alias))
-    .sort((left, right) => right.tokens.length - left.tokens.length || right.normalized.length - left.normalized.length);
-  if (!candidates.length) return new Set();
-  const strongest = candidates[0].tokens.length;
-  return new Set(candidates
-    .filter((candidate) => candidate.tokens.length === strongest)
-    .map((candidate) => candidate.id));
-};
+const registryMetricIdsForQuery = (normalized) => directMetricIdsForQuery(normalized);
 
 // Broad claims need a small, reviewed bridge from the semantic ontology to
 // metric families. This is deliberately many-to-many: “healthcare is

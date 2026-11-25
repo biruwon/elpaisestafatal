@@ -3040,6 +3040,14 @@ for (const claim of ['Hay demasiados alumnos por aula', 'Las clases tienen mucho
 const perTeacher = focusedEvidencePlan('Hay muchos alumnos por profesor en las aulas', { observations: educationStaff });
 assert.ok(perTeacher.blocks.some((block) => block.type === 'evidence_gap' && block.missing.includes('alumnado por docente')));
 assert.equal(claimFocusFor('El alquiler cuesta más de la mitad del sueldo')?.id, 'rental-affordability');
+for (const claim of [
+  '¿Cómo han cambiado las rentas efectivamente pagadas por los hogares desde 2015?',
+  '¿Qué evolución han tenido los alquileres que pagan los hogares desde el año 2015?',
+]) {
+  assert.equal(claimFocusFor(claim), undefined, `A paid-rent trend must not be reinterpreted as rent affordability: ${claim}`);
+  assert.deepEqual([...preferredMetricIdsForQuery(claim)], ['rental_price_index'], `A paid-rent trend must use the actual-rent index: ${claim}`);
+}
+assert.equal(claimFocusFor('El alquiler se lleva más de la mitad del sueldo')?.id, 'rental-affordability', 'Rent paid relative to income must remain an affordability claim');
 assert.equal(claimFocusFor('Para el mismo perfil profesional los salarios son más bajos')?.id, 'matched-pay');
 const pensionExplanation = focusedEvidencePlan('¿Las pensiones públicas usan reparto o cuentas individuales?', { now: Date.parse('2026-10-30') });
 assert.ok(pensionExplanation.sourceLinks.some((item) => /seg-social\.es/.test(item.url)));

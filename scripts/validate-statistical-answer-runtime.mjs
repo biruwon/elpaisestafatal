@@ -183,9 +183,27 @@ try {
     assert.notEqual(result.state, 'processing', `Timed out: ${text}\nPolls: ${pollCount}, last poll: ${lastPollMs}ms\nHealth: ${JSON.stringify(serviceHealth?.metrics || serviceHealth)}\nResolver job: ${JSON.stringify(resolverJob)}\n${logs.slice(-2000)}`);
     return result;
   };
+  const checkPaidRentParaphrases = async () => {
+    let expectedEvidenceIds;
+    for (const query of [
+      '¿Cómo han cambiado las rentas efectivamente pagadas por los hogares desde 2015?',
+      '¿Qué evolución han tenido los alquileres que pagan los hogares desde el año 2015?',
+    ]) {
+      const response = await check(query);
+      assert.match(response.result.reply, /2026-0[9]|2026-10/, JSON.stringify(response));
+      assert.ok(response.result.sources.some((source) => source.url === url), `Paid-rent answer omitted Eurostat's actual-rent source: ${query}`);
+      const family = response.result.evidenceSummary.families.find((item) => item.metricId === 'rental_price_index');
+      assert.ok(family, `Paid-rent paraphrase did not retain the rental-index evidence family: ${query}\n${JSON.stringify(response)}`);
+      const evidenceIds = family.evidenceIds || [];
+      assert.ok(evidenceIds.length, `Paid-rent paraphrase returned no traceable observations: ${query}`);
+      if (expectedEvidenceIds) assert.deepEqual(evidenceIds, expectedEvidenceIds, `Paid-rent paraphrase changed its direct evidence: ${query}`);
+      expectedEvidenceIds = evidenceIds;
+    }
+  };
   const vacancyOnly = process.env.STATISTICAL_RUNTIME_VACANCY_ONLY === '1';
   const rentMagnitudeOnly = process.env.STATISTICAL_RUNTIME_RENT_MAGNITUDE_ONLY === '1';
-  if (!vacancyOnly && !rentMagnitudeOnly) {
+  const paidRentOnly = process.env.STATISTICAL_RUNTIME_PAID_RENT_ONLY === '1';
+  if (!vacancyOnly && !rentMagnitudeOnly && !paidRentOnly) {
   const internshipSubstitution = await check('Las prácticas y becas sustituyen puestos de entrada que antes eran empleos normales');
   assert.equal(internshipSubstitution.state, 'insufficient', 'Contextual placement and inspection counts must not confirm a causal replacement claim');
   assert.equal(internshipSubstitution.result.answerScope?.family, 'internship-labour-substitution');
@@ -486,7 +504,7 @@ try {
   assert.equal(selfEmploymentCost.result.shareableReply?.split(/\n{2,}/).length, 2);
   assert.deepEqual(selfEmploymentCost.result.sources.map((source) => source.id), ['boe-reta-contributions-2026']);
   }
-  if (!rentMagnitudeOnly) {
+  if (!rentMagnitudeOnly && !paidRentOnly) {
   let vacancyRateEvidenceIds;
   for (const query of [
     '¿Cuál fue la tasa de vacantes de empleo en España en el tercer trimestre de 2026?',
@@ -571,7 +589,7 @@ try {
     assert.ok(magnitude.result, `Expected a source-backed response: ${JSON.stringify(magnitude)}`);
     assert.match(magnitude.result.reply, /variaci[oó]n relativa fue \+?17,05 %.*no coincide con el \+?300 % indicado/i, JSON.stringify(magnitude));
   }
-  if (!vacancyOnly && !rentMagnitudeOnly) {
+  if (!vacancyOnly && !rentMagnitudeOnly && !paidRentOnly) {
   const plainRentTrend = await check('El precio del alquiler subió en España durante 2025');
   assert.notEqual(plainRentTrend.result.answerScope?.family, 'residential-gentrification-displacement', 'A rent trend without resident movement must not be presented as displacement');
   for (const query of ['¿Cómo ha evolucionado el índice de precios del alquiler desde 2015?', '¿Ha subido el índice del alquiler en España desde 2015?']) {
@@ -652,9 +670,7 @@ try {
   assert.match(historicalRentTrend.result.reply, /98,6.*2010-01.*117,05.*2026-09/s, JSON.stringify(historicalRentTrend));
   assert.match(historicalRentTrend.result.reply, /no mide los precios anunciados/i);
   assert.deepEqual(historicalRentTrend.result.sources.map((source) => source.url), [url]);
-  const paidRentParaphrase = await check('¿Cómo han cambiado las rentas efectivamente pagadas por los hogares desde 2015?');
-  assert.match(paidRentParaphrase.result.reply, /2026-0[9]|2026-10/, JSON.stringify(paidRentParaphrase));
-  assert.deepEqual(paidRentParaphrase.result.sources.map((source) => source.url), [url]);
+  await checkPaidRentParaphrases();
   const missing = await check('¿Cómo ha cambiado el índice de alquiler desde 2012?');
   assert.equal(missing.state, 'insufficient', JSON.stringify(missing));
   assert.match(missing.result.reply, /serie del mismo indicador que incluya 2012 y el periodo final/);
@@ -712,6 +728,7 @@ try {
   assert.ok(baselineRows.some((row) => row.id === 'I15-2020' && row.status === 'b'), 'A crowded historical search must retain a break between the endpoints');
   assert.ok(baselineRows.length <= 500, 'Historical retrieval must respect the public payload cap');
   }
+  if (paidRentOnly) await checkPaidRentParaphrases();
   await Promise.allSettled(pending);
 } finally {
   child.kill('SIGTERM');
