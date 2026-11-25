@@ -1469,3 +1469,31 @@ corpus, and the family-collision guard pass. These are regression checks, not
 a population-wide estimate of factual accuracy. Tangential context on other
 unresolved claims and high resolver latency under concurrent load remain open
 text-first work.
+
+## Reviewed text answer latency — 25 November 2026
+
+The mortgage entry-versus-payment family already carries a reviewed source and
+defines its comparison, population, period and scope. The live resolver was
+still spending time on local-model compilation and research planning for this
+single-proposition family. Its deterministic path now skips those model calls
+when the reviewed family and direct evidence are present. Compound claims and
+nearby claims without the comparison remain on the general path.
+
+On a fresh local process, the entry-more paraphrase returned in 5.2 seconds and
+the reversed comparison in 4.6 seconds. Both used the same Banco de España
+source and 2016–2023 sample; the first was supported and the reverse was
+contradicted. Resolver telemetry showed two focused compiler skips and no
+research-planner delay for these claims. An adjacent statement that merely
+names the entry and monthly payment stayed outside the family and remained
+insufficient. These are three local requests, not a controlled load benchmark;
+the unresolved neighbour still took 13.7 seconds. A separate concurrent replay
+of the two comparison phrasings took 9.5 seconds each, with zero compiler misses
+and two focused skips. End-to-end p95 was 9.3 seconds; classification p95 was
+5.0 seconds and retrieval/answer p95 was 4.8 seconds. The research-planner stage
+was absent, so other processing remains the main latency source for this family.
+These small samples do not establish performance under sustained load.
+
+The mortgage paraphrase and reversed-direction validator passes, along with
+339 claim-focus boundary checks. This confirms the reviewed route and its
+scope regressions, not accuracy for arbitrary user submissions. No image, PDF
+or audio work was included in this text-only pass.

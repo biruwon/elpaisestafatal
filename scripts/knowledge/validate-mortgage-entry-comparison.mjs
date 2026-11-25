@@ -1,5 +1,5 @@
 import assert from 'node:assert/strict';
-import { claimFocusFor } from '../../src/lib/knowledge/claim-focus.mjs';
+import { canSkipLocalCompilerForFocusedMeasurement, claimFocusFor } from '../../src/lib/knowledge/claim-focus.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { validateAnswerPlan } from './answer-plan-validation.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
@@ -14,6 +14,9 @@ const supportedParaphrases = [
 let sourceIds;
 for (const claim of supportedParaphrases) {
   assert.equal(claimFocusFor(claim)?.id, 'mortgage-entry-vs-payment', claim);
+  assert.equal(canSkipLocalCompilerForFocusedMeasurement(claim, {
+    propositions: [{ text: claim, explicit: true }], clarificationRequired: true, claimType: 'comparative',
+  }), true, `A single reviewed comparison should not need model compilation: ${claim}`);
   const result = check(claim);
   const plan = result.result;
   assert.equal(result.status, 'partial');
@@ -36,6 +39,11 @@ for (const claim of supportedParaphrases) {
 }
 
 const reversed = check('La cuota mensual de la hipoteca es una barrera mayor que reunir la entrada para comprar vivienda');
+assert.equal(canSkipLocalCompilerForFocusedMeasurement('La cuota mensual de la hipoteca es una barrera mayor que reunir la entrada para comprar vivienda', {
+  propositions: [{ text: 'La cuota mensual de la hipoteca es una barrera mayor que reunir la entrada para comprar vivienda', explicit: true }],
+  clarificationRequired: true,
+  claimType: 'comparative',
+}), true, 'Reversing the comparison must keep the same deterministic evidence path');
 assert.equal(reversed.result?.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'contradicted');
 assert.deepEqual(reversed.result?.sourceIds, sourceIds);
 
@@ -52,6 +60,13 @@ assert.deepEqual(questionAnswer.result?.sourceIds, sourceIds);
 
 const neutral = 'La entrada y la cuota hipotecaria son dos barreras para comprar una vivienda';
 assert.notEqual(claimFocusFor(neutral)?.id, 'mortgage-entry-vs-payment', 'A claim that names both costs without comparing them must not inherit a direction');
+assert.equal(canSkipLocalCompilerForFocusedMeasurement(neutral, {
+  propositions: [{ text: neutral, explicit: true }], clarificationRequired: true, claimType: 'comparative',
+}), false, 'A nearby mortgage claim without the reviewed comparison must not use the shortcut');
+const compoundComparison = `${supportedParaphrases[0]} y los tipos de interés también han aumentado`;
+assert.equal(canSkipLocalCompilerForFocusedMeasurement(compoundComparison, {
+  propositions: [{ text: compoundComparison, explicit: true }], clarificationRequired: true, claimType: 'comparative',
+}), false, 'Compound comparison claims must retain proposition compilation');
 
 for (const claim of [
   'En Madrid la entrada de una hipoteca es una barrera mayor que la cuota mensual para comprar una vivienda',

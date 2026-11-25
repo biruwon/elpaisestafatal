@@ -3510,7 +3510,14 @@ const enrichResolve = async (text, classified, sourceOverride, resultRequestId, 
     if (deterministic.result) await researchFamilyGaps(deterministic.result);
     return deterministic;
   }
+  const reviewedFocus = claimFocusFor(text);
+  const reviewedFocusHasEvidence = reviewedFocus?.id === 'mortgage-entry-vs-payment'
+    && reviewedFocus.explanationEvidence?.directClaimEvidence === true;
+  // This reviewed comparison already carries the source, comparison scope
+  // and missing dimensions. A model-only planning pass cannot change its
+  // evidence selection or public finding, so keep it off the latency path.
   if (deterministic.result && !retrievalClassified.primary
+    && !reviewedFocusHasEvidence
     && (!deterministic.result.evidenceIds?.length || deterministic.result.evidenceLevel !== 'supported')) {
     const researchPlan = await planResearchWithModel(text, classified);
     if (researchPlan) {

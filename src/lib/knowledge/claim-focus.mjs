@@ -3336,8 +3336,18 @@ export const canSkipLocalCompilerForFocusedMeasurement = (claim, {
   // optimization to claims with no visible second-clause cue.
   const hasCompoundCue = /[,;.\n]/.test(rawClaim)
     || /\b(?:y|ni|pero|aunque|mientras|sin embargo|por eso|por tanto|por ello|asi que|porque|ya que|debido a que)\b/.test(normalizedClaim);
-  return Boolean(focus && focus.claimType !== 'causal' && ['descriptive', 'trend'].includes(claimType)
-    && !clarificationRequired && explicit.length === 1 && !hasCompoundCue);
+  // This comparison has a reviewed measurement contract and a bounded source
+  // snapshot that already defines both sides, population, period and scope.
+  // The deterministic compiler's generic request for comparable dimensions
+  // adds no useful structure here, so do not spend a local-model call on a
+  // single proposition in this family. Compound wording still goes through
+  // the compiler so additional claims cannot be hidden by the shortcut.
+  const reviewedMortgageComparison = focus?.id === 'mortgage-entry-vs-payment'
+    && claimType === 'comparative';
+  const ordinaryFocusedMeasurement = focus && focus.claimType !== 'causal'
+    && ['descriptive', 'trend'].includes(claimType) && !clarificationRequired;
+  return Boolean((reviewedMortgageComparison || ordinaryFocusedMeasurement)
+    && explicit.length === 1 && !hasCompoundCue);
 };
 
 const broadAliases = new Set(['coste de vida', 'sanidad publica', 'servicios publicos', 'gasto publico', 'ayudas sociales', 'mercado laboral', 'sector publico', 'proteccion social', 'pensiones publicas', 'calidad de vida']);
