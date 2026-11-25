@@ -29,6 +29,7 @@ import { HOUSEHOLD_HOUSING_BURDEN_EVIDENCE } from './household-housing-burden-sn
 import { ROOM_RENTAL_MARKET_SNAPSHOT, roomRentalMarketClaimFor, roomRentalMarketDirectMeasureFor, roomRentalMarketRequestedMeasureFor } from './room-rental-market-snapshot.mjs';
 import { PUBLIC_SERVICE_DIGITAL_ACCESS_SNAPSHOT, publicServiceDigitalAccessClaimFor, publicServiceDigitalAccessMeasureFor } from './public-service-digital-access-snapshot.mjs';
 import { PUBLIC_DOCUMENT_REUSE_SNAPSHOT, publicDocumentReuseClaimFor, publicDocumentReuseLegalQuestionFor } from './public-document-reuse-snapshot.mjs';
+import { HEALTH_PERCEPTION_OUTCOMES_SNAPSHOT } from './health-perception-outcomes-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -212,6 +213,13 @@ const residentialDisplacementEvidence = {
 const healthcareWorkforceCausality = (t) => /\b(medic\w*|facultativ\w*|enfermer\w*|personal sanitario|profesional\w* sanitari\w*)\b/.test(t)
   && /\b(falt\w*|escasez|deficit|poc\w*|insuficient\w*)\b/.test(t)
   && /\b(condicion\w*|t[ií]tul\w*|graduad\w*|homolog\w*|plantilla|vacantes?|plazas?|zonas?|puebl\w*|rural\w*|capital\w*|provinci\w*|territorio|distribuci\w*)\b/.test(t);
+const healthPerceptionAndOutcomeClaim = (t) => {
+  const publicHealthSystem = /\b(?:sanidad|sistema sanitari\w*|sistema de salud)\s+public\w*\b|\bsistema public\w* de salud\b|\b(?:sns|sistema nacional de salud)\b/.test(t);
+  const perception = /\b(satisfacci\w*|satisfech\w*|valoraci\w*|percepci\w*|percibid\w*|opini\w*|calidad)\b/.test(t);
+  const healthOutcome = /\b(buen\w* resultad\w*|resultad\w* sanitari\w*|resultad\w* (?:de|en) salud|esperanza de vida|mortalidad (?:evitable|prevenible|tratable)|resultad\w* clinico\w*)\b/.test(t);
+  const serviceSpecific = /\b(atencion primaria|consultas?|lista\w* de espera|urgencias?|cirug\w*|sanidad privada|sistema sanitari\w* privad\w*|sector privado|seguro privado)\b/.test(t);
+  return publicHealthSystem && perception && healthOutcome && !serviceSpecific;
+};
 const publicMentalHealthPsychologistContext = (t) => /\b(psicolog\w*)\b/.test(t)
   && /\b(public\w*|sistema public\w*)\b/.test(t)
   && /\b(salud mental|sanidad|sistema sanitari\w*|atencion psicologic\w*|psicolog\w* clinic\w*)\b/.test(t);
@@ -3177,6 +3185,22 @@ const focuses = [
     needs: ['salario bruto o neto y periodo', 'jornada y población comparables', 'referencia temporal o territorial'],
     explanation: 'El salario puede medirse por hora, mes o año; las comparaciones dependen de la jornada, la población y de si se usan importes brutos o netos.',
     limitation: 'El salario mediano bruto por hora ofrece contexto, pero no mide automáticamente el salario anual, el neto ni la remuneración de un puesto o persona concreta.',
+  },
+  {
+    id: 'health-perception-outcomes', label: 'percepción del sistema sanitario y resultados de salud',
+    when: healthPerceptionAndOutcomeClaim,
+    direct: [], context: [], claimType: 'mixed',
+    needs: ['periodo y medida concreta de percepción pública', 'indicadores de salud, acceso y calidad con años y denominadores definidos'],
+    explanation: 'La satisfacción general con el sistema sanitario es una opinión de la población; esperanza de vida y mortalidad son resultados poblacionales. Pueden moverse de forma distinta y no miden por sí solos la calidad de cada atención.',
+    explanationHeadline: 'La satisfacción bajó hasta 2025 y repuntó en la segunda oleada de 2026; los resultados de salud miden otra cosa',
+    explanationEvidence: HEALTH_PERCEPTION_OUTCOMES_SNAPSHOT,
+    shareableReplyForContext: () => [
+      'Parcialmente. El Barómetro Sanitario (opinión de la población española de 18 años o más; escala de 1 a 10) pasó de 6,74 en 2019 a 6,02 en 2025; no hubo encuestas en 2020–2021.',
+      'En la segunda oleada, subió de 6,02 en 2025 (n=2.318) a 6,19 en 2026 (n=2.644): el dato más reciente no sigue bajando y no es una media anual de 2026.',
+      'La OCDE 2025 sitúa España por encima de su media en 8 de 10 indicadores de salud y riesgo, pero en 5 de 10 de acceso y calidad (uno sin dato). Informa 84 años de esperanza de vida (+2,9) y mortalidad prevenible/tratable de 92/50 frente a 145/77 por 100.000.',
+      'Son medidas distintas y los años de referencia de la OCDE varían por indicador: pueden coexistir. No miden lo mismo ni demuestran que la atención por sí sola haya causado esos resultados o resuma toda la calidad.',
+    ].join(' '),
+    limitation: 'La valoración del Barómetro mide opinión general, no la experiencia de cada paciente. Los indicadores de salud reflejan también factores ajenos a la atención sanitaria; estos datos no establecen una causa ni resumen toda la calidad del sistema.',
   },
   {
     id: 'primary-care-wait-causes', label: 'causas y efectos de las demoras en atención primaria',

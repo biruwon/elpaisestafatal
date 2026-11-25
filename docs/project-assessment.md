@@ -1770,3 +1770,23 @@ the held-out text-answer benchmark passes 202/202 cases across 55 paraphrase
 groups. This is a routing and reply regression check, not evidence that the
 underlying public claim is true or false, nor an accuracy estimate for all
 text users may submit.
+
+## Healthcare perception and outcomes — 25 November 2026
+
+A text audit found that a compound claim about falling perceived quality and
+strong national health outcomes had no sourced answer, even though the project
+already contained official survey and OECD material. A reviewed family now
+keeps the Barómetro Sanitario satisfaction series separate from population
+health outcomes. It reports the 2019–2025 decline, the missing 2020–2021 survey
+years, and the increase from 6.02 in the 2025 second wave to 6.19 in the 2026
+second wave. It also reports selected OECD comparisons while noting that the
+indicators' reference years vary and that they do not establish causality or
+summarize all of healthcare quality.
+
+Three paraphrases share the same primary sources and mixed verdict. Nearby
+claims about primary-care satisfaction, waiting lists, opinion alone and health
+outcomes alone do not cross-route into this compound family. The held-out
+text-answer benchmark passes 205/205 cases across 56 paraphrase groups; the
+claim-focus validator passes 351 paraphrases and its negative-neighbour checks.
+These are evidence and reply regression checks, not an estimate of accuracy
+across arbitrary user text.

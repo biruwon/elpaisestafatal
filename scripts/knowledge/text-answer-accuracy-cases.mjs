@@ -2810,4 +2810,46 @@ export const textAnswerAccuracyCases = [
       evidence: [], maxReplyWords: 90,
     },
   },
+  {
+    id: 'health-perception-outcomes-compound',
+    equivalenceGroup: 'health-perception-and-outcomes-spain',
+    input: 'La calidad percibida de la sanidad pública ha empeorado aunque España siga teniendo buenos resultados sanitarios',
+    expected: {
+      state: 'limited', family: 'health-perception-outcomes', verdict: 'mixed',
+      directSourceIds: ['oecd-health-at-a-glance-2025-spain', 'sanidad-barometer-satisfaction-2015-2025', 'sanidad-barometer-satisfaction-2026-wave2'],
+      replyIncludes: ['Parcialmente', '6,74 en 2019', '6,02 en 2025', '6,19 en 2026', 'no es una media anual de 2026', '8 de 10', '5 de 10', 'mortalidad prevenible', 'pueden coexistir'],
+      replyExcludes: ['empeoró cada año', 'la sanidad causó la esperanza de vida'],
+      evidence: [{
+        familyId: 'health-perception-outcomes',
+        sourceIds: ['oecd-health-at-a-glance-2025-spain', 'sanidad-barometer-satisfaction-2015-2025', 'sanidad-barometer-satisfaction-2026-wave2'],
+        dataIncludes: ['6,74 en 2019', '6,19 en 2026', 'mortalidad prevenible es 92'],
+        dimensions: { period: '2015–2026', geography: 'España', population: 'población general de España de 18 años o más', denominator: 'personas entrevistadas', unit: 'puntuación media en escala de 1 a 10' },
+      }],
+      maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'health-perception-outcomes-barometer-paraphrase',
+    equivalenceGroup: 'health-perception-and-outcomes-spain',
+    input: 'El Barómetro muestra una caída en la valoración del sistema sanitario público, aunque la esperanza de vida española siga sobre la media de la OCDE',
+    expected: {
+      state: 'limited', family: 'health-perception-outcomes', verdict: 'mixed',
+      directSourceIds: ['oecd-health-at-a-glance-2025-spain', 'sanidad-barometer-satisfaction-2015-2025', 'sanidad-barometer-satisfaction-2026-wave2'],
+      replyIncludes: ['6,74 en 2019', '6,19 en 2026', '8 de 10', '5 de 10', 'pueden coexistir'],
+      replyExcludes: ['empeoró cada año'],
+      evidence: [], maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'health-perception-outcomes-public-opinion-paraphrase',
+    equivalenceGroup: 'health-perception-and-outcomes-spain',
+    input: 'La ciudadanía está menos satisfecha con la sanidad pública que antes, pese a que los resultados de salud en España siguen siendo buenos',
+    expected: {
+      state: 'limited', family: 'health-perception-outcomes', verdict: 'mixed',
+      directSourceIds: ['oecd-health-at-a-glance-2025-spain', 'sanidad-barometer-satisfaction-2015-2025', 'sanidad-barometer-satisfaction-2026-wave2'],
+      replyIncludes: ['6,74 en 2019', '6,19 en 2026', 'mortalidad prevenible/tratable', 'pueden coexistir'],
+      replyExcludes: ['empeoró cada año'],
+      evidence: [], maxReplyWords: 180,
+    },
+  },
 ];

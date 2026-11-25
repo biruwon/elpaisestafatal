@@ -147,6 +147,11 @@ const cases = [
     '¿Cuántas personas adultas reciben condena firme por cada 1000 residentes adultos según su nacionalidad?',
     '¿Cuál fue la tasa de personas mayores de edad con sentencia firme por cada mil residentes de nacionalidad extranjera?',
   ]],
+  ['health-perception-outcomes', [
+    'La calidad percibida de la sanidad pública ha empeorado aunque España siga teniendo buenos resultados sanitarios',
+    'El Barómetro muestra una caída en la valoración del sistema sanitario público, aunque la esperanza de vida española siga sobre la media de la OCDE',
+    'La ciudadanía está menos satisfecha con la sanidad pública que antes, pese a que los resultados de salud en España siguen siendo buenos',
+  ]],
   ['migration-wage-effects', ['La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores', 'La llegada de mano de obra extranjera ha reducido los sueldos en sectores con baja cualificación', 'La inmigración presiona los salarios en los sectores con sueldos bajos', 'La entrada de trabajadores extranjeros puede contener los sueldos de empleados nativos']],
   ['migration-fiscal-contribution', ['La inmigración cualificada aporta más fiscalmente que la inmigración atrapada en empleos de bajos salarios', 'Los inmigrantes aportan más a la Hacienda pública de lo que reciben en prestaciones', 'El balance fiscal de la población migrante depende del empleo y de cuánto cotiza']],
   ['migration-overqualification', ['La tasa de sobrecualificación de extranjeros es mayor que la de españoles', '¿Qué parte de las personas con ciudadanía extranjera y estudios terciarios trabaja en ocupaciones de menor cualificación?', 'La tasa de sobrecualificación de ciudadanos de otros países de la Unión Europea']],
@@ -3640,5 +3645,14 @@ assert.ok(!security.evidenceSummary.families.some((family) => family.criterionId
 const health = answerPlanForBroadDomains('Las listas de espera sanitarias son muy largas');
 assert.doesNotMatch(health.shareableReply, /peor que nunca/i);
 assert.ok(!health.evidenceSummary.families.some((family) => family.criterionId === 'health-historical-claim'));
+for (const claim of [
+  'La satisfacción general con la sanidad pública bajó en la segunda oleada de 2026',
+  'La satisfacción con las citas de atención primaria bajó aunque España mantenga una esperanza de vida alta',
+  'La sanidad pública ha empeorado por las listas de espera, aunque España conserve buenos resultados sanitarios',
+  'La satisfacción con la sanidad privada bajó aunque España mantenga una esperanza de vida alta',
+  'La esperanza de vida de España supera la media de la OCDE',
+]) {
+  assert.notEqual(claimFocusFor(claim)?.id, 'health-perception-outcomes', `A standalone opinion, service-specific, waiting-list or outcome-only claim crossed into the perception-versus-outcomes family: ${claim}`);
+}
 const paraphraseCount = cases.reduce((count, [, paraphrases]) => count + paraphrases.length, 0) + workHousingParaphrases.length;
 console.log(`Claim focus validated: ${paraphraseCount} paraphrases, negative neighbours, survey bases, scope rejection, denominator and source boundaries, missing values and preview replacement.`);

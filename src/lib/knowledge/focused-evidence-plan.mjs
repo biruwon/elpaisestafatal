@@ -666,6 +666,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && propositions.length === 2
     && propositions.some((proposition) => claimFocusFor(proposition.text)?.id === focus.id)
     && propositions.every((proposition) => /\b(mei|mecanismo de equidad intergeneracional|cotiz\w*|pension\w*|sostenibil\w*|fondo de reserva)\b/.test(normalize(proposition.text)));
+  const sameHealthPerceptionOutcomeCompound = focus.id === 'health-perception-outcomes'
+    && propositions.length >= 2 && propositions.length <= 3
+    && propositions.every((proposition) => /\b(sanidad|sanitari\w*|salud|esperanza de vida|mortalidad|resultad\w*)\b/.test(normalize(proposition.text)));
   const continuesSameSubject = (item) => {
     const clauseFocus = claimFocusFor(item.text);
     if (clauseFocus?.id === focus.id) return true;
@@ -755,7 +758,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       || sameProductivityComparison && /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(clauseText)) return true;
     if (sameLandlordMotive) return true;
     if (samePensionPrivateSavingsCompound) return true;
-    if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism || samePensionMeiCompound || unemploymentSupplyExplanation || sameEmployerContributionVisibility) return true;
+    if (housingInvestmentReason || firmWageMechanism || pensionWageMechanism || samePensionMeiCompound || sameHealthPerceptionOutcomeCompound || unemploymentSupplyExplanation || sameEmployerContributionVisibility) return true;
     if (educationOutcomeCauseClause) return true;
     if (clauseFocus) return false;
     // A clause such as “una parte se produce más barata” can refer back to
