@@ -67,6 +67,8 @@ const scopeOf = (item) => Object.fromEntries(Object.entries({
   ...(item.dimensions || {}),
 }).filter(([key, value]) => value !== undefined && value !== null && value !== '' && !['time', 'period', 'year'].includes(key)).sort(([a], [b]) => a.localeCompare(b)));
 const seriesKey = (item) => JSON.stringify({ scope: scopeOf(item), dataKind: item.dataKind || 'observed', periodType: item.periodType || 'observation' });
+const matchesDimensionConstraints = (item, constraints = {}) => Object.entries(constraints).every(([dimension, expected]) =>
+  String(item?.dimensions?.[dimension] ?? item?.[dimension] ?? '') === String(expected));
 
 const findingFor = (items, candidate, query, requestedYears = []) => {
   const latestItems = items.slice().sort((a, b) => String(a.period || a.id).localeCompare(String(b.period || b.id)));
@@ -156,7 +158,8 @@ export const selectEvidence = ({ query = '', observations = [], candidateIds = [
   const requestedYears = requestedYearsFor(query);
   const missingRequestedYears = new Set();
   for (const candidate of candidates) {
-    let items = (byMetric.get(candidate.metricId) || []).filter((item) => numericValue(item.value) || ['official_publication', 'legal_document', 'legal_rule'].includes(item.kind));
+    let items = (byMetric.get(candidate.metricId) || []).filter((item) => matchesDimensionConstraints(item, candidate.dimensionConstraints)
+      && (numericValue(item.value) || ['official_publication', 'legal_document', 'legal_rule'].includes(item.kind)));
     if (candidate.metricId === 'public_housing_allocations_by_nationality' && !/euskadi|pa[ií]s\s+vasco|etxebide|capv/i.test(query)) {
       rejected.push({ metricId: candidate.metricId, reason: 'territorial_scope_not_requested' });
       continue;
@@ -221,7 +224,7 @@ export const selectEvidence = ({ query = '', observations = [], candidateIds = [
   const selected = ranked.slice(0, maxFamilies).map(({ candidate, items, freshness }) => {
     const finding = findingFor(items, candidate, query, requestedYears);
     const stale = freshness !== 'fresh';
-    const qualityNotes = [...new Set(items.flatMap((item) => observationFlagNotes(item.status)))].join(' ');
+    const qualityNotes = [...new Set(items.flatMap((item) => observationFlagNotes(item.status)))];
     return {
       metricId: candidate.metricId,
       family: candidate.family,
@@ -229,7 +232,8 @@ export const selectEvidence = ({ query = '', observations = [], candidateIds = [
       finding: finding.finding,
       direction: finding.direction,
       evidenceIds: items.map((item) => item.id).filter(Boolean),
-      limitation: `${stale ? `${finding.limitation} ${freshness === 'stale' ? 'La fuente necesita una actualización' : 'No se ha podido verificar la fecha de consulta de la fuente'}; este resultado no debe tratarse como una comprobación plenamente actual.` : finding.limitation}${qualityNotes ? ` ${qualityNotes}` : ''}`,
+      limitation: `${stale ? `${finding.limitation} ${freshness === 'stale' ? 'La fuente necesita una actualización' : 'No se ha podido verificar la fecha de consulta de la fuente'}; este resultado no debe tratarse como una comprobación plenamente actual.` : finding.limitation}${qualityNotes.length ? ` ${qualityNotes.join(' ')}` : ''}`,
+      qualityNotes,
       freshness,
       dataKind: items.every((item) => (item.dataKind || 'observed') === (items[0]?.dataKind || 'observed')) ? items[0]?.dataKind || 'observed' : 'context',
       period: [...new Set(items.map((item) => item.period).filter(Boolean))].sort().join(' · '),
@@ -255,6 +259,7 @@ export const evidenceSummaryForPublic = (selection, { mode = 'dynamic', fallback
     evidenceIds: item.evidenceIds,
     finding: item.finding,
     limitation: item.limitation,
+    ...(item.qualityNotes?.length ? { qualityNotes: item.qualityNotes } : {}),
     period: item.period,
     dimensions: item.dimensions,
     sourceIds: item.sourceIds || [],

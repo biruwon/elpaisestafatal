@@ -1477,41 +1477,41 @@
     "name": "Tasa de vacantes de empleo",
     "aliases": ["tasa de vacantes", "porcentaje de puestos vacantes", "proporción de puestos de trabajo sin cubrir"],
     "unit": "percent of jobs",
-    "population": "puestos de trabajo vacantes como proporción del total de puestos ocupados y vacantes en las actividades económicas cubiertas",
+    "population": "puestos vacantes sobre el total de puestos ocupados y vacantes en el agregado NACE Rev. 2.1 B-T, todas las clases de tamaño y datos no ajustados estacionalmente",
     "notEquivalentTo": ["unemployment_rate", "job_vacancy_count", "job_vacancy_rate_quarterly_change"],
-    "dimensions": ["period", "geography", "nace_r2", "sizeclas", "s_adj", "indic_em"],
-    "dimensionConstraints": {"indic_em": "JVR"},
-    "limitations": ["La tasa divide los puestos vacantes entre la suma de puestos ocupados y vacantes; no es el porcentaje de personas desempleadas ni explica por qué un puesto sigue libre.", "La cobertura y el momento de referencia pueden variar por país y sector. España inició una nueva encuesta en el segundo trimestre de 2013; no hay datos españoles del primer trimestre de 2013."]
+    "dimensions": ["period", "geography", "nace_r2_1", "sizeclas", "s_adj", "indic_em"],
+    "dimensionConstraints": {"nace_r2_1": "B-T", "sizeclas": "TOTAL", "s_adj": "NSA", "indic_em": "JVR"},
+    "limitations": ["La tasa divide los puestos vacantes entre la suma de puestos ocupados y vacantes; no es el porcentaje de personas desempleadas ni explica por qué un puesto sigue libre.", "La serie usa el agregado NACE Rev. 2.1 B-T, todas las clases de tamaño y datos no ajustados estacionalmente; no debe empalmarse con NACE Rev. 2 sin una tabla de enlace.", "La cobertura y el momento de referencia pueden variar por país y sector. España inició una nueva encuesta en el segundo trimestre de 2013; no hay datos españoles del primer trimestre de 2013."]
   },
   "job_vacancy_count": {
     "name": "Número de puestos de trabajo vacantes",
     "aliases": ["vacantes de empleo", "vacantes laborales", "plazas vacantes", "número de vacantes de empleo", "cantidad de puestos vacantes", "cuántos puestos de trabajo sin cubrir", "puestos vacantes en total"],
     "unit": "posts",
-    "population": "puestos de trabajo vacantes en las actividades económicas cubiertas",
+    "population": "puestos pagados vacantes en el agregado NACE Rev. 2.1 B-T, todas las clases de tamaño y datos no ajustados estacionalmente",
     "notEquivalentTo": ["job_vacancy_rate", "occupied_job_post_count", "unemployment_rate"],
-    "dimensions": ["period", "geography", "nace_r2", "sizeclas", "s_adj", "indic_em"],
-    "dimensionConstraints": {"indic_em": "JOBVAC"},
-    "limitations": ["Cuenta puestos de trabajo vacantes; no es una tasa ni el número de personas desempleadas.", "La cobertura y el momento de referencia pueden variar por país y sector. España inició una nueva encuesta en el segundo trimestre de 2013; no hay datos españoles del primer trimestre de 2013."]
+    "dimensions": ["period", "geography", "nace_r2_1", "sizeclas", "s_adj", "indic_em"],
+    "dimensionConstraints": {"nace_r2_1": "B-T", "sizeclas": "TOTAL", "s_adj": "NSA", "indic_em": "JOBVAC"},
+    "limitations": ["Cuenta puestos de trabajo vacantes; no es una tasa ni el número de personas desempleadas.", "La serie usa el agregado NACE Rev. 2.1 B-T, todas las clases de tamaño y datos no ajustados estacionalmente; no debe empalmarse con NACE Rev. 2 sin una tabla de enlace.", "La cobertura y el momento de referencia pueden variar por país y sector. España inició una nueva encuesta en el segundo trimestre de 2013; no hay datos españoles del primer trimestre de 2013."]
   },
   "occupied_job_post_count": {
     "name": "Número de puestos de trabajo ocupados",
     "aliases": ["número de puestos de trabajo ocupados", "cuántos puestos de trabajo ocupados", "puestos de trabajo ocupados", "puestos ocupados", "empleos ocupados"],
     "unit": "posts",
-    "population": "puestos de trabajo ocupados en las actividades económicas cubiertas",
+    "population": "puestos de trabajo pagados ocupados en el agregado NACE Rev. 2.1 B-T, todas las clases de tamaño y datos no ajustados estacionalmente",
     "notEquivalentTo": ["job_vacancy_count", "employment_rate", "unemployment_rate"],
-    "dimensions": ["period", "geography", "nace_r2", "sizeclas", "s_adj", "indic_em"],
-    "dimensionConstraints": {"indic_em": "JOBOCC"},
-    "limitations": ["Cuenta puestos ocupados, no personas empleadas únicas: una persona puede ocupar más de un puesto.", "La cobertura y el momento de referencia pueden variar por país y sector. España inició una nueva encuesta en el segundo trimestre de 2013; no hay datos españoles del primer trimestre de 2013."]
+    "dimensions": ["period", "geography", "nace_r2_1", "sizeclas", "s_adj", "indic_em"],
+    "dimensionConstraints": {"nace_r2_1": "B-T", "sizeclas": "TOTAL", "s_adj": "NSA", "indic_em": "JOBOCC"},
+    "limitations": ["Cuenta puestos ocupados, no personas empleadas únicas: una persona puede ocupar más de un puesto.", "La serie usa el agregado NACE Rev. 2.1 B-T, todas las clases de tamaño y datos no ajustados estacionalmente; no debe empalmarse con NACE Rev. 2 sin una tabla de enlace.", "La cobertura y el momento de referencia pueden variar por país y sector. España inició una nueva encuesta en el segundo trimestre de 2013; no hay datos españoles del primer trimestre de 2013."]
   },
   "job_vacancy_rate_quarterly_change": {
     "name": "Variación trimestral de la tasa de vacantes de empleo",
     "aliases": ["variación trimestral de la tasa de vacantes", "cambio trimestral de la tasa de puestos vacantes", "cambio de la tasa de vacantes respecto al trimestre anterior", "cómo cambió la tasa de vacantes frente al trimestre anterior", "puntos porcentuales de cambio de la tasa de vacantes"],
     "unit": "percentage points quarter-on-quarter",
-    "population": "cambio entre trimestres de la tasa de vacantes en las actividades económicas cubiertas",
+    "population": "variación trimestral en puntos porcentuales de la tasa de vacantes del agregado NACE Rev. 2.1 B-T, todas las clases de tamaño y datos no ajustados estacionalmente",
     "notEquivalentTo": ["job_vacancy_rate", "inflation_rate", "job_vacancy_count"],
-    "dimensions": ["period", "geography", "nace_r2", "sizeclas", "s_adj", "indic_em"],
-    "dimensionConstraints": {"indic_em": "JVRCH_Q"},
-    "limitations": ["Expresa en puntos porcentuales cuánto cambió la tasa respecto al trimestre anterior; no es el nivel de la tasa ni el cambio porcentual del número de puestos vacantes.", "La cobertura y el momento de referencia pueden variar por país y sector. España inició una nueva encuesta en el segundo trimestre de 2013; no hay datos españoles del primer trimestre de 2013."]
+    "dimensions": ["period", "geography", "nace_r2_1", "sizeclas", "s_adj", "indic_em"],
+    "dimensionConstraints": {"nace_r2_1": "B-T", "sizeclas": "TOTAL", "s_adj": "NSA", "indic_em": "JVRCH_Q"},
+    "limitations": ["Expresa en puntos porcentuales cuánto cambió la tasa respecto al trimestre anterior; no es el nivel de la tasa ni el cambio porcentual del número de puestos vacantes.", "La serie usa el agregado NACE Rev. 2.1 B-T, todas las clases de tamaño y datos no ajustados estacionalmente; no debe empalmarse con NACE Rev. 2 sin una tabla de enlace.", "La cobertura y el momento de referencia pueden variar por país y sector. España inició una nueva encuesta en el segundo trimestre de 2013; no hay datos españoles del primer trimestre de 2013."]
   },
   "housing_payment_arrears_rate": {
     "name": "Housing-payment arrears rate",

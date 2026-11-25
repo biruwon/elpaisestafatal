@@ -1516,3 +1516,37 @@ its nearby unemployment-rate question, and covers mixed metrics, a research-
 and-development time series, and a causal-study estimate beside an unrelated
 trend. These are regression boundaries for evidence selection; they do not
 establish accuracy for arbitrary claims or measure live resolver latency.
+
+## Text measurement scope and source flags — 25 November 2026
+
+The Spanish job-vacancy family now reads Eurostat's [NACE Rev. 2.1 API series](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/jvs_q_r21?geo=ES&sinceTimePeriod=2015&nace_r2_1=B-T&sizeclas=TOTAL&s_adj=NSA)
+with the activity aggregate, size class and adjustment method fixed in the
+source query and metric definitions. Vacant posts, occupied posts, the vacancy
+rate and its quarter-on-quarter change each map to their own indicator code.
+The evidence selector checks those dimension codes before use, so the retired
+NACE Rev. 2 series or a different activity aggregate cannot stand in for the
+current measure. The two classifications must not be joined without a linking
+table.
+
+Eurostat's API returned Q3 2026 observations with its provisional flag. The
+[Q2 release page](https://ec.europa.eu/eurostat/web/products-euro-indicators/w/3-15092026-bp)
+listed 16 December 2026 as the next release date, so the regular Q3 release
+was scheduled after this review. The answer composer now carries source
+quality notes into the main reply as well as the evidence details. This is
+shared text-response behavior, not a
+special phrase for vacancy claims. The series counts posts, not unique people;
+the [Eurostat definition](https://ec.europa.eu/eurostat/cache/metadata/EN/jvs_esms.htm)
+divides vacant posts by occupied plus vacant posts. The source uses unadjusted
+quarterly data for the specified activity scope. It cannot establish why a
+vacancy remains open or describe every worker's job search.
+
+The local coverage audit now marks all four vacancy metrics ready under one
+Eurostat feed, and all 24 configured refreshes in that audit succeeded. The
+runtime regression checks rate, count, occupied-post and quarterly-change
+paraphrases, rejects cross-measure substitutions and legacy-series leakage,
+and requires provisional wording in the public answer. The held-out text
+benchmark remains 199/199 across 54 paraphrase groups; claim-focus boundary
+validation remains 339. These are reviewed regression sets, not an estimate
+of accuracy for arbitrary submissions. The local warehouse refresh is not a
+verification that production D1 has been mirrored; the deployment's scheduled
+refresh must populate that store before production can use these rows.

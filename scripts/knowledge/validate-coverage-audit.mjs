@@ -15,6 +15,12 @@ if (Array.isArray(report.metrics) && report.summary.configuredMetricCount !== re
 if (Array.isArray(report.feeds)) {
   const keys = report.feeds.map((feed) => `${feed.sourceId || ''}|${feed.metricId || ''}|${feed.url || ''}`);
   if (new Set(keys).size !== keys.length) errors.push('feed inventory contains duplicate source/metric/URL entries');
+  for (const feed of report.feeds) {
+    if (!Array.isArray(feed.metricIds)) errors.push(`${feed.sourceId || 'feed'}: metric family inventory is missing`);
+    const mappedIds = Object.values(feed.metricIdByDimension || {}).flatMap((mapping) => Object.values(mapping || {}));
+    if (feed.metricId && !feed.metricIds?.includes(feed.metricId)) errors.push(`${feed.sourceId || 'feed'}: primary metric is absent from metric family inventory`);
+    if (mappedIds.some((metricId) => !feed.metricIds?.includes(metricId))) errors.push(`${feed.sourceId || 'feed'}: a dimension-mapped metric is absent from metric family inventory`);
+  }
 }
 if (![report.summary.refreshAttempted, report.summary.refreshSucceeded, report.summary.refreshFailed].every((value) => Number.isInteger(Number(value)) && Number(value) >= 0)) errors.push('refresh summary is malformed');
 if (!Array.isArray(report.operationalFailures)) errors.push('operational failure collection is missing');

@@ -746,7 +746,7 @@
       "metricId": "industrial_production_index"
     },
     {
-      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/jvs_q_nace2?geo=ES&sinceTimePeriod=2015",
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/jvs_q_r21?geo=ES&sinceTimePeriod=2015&nace_r2_1=B-T&sizeclas=TOTAL&s_adj=NSA",
       "title": "Vacantes, puestos ocupados y tasa de vacantes en España · Eurostat",
       "aliases": ["estadística de vacantes de empleo", "puestos ocupados y tasa de vacantes"],
       "metricId": "job_vacancy_rate",

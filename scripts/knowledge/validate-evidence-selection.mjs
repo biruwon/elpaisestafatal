@@ -64,6 +64,21 @@ const requestedRange = selectEvidence({
 });
 assert(requestedRange.selected[0]?.period === '2020 · 2050', 'requested range included years outside its endpoints');
 assert(requestedRange.selected[0]?.finding.includes('2020: -2,48 % del PIB; 2050: -3,04 % del PIB') && !requestedRange.selected[0]?.finding.includes('2070'), 'requested period comparison did not show both requested values');
+
+const vacancyRate = selectEvidence({
+  query: '¿Cuál fue la tasa de vacantes de empleo más reciente en España?',
+  observations: [
+    { ...syntheticObservation('job_vacancy_rate'), id: 'vacancy-rate-r21', value: 0.8, unit: 'percent of jobs', period: '2026-Q3', status: 'p', dimensions: { indic_em: 'JVR', nace_r2_1: 'B-T', sizeclas: 'TOTAL', s_adj: 'NSA' } },
+    { ...syntheticObservation('job_vacancy_rate'), id: 'vacancy-rate-legacy', value: 0.9, unit: 'percent of jobs', period: '2025-Q4', dimensions: { indic_em: 'JVR', nace_r2: 'B-S', sizeclas: 'TOTAL', s_adj: 'NSA' } },
+    { ...syntheticObservation('job_vacancy_rate'), id: 'vacancy-rate-other-aggregate', value: 4.2, unit: 'percent of jobs', period: '2026-Q3', dimensions: { indic_em: 'JVR', nace_r2_1: 'A-T', sizeclas: 'TOTAL', s_adj: 'NSA' } },
+  ],
+  candidateIds: ['job_vacancy_rate'],
+});
+assert(vacancyRate.selected[0]?.evidenceIds?.length === 1 && vacancyRate.selected[0]?.evidenceIds[0] === 'vacancy-rate-r21', 'Current vacancy answers must use only the reviewed NACE Rev. 2.1 whole-economy total series');
+assert(/0,8 % \(2026-Q3\)/.test(vacancyRate.selected[0]?.finding || ''), 'Vacancy evidence lost its current period or measured rate');
+assert(vacancyRate.selected[0]?.qualityNotes?.includes('La fuente marca este dato como provisional.'), 'A provisional source flag was not preserved as structured answer quality');
+assert(evidenceSummaryForPublic(vacancyRate).families[0]?.qualityNotes?.includes('La fuente marca este dato como provisional.'), 'The public evidence summary dropped the provisional source flag');
+assert(!vacancyRate.selected[0]?.finding.includes('0,9 %'), 'A legacy NACE Rev. 2 vacancy rate crossed into the current-series answer');
 const missingRequestedYear = selectEvidence({
   query: '¿Qué saldo proyecta el sistema en 2060?',
   observations: [forecastRows[0], forecastRows[2]],

@@ -184,6 +184,7 @@ console.log(`Seven exact claims and ${variantCount} paraphrases, citations, mult
 assert(!broadObservationFits({ metricId: 'cpi_index', value: 3, period: '2025', unit: '%' }, { metricIds: ['cpi_index'] }));
 assert(!broadObservationFits({ metricId: 'cpi_index', value: 120, period: '2025', unit: 'index', dimensions: { geo: 'FR' } }, { metricIds: ['cpi_index'] }));
 assert(!broadObservationFits({ metricId: 'hospital_beds_per_100k', value: 138368, period: '2025', unit: 'number' }, { metricIds: ['hospital_beds_per_100k'] }));
-assert(broadObservationFits({ metricId: 'job_vacancy_rate', value: 0.9, period: '2025-Q4', dimensions: { indic_em: 'JVR' } }, { metricIds: ['job_vacancy_rate'] }));
+assert(broadObservationFits({ metricId: 'job_vacancy_rate', value: 0.8, period: '2026-Q3', dimensions: { indic_em: 'JVR', nace_r2_1: 'B-T', sizeclas: 'TOTAL', s_adj: 'NSA' } }, { metricIds: ['job_vacancy_rate'] }));
 assert(!broadObservationFits({ metricId: 'job_vacancy_rate', value: 154247, period: '2025-Q4', dimensions: { indic_em: 'JOBVAC' } }, { metricIds: ['job_vacancy_rate'] }), 'A vacancy count cannot satisfy the rate metric contract');
 assert(!broadObservationFits({ metricId: 'job_vacancy_rate', value: 154247, period: '2025-Q4' }, { metricIds: ['job_vacancy_rate'] }), 'An observation without its indicator code cannot satisfy the rate metric contract');
+assert(!broadObservationFits({ metricId: 'job_vacancy_rate', value: 0.9, period: '2025-Q4', dimensions: { indic_em: 'JVR', nace_r2: 'B-S', sizeclas: 'TOTAL', s_adj: 'NSA' } }, { metricIds: ['job_vacancy_rate'] }), 'The retired NACE Rev. 2 series cannot satisfy a current NACE Rev. 2.1 vacancy claim');

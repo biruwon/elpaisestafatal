@@ -17,6 +17,7 @@ const validEvidenceSummary = (value) => !value || (typeof value === 'object'
   && value.families.every((family) => family && typeof family.label === 'string' && (family.familyId === undefined || typeof family.familyId === 'string') && (family.familyLabel === undefined || typeof family.familyLabel === 'string') && (family.metricId === undefined || typeof family.metricId === 'string') && ['supports', 'qualifies', 'contradicts', 'neutral'].includes(family.direction) && (!family.status || evidenceStatuses.has(family.status)) && (!family.dataKind || evidenceDataKinds.has(family.dataKind)) && validDimensions(family.dimensions) && Array.isArray(family.evidenceIds) && family.evidenceIds.every((id) => typeof id === 'string')
     && (family.finding === undefined || typeof family.finding === 'string')
     && (family.limitation === undefined || typeof family.limitation === 'string')
+    && (!family.qualityNotes || strings(family.qualityNotes))
     && (family.period === undefined || typeof family.period === 'string')
     && (!family.data || strings(family.data))
     && (!family.missingDimensions || strings(family.missingDimensions))

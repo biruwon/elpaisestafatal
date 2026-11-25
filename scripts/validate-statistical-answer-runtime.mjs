@@ -53,8 +53,10 @@ db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?
 db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('tourist-share-source', 'INE', 'Porcentaje de viviendas turísticas sobre el parque', touristShareUrl, retrieved, 'primary', '[]', 'ine', 'monthly');
 const educationPayUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_16?freq=A&sex=T&indic_se=ERN&isced11=ED0-2&isced11=ED3_4&isced11=ED5-8&sizeclas=GE10&nace_r2=B-S_X_O&unit=EUR&geo=ES&time=2022&lang=EN';
 db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('education-pay-source', 'Eurostat', 'Salario bruto medio por hora según estudios alcanzados, 2022', educationPayUrl, retrieved, 'primary', '[]', 'eurostat', 'daily');
-const vacancyUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/jvs_q_nace2?geo=ES&sinceTimePeriod=2015';
+const vacancyUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/jvs_q_r21?geo=ES&sinceTimePeriod=2015&nace_r2_1=B-T&sizeclas=TOTAL&s_adj=NSA';
 db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('vacancy-source', 'Eurostat', 'Vacantes, puestos ocupados y tasa de vacantes en España', vacancyUrl, retrieved, 'primary', '[]', 'eurostat', 'daily');
+const vacancyLegacyUrl = 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/jvs_q_nace2?geo=ES&sinceTimePeriod=2015';
+db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, NULL, ?, ?, ?, ?, ?)').run('vacancy-legacy-source', 'Eurostat', 'Serie histórica NACE Rev. 2 de vacantes', vacancyLegacyUrl, retrieved, 'primary', '[]', 'eurostat', 'daily');
 for (const source of new Map(TOURISM_EMPLOYMENT_SNAPSHOT.observations.map((item) => [item.source.id, item.source])).values()) {
   db.prepare('INSERT INTO source_documents VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?)').run(
     source.id, source.publisher, source.title, source.url, source.publishedAt || null, source.retrievedAt,
@@ -103,23 +105,29 @@ const vacancyMetricMap = { indic_em: {
   JVR: 'job_vacancy_rate', JVRCH_Q: 'job_vacancy_rate_quarterly_change',
 } };
 const vacancyRecords = normalizeJsonPayload({
-  id: ['geo', 'indic_em', 'time'], size: [1, 4, 1],
+  id: ['geo', 'nace_r2_1', 'sizeclas', 's_adj', 'indic_em', 'time'], size: [1, 1, 1, 1, 4, 1],
   dimension: {
     geo: { category: { index: { ES: 0 }, label: { ES: 'Spain' } } },
+    nace_r2_1: { category: { index: { 'B-T': 0 }, label: { 'B-T': 'Industry, construction and services, NACE Rev. 2.1' } } },
+    sizeclas: { category: { index: { TOTAL: 0 }, label: { TOTAL: 'Total' } } },
+    s_adj: { category: { index: { NSA: 0 }, label: { NSA: 'Unadjusted data' } } },
     indic_em: { category: { index: { JOBVAC: 0, JOBOCC: 1, JVR: 2, JVRCH_Q: 3 }, label: { JOBVAC: 'Number of job vacancies', JOBOCC: 'Number of occupied posts', JVR: 'Job vacancy rate', JVRCH_Q: 'Quarterly change in job vacancy rate' } } },
-    time: { category: { index: { '2025-Q4': 0 }, label: { '2025-Q4': '2025-Q4' } } },
+    time: { category: { index: { '2026-Q3': 0 }, label: { '2026-Q3': '2026-Q3' } } },
   },
-  value: { 0: 154247, 1: 17106029, 2: 0.9, 3: 0 },
-}, { id: 'vacancy-source', title: 'Vacantes, puestos ocupados y tasa de vacantes en España', metricId: 'job_vacancy_rate', metricIdByDimension: vacancyMetricMap });
+  value: { 0: 148944, 1: 17598304, 2: 0.8, 3: 0 },
+  status: { 0: 'p', 1: 'p', 2: 'p', 3: 'p' },
+}, { id: 'vacancy-source', title: 'Vacantes, puestos ocupados y tasa de vacantes en España · NACE Rev. 2.1', metricId: 'job_vacancy_rate', metricIdByDimension: vacancyMetricMap });
 const vacancyUnits = {
   job_vacancy_count: 'posts', occupied_job_post_count: 'posts',
   job_vacancy_rate: 'percent of jobs', job_vacancy_rate_quarterly_change: 'percentage points quarter-on-quarter',
 };
 for (const record of vacancyRecords) {
   const label = record.dimensionLabels.indic_em;
-  insert.run(record.id, 'observation', 'jvs_q_nace2', label, record.metricId, record.value, vacancyUnits[record.metricId], record.period, 'España', record.metricId === 'occupied_job_post_count' ? 'occupied employee posts' : 'employee vacancies and occupied posts across economic activities',
-    JSON.stringify({ ...record.dimensions, nace_r2: 'B-S', sizeclas: 'TOTAL', s_adj: 'NSA' }), JSON.stringify({ geo: 'Spain', indic_em: label, nace_r2: 'Industry, construction and services', sizeclas: 'Total', s_adj: 'Unadjusted', time: record.period }), vacancyUrl, null, '{}', 'vacancy-source', `vacantes puestos ocupados tasa de vacantes empleo España ${label} ${record.period} Eurostat`);
+  insert.run(record.id, 'observation', 'jvs_q_r21', label, record.metricId, record.value, vacancyUnits[record.metricId], record.period, 'España', record.metricId === 'occupied_job_post_count' ? 'paid occupied posts in NACE Rev. 2.1 B-T' : 'vacant and occupied paid posts in NACE Rev. 2.1 B-T',
+    JSON.stringify(record.dimensions), JSON.stringify(record.dimensionLabels), vacancyUrl, null, JSON.stringify(record.status ? { status: record.status } : {}), 'vacancy-source', `vacantes puestos ocupados tasa de vacantes empleo España ${label} ${record.period} Eurostat NACE Rev. 2.1`);
 }
+insert.run('vacancy-rate-legacy-2025-Q4', 'observation', 'jvs_q_nace2', 'Job vacancy rate', 'job_vacancy_rate', 0.9, 'percent of jobs', '2025-Q4', 'España', 'vacant and occupied paid posts in NACE Rev. 2 B-S',
+  JSON.stringify({ geo: 'ES', nace_r2: 'B-S', sizeclas: 'TOTAL', s_adj: 'NSA', indic_em: 'JVR', time: '2025-Q4' }), JSON.stringify({ geo: 'Spain', nace_r2: 'Industry, construction and services', sizeclas: 'Total', s_adj: 'Unadjusted', indic_em: 'Job vacancy rate', time: '2025-Q4' }), vacancyLegacyUrl, null, '{}', 'vacancy-legacy-source', 'tasa de vacantes empleo España 0,9 2025-Q4 Eurostat NACE Rev. 2');
 for (const [year, value] of [['2015', 100], ['2020', 110], ['2025', 120]]) {
     insert.run(`rent-archive-${year}`, 'observation', 'prc_hicp_midx', 'Índice histórico de precios del alquiler', 'rental_price_index', value, 'Index, 1996=100', year, 'España', null,
     JSON.stringify({ geo: 'ES', unit: 'I96', time: year }), JSON.stringify({ geo: 'Spain', unit: 'Index, 1996=100' }), null, null, '{}', 'rent-archive-source', 'índice histórico precios alquiler España evolución subida Eurostat');
@@ -466,12 +474,13 @@ try {
   if (!rentMagnitudeOnly) {
   let vacancyRateEvidenceIds;
   for (const query of [
-    '¿Cuál fue la tasa de vacantes de empleo en España en el cuarto trimestre de 2025?',
-    '¿Qué porcentaje de puestos vacantes se registró en España durante el cuarto trimestre de 2025?',
+    '¿Cuál fue la tasa de vacantes de empleo en España en el tercer trimestre de 2026?',
+    '¿Qué porcentaje de puestos vacantes se registró en España durante el tercer trimestre de 2026?',
   ]) {
     const result = await check(query);
-    assert.match(result.result.reply, /Tasa de vacantes de empleo en España: 0,9 %/, JSON.stringify(result));
-    assert.doesNotMatch(result.result.reply, /154\.247|17\.106\.029/, 'A vacancy-rate answer must not use a post count');
+    assert.match(result.result.reply, /Tasa de vacantes de empleo en España: 0,8 %/, JSON.stringify(result));
+    assert.match(result.result.reply, /provisional/i, `The source quality flag must be visible in the answer: ${JSON.stringify(result.result)}`);
+    assert.doesNotMatch(result.result.reply, /148\.944|17\.598\.304/, 'A vacancy-rate answer must not use a post count');
     assert.deepEqual(result.result.sources.map((source) => source.url), [vacancyUrl]);
     assert.equal(result.result.evidenceSummary.families[0].metricId, 'job_vacancy_rate', 'The API must preserve the selected rate metric through response validation');
     const evidenceIds = result.result.evidenceSummary.families.flatMap((family) => family.evidenceIds || []);
@@ -480,14 +489,19 @@ try {
     if (vacancyRateEvidenceIds) assert.deepEqual(evidenceIds, vacancyRateEvidenceIds, `Rate paraphrase selected different evidence: ${query}`);
     vacancyRateEvidenceIds = [...evidenceIds];
   }
+  const latestVacancyRate = await check('¿Cuál fue la tasa de vacantes de empleo más reciente en España?');
+  assert.match(latestVacancyRate.result.reply, /Tasa de vacantes de empleo en España: 0,8 %.*2026-Q3/s, JSON.stringify(latestVacancyRate));
+  assert.match(latestVacancyRate.result.reply, /provisional/i, 'A latest-period answer must retain the source provisional flag');
+  assert.deepEqual(latestVacancyRate.result.evidenceSummary.families.flatMap((family) => family.evidenceIds || []), ['vacancy-source-observation-2'], 'A current vacancy query must exclude the older NACE Rev. 2 series');
   let vacancyCountEvidenceIds;
   for (const query of [
-    '¿Cuántos puestos de trabajo sin cubrir había en España en el cuarto trimestre de 2025?',
-    '¿Cuál fue el número de vacantes laborales en España durante el cuarto trimestre de 2025?',
+    '¿Cuántos puestos de trabajo sin cubrir había en España en el tercer trimestre de 2026?',
+    '¿Cuál fue el número de vacantes laborales en España durante el tercer trimestre de 2026?',
   ]) {
     const result = await check(query);
-    assert.match(result.result.reply, /Número de puestos de trabajo vacantes en España: 154\.247 puestos/, JSON.stringify(result));
-    assert.doesNotMatch(result.result.reply, /17\.106\.029|0,9 %/, 'A vacancy-count answer must not use occupied posts or a rate');
+    assert.match(result.result.reply, /Número de puestos de trabajo vacantes en España: 148\.944 puestos/, JSON.stringify(result));
+    assert.match(result.result.reply, /provisional/i, 'The source quality flag must be visible in the count answer');
+    assert.doesNotMatch(result.result.reply, /17\.598\.304|0,8 %/, 'A vacancy-count answer must not use occupied posts or a rate');
     assert.deepEqual(result.result.sources.map((source) => source.url), [vacancyUrl]);
     assert.equal(result.result.evidenceSummary.families[0].metricId, 'job_vacancy_count', 'The API must preserve the selected count metric through response validation');
     const evidenceIds = result.result.evidenceSummary.families.flatMap((family) => family.evidenceIds || []);
@@ -495,27 +509,29 @@ try {
     if (vacancyCountEvidenceIds) assert.deepEqual(evidenceIds, vacancyCountEvidenceIds, `Count paraphrase selected different evidence: ${query}`);
     vacancyCountEvidenceIds = [...evidenceIds];
   }
-  const occupiedPosts = await check('¿Cuántos puestos de trabajo ocupados había en España en el cuarto trimestre de 2025?');
-  assert.match(occupiedPosts.result.reply, /Número de puestos de trabajo ocupados en España: 17\.106\.029 puestos/, JSON.stringify(occupiedPosts));
-  assert.doesNotMatch(occupiedPosts.result.reply, /154\.247|0,9 %/, 'Occupied-post claims must not borrow vacancy counts or rates');
+  const occupiedPosts = await check('¿Cuántos puestos de trabajo ocupados había en España en el tercer trimestre de 2026?');
+  assert.match(occupiedPosts.result.reply, /Número de puestos de trabajo ocupados en España: 17\.598\.304 puestos/, JSON.stringify(occupiedPosts));
+  assert.match(occupiedPosts.result.reply, /provisional/i, 'The source quality flag must be visible in the occupied-post answer');
+  assert.doesNotMatch(occupiedPosts.result.reply, /148\.944|0,8 %/, 'Occupied-post claims must not borrow vacancy counts or rates');
   assert.equal(occupiedPosts.result.evidenceSummary.families[0].metricId, 'occupied_job_post_count');
   assert.deepEqual(occupiedPosts.result.evidenceSummary.families.flatMap((family) => family.evidenceIds || []), ['vacancy-source-observation-1']);
   assert.match(occupiedPosts.result.evidenceSummary.families[0].limitation, /no personas empleadas únicas/);
   let vacancyRateChangeEvidenceIds;
   for (const query of [
-    '¿Cómo cambió la tasa de vacantes de empleo frente al trimestre anterior en España?',
-    '¿Cuántos puntos porcentuales cambió la tasa de vacantes frente al trimestre anterior en España?',
+    '¿Cómo cambió la tasa de vacantes de empleo frente al trimestre anterior en España en el tercer trimestre de 2026?',
+    '¿Cuántos puntos porcentuales cambió la tasa de vacantes frente al trimestre anterior en España en el tercer trimestre de 2026?',
   ]) {
     const vacancyRateChange = await check(query);
     assert.match(vacancyRateChange.result.reply, /Variación trimestral de la tasa de vacantes en España: 0 puntos porcentuales/, JSON.stringify(vacancyRateChange));
-    assert.doesNotMatch(vacancyRateChange.result.reply, /154\.247|17\.106\.029|0,9 %/, 'Quarterly rate change must not be expressed as a count or rate level');
+    assert.match(vacancyRateChange.result.reply, /provisional/i, 'The source quality flag must be visible in the quarterly-change answer');
+    assert.doesNotMatch(vacancyRateChange.result.reply, /148\.944|17\.598\.304|0,8 %/, 'Quarterly rate change must not be expressed as a count or rate level');
     assert.equal(vacancyRateChange.result.evidenceSummary.families[0].metricId, 'job_vacancy_rate_quarterly_change');
     const evidenceIds = vacancyRateChange.result.evidenceSummary.families.flatMap((family) => family.evidenceIds || []);
     assert.deepEqual(evidenceIds, ['vacancy-source-observation-3']);
     if (vacancyRateChangeEvidenceIds) assert.deepEqual(evidenceIds, vacancyRateChangeEvidenceIds, `Quarter-change paraphrase selected different evidence: ${query}`);
     vacancyRateChangeEvidenceIds = evidenceIds;
   }
-  const mixedVacancyMeasures = await check('¿Cuál fue la tasa de vacantes y el número de puestos vacantes en España en el cuarto trimestre de 2025?');
+  const mixedVacancyMeasures = await check('¿Cuál fue la tasa de vacantes y el número de puestos vacantes en España en el tercer trimestre de 2026?');
   assert.equal(mixedVacancyMeasures.state, 'clarification', JSON.stringify(mixedVacancyMeasures));
   assert.deepEqual(mixedVacancyMeasures.options.map((option) => option.id), ['job_vacancy_count', 'job_vacancy_rate']);
   const selectedCount = mixedVacancyMeasures.options[0];
@@ -524,7 +540,7 @@ try {
     prompt: selectedCount.interpretation.normalizedClaim,
     interpretation: selectedCount.interpretation,
   });
-  assert.match(selectedCountResult.result.reply, /Número de puestos de trabajo vacantes en España: 154\.247 puestos/, JSON.stringify(selectedCountResult));
+  assert.match(selectedCountResult.result.reply, /Número de puestos de trabajo vacantes en España: 148\.944 puestos/, JSON.stringify(selectedCountResult));
   assert.deepEqual(selectedCountResult.result.evidenceSummary.families.flatMap((family) => family.evidenceIds || []), ['vacancy-source-observation-0']);
   const selectedRate = mixedVacancyMeasures.options[1];
   const selectedRateResult = await check(mixedVacancyMeasures.claim, {
@@ -532,7 +548,7 @@ try {
     prompt: selectedRate.interpretation.normalizedClaim,
     interpretation: selectedRate.interpretation,
   });
-  assert.match(selectedRateResult.result.reply, /Tasa de vacantes de empleo en España: 0,9 %/, JSON.stringify(selectedRateResult));
+  assert.match(selectedRateResult.result.reply, /Tasa de vacantes de empleo en España: 0,8 %/, JSON.stringify(selectedRateResult));
   assert.deepEqual(selectedRateResult.result.evidenceSummary.families.flatMap((family) => family.evidenceIds || []), ['vacancy-source-observation-2']);
   }
   if (rentMagnitudeOnly) {

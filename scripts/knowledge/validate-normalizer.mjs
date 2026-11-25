@@ -57,10 +57,13 @@ const vacancyMetricMap = { indic_em: {
   JVRCH_Q: 'job_vacancy_rate_quarterly_change',
 } };
 const vacancyRows = normalizeJsonPayload({
-  id: ['indic_em', 'time'],
-  size: [5, 1],
+  id: ['indic_em', 'nace_r2_1', 'sizeclas', 's_adj', 'time'],
+  size: [5, 1, 1, 1, 1],
   dimension: {
     indic_em: { category: { index: { JOBVAC: 0, JOBOCC: 1, JVR: 2, JVRCH_Q: 3, FUTURE: 4 }, label: { JOBVAC: 'Job vacancies', JOBOCC: 'Occupied jobs', JVR: 'Job vacancy rate', JVRCH_Q: 'Quarterly rate change', FUTURE: 'New indicator' } } },
+    nace_r2_1: { category: { index: { 'B-T': 0 }, label: { 'B-T': 'Industry, construction and services, NACE Rev. 2.1' } } },
+    sizeclas: { category: { index: { TOTAL: 0 }, label: { TOTAL: 'Total' } } },
+    s_adj: { category: { index: { NSA: 0 }, label: { NSA: 'Unadjusted data' } } },
     time: { category: { index: { '2025-Q4': 0 }, label: { '2025-Q4': '2025-Q4' } } },
   },
   value: { '0': 154247, '1': 17106029, '2': 0.9, '3': 0, '4': 99 },
@@ -70,7 +73,8 @@ if (vacancyMetricIds.join(',') !== 'job_vacancy_count,occupied_job_post_count,jo
   throw new Error(`Eurostat vacancy indicators were not kept in separate metric families: ${vacancyMetricIds.join(',')}`);
 }
 if (vacancyRows[2].value !== 0.9 || vacancyRows[2].dimensions.indic_em !== 'JVR'
-  || vacancyRows[0].value !== 154247 || vacancyRows[0].dimensions.indic_em !== 'JOBVAC') {
+  || vacancyRows[0].value !== 154247 || vacancyRows[0].dimensions.indic_em !== 'JOBVAC'
+  || vacancyRows.some((row) => row.dimensions.nace_r2_1 !== 'B-T' || row.dimensions.sizeclas !== 'TOTAL' || row.dimensions.s_adj !== 'NSA')) {
   throw new Error('Eurostat vacancy count and rate values lost their measurement dimension');
 }
 

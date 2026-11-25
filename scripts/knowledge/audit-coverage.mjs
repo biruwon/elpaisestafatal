@@ -63,10 +63,16 @@ for (const file of recordFiles) {
 const configured = Object.entries(refresh).flatMap(([sourceId, list]) => (Array.isArray(list) ? list : []).map((feed) => ({ sourceId, ...(typeof feed === 'string' ? { url: feed } : feed), mode: 'warehouse' })));
 const domainFeeds = (domains.feeds || []).map((feed) => ({ ...feed, sourceId: feed.id, mode: feed.mode || 'active' }));
 const allFeeds = [...configured, ...domainFeeds];
+const configuredMetricIdsFor = (feed) => [...new Set([
+  feed.metricId,
+  ...Object.values(feed.metricIdByDimension || {}).flatMap((mapping) => Object.values(mapping || {})),
+].filter((metricId) => typeof metricId === 'string' && metricId))];
 const recordByMetric = new Map();
 for (const record of records) if (record.metricId) recordByMetric.set(record.metricId, [...(recordByMetric.get(record.metricId) || []), record]);
 const configByMetric = new Map();
-for (const feed of configured) if (feed.metricId) configByMetric.set(feed.metricId, [...(configByMetric.get(feed.metricId) || []), feed]);
+for (const feed of configured) for (const metricId of configuredMetricIdsFor(feed)) {
+  configByMetric.set(metricId, [...(configByMetric.get(metricId) || []), { ...feed, metricId }]);
+}
 const domainMetricIds = {
   immigration_benefits: ['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality', 'imv_comparable_population_by_nationality', 'imv_title_holder_rate_by_nationality', 'unemployment_rate_by_nationality', 'unemployment_beneficiaries_by_nationality', 'unemployment_beneficiaries_by_programme_nationality', 'unemployment_benefit_share_by_nationality', 'unemployment_benefit_coverage_by_nationality', 'survey_selected_social_transfer_rate_by_nationality', 'imv_beneficiary_average_age'],
   immigration_crime: ['crime_rate_by_group', 'crime_detentions_investigations_by_nationality', 'crime_standardised_conviction_offence_rate_by_nationality', 'crime_convictions_by_nationality', 'crime_convictions_by_sex_nationality', 'resident_population_18_plus_by_sex_nationality', 'crime_conviction_rate_by_nationality', 'crime_conviction_rate_by_sex_nationality', 'crime_conviction_rate_minor_by_nationality'],
@@ -218,7 +224,7 @@ const scoreSourceWork = (item) => {
 };
 for (let index = 0; index < sourceWorkItems.length; index += 1) sourceWorkItems[index] = scoreSourceWork(sourceWorkItems[index]);
 sourceWorkItems.sort((a, b) => b.rankScore - a.rankScore || b.priorityScore - a.priorityScore || b.recentVelocity - a.recentVelocity || b.recurrence - a.recurrence);
-const report = { schemaVersion: '1', generatedAt: new Date().toISOString(), summary: { registryMetrics: metricAudit.length, configuredFeeds: allFeeds.length, configuredMetricCount: metricAudit.filter((item) => item.configuredFeedCount > 0).length, warehouseRecords: records.length, clusters: clusterAudit.length, newlyCoveredClusters: clusterAudit.filter((item) => item.newlyCovered).length, clusterClasses: counts(clusterAudit, 'auditClass'), metricStatuses: counts(metricAudit, 'status'), sourceWorkCandidates: sourceWork.length, sourceWorkItems: sourceWorkItems.length, refreshAttempted: Number(refreshReport.attempted || 0), refreshSucceeded: Number(refreshReport.succeeded || 0), refreshFailed: Number(refreshReport.failed || 0) }, metrics: metricAudit, clusters: clusterAudit, sourceWorkCandidates: sourceWork, sourceWorkItems, domainGaps: gapContracts.gaps || [], operationalFailures: refreshReport.failures || [], feeds: allFeeds.map(({ sourceId, metricId, url, schedule, mode, domain }) => ({ sourceId, metricId, url, schedule, mode, domain })) };
+const report = { schemaVersion: '1', generatedAt: new Date().toISOString(), summary: { registryMetrics: metricAudit.length, configuredFeeds: allFeeds.length, configuredMetricCount: metricAudit.filter((item) => item.configuredFeedCount > 0).length, warehouseRecords: records.length, clusters: clusterAudit.length, newlyCoveredClusters: clusterAudit.filter((item) => item.newlyCovered).length, clusterClasses: counts(clusterAudit, 'auditClass'), metricStatuses: counts(metricAudit, 'status'), sourceWorkCandidates: sourceWork.length, sourceWorkItems: sourceWorkItems.length, refreshAttempted: Number(refreshReport.attempted || 0), refreshSucceeded: Number(refreshReport.succeeded || 0), refreshFailed: Number(refreshReport.failed || 0) }, metrics: metricAudit, clusters: clusterAudit, sourceWorkCandidates: sourceWork, sourceWorkItems, domainGaps: gapContracts.gaps || [], operationalFailures: refreshReport.failures || [], feeds: allFeeds.map((feed) => ({ sourceId: feed.sourceId, metricId: feed.metricId, metricIds: configuredMetricIdsFor(feed), ...(feed.metricIdByDimension ? { metricIdByDimension: feed.metricIdByDimension } : {}), url: feed.url, schedule: feed.schedule, mode: feed.mode, domain: feed.domain })) };
 const output = pathArg('output', '.local/coverage-audit.json');
 await mkdir(join(output, '..'), { recursive: true });
 await writeFile(output, JSON.stringify(report, null, 2));
