@@ -145,6 +145,7 @@ const cases = [
   ['migration-overqualification', ['La tasa de sobrecualificación de extranjeros es mayor que la de españoles', '¿Qué parte de las personas con ciudadanía extranjera y estudios terciarios trabaja en ocupaciones de menor cualificación?', 'La tasa de sobrecualificación de ciudadanos de otros países de la Unión Europea']],
   ['migrant-credential-recognition', ['La homologación lenta de títulos obliga a inmigrantes cualificados a trabajar por debajo de su formación', 'El retraso en convalidar estudios superiores deja a personas migrantes en puestos por debajo de su preparación', 'Los títulos obtenidos fuera de España no se reconocen y los profesionales extranjeros acaban en empleos de baja cualificación']],
   ['healthcare-staffing-causality', ['La falta de médicos en algunas zonas se debe más a las condiciones de trabajo que al número total de titulados', 'Hay vacantes médicas en pueblos porque las plazas ofrecen condiciones poco atractivas', 'Faltan facultativos en la periferia pese a que hay suficientes graduados']],
+  ['internship-labour-substitution', ['Las prácticas y becas sustituyen puestos de entrada que antes eran empleos normales', 'Muchas empresas usan becarios para hacer trabajo ordinario con menor coste', 'Las empresas cubren funciones de plantilla con personas en prácticas para pagar menos']],
   ['work-housing-independence', ['Tener un trabajo a jornada completa ya no garantiza poder independizarse', 'Un empleo a tiempo completo no basta para vivir por cuenta propia', 'Trabajar a jornada completa no asegura poder emanciparse']],
   ['rental-tenant-screening-exclusion', ['Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares', 'Los avales y requisitos de solvencia dejan fuera a inquilinos con ingresos variables', 'Personas con nóminas inestables son rechazadas para alquilar por no cumplir las garantías', 'El mercado del alquiler penaliza a autónomos y personas sin nómina indefinida', 'Las inmobiliarias y los seguros de impago exigen condiciones que dejan fuera a muchos trabajadores normales']],
   ['rental-screening-requirements-trend', ['Los requisitos para alquilar son más difíciles de cumplir que hace una década', 'Ahora cuesta más cumplir las garantías que piden para arrendar una vivienda']],
@@ -174,6 +175,34 @@ const generalTenantScreeningPlan = focusedEvidencePlan('Las inmobiliarias y los 
 assert.equal(generalTenantScreeningPlan.answerScope.family, 'rental-tenant-screening-exclusion');
 assert.match(generalTenantScreeningPlan.shareableReply, /no indica cuántas solicitudes se rechazan/);
 assert.doesNotMatch(generalTenantScreeningPlan.shareableReply, /ingresos irregulares/, 'An answer must not assume an income group that the claim did not name');
+const internshipEvidenceSourceIds = [
+  'social-security-unpaid-training-practice-registrations-2025',
+  'mites-false-intern-inspection-detections-2021-2025',
+];
+for (const claim of [
+  'Las prácticas y becas sustituyen puestos de entrada que antes eran empleos normales',
+  'Muchas empresas usan becarios para hacer trabajo ordinario con menor coste',
+  'Las empresas cubren funciones de plantilla con personas en prácticas para pagar menos',
+]) {
+  const plan = focusedEvidencePlan(claim);
+  assert.equal(plan.answerScope.family, 'internship-labour-substitution');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  assert.equal(plan.evidenceLevel, 'limited', 'Official registration and inspection counts provide context, not a representative estimate of replacement');
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id).sort(), [...internshipEvidenceSourceIds].sort(), 'Paraphrases should reuse the same official context sources');
+  assert.match(plan.shareableReply, /entre el 1 de enero de 2024.*30 de junio de 2025.*1\.580\.637/is);
+  assert.match(plan.shareableReply, /2\.688.*6\.519.*2021 y 2025/s);
+  assert.match(plan.shareableReply, /estas cifras no miden la frecuencia de sustituci[oó]n de puestos de entrada/i);
+  assert.match(plan.shareableReply, /no (?:da|ofrecen) (?:el )?total de pr[aá]cticas/i);
+}
+const publicInternshipResponse = localPublicCheckResponse({
+  status: 'complete', requestId: 'internship-text-evidence',
+  result: focusedEvidencePlan('Las prácticas y becas sustituyen puestos de entrada que antes eran empleos normales'),
+}, 'Las prácticas y becas sustituyen puestos de entrada que antes eran empleos normales');
+assert.equal(publicInternshipResponse.state, 'insufficient', 'Contextual inspection counts must not upgrade the causal claim verdict');
+assert.match(publicInternshipResponse.result.reply, /La evidencia no basta.*1\.580\.637.*2\.688/s, 'The public text answer should keep the scoped context instead of collapsing to a generic gap');
+assert.deepEqual(publicInternshipResponse.result.sources.map((source) => source.id).sort(), [...internshipEvidenceSourceIds].sort());
 const publicDigitalBarrier = focusedEvidencePlan('Los trámites online excluyen a personas mayores o con poca competencia digital', { now: Date.parse('2026-11-24T12:00:00Z') });
 assert.equal(publicDigitalBarrier.answerScope.family, 'public-service-digital-access');
 assert.equal(publicDigitalBarrier.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient',
@@ -579,6 +608,9 @@ assert.equal(claimFocusFor('Los requisitos para comprar una vivienda son más di
 assert.equal(claimFocusFor('Las inmobiliarias ofrecen seguros de impago a los propietarios')?.id, undefined, 'Offering landlord insurance alone must not be interpreted as tenant exclusion');
 assert.equal(claimFocusFor('Para comprar una vivienda ahora exigen más garantías que hace una década')?.id, undefined, 'Mortgage requirements must not cross-route into rental screening');
 assert.equal(claimFocusFor('Cada vez es más difícil alquilar una vivienda')?.id, undefined, 'General rental difficulty must not be interpreted as a change in screening requirements');
+assert.equal(claimFocusFor('Las prácticas profesionales ayudan a los estudiantes a adquirir experiencia en la empresa')?.id, undefined, 'Ordinary work experience claims must not be treated as labour substitution');
+assert.equal(claimFocusFor('Los becarios cobran menos que los trabajadores con contrato')?.id, undefined, 'An intern wage comparison must not be answered with inspection counts about substitution');
+assert.equal(claimFocusFor('En 2024 aumentaron los contratos de formación en alternancia')?.id, undefined, 'Alternance training contracts must not be conflated with non-labour internships');
 assert.equal(claimFocusFor('Los precios del alquiler subieron después de aprobarse la ley')?.id, undefined, 'A rent-price trend must not be mistaken for a contract-supply shift caused by regulation');
 assert.equal(claimFocusFor('Los pisos turísticos reducen la oferta de alquiler residencial')?.id, 'tourist-housing-supply', 'Tourist conversion claims must remain separate from landlord-reason claims');
 assert.notEqual(claimFocusFor('El precio del alquiler subió en España durante 2025')?.id, 'housing-construction-pressure', 'A rent-price trend must not inherit the new-home supply context');

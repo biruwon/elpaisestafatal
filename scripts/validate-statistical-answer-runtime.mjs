@@ -176,6 +176,18 @@ try {
   const vacancyOnly = process.env.STATISTICAL_RUNTIME_VACANCY_ONLY === '1';
   const rentMagnitudeOnly = process.env.STATISTICAL_RUNTIME_RENT_MAGNITUDE_ONLY === '1';
   if (!vacancyOnly && !rentMagnitudeOnly) {
+  const internshipSubstitution = await check('Las prácticas y becas sustituyen puestos de entrada que antes eran empleos normales');
+  assert.equal(internshipSubstitution.state, 'insufficient', 'Contextual placement and inspection counts must not confirm a causal replacement claim');
+  assert.equal(internshipSubstitution.result.answerScope?.family, 'internship-labour-substitution');
+  assert.deepEqual(internshipSubstitution.result.answerScope.directMetrics, []);
+  assert.deepEqual(internshipSubstitution.result.answerScope.contextMetrics, []);
+  assert.equal(internshipSubstitution.result.arguments?.[0]?.verdict, 'insufficient');
+  assert.match(internshipSubstitution.result.reply, /1\.580\.637.*2\.688.*6\.519/s);
+  assert.match(internshipSubstitution.result.reply, /no miden la frecuencia de sustituci[oó]n de puestos de entrada/i);
+  assert.deepEqual(internshipSubstitution.result.sources.map((source) => source.id).sort(), [
+    'mites-false-intern-inspection-detections-2021-2025',
+    'social-security-unpaid-training-practice-registrations-2025',
+  ]);
   const tourismEmploymentQueries = [
     'España depende demasiado del turismo para sostener el empleo',
     'El turismo representa una parte excesiva del empleo español',

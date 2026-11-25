@@ -1208,6 +1208,13 @@ const businessSizeProductivityConstraint = (t) => /\b(empresas? peque[nñ]as?|pe
     || /\b(menos|menor\w*)[\s\w]{0,25}\b(capacidad|posibilidad|acceso)\b/.test(t));
 const unpaidOvertime = (t) => /\b(horas? extra\w*|horas? extraordinari\w*)\b/.test(t)
   && /\b(no pag\w*|sin pag\w*|impag\w*|sin cobr\w*|no cobr\w*|gratis|no remuner\w*|sin remuner\w*|trabaj\w* gratis)\b/.test(t);
+const internshipLabourSubstitution = (t) => {
+  const internship = /\b(becari\w*|beca\w*|practic\w*)\b/.test(t);
+  const ordinaryWork = /\b(trabajo ordinari\w*|tareas? ordinari\w*|funcion\w* de plantilla|puestos? de entrada|puestos? ordinari\w*)\b/.test(t);
+  const substitution = /\b(sustitu\w*|reemplaz\w*|cubr\w*)\b/.test(t);
+  const lowerCost = /\b(menor cost\w*|cost\w* menor\w*|mas barat\w*|menos salari\w*|pag\w* menos)\b/.test(t);
+  return internship && (substitution && ordinaryWork || ordinaryWork && lowerCost);
+};
 const reportedVsWorkedHours = (t) => /\b(?:horas?|jornad\w*|horari\w*|turn\w*)\b/.test(t)
   && /\b(trabaj\w*|hac\w*|cumpl\w*|real\w*|realiz\w*|efectiv\w*)\b/.test(t)
   && /\b(declar\w*|registr\w*|const\w*|fich\w*|contrat\w*|figur\w*|oficial\w*|anotad\w*|computad\w*)\b/.test(t);
@@ -1319,6 +1326,54 @@ const unpaidOvertimeEvidence = (() => {
     },
   };
 })();
+const internshipLabourSubstitutionEvidence = {
+  directClaimEvidence: false,
+  expiresAt: '2027-07-24',
+  territories: ['ES'],
+  evidenceLabel: 'Altas de prácticas no remuneradas e inspecciones por falsos becarios',
+  dimensions: {
+    subject: 'alumnado dado de alta por prácticas formativas no remuneradas y detecciones de falsos becarios por la Inspección de Trabajo',
+    population: 'alumnado de programas formativos incluidos en la Seguridad Social; por separado, personas detectadas en actuaciones inspectoras',
+    period: '1 de enero de 2024–30 de junio de 2025 para las altas; 2021–2025 para las detecciones',
+    geography: 'España',
+    denominator: 'No hay un denominador común para estimar sustitución: una cifra cuenta alumnos con al menos un día cotizado y la otra personas detectadas en actuaciones inspectoras.',
+    unit: 'personas registradas y personas detectadas; no equivalen a puestos sustituidos ni a una tasa de prevalencia',
+  },
+  facts: [
+    'Entre el 1 de enero de 2024 y el 30 de junio de 2025, la Tesorería General de la Seguridad Social dio de alta al menos un día a 1.580.637 alumnos de prácticas formativas no remuneradas. La cifra incluye prácticas universitarias, de FP no intensiva y de enseñanzas artísticas y deportivas; desde enero de 2024 también cotizan estas prácticas no remuneradas.',
+    'El Ministerio de Trabajo informó de que la Inspección de Trabajo detectó 2.688 falsos becarios en 6.519 actuaciones entre 2021 y 2025. La publicación no da el total de prácticas o empresas que permitiría estimar qué proporción representan esas detecciones.',
+  ],
+  factSourceIds: [
+    ['social-security-unpaid-training-practice-registrations-2025'],
+    ['mites-false-intern-inspection-detections-2021-2025'],
+  ],
+  factDimensions: [
+    {
+      subject: 'alumnos en prácticas formativas no remuneradas dados de alta',
+      population: 'alumnado universitario, de FP no intensiva y de enseñanzas artísticas y deportivas incluido en el régimen de prácticas formativas',
+      period: '1 de enero de 2024–30 de junio de 2025',
+      geography: 'España',
+      denominator: 'recuento de alumnos con al menos un día cotizado; no se proporciona un denominador de puestos de entrada o empresas',
+      unit: 'personas dadas de alta, no puestos de trabajo',
+    },
+    {
+      subject: 'detecciones de falsos becarios en actuaciones de la Inspección de Trabajo y Seguridad Social',
+      population: 'personas identificadas como falsos becarios en las actuaciones inspectoras informadas por el Ministerio de Trabajo',
+      period: '2021–2025',
+      geography: 'España',
+      denominator: '6.519 actuaciones inspectoras; no es el total de prácticas, empresas ni personas becarias',
+      unit: 'personas detectadas; no es una tasa representativa',
+    },
+  ],
+  sources: [
+    { id: 'social-security-unpaid-training-practice-registrations-2025', title: 'Más de 1,5 millones de jóvenes han estado en alta en la Seguridad Social por cursar prácticas no remuneradas', publisher: 'Secretaría de Estado de la Seguridad Social y Pensiones · TGSS', url: 'https://revista.seg-social.es/-/m%C3%A1s-de-1-5-millones-de-j%C3%B3venes-han-estado-en-alta-en-la-seguridad-social-por-cursar-pr%C3%A1cticas-no-remuneradas', publishedAt: '2025-07-24', retrievedAt: '2026-11-25', role: 'primary' },
+    { id: 'mites-false-intern-inspection-detections-2021-2025', title: 'Proyecto de ley de prácticas no laborales: datos de la Inspección de Trabajo', publisher: 'Ministerio de Trabajo y Economía Social', url: 'https://prensa.mites.gob.es/webPrensa/listado-noticia/noticia/4510', publishedAt: '2026-03-03', retrievedAt: '2026-11-25', role: 'primary' },
+  ],
+  shareableReplyForContext: ({ facts }) => [
+    ...facts,
+    'No se deben sumar ni dividir estos recuentos: cubren periodos y poblaciones distintos. Las altas registran alumnado; las inspecciones no ofrecen un total de prácticas como denominador. Estas cifras no miden la frecuencia de sustitución de puestos de entrada ni el ahorro empresarial. Para comprobar esa afirmación hacen falta tareas y planes formativos, puestos y costes comparables, y un denominador representativo de empresas y prácticas.',
+  ].join('\n\n'),
+};
 const wageGrowthJobMobility = (t) => /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*)\b/.test(t)
   && /\b(subid\w*|aument\w*|mejor\w*|crec\w*|increment\w*)\b/.test(t)
   && /\b(cambi\w* de (?:empresa|trabajo|empleo)|cambio de (?:empresa|trabajo|empleo)|moverse de empresa|pasar a otra empresa)\b/.test(t);
@@ -2420,6 +2475,23 @@ const focuses = [
     needs: ['competencias solicitadas en ofertas de empleo comparables por ocupación, territorio y periodo', 'contenidos y objetivos de aprendizaje de las titulaciones que se comparan', 'un resultado laboral comparable que permita relacionar las competencias con contratación, empleo o salario', 'un criterio medible para interpretar «pesan más»'],
     explanation: 'La tasa de empleo por nivel educativo cuenta cuántas personas trabajan; no mide qué competencias piden las empresas ni las compara con los contenidos de una titulación.',
     limitation: 'Sin vacantes, programas formativos y resultados laborales comparables, no se puede determinar qué competencias pesan más ni atribuir un resultado laboral a las asignaturas cursadas.',
+  },
+  {
+    id: 'internship-labour-substitution', label: 'prácticas formativas usadas como trabajo ordinario',
+    when: internshipLabourSubstitution,
+    direct: [], context: [], claimType: 'causal',
+    needs: [
+      'prácticas clasificadas por modalidad, remuneración, ocupación y periodo, con un denominador representativo',
+      'tareas realizadas, plan formativo y supervisión comparables con las funciones de puestos de entrada',
+      'contratación, plantilla y costes de las mismas empresas antes y durante las prácticas',
+      'comparación que permita distinguir sustitución de formación y otros cambios de empleo',
+    ],
+    explanation: 'Las altas de prácticas y las detecciones de la Inspección dan contexto, pero no indican qué proporción de empresas usa prácticas para cubrir trabajo ordinario ni cuántos empleos de entrada sustituye.',
+    explanationHeadline: 'Hay casos detectados de prácticas irregulares; falta medir cuántos puestos se sustituyen',
+    evidenceGap: 'Las cifras disponibles no estiman de forma representativa cuántas prácticas sustituyen puestos ordinarios ni el ahorro que generan a las empresas.',
+    explanationEvidence: internshipLabourSubstitutionEvidence,
+    shareableReplyForContext: internshipLabourSubstitutionEvidence.shareableReplyForContext,
+    limitation: 'Las altas de alumnado miden prácticas registradas, no puestos de trabajo. La cifra de inspecciones no incluye el total de prácticas o empresas como denominador y no es una tasa de incumplimiento.',
   },
   {
     id: 'education-employment-outcomes', label: 'empleo y adecuación al nivel de estudios',
