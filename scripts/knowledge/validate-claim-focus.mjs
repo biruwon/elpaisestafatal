@@ -153,6 +153,12 @@ const cases = [
     'El coste del alquiler limita que los trabajadores se muden a provincias con más empleo',
     'Los precios de la vivienda condicionan los cambios de residencia de los trabajadores entre territorios',
   ]],
+  ['housing-cost-burden-by-household-type', [
+    'Alquilar una vivienda se ha convertido en algo mucho más fácil para parejas que para personas solas',
+    'Alquilar es más asequible para una pareja que para una persona sola',
+    'Las personas que viven solas tienen más sobrecarga de vivienda que quienes viven en hogares de dos adultos',
+    '¿Cómo se compara el esfuerzo de vivienda entre hogares de un solo adulto y hogares de dos adultos?',
+  ]],
   ['rental-tenant-screening-exclusion', ['Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares', 'Los avales y requisitos de solvencia dejan fuera a inquilinos con ingresos variables', 'Personas con nóminas inestables son rechazadas para alquilar por no cumplir las garantías', 'El mercado del alquiler penaliza a autónomos y personas sin nómina indefinida', 'Las inmobiliarias y los seguros de impago exigen condiciones que dejan fuera a muchos trabajadores normales']],
   ['rental-screening-requirements-trend', ['Los requisitos para alquilar son más difíciles de cumplir que hace una década', 'Ahora cuesta más cumplir las garantías que piden para arrendar una vivienda']],
   ['seasonal-rental-substitution', [
@@ -392,6 +398,51 @@ for (const nearby of [
   'El precio del alquiler habitual subió en Cataluña durante 2025',
 ]) assert.notEqual(claimFocusFor(nearby)?.id, 'seasonal-rental-substitution', `A nearby claim crossed into seasonal rental substitution: ${nearby}`);
 validateAnswerPlan(seasonalRentalPlan);
+const householdHousingBurdenClaim = 'Alquilar una vivienda se ha convertido en algo mucho más fácil para parejas que para personas solas';
+const householdHousingBurdenPlan = focusedEvidencePlan(householdHousingBurdenClaim, { now: Date.parse('2026-11-25') });
+assert.equal(householdHousingBurdenPlan.answerScope.family, 'housing-cost-burden-by-household-type');
+assert.equal(householdHousingBurdenPlan.claimType, 'trend');
+assert.deepEqual(householdHousingBurdenPlan.answerScope.directMetrics, []);
+assert.deepEqual(householdHousingBurdenPlan.answerScope.contextMetrics, []);
+assert.equal(householdHousingBurdenPlan.evidenceLevel, 'limited', 'Household overburden is context, not a direct measure of rental access');
+assert.equal(householdHousingBurdenPlan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
+assert.deepEqual(householdHousingBurdenPlan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.evidenceIds, []);
+assert.deepEqual(householdHousingBurdenPlan.sourceLinks.map((source) => source.id), ['eurostat-housing-overburden-household-composition-2025']);
+assert.match(householdHousingBurdenPlan.shareableReply, /2025.*24,4 %.*8,4 %/s);
+assert.match(householdHousingBurdenPlan.shareableReply, /2020.*22,7 %.*9,0 %/s);
+assert.match(householdHousingBurdenPlan.shareableReply, /superiores al 40 %.*renta disponible/);
+assert.match(householdHousingBurdenPlan.shareableReply, /propietarios e inquilinos/);
+assert.match(householdHousingBurdenPlan.shareableReply, /no equivale necesariamente a una pareja/);
+assert.match(householdHousingBurdenPlan.shareableReply, /no permite concluir que sea m[aá]s f[aá]cil alquilar en pareja/);
+const householdHousingBurdenPublic = localPublicCheckResponse({
+  status: 'complete', requestId: 'household-housing-burden-context', result: householdHousingBurdenPlan,
+}, householdHousingBurdenClaim);
+assert.equal(householdHousingBurdenPublic.state, 'insufficient');
+assert.match(householdHousingBurdenPublic.result.reply, /24,4 %.*8,4 %.*no permite concluir que sea m[aá]s f[aá]cil alquilar en pareja/s);
+assert.deepEqual(householdHousingBurdenPublic.result.sources.map((source) => source.id), ['eurostat-housing-overburden-household-composition-2025']);
+for (const claim of [
+  '¿Es más fácil alquilar para dos adultos que para una persona que vive sola?',
+  'Alquilar es más asequible para una pareja que para una persona sola',
+  'Las personas que viven solas tienen más sobrecarga de vivienda que quienes viven en hogares de dos adultos',
+  '¿Cómo se compara el esfuerzo de vivienda entre hogares de un solo adulto y hogares de dos adultos?',
+]) {
+  const plan = focusedEvidencePlan(claim, { now: Date.parse('2026-11-25') });
+  assert.equal(plan.answerScope.family, 'housing-cost-burden-by-household-type', 'A household-composition paraphrase changed family: ' + claim);
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['eurostat-housing-overburden-household-composition-2025']);
+  assert.match(plan.shareableReply, /no permite concluir que sea m[aá]s f[aá]cil alquilar en pareja/);
+}
+const householdHousingBurdenOutsidePeriod = focusedEvidencePlan('En 2019 alquilar era más fácil para parejas que para personas solas', { now: Date.parse('2026-11-25') });
+assert.deepEqual(householdHousingBurdenOutsidePeriod.sourceLinks, [], 'The selected Eurostat comparison covers 2020 and 2025, not 2019');
+const householdHousingBurdenOutsideTerritory = focusedEvidencePlan('En Madrid, alquilar es más fácil para parejas que para personas solas', { now: Date.parse('2026-11-25') });
+assert.deepEqual(householdHousingBurdenOutsideTerritory.sourceLinks, [], 'A Spain-wide household-type rate must not answer a Madrid-specific comparison');
+for (const nearby of [
+  'Comprar vivienda en solitario se ha vuelto excepcional en las grandes áreas metropolitanas',
+  'Los hogares monoparentales tienen más dificultades para alquilar que las parejas',
+  'Las parejas cobran más que las personas solas',
+]) assert.notEqual(claimFocusFor(nearby)?.id, 'housing-cost-burden-by-household-type', 'A neighboring housing claim crossed into household-type burden: ' + nearby);
+assert.equal(claimFocusFor('¿Es fácil alquilar una vivienda con un sueldo normal?')?.id, 'rental-affordability',
+  'An individual-salary question must stay with the existing rental affordability family');
+validateAnswerPlan(householdHousingBurdenPlan);
 const localLandlordFear = focusedEvidencePlan('En Barcelona, el miedo a los impagos hace que propietarios retiren viviendas del alquiler', { now: Date.parse('2026-11-24T12:00:00Z') });
 assert.equal(localLandlordFear.answerScope.family, 'rental-landlord-motives');
 assert.ok(!localLandlordFear.sourceLinks.some((source) => source.id === 'observatorio-alquiler-landlord-profile-2025'),

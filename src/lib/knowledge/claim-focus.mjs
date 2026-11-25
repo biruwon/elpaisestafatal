@@ -23,6 +23,7 @@ import { PUBLIC_SOCIAL_HOUSING_SNAPSHOT, asksForPublicSocialStockCount } from '.
 import { YOUTH_HOUSING_INDEPENDENCE_SNAPSHOT } from './youth-housing-independence-snapshot.mjs';
 import { HOUSING_LABOUR_MOBILITY_EVIDENCE } from './housing-labour-mobility-snapshot.mjs';
 import { SEASONAL_RENTAL_SHIFT_EVIDENCE } from './seasonal-rental-shift-snapshot.mjs';
+import { HOUSEHOLD_HOUSING_BURDEN_EVIDENCE } from './household-housing-burden-snapshot.mjs';
 import { ROOM_RENTAL_MARKET_SNAPSHOT, roomRentalMarketClaimFor, roomRentalMarketDirectMeasureFor, roomRentalMarketRequestedMeasureFor } from './room-rental-market-snapshot.mjs';
 import { PUBLIC_SERVICE_DIGITAL_ACCESS_SNAPSHOT, publicServiceDigitalAccessClaimFor, publicServiceDigitalAccessMeasureFor } from './public-service-digital-access-snapshot.mjs';
 import { PUBLIC_DOCUMENT_REUSE_SNAPSHOT, publicDocumentReuseClaimFor, publicDocumentReuseLegalQuestionFor } from './public-document-reuse-snapshot.mjs';
@@ -624,6 +625,14 @@ const housingLabourMobility = (t) => {
   return housing && housingPressure && workerOrJob && relocation && causalLink;
 };
 const rentalSubject = (t) => /\b(viviend\w*|alquil\w*|arrendam\w*|inquilin\w*|piso\w*|casas?|apartament\w*)\b/.test(t);
+const housingCostBurdenHouseholdComparison = (t) => {
+  const oneAdultGroup = /\b(personas? solas?|viv\w* sol\w*|hogar\w* unipersonal\w*|un solo adulto)\b/.test(t);
+  const twoAdultGroup = /\b(parej\w*|dos adultos)\b/.test(t);
+  const burdenOrAccess = /\b(facil\w*|dificil\w*|asequib\w*|inasequib\w*|acces\w*|coste\w*|costo\w*|esfuerzo\w*|sobrecarg\w*|cuest\w*|pagar\w*)\b/.test(t);
+  const comparesGroups = /\b(?:mas|menos|mejor|peor|mayor\w*|menor\w*|superior\w*|inferior\w*)\b[\s\w]{0,70}\bque\b|\b(?:compar\w*|diferenc\w*|brecha|frente a|versus|vs\.?)\b/.test(t);
+  return rentalSubject(t) && oneAdultGroup && twoAdultGroup && burdenOrAccess && comparesGroups
+    && !/\b(compr\w*|hipotec\w*|adquir\w*|compra|ahorro inicial|entrada de vivienda|monoparental\w*|padres? solos?|madres? solas?|hij\w*|menor\w* a cargo)\b/.test(t);
+};
 const rentalScreeningRequirementsTrend = (t) => {
   const explicitRentalContext = /\b(alquil\w*|arrend\w*|inquilin\w*)\b/.test(t);
   const screeningRequirements = /\b(fianz\w*|garanti\w*|aval\w*|seguro\w* de impago|solvenci\w*|ingresos? irregulares?|n[oó]min\w*|requisit\w*|condicion\w*)\b/.test(t);
@@ -2865,6 +2874,23 @@ const focuses = [
     ],
     explanation: 'Los datos de alquiler juvenil, acceso a la compra y patrimonio por edad pueden describir una brecha residencial, pero no identifican por sí solos quién recibe el alquiler, cuánto dinero pasa entre generaciones ni si la brecha patrimonial supera la salarial.',
     limitation: 'Sin vincular el gasto de los hogares jóvenes con la edad y los ingresos de sus arrendadores, y comparar patrimonio, salarios y precios de compra por cohortes y periodos compatibles, no se puede cuantificar una transferencia de renta entre generaciones, ordenar las brechas ni afirmar que las generaciones mayores concentren la propiedad.',
+  },
+  {
+    id: 'housing-cost-burden-by-household-type', label: 'sobrecarga de vivienda por composición del hogar',
+    when: housingCostBurdenHouseholdComparison,
+    direct: [], context: [],
+    claimTypeFor: (t) => /\b(antes|ahora|cada vez|se ha convertid\w*|se ha vuelt\w*|desde 20\d{2}|entre 20\d{2})\b/.test(t) ? 'trend' : 'comparative',
+    needs: [
+      'sobrecarga de costes de vivienda para inquilinos, desglosada por composición del hogar',
+      'medidas de acceso al alquiler, como solicitudes, aceptaciones o contratos obtenidos',
+      'ingresos, edad, hijos a cargo, territorio y periodo comparables entre los grupos',
+      'una definición concreta de qué significa «más fácil» en el acceso al alquiler',
+    ],
+    explanationHeadline: 'La sobrecarga de vivienda es mayor en hogares de un adulto, pero el dato no mide solo el alquiler',
+    explanation: 'Eurostat aporta una comparación de sobrecarga de los costes totales de vivienda por hogares de uno o dos adultos; incluye propietarios e inquilinos y no registra si una solicitud de alquiler fue aceptada.',
+    explanationEvidence: HOUSEHOLD_HOUSING_BURDEN_EVIDENCE,
+    shareableReplyForContext: HOUSEHOLD_HOUSING_BURDEN_EVIDENCE.shareableReplyForContext,
+    limitation: 'La tasa de sobrecarga agrupa propietarios e inquilinos y sus categorías de uno o dos adultos no identifican respectivamente a personas solas y parejas. No mide ofertas, solicitudes, rechazos ni contratos de alquiler.',
   },
   {
     id: 'rental-affordability', label: 'alquiler e ingresos',
