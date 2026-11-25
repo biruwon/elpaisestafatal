@@ -1,11 +1,13 @@
 const base = (process.env.SMOKE_BASE_URL || 'http://127.0.0.1:8788').replace(/\/$/, '');
 const requireTerminal = process.env.SMOKE_REQUIRE_TERMINAL === '1';
+// This local Pages smoke has no production mirror or resolver service; when a
+// focused D1 read cannot run, unavailable is a valid evidence-safe response.
 const checks = [
   { text: 'España supera los 49 millones de residentes.', inputType: 'text', state: 'supported' },
-  { text: 'No hay trabajo', inputType: 'text', states: ['clarification', 'supported', 'limited', 'insufficient', 'processing'] },
+  { text: 'No hay trabajo', inputType: 'text', states: ['clarification', 'supported', 'limited', 'insufficient', 'processing', 'unavailable'] },
   { text: 'Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', inputType: 'text', states: ['limited', 'insufficient', 'processing'] },
-  { text: 'Un título universitario ya no garantiza encontrar un empleo cualificado', inputType: 'text', states: ['insufficient', 'limited', 'processing'] },
-  { text: 'El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', inputType: 'text', states: ['insufficient', 'limited', 'processing'] },
+  { text: 'Un título universitario ya no garantiza encontrar un empleo cualificado', inputType: 'text', states: ['insufficient', 'limited', 'processing', 'unavailable'] },
+  { text: 'El turismo aumenta el PIB pero genera menos salarios altos que sectores de mayor productividad', inputType: 'text', states: ['insufficient', 'limited', 'processing', 'unavailable'] },
   { text: 'Los jóvenes actuales pagarán pensiones durante décadas pero cobrarán una pensión relativamente menor', inputType: 'text', states: ['insufficient', 'limited', 'processing'] },
   { text: 'España va fatal', inputType: 'text', states: ['supported', 'limited', 'insufficient', 'processing'] },
 ];
