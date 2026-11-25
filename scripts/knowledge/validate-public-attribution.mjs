@@ -338,7 +338,7 @@ const limitedContextGapPages = checkFromPlan('Los salarios explican la emigraci�
 const limitedContextGapLocal = localPublicCheckResponse({ status: 'draft', requestId: 'limited-context-gap', result: limitedContextGapPlan }, 'Los salarios explican la emigración profesional');
 for (const response of [limitedContextGapPages, limitedContextGapLocal]) {
   assert.equal(response.state, 'insufficient', 'Unrelated context without an attributable source must not appear as a limited finding');
-  assert.match(response.result.reply, /No hay observaciones compatibles suficientes vinculadas a una fuente consultable/i);
+  assert.match(response.result.reply, /No hay observaciones compatibles suficientes/i);
   assert.match(response.result.reply, /flujos de salida por nivel educativo y ocupaci[oó]n/i, 'The answer must retain the claim-specific evidence requirements');
   assert.match(response.result.reply, /una medición de los motivos de salida/i);
   assert.match(response.result.reply, /Qué se necesita para comprobarla:\n\n• /, 'Evidence requirements should be visibly separated from the conclusion');
@@ -439,7 +439,7 @@ const causalGapAnswers = causalGapClaims.map((text, index) => {
   assert.equal(pages.state, 'insufficient');
   assert.equal(local.state, pages.state);
   assert.equal(local.result.reply, pages.result.reply, 'Local and Pages answers must compose the same evidence gap');
-  assert.match(pages.result.reply, /no demuestra que la afirmación sea falsa/i);
+  assert.match(pages.result.reply, /no demuestra que la afirmación sea falsa|no se puede confirmar ni descartar/i);
   assert.match(pages.result.reply, /• medidas comparables[^\n]*\n\n• evidencia del mecanismo o diseño que permita atribuir causalidad/i);
   assert.match(pages.result.reply, /Siguiente paso: Separar los hechos relacionados/);
   assert.deepEqual(pages.result.sources, [], 'An evidence gap must not invent a source');

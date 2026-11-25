@@ -15,7 +15,7 @@ export const publicEvidenceGapReply = (plan, { attributionUnavailable = false, c
 
   const limitation = meaningfulLimitation(plan.limitation);
   const opening = attributionUnavailable
-    ? 'No hay observaciones compatibles suficientes vinculadas a una fuente consultable para esta comprobación. Eso no demuestra que la afirmación sea falsa; con lo disponible aquí no se puede confirmar ni descartar.'
+    ? 'No hay observaciones compatibles suficientes. Eso no demuestra que la afirmación sea falsa; no se puede confirmar ni descartar con lo disponible.'
     : limitation || String(plan.summary || '').trim() || 'No se ha localizado evidencia compatible para comprobar la afirmación.';
   const cautiousOpening = /\b(?:no demuestra|no permite confirmar|no confirma ni descarta|no se puede confirmar ni descartar)\b/i.test(opening)
     ? opening
