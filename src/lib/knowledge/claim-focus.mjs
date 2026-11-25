@@ -2739,7 +2739,7 @@ const focuses = [
   },
   {
     id: 'real-wages', label: 'salarios y poder adquisitivo',
-    when: (t) => has(t, wages) && /\b(poder (?:adquisitivo|de compra)|nivel de vida|inflacion|coste de (?:la )?vida|precios|salari\w* real(?:es)?|perdi\w* poder)\b/.test(t)
+    when: (t) => has(t, wages) && /\b(poder (?:adquisitivo|de compra)|nivel de vida|calidad de vida|condiciones de vida|vivir igual|llegar a fin de mes|inflacion|coste de (?:la )?vida|precios|salari\w* real(?:es)?|perdi\w* poder)\b/.test(t)
       && !/\b(?:caus\w*|provoc\w*|gener\w*|traslad\w*|oblig\w*)\b/.test(t),
     direct: [], context: ['annual_hourly_wage_index', 'annual_hicp_index', 'median_hourly_earnings', 'cpi_index'],
     needsForClaim: (claim) => {

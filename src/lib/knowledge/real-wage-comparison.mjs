@@ -114,7 +114,9 @@ const makeComparison = (wages, prices, start, end) => {
 
 export const realWagePlan = (claim, { observations = [], now = Date.now(), allowReviewedSnapshot = false } = {}) => {
   const text = normalize(claim);
-  if (!compatibleClaimScope(claim) || !/\b(perd\w*|pierd\w*|gan\w*|baj\w*|sub\w*|aument\w*|ca[iy]\w*|crec\w*|estanc\w*|evoluc\w*|mejor\w*|empeor\w*|sigu\w*|come\w*|comid\w*|compar\w*|cambi\w*|compens\w*|reduc\w*|disminu\w*|erosion\w*|recuper\w*|mantien\w*)\b/.test(text)) return undefined;
+  const asksLivingStandard = /\b(nivel de vida|calidad de vida|condiciones de vida|vivir igual|llegar a fin de mes)\b/.test(text);
+  const asksRealWageChange = /\b(perd\w*|pierd\w*|gan\w*|baj\w*|sub\w*|aument\w*|ca[iy]\w*|crec\w*|estanc\w*|evoluc\w*|mejor\w*|empeor\w*|sigu\w*|come\w*|comid\w*|compar\w*|cambi\w*|compens\w*|reduc\w*|disminu\w*|erosion\w*|recuper\w*|mantener|mantien\w*|permit\w*|vivir|alcanz\w*)\b/.test(text);
+  if (!compatibleClaimScope(claim) || !(asksRealWageChange || asksLivingStandard)) return undefined;
   const wages = eligibleSeries(observations, WAGES, now, allowReviewedSnapshot), prices = eligibleSeries(observations, PRICES, now, allowReviewedSnapshot);
   const years = [...wages.keys()].filter((year) => prices.has(year)).sort((a, b) => a - b);
   if (!/\b(?:19|20|21)\d{2}\b/.test(text)
@@ -124,25 +126,33 @@ export const realWagePlan = (claim, { observations = [], now = Date.now(), allow
   const main = makeComparison(wages, prices, window.start, window.end);
   if (!main) return undefined;
   const recentStart = window.end - 3;
-  const recent = window.automatic && recentStart > window.start ? makeComparison(wages, prices, recentStart, window.end) : undefined;
+  const recent = window.automatic && !asksLivingStandard && recentStart > window.start ? makeComparison(wages, prices, recentStart, window.end) : undefined;
   const finding = `En España, entre ${main.start} y ${main.end}, el índice de salarios brutos por hora trabajada ${describeChange(main.wageChange)}, mientras el índice armonizado de precios de consumo ${describeChange(main.priceChange)}. Al descontar esos precios, el índice salarial ${describeChange(main.realChange)}.`;
   const recentFinding = recent ? `Entre ${recent.start} y ${recent.end}, el índice salarial ajustado por precios ${describeChange(recent.realChange)}; el resultado depende de las fechas comparadas.` : '';
   const flagNote = [main.provisional || recent?.provisional ? 'La comparación incluye datos provisionales.' : '', main.estimated || recent?.estimated ? 'La comparación incluye datos estimados.' : ''].filter(Boolean).join(' ');
-  const limitation = 'El índice salarial mide salarios brutos por hora en industria, construcción y servicios (excluye agricultura, empleo doméstico y organismos extraterritoriales); no es neto, mediano ni individual. El índice armonizado de precios no mide el coste de cada hogar. La composición del empleo puede influir; comparar extremos no prueba que ocurriera lo mismo cada año ni explica las causas.';
+  const limitation = asksLivingStandard
+    ? 'El índice salarial mide salarios brutos por hora en industria, construcción y servicios (sin agricultura, empleo doméstico ni organismos extraterritoriales); no es neto, mediano ni individual. El índice de precios refleja una cesta media, no los gastos de cada hogar.'
+    : 'El índice salarial mide salarios brutos por hora en industria, construcción y servicios (excluye agricultura, empleo doméstico y organismos extraterritoriales); no es neto, mediano ni individual. El índice armonizado de precios no mide el coste de cada hogar. La composición del empleo puede influir; comparar extremos no prueba que ocurriera lo mismo cada año ni explica las causas.';
+  const livingStandardLimitation = asksLivingStandard
+    ? 'El índice general de salarios y precios aporta contexto, pero no permite confirmar toda la afirmación: no define qué es un sueldo «bueno» ni incluye el ingreso neto, la composición del hogar o sus gastos.'
+    : '';
   const method = 'Cálculo propio: compara el cociente entre salarios y precios en las mismas fechas.';
-  const reply = [finding, recentFinding, method, flagNote, limitation].filter(Boolean).join('\n\n');
+  const reply = [finding, recentFinding, method, flagNote, limitation, livingStandardLimitation].filter(Boolean).join('\n\n');
   const usedYears = Array.from({ length: main.end - main.start + 1 }, (_, index) => main.start + index);
   const wageRows = usedYears.map((year) => wages.get(year)), priceRows = usedYears.map((year) => prices.get(year));
   const rows = [...wageRows, ...priceRows];
   const evidenceIds = rows.map((item) => item.id);
   const sources = [...new Map(rows.map((item) => [item.source.id, item.source])).values()];
   const sourceIds = sources.map((source) => source.id);
+  const claimEvidenceIds = asksLivingStandard ? [] : evidenceIds;
+  const claimSourceIds = asksLivingStandard ? [] : sourceIds;
+  const claimVerdict = asksLivingStandard ? 'insufficient' : 'mixed';
   const families = [
-    { familyId: WAGES, label: 'Salarios brutos por hora trabajada', direction: 'qualifies', status: 'available', dataKind: 'observed',
+    { familyId: WAGES, label: 'Salarios brutos por hora trabajada', direction: 'qualifies', status: 'available', dataKind: asksLivingStandard ? 'context' : 'observed',
       finding: `Índice de salarios y sueldos por hora: ${n(wages.get(main.start).value, 2)} (${main.start}) y ${n(wages.get(main.end).value, 2)} (${main.end}); base 2020 = 100.`,
       data: [`${main.start}: ${n(wages.get(main.start).value, 2)}`, `${main.end}: ${n(wages.get(main.end).value, 2)}`], evidenceIds: wageRows.map((item) => item.id), sourceIds: [wageRows[0].source.id],
       dimensions: { geography: 'España', period: `${main.start}–${main.end}`, population: 'Personas asalariadas en industria, construcción y servicios; costes salariales por hora', denominator: 'Horas trabajadas', unit: 'Índice, 2020 = 100' } },
-    { familyId: PRICES, label: 'Precios de consumo armonizados', direction: 'qualifies', status: 'available', dataKind: 'observed',
+    { familyId: PRICES, label: 'Precios de consumo armonizados', direction: 'qualifies', status: 'available', dataKind: asksLivingStandard ? 'context' : 'observed',
       finding: `Índice medio anual de precios: ${n(prices.get(main.start).value, 2)} (${main.start}) y ${n(prices.get(main.end).value, 2)} (${main.end}).`,
       data: [`${main.start}: ${n(prices.get(main.start).value, 2)}`, `${main.end}: ${n(prices.get(main.end).value, 2)}`], evidenceIds: priceRows.map((item) => item.id), sourceIds: [priceRows[0].source.id],
       dimensions: { geography: 'España', period: `${main.start}–${main.end}`, population: 'Cesta armonizada de consumo, todos los productos', unit: 'Índice medio anual' } },
@@ -150,15 +160,17 @@ export const realWagePlan = (claim, { observations = [], now = Date.now(), allow
   return {
     id: 'measurement-real-wages', schemaVersion: '1', evidenceLevel: 'limited', coverage: 'qualified', claimType: 'comparative',
     headline: `Salarios por hora y precios en España, ${main.start}–${main.end}`, summary: finding, shareableReply: reply, shareableSourceIds: sourceIds,
-    interpretation: { kind: 'quantitative', subject: 'salarios por hora y precios de consumo', predicate: 'comparison', normalizedClaim: claim, evidenceNeeds: ['series salariales y de precios con las mismas fechas', 'población y definición salarial'] },
+    interpretation: { kind: 'quantitative', subject: 'salarios por hora y precios de consumo', predicate: 'comparison', normalizedClaim: claim, evidenceNeeds: asksLivingStandard
+      ? ['definición del importe considerado un sueldo «bueno»', 'ingreso neto, composición del hogar y gastos en el mismo periodo']
+      : ['series salariales y de precios con las mismas fechas', 'población y definición salarial'] },
     blocks: [
-      { type: 'claim_breakdown', propositionIds: ['submitted-claim'], items: [{ text: claim, type: 'comparative', explicit: true, evidenceIds, sourceIds, verdict: 'mixed', evidenceLevel: 'limited', finding }] },
-      { type: 'data_finding', evidenceIds, points: [finding, ...(recentFinding ? [recentFinding] : [])] },
-      { type: 'cannot_conclude', evidenceIds: [], points: [limitation] },
+      { type: 'claim_breakdown', propositionIds: ['submitted-claim'], items: [{ text: claim, type: 'comparative', explicit: true, evidenceIds: claimEvidenceIds, sourceIds: claimSourceIds, verdict: claimVerdict, evidenceLevel: asksLivingStandard ? 'none' : 'limited', ...(asksLivingStandard ? {} : { finding }) }] },
+      { type: 'data_finding', ...(asksLivingStandard ? { dataKind: 'context' } : {}), evidenceIds, points: [finding, ...(recentFinding ? [recentFinding] : [])] },
+      { type: 'cannot_conclude', evidenceIds: [], points: [limitation, livingStandardLimitation].filter(Boolean) },
       { type: 'conversation_reply', evidenceIds, text: reply },
     ],
-    limitation, evidenceIds, sourceIds, sourceLinks: sources, evidenceSummary: { mode: 'dynamic', families },
-    answerScope: { kind: 'measurement', family: 'real-wages', directMetrics: [WAGES, PRICES], contextMetrics: [] },
+    limitation: [limitation, livingStandardLimitation].filter(Boolean).join(' '), evidenceIds, sourceIds, sourceLinks: sources, evidenceSummary: { mode: 'dynamic', families },
+    answerScope: { kind: 'measurement', family: 'real-wages', directMetrics: asksLivingStandard ? [] : [WAGES, PRICES], contextMetrics: asksLivingStandard ? [WAGES, PRICES] : [] },
     knowledgeVersion: RUNTIME_VERSIONS.warehouseKnowledge,
   };
 };

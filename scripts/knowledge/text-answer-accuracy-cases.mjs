@@ -1107,8 +1107,13 @@ export const textAnswerAccuracyCases = [
     input: 'Un sueldo considerado bueno hace pocos años ya no permite el mismo nivel de vida',
     expected: {
       state: 'insufficient', family: 'real-wages', verdict: 'insufficient', directSourceIds: [],
-      replyIncludes: ['no se puede confirmar ni descartar', 'qué importe o criterio define un sueldo', 'fechas concretas de inicio y fin', 'tipo de salario (bruto o neto), la jornada y una población comparable'],
-      replyExcludes: ['la renta mediana de los hogares demuestra'], evidence: [], maxReplyWords: 150,
+      replyIncludes: ['entre 2020 y 2025', 'salarios brutos por hora trabajada subió aproximadamente un 16,3 %', 'precios de consumo subió aproximadamente un 21,9 %', 'índice salarial bajó aproximadamente un 4,6 %', 'no permite confirmar toda la afirmación: no define qué es un sueldo «bueno»'],
+      replyExcludes: ['la renta mediana de los hogares demuestra', 'Entre 2022 y 2025'],
+      evidence: [
+        { familyId: 'annual_hourly_wage_index', sourceIds: ['eurostat-annual-hourly-wages-spain-2026-11-23'], dataIncludes: ['2020: 100', '2025: 116,3'], dimensions: { population: 'Personas asalariadas en industria, construcción y servicios; costes salariales por hora', period: '2020–2025', geography: 'España', denominator: 'Horas trabajadas', unit: 'Índice, 2020 = 100' } },
+        { familyId: 'annual_hicp_index', sourceIds: ['eurostat-annual-hicp-spain-2026-11-23'], dataIncludes: ['2020: 82,05', '2025: 100'], dimensions: { population: 'Cesta armonizada de consumo, todos los productos', period: '2020–2025', geography: 'España', unit: 'Índice medio anual' } },
+      ],
+      maxReplyWords: 150,
     },
   },
   {
@@ -1117,8 +1122,27 @@ export const textAnswerAccuracyCases = [
     input: 'Lo que antes era un buen salario ya no da para mantener el mismo nivel de vida',
     expected: {
       state: 'insufficient', family: 'real-wages', verdict: 'insufficient', directSourceIds: [],
-      replyIncludes: ['no se puede confirmar ni descartar', 'fechas concretas de inicio y fin', 'tipo de salario (bruto o neto), la jornada y una población comparable'],
-      replyExcludes: ['la renta mediana de los hogares demuestra'], evidence: [], maxReplyWords: 150,
+      replyIncludes: ['entre 2020 y 2025', 'salarios brutos por hora trabajada subió aproximadamente un 16,3 %', 'índice salarial bajó aproximadamente un 4,6 %', 'no permite confirmar toda la afirmación: no define qué es un sueldo «bueno»'],
+      replyExcludes: ['la renta mediana de los hogares demuestra', 'Entre 2022 y 2025'], evidence: [], maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'good-salary-and-living-standard-quality-paraphrase',
+    equivalenceGroup: 'good-salary-and-living-standard-period-and-benchmark',
+    input: 'Un salario que antes parecía bueno ya no basta para mantener la misma calidad de vida',
+    expected: {
+      state: 'insufficient', family: 'real-wages', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['entre 2020 y 2025', 'salarios brutos por hora trabajada subió aproximadamente un 16,3 %', 'índice salarial bajó aproximadamente un 4,6 %', 'no permite confirmar toda la afirmación: no define qué es un sueldo «bueno»'],
+      replyExcludes: ['la renta mediana de los hogares demuestra', 'Entre 2022 y 2025'], evidence: [], maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'city-rent-and-good-salary-neighbour',
+    input: 'Un sueldo bueno en Madrid ya no permite pagar el alquiler de una vivienda',
+    expected: {
+      state: 'insufficient', family: 'rental-affordability', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['alquiler de vivienda completa y renta neta comparables', 'ciudad, tipo de hogar y periodo'],
+      replyExcludes: ['índice salarial bajó aproximadamente un 4,6 %'], evidence: [], maxReplyWords: 110,
     },
   },
   {

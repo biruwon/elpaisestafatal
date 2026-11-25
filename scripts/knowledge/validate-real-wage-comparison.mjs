@@ -1,6 +1,7 @@
 import assert from 'node:assert/strict';
 import { realWagePlan } from '../../src/lib/knowledge/real-wage-comparison.mjs';
 import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
+import { claimFocusFor } from '../../src/lib/knowledge/claim-focus.mjs';
 import { validateAnswerPlan } from './answer-plan-validation.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 
@@ -34,6 +35,30 @@ for (const claim of ['Los salarios pierden poder adquisitivo frente al coste de 
   assert.ok(validateAnswerPlan(plan).ok, JSON.stringify(validateAnswerPlan(plan).errors));
   assert.ok(publicResolveResponse({ status: 'complete', requestId: 'test-real-wages', result: plan }));
 }
+const livingStandardClaims = [
+  'Un sueldo considerado bueno hace pocos años ya no permite el mismo nivel de vida',
+  'Lo que antes era un buen salario ya no da para mantener el mismo nivel de vida',
+  'Un salario que antes parecía bueno ya no basta para mantener la misma calidad de vida',
+];
+for (const claim of livingStandardClaims) {
+  const plan = focusedEvidencePlan(claim, options);
+  assert.equal(plan?.answerScope?.family, 'real-wages', claim);
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+  assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].evidenceIds, [], 'Aggregate wage and price observations are contextual for a household living-standard claim');
+  assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].sourceIds, []);
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.deepEqual(new Set(plan.answerScope.contextMetrics), new Set(['annual_hourly_wage_index', 'annual_hicp_index']));
+  assert.ok(plan.blocks.find((block) => block.type === 'data_finding').dataKind === 'context');
+  assert.match(plan.shareableReply, /entre 2020 y 2025/);
+  assert.match(plan.shareableReply, /índice salarial bajó aproximadamente un 4,6 %/);
+  assert.match(plan.shareableReply, /no permite confirmar toda la afirmación: no define qué es un sueldo «bueno»/);
+  assert.doesNotMatch(plan.shareableReply, /Entre 2022 y 2025/);
+  assert.deepEqual(new Set(plan.sourceIds), new Set(['wages', 'prices']));
+  assert.ok(validateAnswerPlan(plan).ok, JSON.stringify(validateAnswerPlan(plan).errors));
+}
+assert.notEqual(claimFocusFor('Una pensión considerada buena hace pocos años ya no permite mantener el mismo nivel de vida')?.id, 'real-wages', 'Pension claims must not inherit the wage-index comparison');
+assert.notEqual(claimFocusFor('Un sueldo bueno en Madrid ya no permite pagar el alquiler de una vivienda')?.id, 'real-wages', 'City-specific housing affordability must not inherit national wage context');
 const since = realWagePlan('Los salarios han perdido poder adquisitivo desde 2018', options);
 assert.match(since.shareableReply, /2018 y 2025/);
 assert.match(since.shareableReply, /índice salarial subió aproximadamente un 1 %/);
