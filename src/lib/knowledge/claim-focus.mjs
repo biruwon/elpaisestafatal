@@ -2637,10 +2637,10 @@ const focuses = [
   },
   {
     id: 'collective-agreement-wages', label: 'subidas salariales pactadas y precios',
-    when: (t) => /\b(?:conveni\w*\s+(?:colectiv\w*|laboral\w*)|negociacion colectiv\w*|pactos? salarial\w*|salari\w* pactad\w*)\b/.test(t)
+    when: (t) => /\b(?:convenio(?:s)?(?: colectivo(?:s)?| laboral(?:es)?)?|negociacion colectiv\w*|pactos? salarial\w*|salari\w* pactad\w*)\b/.test(t)
       && /\b(?:salari\w*|sueldo\w*|retribu\w*|remuner\w*)\b/.test(t)
-      && /\b(?:inflacion|precios|coste de (?:la )?vida|ipc)\b/.test(t)
-      && /\b(?:mas|menos|debajo|encima|ritmo|compens\w*|recuper\w*|perdi\w*|lento|rapido|retras\w*|super\w*)\b/.test(t)
+      && /\b(?:inflacion|precios|coste de (?:la )?vida|ipc|poder adquisitivo|poder de compra)\b/.test(t)
+      && /\b(?:mas|menos|debajo|encima|ritmo|compens\w*|recuper\w*|perdi\w*|lento|rapido|retras\w*|super\w*|erosion\w*|manten\w*)\b/.test(t)
       && !/\b(?:caus\w*|provoc\w*|gener\w*|traslad\w*|oblig\w*)\b/.test(t),
     direct: [], context: [], claimType: 'comparative',
     needs: ['variación salarial pactada en convenios con efectos económicos cuantificados', 'variación del índice de precios en los mismos años', 'personas trabajadoras cubiertas y provisionalidad de las cifras'],

@@ -2099,11 +2099,41 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'collective-wage-purchasing-power-paraphrase',
+    equivalenceGroup: 'collective-wage-prices-spain-2020-2025',
+    input: 'Los salarios pactados en convenio no recuperan el poder adquisitivo perdido',
+    expected: {
+      state: 'limited', family: 'collective-agreement-wages', verdict: 'supported',
+      directSourceIds: ['mites-collective-agreements-2026-10', 'eurostat-annual-hicp-spain-2026-11-23'],
+      replyIncludes: ['15,7 %', '21,9 %', '5 % por debajo', '2025 es provisional'],
+      replyExcludes: ['4,6 %', '2021: pactada'], evidence: [], maxReplyWords: 130,
+    },
+  },
+  {
+    id: 'collective-wage-power-of-purchase-paraphrase',
+    equivalenceGroup: 'collective-wage-prices-spain-2020-2025',
+    input: 'Los sueldos pactados en convenios no recuperan el poder de compra frente al IPC',
+    expected: {
+      state: 'limited', family: 'collective-agreement-wages', verdict: 'supported',
+      directSourceIds: ['mites-collective-agreements-2026-10', 'eurostat-annual-hicp-spain-2026-11-23'],
+      replyIncludes: ['15,7 %', '21,9 %', '5 % por debajo', '2025 es provisional'],
+      replyExcludes: ['4,6 %', '2021: pactada'], evidence: [], maxReplyWords: 130,
+    },
+  },
+  {
     id: 'collective-wage-sector-neighbour-out-of-scope',
     input: 'En hostelería, las subidas salariales pactadas en convenios quedaron por debajo de los precios entre 2020 y 2025',
     expected: {
       state: 'insufficient', family: 'collective-agreement-wages', verdict: 'insufficient', directSourceIds: [],
       replyExcludes: ['15,7 %', '21,9 %', '5 % por debajo'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'collective-agreement-count-neighbour',
+    input: 'El número de convenios colectivos registrados crece menos que la inflación',
+    expected: {
+      state: 'insufficient', family: undefined, verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['15,7 %', '21,9 %', '5 % por debajo'], evidence: [], maxReplyWords: 110,
     },
   },
   {

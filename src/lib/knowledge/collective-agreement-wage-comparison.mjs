@@ -85,6 +85,9 @@ const eligibleSeries = (observations, metricId, now, allowReviewedSnapshot) => {
 };
 
 const claimDirection = (text) => {
+  const negatedRecovery = /\bno\b.{0,24}\b(?:recuper\w*|manten\w*|compens\w*|conserv\w*)\b/.test(text)
+    && !/\bno solo\b.{0,24}\b(?:recuper\w*|manten\w*|compens\w*|conserv\w*)\b/.test(text);
+  if (negatedRecovery || /\bsin (?:haber )?recuper\w*/.test(text)) return 'slower';
   if (/\b(?:mas lent\w*|mas despaci\w*|menos que|por debajo|por detras|no compens\w*|no.{0,12}(?:segu|sigui)\w*|perdi\w* poder|erosion\w*)\b/.test(text)) return 'slower';
   if (/\b(?:mas rapid\w*|mas deprisa|mas que|por encima|por delante|super\w*|compens\w*|recuper\w*)\b/.test(text)) return 'faster';
   if (/\b(?:al mismo ritmo|a la par|igual que)\b/.test(text)) return 'equal';

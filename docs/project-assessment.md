@@ -1449,3 +1449,23 @@ answer benchmark and live statistical-answer integration. These checks cover
 reviewed formulations and regression boundaries; they do not establish
 accuracy for every text a user may submit. Multimodal evidence quality remains
 outside this text-first pass.
+
+## Collective-wage purchasing-power wording — 25 November 2026
+
+The collective-agreement wage family now recognizes claims that say agreed
+salaries have not regained purchasing power, including equivalent wording
+about buying power. Negated recovery is interpreted as lagging wage growth;
+positive recovery remains a separate direction. These phrasings use the same
+official settlement-rate and HICP evidence. The answer compares the 15.7%
+cumulative rise in negotiated settlements from 2021–2025 with 21.9% HICP growth
+from 2020–2025 and labels the 2025 settlement figure provisional. It does not
+extend the national result to women, particular cities or sectors, and causal
+claims about inflation stay in their own evidence family. A claim about the
+number of agreements does not inherit wage-settlement data.
+
+The held-out text-answer benchmark passes 199/199 cases across 54 paraphrase
+groups. `npm run classifier:validate`, the 291-claim/20,105-formulation routing
+corpus, and the family-collision guard pass. These are regression checks, not
+a population-wide estimate of factual accuracy. Tangential context on other
+unresolved claims and high resolver latency under concurrent load remain open
+text-first work.

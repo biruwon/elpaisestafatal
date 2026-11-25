@@ -32,6 +32,8 @@ const collectiveParaphrases = [
   'Las subidas salariales pactadas no han seguido el ritmo de la inflación',
   'La negociación colectiva ha subido los sueldos más despacio que el coste de la vida',
   'Las subidas salariales pactadas en convenios han quedado por debajo de los precios',
+  'Los salarios pactados en convenio no recuperan el poder adquisitivo perdido',
+  'Los sueldos pactados en convenios no recuperan el poder de compra frente al IPC',
 ];
 let collectiveSources;
 for (const claim of collectiveParaphrases) {
@@ -78,6 +80,18 @@ for (const claim of [
   assert.deepEqual(plan.sourceIds, []);
   assert.doesNotMatch(plan.shareableReply, /15,7 %|21,9 %|5 % por debajo/);
 }
+
+for (const claim of [
+  'Los salarios pactados en convenio de las mujeres no recuperan poder adquisitivo frente a la inflación',
+  'Los salarios pactados en convenio no recuperan poder adquisitivo en Madrid',
+]) {
+  const plan = answer(claim);
+  assert.equal(claimFocusFor(claim)?.id, 'collective-agreement-wages', claim);
+  assert.equal(plan.evidenceLevel, 'insufficient');
+  assert.deepEqual(plan.sourceIds, [], 'National aggregate agreements must not answer subgroup or city claims');
+  assert.doesNotMatch(plan.shareableReply, /15,7 %|21,9 %|5 % por debajo/);
+}
+assert.notEqual(claimFocusFor('El número de convenios colectivos registrados crece menos que la inflación')?.id, 'collective-agreement-wages', 'Agreement counts must not inherit wage-settlement evidence');
 
 const personalWageClaim = 'Los salarios de las mujeres pierden poder adquisitivo frente a la inflación';
 const personalWagePlan = answer(personalWageClaim);
