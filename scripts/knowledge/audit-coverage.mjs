@@ -20,11 +20,12 @@ const nonFactualPattern = /(?:tertulian|colapso|sabemos significa|ministro sabia
 // name one metric explicitly.
 const broadScorecardPattern = /\b(?:espana|pa[ií]s|este pa[ií]s|el pa[ií]s)\b[\s\w]{0,52}\b(?:destruida?|destruido|fatal|mal|ruina|desastre|cuesta abajo|arruinad[oa]|quebrada?|quiebra|bancarrota|impagable|insostenible|va peor|peor|mejorando?|progresa?|avanza?)\b|\b(?:destruy(?:e|endo)|carga)\s+espana\b|\b(?:sanchez|presidente|gobierno|moncloa|psoe|pp|vox|sumar)\b[\s\w]{0,24}\b(?:destruy|hunde?|arruin|carga|mejor|arregl|levanta|transform)\w*[\s\w]{0,12}\bespana\b|\b(?:este pa[ií]s|el pa[ií]s|espana)\s+es\s+(?:un\s+)?desastre\b|\b(?:gobernando|gobierno)\b[\s\w]{0,30}\b(?:izquierda|izquierdas|derecha)\b[\s\w]{0,30}\b(?:peor|mal|fatal)\b/i;
 const scorecardMetricIds = ['gdp_per_capita_europe', 'median_equivalised_income', 'unemployment_rate', 'arope_rate', 'housing_cost_overburden_rate', 'unmet_healthcare_waiting_list_rate'];
+const immigrationGroupPattern = /\b(?:inmigraci[oó]n|inmigrantes?|migraci[oó]n|migrantes?|extranjer[oa]s?|poblaci[oó]n extranjera|nacionalidad(?:es)?|ciudadan[ií]a extranjera|origen extranjero|nacid[oa]s? (?:en|fuera de) el extranjero)\b/i;
 const domainPattern = (text) => {
   const value = normalise(text);
-  if (/benefici|ayuda|imv|prestacion|subsidio/.test(value)) return 'immigration_benefits';
-  if (/delinc|crimen|delito|inseguridad|policia/.test(value)) return 'immigration_crime';
-  if (/vivienda publica|vivienda protegida|prioridad.*(ayuda|vivienda)|ayudas.*prioridad/.test(value)) return 'public_housing_allocation';
+  if (/vivienda publica|vivienda protegida|vivienda social|ayudas? (?:de|a la|para la) vivienda|prioridad.{0,40}(?:vivienda|alquiler social)|vivienda.{0,40}prioridad/.test(value)) return 'public_housing_allocation';
+  if (immigrationGroupPattern.test(value) && /benefici|ayuda|imv|prestacion|subsidio/.test(value)) return 'immigration_benefits';
+  if (immigrationGroupPattern.test(value) && /delinc|crimen|delito|inseguridad|policia/.test(value)) return 'immigration_crime';
   return '';
 };
 const directSources = (ids) => (Array.isArray(ids) ? ids : []).filter((id) => !/(?:^|-)discovery-/i.test(String(id)));
@@ -138,21 +139,6 @@ const metricById = new Map(metricAudit.map((item) => [item.id, item]));
 const classifyCluster = (cluster) => {
   const text = textOf(cluster);
   const llm = llmByCluster.get(`cluster:${cluster.id}`) || llmByCluster.get(cluster.id);
-  if (llm) return {
-    auditClass: 'source_assessment_review_required',
-    action: 'review_source_candidate',
-    metricIds: [],
-    domain: llm.domain || '',
-    sourceIds: [...new Set((llm.sourceCandidates || [{ source: llm.source }]).map(({ source }) => source?.id || source?.url).filter(Boolean))],
-    reviewSources: (llm.sourceCandidates || [{ source: llm.source, modelAssessment: assessmentHintFor(llm) }]).filter(({ source }) => source?.url).map(({ source, modelAssessment }) => ({
-      title: source.title || '',
-      publisher: source.publisher || '',
-      url: source.url,
-      modelAssessment,
-    })),
-    modelAssessment: llm.sourceCandidates?.some((candidate) => candidate.modelAssessment === 'possible_match') ? 'possible_match' : llm.sourceCandidates?.some((candidate) => candidate.modelAssessment === 'possible_partial_match') ? 'possible_partial_match' : assessmentHintFor(llm),
-    reviewStatus: llm.reviewStatus || 'pending',
-  };
   if (nonFactualPattern.test(normalise(text))) return { auditClass: 'unsupported_claim', action: 'answer_with_limits', metricIds: [], domain: '' };
   const ids = [...preferredMetricIdsForQuery(text)].filter((id) => metricById.has(id));
   const domain = domainPattern(text);
@@ -167,6 +153,24 @@ const classifyCluster = (cluster) => {
   if (cluster.coverageStatus === 'covered' && cluster.reviewStatus === 'published' && cluster.linkedClaimSlug) {
     return { auditClass: 'covered_existing_evidence', action: 'auto_route', metricIds: ids, domain, sourceIds };
   }
+  if (llm) return {
+    auditClass: 'source_assessment_review_required',
+    action: 'review_source_candidate',
+    metricIds: [],
+    // A source lead may help locate evidence, but its generated domain label
+    // is not a reviewed scope decision. Only retain a domain inferred from
+    // the claim's own matching terms.
+    domain,
+    sourceIds: [...new Set((llm.sourceCandidates || [{ source: llm.source }]).map(({ source }) => source?.id || source?.url).filter(Boolean))],
+    reviewSources: (llm.sourceCandidates || [{ source: llm.source, modelAssessment: assessmentHintFor(llm) }]).filter(({ source }) => source?.url).map(({ source, modelAssessment }) => ({
+      title: source.title || '',
+      publisher: source.publisher || '',
+      url: source.url,
+      modelAssessment,
+    })),
+    modelAssessment: llm.sourceCandidates?.some((candidate) => candidate.modelAssessment === 'possible_match') ? 'possible_match' : llm.sourceCandidates?.some((candidate) => candidate.modelAssessment === 'possible_partial_match') ? 'possible_partial_match' : assessmentHintFor(llm),
+    reviewStatus: llm.reviewStatus || 'pending',
+  };
   if (domain && (domain === 'public_housing_allocation' || domain === 'immigration_benefits' || domain === 'immigration_crime')) return { auditClass: 'partial_domain_evidence', action: 'source_research', metricIds: ids, domain };
   if (ids.length) {
     const readiness = ids.map((id) => metricById.get(id));

@@ -14,9 +14,17 @@ try {
     { id: 'named-scorecard', text: 'Sánchez está hundiendo España', count: 8, sourceIds: [], coverageStatus: 'partial' },
     { id: 'positive-scorecard', text: 'España está mejorando', count: 8, sourceIds: [], coverageStatus: 'partial' },
     { id: 'local', text: 'en mi barrio ha subido la inseguridad este mes', count: 8, sourceIds: ['source-direct'], coverageStatus: 'uncovered' },
-    { id: 'housing', text: 'espanoles deberian tener prioridad ayudas', count: 8, sourceIds: ['source-direct'], coverageStatus: 'uncovered' },
+    { id: 'housing', text: 'las personas extranjeras reciben prioridad en vivienda publica', count: 8, sourceIds: ['source-direct'], coverageStatus: 'uncovered' },
+    { id: 'generic-benefit', text: 'han subido las prestaciones sociales en Espana', count: 8, sourceIds: [], coverageStatus: 'uncovered' },
+    { id: 'generic-crime', text: 'la delincuencia ha aumentado en Espana', count: 8, sourceIds: [], coverageStatus: 'uncovered' },
+    { id: 'generic-priority', text: 'los espanoles deberian tener prioridad en las ayudas', count: 8, sourceIds: [], coverageStatus: 'uncovered' },
+    { id: 'immigrant-benefits', text: 'los inmigrantes reciben mas prestaciones', count: 8, sourceIds: [], coverageStatus: 'uncovered' },
+    { id: 'foreign-benefits-paraphrase', text: 'las personas extranjeras cobran mas ayudas', count: 8, sourceIds: [], coverageStatus: 'uncovered' },
+    { id: 'immigrant-crime', text: 'los inmigrantes cometen mas delitos en Espana', count: 8, sourceIds: [], coverageStatus: 'uncovered' },
+    { id: 'foreign-crime-paraphrase', text: 'la tasa de delitos es mayor entre personas extranjeras', count: 8, sourceIds: [], coverageStatus: 'uncovered' },
     { id: 'llm-candidate', text: 'el empleo sube en toda España', count: 8, sourceIds: [], coverageStatus: 'uncovered' },
     { id: 'llm-no-match', text: 'el desempleo juvenil se ha duplicado', count: 8, sourceIds: [], coverageStatus: 'uncovered' },
+    { id: 'published-llm', text: 'el empleo crece en toda Espana', count: 8, sourceIds: [], coverageStatus: 'covered', reviewStatus: 'published', linkedClaimSlug: 'employment-growth' },
     { id: 'broken', text: 'Audio transcription is not available', count: 8, sourceIds: [], coverageStatus: 'uncovered', reviewable: false },
   ] };
   const clustersPath = join(dir, 'clusters.json');
@@ -74,9 +82,10 @@ try {
   ] }));
   await writeFile(clustersPath, JSON.stringify(clusters));
   await writeFile(researchPath, JSON.stringify({ results: [
-    { id: 'cluster:llm-candidate', status: 'covered_by_llm', source: { title: 'Employment statistics', publisher: 'Fixture office', url: 'https://example.org/employment' } },
+    { id: 'cluster:llm-candidate', status: 'covered_by_llm', domain: 'immigration_crime', source: { title: 'Employment statistics', publisher: 'Fixture office', url: 'https://example.org/employment' } },
     { id: 'cluster:llm-candidate', status: 'partially_covered_by_llm', source: { title: 'Labour survey', publisher: 'Fixture office', url: 'https://example.org/labour-survey' } },
     { id: 'cluster:llm-no-match', status: 'unsupported_after_llm_review', source: { title: 'Youth labour statistics', publisher: 'Fixture office', url: 'https://example.org/youth-labour' } },
+    { id: 'cluster:published-llm', status: 'covered_by_llm', source: { title: 'Employment statistics', publisher: 'Fixture office', url: 'https://example.org/published-employment' } },
   ] }));
   await run(process.execPath, ['scripts/knowledge/audit-coverage.mjs', '--clusters', clustersPath, '--records', recordsDir, '--llm-research', researchPath, '--refresh', refreshPath, '--domains', domainsPath, '--output', auditPath], { cwd: root });
   const audit = JSON.parse(await readFile(auditPath, 'utf8'));
@@ -87,12 +96,41 @@ try {
   if (classes.get('positive-scorecard') !== 'covered_existing_evidence') throw new Error(`positive broad scorecard was not recognized: ${classes.get('positive-scorecard')}`);
   if (classes.get('local') !== 'unsupported_scope') throw new Error(`local claim was not scoped: ${classes.get('local')}`);
   if (classes.get('housing') !== 'partial_domain_evidence') throw new Error(`partial domain was not preserved: ${classes.get('housing')}`);
+  if (audit.clusters.find((item) => item.clusterId === 'housing')?.domain !== 'public_housing_allocation') {
+    throw new Error('a public-housing claim crossed into the immigration-benefit domain');
+  }
+  for (const id of ['generic-benefit', 'generic-crime', 'generic-priority']) {
+    const item = audit.clusters.find((cluster) => cluster.clusterId === id);
+    if (item?.domain) throw new Error(`${id} crossed into an immigration or housing domain: ${item.domain}`);
+    const workItem = audit.sourceWorkItems.find((entry) => entry.clusterId === id);
+    if (workItem?.requiredDimensions?.some((dimension) => ['beneficiary_group', 'group_denominator', 'age_sex_adjustment', 'eligible_applicants'].includes(dimension))) {
+      throw new Error(`${id} inherited population-specific dimensions without a matching group claim`);
+    }
+  }
+  for (const id of ['immigrant-benefits', 'foreign-benefits-paraphrase']) {
+    const item = audit.clusters.find((cluster) => cluster.clusterId === id);
+    const workItem = audit.sourceWorkItems.find((entry) => entry.clusterId === id);
+    if (item?.domain !== 'immigration_benefits' || !workItem?.requiredDimensions?.includes('denominator')) {
+      throw new Error(`${id} did not retain the immigration-benefit scope and denominator requirement (${JSON.stringify(item)})`);
+    }
+  }
+  for (const id of ['immigrant-crime', 'foreign-crime-paraphrase']) {
+    const item = audit.clusters.find((cluster) => cluster.clusterId === id);
+    const workItem = audit.sourceWorkItems.find((entry) => entry.clusterId === id);
+    if (item?.domain !== 'immigration_crime' || !workItem?.requiredDimensions?.includes('legal_stage') || !workItem?.requiredDimensions?.includes('group_denominator')) {
+      throw new Error(`${id} did not retain legal-stage and population-denominator requirements (${JSON.stringify(item)})`);
+    }
+  }
   if (classes.get('llm-candidate') !== 'source_assessment_review_required') throw new Error(`model suggestion was treated as evidence: ${classes.get('llm-candidate')}`);
   const llmCandidate = audit.clusters.find((item) => item.clusterId === 'llm-candidate');
+  if (llmCandidate.domain) throw new Error(`an unreviewed model domain was trusted for an employment claim: ${llmCandidate.domain}`);
   if (llmCandidate.action !== 'review_source_candidate' || audit.sourceWorkItems.some((item) => item.clusterId === 'llm-candidate') === false) throw new Error('model suggestion did not enter the private review queue');
   if (llmCandidate.reviewSources?.length !== 2 || !llmCandidate.reviewSources.some((source) => source.url === 'https://example.org/employment') || !llmCandidate.reviewSources.some((source) => source.url === 'https://example.org/labour-survey')) throw new Error('all model source leads were not preserved for review');
   const llmNoMatch = audit.clusters.find((item) => item.clusterId === 'llm-no-match');
   if (llmNoMatch.auditClass !== 'source_assessment_review_required' || /suggested a possible source match/i.test(audit.sourceWorkItems.find((item) => item.clusterId === 'llm-no-match')?.reason || '')) throw new Error('a negative model assessment was treated as a coverage decision');
+  if (classes.get('published-llm') !== 'covered_existing_evidence' || audit.sourceWorkItems.some((item) => item.clusterId === 'published-llm')) {
+    throw new Error('a model source lead downgraded an already published and linked claim');
+  }
   if (classes.get('broken') !== 'operational_failure') throw new Error(`operational failure was treated as evidence: ${classes.get('broken')}`);
   const vacancyMetrics = ['job_vacancy_count', 'occupied_job_post_count', 'job_vacancy_rate', 'job_vacancy_rate_quarterly_change'];
   for (const metricId of vacancyMetrics) {
@@ -137,7 +175,7 @@ try {
   await run(process.execPath, ['scripts/knowledge/promote-existing-coverage.mjs', '--audit', auditPath, '--clusters', promotedPath, '--output', promotedAgainPath], { cwd: root });
   const promotedAgain = JSON.parse(await readFile(promotedAgainPath, 'utf8'));
   if (JSON.stringify(promoted.clusters) !== JSON.stringify(promotedAgain.clusters)) throw new Error('promotion is not idempotent');
-  console.log('Coverage audit fixtures passed: reviewed evidence promotes, model suggestions stay in source review, scoped gaps remain gated, and operational failures stay separate.');
+  console.log('Coverage audit fixtures passed: text domains stay scope-matched, paraphrases share evidence requirements, published claims stay covered, model suggestions stay in review, and operational failures stay separate.');
 } finally {
   await rm(dir, { recursive: true, force: true });
 }
