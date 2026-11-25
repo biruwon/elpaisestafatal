@@ -1624,3 +1624,13 @@ foreign-beneficiary evidence, the adjacent Spanish-beneficiary wording against
 its own evidence, and an empty population match without a source. This protects
 source attribution at the filter boundary; it does not resolve the production
 D1 refresh gap or establish accuracy for arbitrary claims.
+
+## Scheduled text-data refresh gate — 25 November 2026
+
+The 25 November scheduled refresh failed before source ingestion because
+`refresh-utils.mjs` imported `isBoeLegalDiscoveryUrl` from the freshness policy,
+but that helper was not exported. The freshness policy now exports the shared
+URL classifier. The refresh-configuration and resilience validators, plus the
+source-freshness validator, pass locally. The same workflow run also reported
+that production D1 sync credentials are absent, so this fix enables the next
+refresh attempt but does not update the production evidence mirror.

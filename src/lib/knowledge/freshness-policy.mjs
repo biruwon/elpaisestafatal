@@ -18,7 +18,7 @@ const staleActionBySchedule = Object.freeze({
   yearly: 'label-limited',
 });
 
-const isBoeLegalDiscoveryUrl = (value) => {
+export const isBoeLegalDiscoveryUrl = (value) => {
   try {
     const url = new URL(String(value));
     return (url.hostname === 'boe.es' || url.hostname.endsWith('.boe.es')) && url.pathname.includes('/legislacion-consolidada/');
