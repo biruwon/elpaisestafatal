@@ -7,7 +7,13 @@ import { promisify } from 'node:util';
 const execute = promisify(execFile);
 let scenario = 'valid';
 let polls = 0;
-const answer = (state) => ({ id: 'fixture', state, result: { evidenceLevel: state, reply: 'Respuesta de prueba', sources: state === 'supported' ? [{ url: 'https://example.org/source' }] : [] } });
+const answer = (state, { family, sourceId } = {}) => ({ id: 'fixture', state, result: {
+  evidenceLevel: state,
+  reply: 'Respuesta de prueba',
+  ...(family ? { answerScope: { family } } : {}),
+  sources: sourceId ? [{ id: sourceId, url: 'https://www.ine.es/ftp/microdatos/ecv/ecv_b2013/datos_2025.zip' }]
+    : state === 'supported' ? [{ url: 'https://example.org/source' }] : [],
+} });
 const server = createServer(async (request, response) => {
   response.setHeader('content-type', 'application/json');
   if (request.method === 'GET' && request.url === '/api/check/pending') {
@@ -24,6 +30,7 @@ const server = createServer(async (request, response) => {
   const input = JSON.parse(body);
   if (input.text.startsWith('España supera')) response.end(JSON.stringify(answer(scenario === 'missing-evidence' ? 'insufficient' : 'supported')));
   else if (input.text === 'No hay trabajo') response.writeHead(202).end(JSON.stringify({ id: 'pending', state: 'processing' }));
+  else if (input.answerScopeFamily && input.requiredSourceId) response.end(JSON.stringify(answer('limited', { family: input.answerScopeFamily, sourceId: input.requiredSourceId })));
   else response.end(JSON.stringify(answer('insufficient')));
 });
 server.listen(0, '127.0.0.1');
