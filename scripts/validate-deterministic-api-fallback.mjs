@@ -1,4 +1,5 @@
 import { deterministicApiFallback } from '../src/lib/knowledge/deterministic-api-fallback.mjs';
+import { INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT } from '../src/lib/knowledge/ine-ecv-personal-benefit-receipt-snapshot.mjs';
 import { deterministicFallbackCompiler, FALLBACK_CLAIM_MAX_CHARS } from './knowledge/fallback-compiler.mjs';
 import { localPublicCheckResponse } from './lib/local-public-check-response.mjs';
 
@@ -616,6 +617,49 @@ for (const [input, expected] of [
     || typeof evidenceGap.nextAction !== 'string' || !evidenceGap.nextAction.trim())) {
     throw new Error(`broad claim fell through to an unstructured evidence gap: ${input}`);
   }
+}
+const immigrationFiscalClaims = [
+  'El impacto fiscal de la inmigración depende mucho de los salarios y de la edad de los inmigrantes',
+  'La inmigración cualificada aporta más fiscalmente que la inmigración atrapada en empleos de bajos salarios',
+  'El saldo fiscal de la población inmigrante cambia según la edad y los ingresos',
+];
+let immigrationFiscalSourceIds;
+for (const claim of immigrationFiscalClaims) {
+  const result = deterministicApiFallback({ text: claim, inputType: 'text', now: politicalReviewedAt });
+  const plan = result.result;
+  const directBalance = plan?.evidenceSummary?.families?.find((family) => family.criterionId === 'immigrant-direct-fiscal-balance');
+  const gap = plan?.blocks?.find((block) => block.type === 'evidence_gap');
+  const publicResult = localPublicCheckResponse(result, claim);
+  const sourceIds = [...(plan?.sourceIds || [])].sort();
+  if (result.status !== 'complete' || plan?.id !== 'broad-immigrant-net-fiscal-contribution'
+    || plan.evidenceLevel !== 'limited'
+    || JSON.stringify(sourceIds) !== JSON.stringify(['airef-immigration-fiscal-review-2025', 'uc3m-immigration-fiscal-study-2020'])
+    || !directBalance?.data?.some((item) => /4\.200 €/.test(item))
+    || !/hogares compuestos exclusivamente por inmigrantes no europeos/.test(directBalance?.dimensions?.population || '')
+    || !/hogar y año/.test(directBalance?.dimensions?.denominator || '')
+    || !gap?.missing?.some((item) => /salarios.*edad.*cualificaci[oó]n/.test(item))
+    || !gap?.needed?.length || !gap?.nextAction?.includes('2017')
+    || !/estructura de edad m[aá]s joven/.test(plan.shareableReply || '')
+    || !/no mide el efecto de los salarios ni compara por cualificaci[oó]n/.test(plan.shareableReply || '')
+    || publicResult.state !== 'limited' || publicResult.result?.evidenceLevel !== 'limited'
+    || !publicResult.result?.sources?.some((source) => source.id === 'airef-immigration-fiscal-review-2025')
+    || !publicResult.result?.sources?.some((source) => source.id === 'uc3m-immigration-fiscal-study-2020')
+    || !/2017/.test(publicResult.result?.reply || '')
+    || !/no mide el efecto de los salarios ni compara por cualificaci[oó]n/.test(publicResult.result?.reply || '')) {
+    throw new Error(`A migration fiscal paraphrase lost its reviewed family, source scope, household denominator, or qualification and salary gap: ${claim}`);
+  }
+  if (immigrationFiscalSourceIds && JSON.stringify(sourceIds) !== JSON.stringify(immigrationFiscalSourceIds)) {
+    throw new Error(`A migration fiscal paraphrase changed its reviewed source family: ${claim}`);
+  }
+  immigrationFiscalSourceIds = sourceIds;
+}
+const immigrationBenefitsReviewedAt = Date.parse(`${INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT.createdAt}T12:00:00Z`);
+const immigrationBenefitsNeighbour = deterministicApiFallback({ text: 'Los inmigrantes reciben más prestaciones que los españoles', inputType: 'text', now: immigrationBenefitsReviewedAt });
+if (immigrationBenefitsNeighbour.result?.id !== 'measurement-migration-benefit-receipt'
+  || immigrationBenefitsNeighbour.result?.sourceIds?.includes('airef-immigration-fiscal-review-2025')
+  || immigrationBenefitsNeighbour.result?.sourceIds?.includes('uc3m-immigration-fiscal-study-2020')
+  || !immigrationBenefitsNeighbour.result?.sourceIds?.includes('ine-ecv-2025-personal-benefit-receipt')) {
+  throw new Error('A benefit-receipt claim crossed into the household net-fiscal packet instead of retaining its ECV evidence family.');
 }
 const immigrationCrime = deterministicApiFallback({ text: 'Los inmigrantes crean inseguridad en España', inputType: 'text' });
 if (!/causa colectiva|diferencia descriptiva/i.test(JSON.stringify(immigrationCrime.result))) throw new Error('immigration/crime causal claim lost its causal limitation');

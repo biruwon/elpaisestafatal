@@ -91,6 +91,21 @@ const reviewedContextForFocusedGap = {
       };
     },
   },
+  'measurement-migration-fiscal-contribution': {
+    packetId: 'broad-immigrant-net-fiscal-contribution',
+    criterionId: 'immigrant-direct-fiscal-balance',
+    evidenceGap: () => ({
+      missing: [
+        'saldo fiscal neto desglosado por ingresos o salarios, edad, situación laboral y nivel de cualificación',
+        'estimación actual para grupos comparables y para los principales ingresos y servicios públicos',
+      ],
+      needed: [
+        'impuestos, cotizaciones, prestaciones y servicios atribuidos a los mismos grupos, con periodo y población definidos',
+        'denominador y método comparables para separar los saldos por edad, salarios y cualificación',
+      ],
+      nextAction: 'Buscar una cuenta fiscal actual que compare grupos por salario, edad y cualificación. El estudio citado cubre hogares no europeos en 2017 y no desglosa el resultado por cualificación ni mide el saldo de cada persona.',
+    }),
+  },
 };
 
 const reviewedContextForGap = (focused, claim, now) => {
