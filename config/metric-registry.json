@@ -2321,5 +2321,26 @@
     "limitations": [
       "This is a monthly nationality share within the Special Agricultural Workers System, reported separately from the General Regime agriculture share. The percentages cannot be combined without compatible affiliate counts and do not measure seasonal work or dependence on foreign workers."
     ]
+  },
+  "experimental_job_vacancies_waiters": {
+    "name": "Experimental annual estimate of job vacancies for waiters and bartenders in Spain",
+    "displayName": "Vacantes estimadas para camareros y bármanes en España",
+    "aliases": [
+      "vacantes estimadas de camareros",
+      "puestos vacantes de camareros y bármanes",
+      "número de vacantes para camareros en España",
+      "job vacancies for waiters and bartenders in Spain"
+    ],
+    "unit": "thousand posts",
+    "population": "Eurostat experimental annual estimate of vacancies for ISCO-08 occupation OC513 (waiters and bartenders) in Spain, derived from online job advertisements and EU-LFS employment data; not cross-classified by economic activity",
+    "dimensions": ["freq", "period", "geo", "isco08", "indic_em", "unit"],
+    "dimensionConstraints": {"freq": "A", "isco08": "OC513", "indic_em": "JOBVAC", "unit": "THS"},
+    "notEquivalentTo": ["job_vacancy_count", "job_vacancy_rate", "occupied_job_post_count"],
+    "supports": ["descriptive"],
+    "limitations": [
+      "Eurostat's annual occupation-by-NUTS-1 vacancy estimates are experimental. They use online job advertisements together with EU-LFS data to allocate national job vacancy totals by occupation and region. The estimate does not identify only hospitality activity or measure offered pay, schedules, applicants, time to fill, or why a vacancy exists.",
+      "For waiter and bartender occupation OC513 in Spain, the 2023–2024 NUTS-1 regional cells are flagged confidential and have no public numeric values; do not substitute the national estimate for a regional answer.",
+      "The 2024 observation is flagged as a break in the series; do not compare it with 2023 as a trend without reviewing the metadata."
+    ]
   }
 }

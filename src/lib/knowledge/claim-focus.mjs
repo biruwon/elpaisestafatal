@@ -129,6 +129,27 @@ const exactForeignAffiliateShareQuestion = (t) => foreignAffiliateSectorPresence
   && /\b(regimen general|sistema especial)\b/.test(t)
   && !/\b(depend\w*|necesit\w*|vacant\w*|condicion\w*|estacional\w*|caus\w*|provoc\w*|porque|debido|por culpa)\b/.test(t);
 export { exactForeignAffiliateShareQuestion };
+const waiterOccupationMention = (t) => /\b(camarer\w*|barman\w*|bartender\w*|waiter\w*)\b/.test(t);
+const waiterVacancyCue = (t) => /\b(vacan\w*|vacanc\w*|puesto\w* sin cubrir|plaza\w* sin cubrir|job vacancies?|open positions?|job openings?)\b/.test(t);
+const waiterVacancyCountRequest = (t) => waiterOccupationMention(t)
+  && waiterVacancyCue(t)
+  && /\b(cuant\w*|numero|cantidad|recuento|total|estim\w*|cifra\w*|dato\w*|how many|number of|count of)\b/.test(t);
+const waiterVacancyTrendRequest = (t) => waiterOccupationMention(t)
+  && waiterVacancyCue(t)
+  && /\b(evoluci\w*|tendencia|aument\w*|sub\w*|crec\w*|disminu\w*|descend\w*|baj\w*|compar\w*|entre (?:19|20)\d{2}|trend|increase\w*|rise|rose|declin\w*|decreas\w*|chang\w*|between (?:19|20)\d{2})\b/.test(t);
+const waiterShortageClaim = (t) => waiterOccupationMention(t)
+  && /\b(falt\w*|escasez|escas\w*|carenc\w*|vacan\w*|vacanc\w*|sin cubrir|no hay|dificultad\w*|cuesta encontrar|es dificil encontrar|no se encuentr\w*|no encuentran|no se consigue contratar|no se cubr\w*|falta de personal|falta de mano de obra|shortage|lack of|not enough|hard to find|cannot find|can t find|difficult to recruit|struggle to hire)\b/.test(t);
+const waiterActivityScopeRequested = (t) => /\b(hosteler\w*|hotel\w*|restaurante\w*|turism\w*|actividad economica|sector economico|hospitality|restaurant\w*|tourism|economic activity|economic sector)\b/.test(t);
+const waiterVacancyExactScopeFits = (t) => !waiterActivityScopeRequested(t)
+  && !requestedGeographyScopes(t).some(({ id, type }) => type === 'country' && id !== 'ES');
+const waiterVacancyFamilyPresence = (t) => !migrationPopulation.test(t)
+  && (waiterVacancyCountRequest(t) || waiterVacancyTrendRequest(t) || waiterShortageClaim(t));
+const exactWaiterVacancyCountQuestion = (t) => waiterVacancyFamilyPresence(t)
+  && waiterVacancyCountRequest(t)
+  && !waiterVacancyTrendRequest(t)
+  && waiterVacancyExactScopeFits(t)
+  && !/\b(caus\w*|provoc\w*|porque|debido|por culpa|salari\w*|sueld\w*|horari\w*|jornada\w*|condicion\w*|aceptable\w*|compens\w*|cause|because|due to|wages?|salary|pay|hours?|schedules?|conditions?|compensation)\b/.test(t);
+export { exactWaiterVacancyCountQuestion, waiterActivityScopeRequested, waiterVacancyCountRequest, waiterVacancyTrendRequest };
 const adultConvictionRateByNationality = (t) => /\b(tasa|por cada mil|por cada 1000|por mil|por 1000)\b/.test(t)
   && /\b(condenad\w*|condena firme|sentencia firme)\b/.test(t)
   && /\b(nacionalidad|extranjer\w*|espanol\w*)\b/.test(t)
@@ -2841,6 +2862,21 @@ const focuses = [
     limitation: 'Las definiciones legales y estadísticas describen cómo se contrata, clasifica y protege a estas personas; no cuantifican cuántas deberían sumarse al paro EPA ni prueban una ocultación. Para medirlo hacen falta microdatos por persona y periodo, no contar contratos o prestaciones como si fueran personas desempleadas.',
   },
   {
+    id: 'waiter-vacancy-and-conditions', label: 'vacantes estimadas para camareros y bármanes',
+    when: waiterVacancyFamilyPresence,
+    direct: [], context: ['experimental_job_vacancies_waiters'],
+    claimTypeFor: (t) => exactWaiterVacancyCountQuestion(normalize(t)) ? 'descriptive'
+      : waiterVacancyTrendRequest(normalize(t)) ? 'trend'
+        : /\b(caus\w*|provoc\w*|porque|debido|por culpa|salari\w*|sueld\w*|horari\w*|jornada\w*|condicion\w*|aceptable\w*|compens\w*|cause|because|due to|wages?|salary|pay|hours?|schedules?|conditions?|acceptable|compensation)\b/.test(normalize(t)) ? 'causal' : 'descriptive',
+    needsForClaim: (claim) => exactWaiterVacancyCountQuestion(normalize(claim))
+      ? ['recuento estimado de vacantes para ISCO-08 OC513 (camareros y bármanes), año y territorio']
+      : waiterVacancyTrendRequest(normalize(claim))
+        ? ['una serie de vacantes para la misma ocupación y territorio sin rupturas metodológicas entre periodos']
+        : ['vacantes, solicitudes y puestos cubiertos para la misma ocupación, territorio y periodo', 'salarios, horarios y condiciones de las ofertas asociadas a esas vacantes', 'datos que relacionen las condiciones ofrecidas con solicitudes, contrataciones y vacantes que siguen abiertas'],
+    explanation: 'Eurostat publica una estimación experimental de vacantes para la ocupación de camareros y bármanes. El dato no identifica solo empleos de hostelería ni explica por qué existe una vacante.',
+    limitation: 'La estimación se basa en anuncios de empleo en línea y datos de empleo de EU-LFS; no mide salarios u horarios ofertados ni la causa de las vacantes. El dato de 2024 lleva una marca de ruptura de serie.',
+  },
+  {
     id: 'unemployment-wage-pressure', label: 'desempleo local, oferta de candidatos y negociación salarial',
     when: unemploymentWagePressure,
     claimType: 'causal',
@@ -3870,7 +3906,10 @@ export const focusedMetricIdsFor = (claim) => {
       : /\bgran dificultad\b/.test(text) && !/\bcon dificultad\b/.test(text) ? 'subjective_poverty_great_difficulty_rate' : undefined
     : undefined;
   const foreignAffiliateMetrics = focus.id === 'foreign-affiliation-in-tourism-and-agriculture' ? foreignAffiliateSectorSelection(text) : [];
+  const waiterVacancyExactMetric = focus.id === 'waiter-vacancy-and-conditions'
+    && exactWaiterVacancyCountQuestion(text) ? ['experimental_job_vacancies_waiters'] : [];
   const direct = focus.id === 'subjective-financial-strain' && subjectiveResponseMetric ? [subjectiveResponseMetric]
+    : waiterVacancyExactMetric.length ? waiterVacancyExactMetric
     : focus.id === 'labour-productivity-and-growth' ? ['real_labour_productivity_per_person', 'real_labour_productivity_per_hour']
     : focus.id === 'household-inflation-basket' && !/\b(alquil\w*|arrendam\w*|viviend\w*)\b/.test(text) ? ['annual_hicp_food_index']
     : focus.id === 'education-employment-outcomes' ? educationOutcomeMetrics(claim)

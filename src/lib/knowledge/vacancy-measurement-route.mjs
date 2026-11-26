@@ -10,6 +10,10 @@ const normalize = (value) => String(value || '')
 // and quarterly rate changes are separate measurements in the source table.
 export const vacancyMeasurementMetricIdsForQuery = (query) => {
   const text = normalize(query);
+  // Occupation-specific claims use their own estimate and dimensions. A
+  // national all-occupation vacancy count must not override them.
+  if (/\b(camarer\w*|barman\w*|bartender\w*|waiter\w*)\b/.test(text)
+    && /\b(vacan\w*|vacanc\w*|plazas? sin cubrir|puestos? sin cubrir|puestos? de trabajo sin cubrir)\b/.test(text)) return undefined;
   const clarifiedMetric = text.match(/\bquiero comprobar (numero de puestos de trabajo vacantes|numero de puestos de trabajo ocupados|tasa de vacantes de empleo)\s*$/);
   if (clarifiedMetric) {
     const selectedMetric = {

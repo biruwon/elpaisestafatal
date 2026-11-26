@@ -374,6 +374,12 @@
       "metricId": "mean_hourly_earnings_by_activity"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/jvs_a_isco3_r1?geo=ES&geo=ES1&geo=ES2&geo=ES3&geo=ES4&geo=ES5&geo=ES6&geo=ES7&freq=A&isco08=OC513&indic_em=JOBVAC&unit=THS&sinceTimePeriod=2023",
+      "title": "Vacantes estimadas para camareros y bármanes · Eurostat (estadística experimental)",
+      "aliases": ["vacantes estimadas de camareros", "puestos vacantes de camareros y bármanes", "job vacancies for waiters and bartenders in Spain"],
+      "metricId": "experimental_job_vacancies_waiters"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_ses22_16?freq=A&sex=T&indic_se=ERN&isced11=ED0-2&isced11=ED3_4&isced11=ED5-8&sizeclas=GE10&nace_r2=B-S_X_O&unit=EUR&geo=ES&time=2022&lang=EN",
       "title": "Salario bruto medio por hora según estudios alcanzados, 2022 · Eurostat",
       "aliases": ["salario bruto medio por hora según nivel educativo", "ganancia media por hora por nivel de estudios", "remuneración bruta media por hora según estudios alcanzados"],

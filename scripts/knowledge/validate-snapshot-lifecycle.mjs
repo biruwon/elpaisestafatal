@@ -4,6 +4,7 @@ import { HICP_BASKET_SNAPSHOT } from '../../src/lib/knowledge/hicp-basket-snapsh
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../../src/lib/knowledge/education-earnings-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from '../../src/lib/knowledge/tourist-housing-snapshot.mjs';
 import { HOUSEHOLD_BUDGET_SNAPSHOT, HOUSEHOLD_SAVING_SNAPSHOT } from '../../src/lib/knowledge/household-budget-snapshot.mjs';
+import { WAITER_VACANCY_SNAPSHOT } from '../../src/lib/knowledge/waiter-vacancy-snapshot.mjs';
 import { snapshotLifecycle } from '../../src/lib/knowledge/snapshot-lifecycle.mjs';
 
 const required = ['owner', 'createdAt', 'expiresAt', 'refreshCommand', 'validationStatus', 'supportedScope', 'unsupportedScope'];
@@ -19,6 +20,7 @@ assertPolicy('education-earnings', EDUCATION_EARNINGS_SNAPSHOT);
 assertPolicy('tourist-housing', TOURIST_HOUSING_SNAPSHOT);
 assertPolicy('household-budget', HOUSEHOLD_BUDGET_SNAPSHOT);
 assertPolicy('household-saving', HOUSEHOLD_SAVING_SNAPSHOT);
+assertPolicy('waiter-vacancies', WAITER_VACANCY_SNAPSHOT);
 const expired = snapshotLifecycle({ ...BROAD_SNAPSHOT_POLICY, createdAt: '2024-01-01', expiresAt: '2025-01-01' }, Date.parse('2026-08-20'));
 if (expired.usable || expired.status !== 'expired') throw new Error('Expired snapshot was still usable for factual context');
 const pending = snapshotLifecycle({ ...BROAD_SNAPSHOT_POLICY, createdAt: '2026-08-19', validationStatus: 'pending' }, Date.parse('2026-08-20'));

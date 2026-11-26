@@ -114,6 +114,10 @@ const check = async (text, DB = emptyDatabase) => {
   const response = await api.onRequestPost(context(text, DB));
   return { httpStatus: response.status, body: await response.json() };
 };
+const checkWithoutDatabase = async (text) => {
+  const response = await api.onRequestPost(context(text, undefined));
+  return { httpStatus: response.status, body: await response.json() };
+};
 
 const tourismEmploymentClaim = 'España depende demasiado del turismo para sostener el empleo';
 const tourismEmployment = await check(tourismEmploymentClaim);
@@ -930,6 +934,65 @@ const mortgageMadrid = await check('En Madrid la entrada de una hipoteca es una 
 assert.equal(mortgageMadrid.body.state, 'insufficient');
 assert.deepEqual(mortgageMadrid.body.result.sources, []);
 assert.doesNotMatch(mortgageMadrid.body.result.reply, /86 %|35 %/);
+
+const waiterCount = await check('¿Cuántas vacantes estimó Eurostat para camareros y bármanes en España en 2024?');
+assert.equal(waiterCount.body.state, 'limited');
+assert.equal(waiterCount.body.result.answerScope.family, 'waiter-vacancy-and-conditions');
+assert.deepEqual(waiterCount.body.result.answerScope.directMetrics, ['experimental_job_vacancies_waiters']);
+assert.equal(waiterCount.body.result.arguments[0].verdict, 'supported');
+assert.match(waiterCount.body.result.reply, /5,12 mil puestos vacantes.*estimaci[oó]n experimental/s);
+assert.match(waiterCount.body.result.reply, /ruptura de serie/);
+assert.ok(waiterCount.body.result.sources.some((source) => source.id === 'eurostat-experimental-waiter-vacancies-2024'));
+const waiterCountNoDatabase = await checkWithoutDatabase('¿Cuántas vacantes estimó Eurostat para camareros y bármanes en España en 2024?');
+assert.equal(waiterCountNoDatabase.body.state, 'limited', 'The reviewed text snapshot should remain usable without a D1 binding');
+assert.match(waiterCountNoDatabase.body.result.reply, /5,12 mil puestos vacantes/);
+
+for (const claim of [
+  'La supuesta falta de camareros es en realidad una falta de empleos con salario y horario aceptables',
+  'Los salarios y horarios de los puestos ofrecidos explican la escasez de camareros',
+]) {
+  const waiterShortage = await check(claim);
+  assert.equal(waiterShortage.body.state, 'limited');
+  assert.equal(waiterShortage.body.result.answerScope.family, 'waiter-vacancy-and-conditions');
+  assert.deepEqual(waiterShortage.body.result.answerScope.directMetrics, []);
+  assert.deepEqual(waiterShortage.body.result.answerScope.contextMetrics, ['experimental_job_vacancies_waiters']);
+  assert.equal(waiterShortage.body.result.arguments[0].verdict, 'insufficient');
+  assert.deepEqual(waiterShortage.body.result.arguments[0].sourceIds, []);
+  assert.deepEqual(waiterShortage.body.result.arguments[0].contextSourceIds.sort(), [
+    'eurostat-experimental-waiter-vacancies-2024', 'eurostat-job-vacancies-occupation-methodology',
+  ].sort());
+  assert.match(waiterShortage.body.result.reply, /no mide salarios, horarios ni las razones/);
+  assert.match(waiterShortage.body.result.reply, /no demuestra que las condiciones expliquen/);
+}
+const waiterTrend = await check('¿Aumentaron las vacantes de camareros entre 2023 y 2024?');
+assert.equal(waiterTrend.body.state, 'limited');
+assert.equal(waiterTrend.body.result.arguments[0].verdict, 'insufficient');
+assert.deepEqual(waiterTrend.body.result.answerScope.directMetrics, []);
+assert.match(waiterTrend.body.result.reply, /No puede establecerse la tendencia.*ruptura de serie/s);
+assert.doesNotMatch(waiterTrend.body.result.reply, /aumentaron en 0,39|subieron un 8/i);
+
+const waiterRegional = await check('¿Cuántas vacantes de camarero hay en Madrid?');
+assert.equal(waiterRegional.body.state, 'limited');
+assert.equal(waiterRegional.body.result.answerScope.family, 'waiter-vacancy-and-conditions');
+assert.deepEqual(waiterRegional.body.result.answerScope.directMetrics, ['experimental_job_vacancies_waiters']);
+assert.equal(waiterRegional.body.result.arguments[0].verdict, 'insufficient');
+assert.deepEqual(waiterRegional.body.result.arguments[0].sourceIds, []);
+assert.deepEqual(waiterRegional.body.result.arguments[0].contextSourceIds.sort(), [
+  'eurostat-experimental-waiter-vacancies-2024', 'eurostat-job-vacancies-occupation-methodology',
+].sort());
+assert.match(waiterRegional.body.result.reply, /celdas regionales de España.*confidenciales/);
+assert.doesNotMatch(waiterRegional.body.result.reply, /5,12 mil|4,73 mil/);
+const waiterHospitality = await check('¿Cuántas vacantes de camareros hay en hostelería?');
+assert.equal(waiterHospitality.body.state, 'limited');
+assert.deepEqual(waiterHospitality.body.result.answerScope.directMetrics, []);
+assert.match(waiterHospitality.body.result.reply, /no identifica solo vacantes de hostelería/);
+const waiterFutureYear = await check('¿Cuántas vacantes de camareros había en España en 2026?');
+assert.equal(waiterFutureYear.body.state, 'limited');
+assert.match(waiterFutureYear.body.result.reply, /estimaci[oó]n compatible para 2026/);
+assert.doesNotMatch(waiterFutureYear.body.result.reply, /5,12 mil|4,73 mil/);
+const waiterUnavailable = await check('¿Cuántas vacantes de camareros hay en España?', brokenDatabase);
+assert.equal(waiterUnavailable.body.state, 'unavailable', 'A failed D1 lookup must not be replaced with the reviewed snapshot');
+assert.doesNotMatch(waiterUnavailable.body.result?.reply || '', /5,12 mil|4,73 mil/);
 
 await Promise.all(pending);
 console.log('Reviewed text snapshot Pages fallback passed: empty D1 uses scoped answers, unsupported comparisons exclude mismatched statistics, and failed D1 reads remain unavailable.');

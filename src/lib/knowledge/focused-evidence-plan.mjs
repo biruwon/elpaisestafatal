@@ -1,4 +1,4 @@
-import { claimFocusFor, exactForeignAffiliateShareQuestion, focusedMetricIdsFor, privateHealthcareAccessClaimType, tertiaryOverqualificationCitizenshipFitsClaim } from './claim-focus.mjs';
+import { claimFocusFor, exactForeignAffiliateShareQuestion, exactWaiterVacancyCountQuestion, focusedMetricIdsFor, privateHealthcareAccessClaimType, tertiaryOverqualificationCitizenshipFitsClaim, waiterActivityScopeRequested, waiterVacancyTrendRequest } from './claim-focus.mjs';
 import measurementDefinitions, { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { realWagePlan } from './real-wage-comparison.mjs';
@@ -18,6 +18,7 @@ import { periodScopeMatcherFor } from './period-scope.mjs';
 import { geographyScopeMatcherFor, requestedGeographyScopes } from './geography-scope.mjs';
 import { sexScopeMatcherFor } from './sex-scope.mjs';
 import { metricDimensionContractFits } from './metric-contract.mjs';
+import { WAITER_VACANCY_SNAPSHOT } from './waiter-vacancy-snapshot.mjs';
 
 const vocabulary = new Map(metricVocabulary.map((metric) => [metric.id, metric]));
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -36,6 +37,8 @@ const observationFitsClaim = (claim) => {
     if (/^primary_care_wait_/.test(item.metricId || '') && requestedPrimaryCareWave
       && String(item.dimensions?.surveyWave || '') !== requestedPrimaryCareWave) return false;
     if (!tertiaryOverqualificationCitizenshipFitsClaim(claim, item)) return false;
+    if (item.metricId === 'experimental_job_vacancies_waiters' && requestedTerritories.length === 0
+      && String(item.dimensions?.geo || '').toUpperCase() !== 'ES') return false;
     if (['subjective_poverty_rate', 'subjective_poverty_difficulty_rate', 'subjective_poverty_great_difficulty_rate'].includes(item.metricId)
       && /\b(?:hogares? (?:unipersonales?|monoparentales?|con (?:hijos?|menores|dependientes)|sin hijos?)|familias? monoparentales?|personas que viven solas|madres? solas|padres? solos)\b/.test(text)
       && item.dimensions?.hhcomp === 'TOTAL') return false;
@@ -92,6 +95,7 @@ const labels = {
   foreign_affiliate_share_hospitality_rg: 'Afiliados del Régimen General en hostelería con nacionalidad extranjera',
   foreign_affiliate_share_agriculture_rg: 'Afiliados del Régimen General en agricultura con nacionalidad extranjera',
   foreign_affiliate_share_agricultural_special_system: 'Afiliados del Sistema Especial de Trabajadores Agrarios con nacionalidad extranjera',
+  experimental_job_vacancies_waiters: 'Vacantes estimadas para camareros y bármanes',
 };
 const unitFor = (item) => /^(?:household|industrial)_electricity_price/.test(item.metricId || '') && item.dimensions?.currency && (item.dimensions?.unit === 'KWH' || /^(?:kilowatt-hour|kwh)$/i.test(item.unit || ''))
   ? `${item.dimensions.currency === 'EUR' ? '€' : item.dimensions.currency}/kWh`
@@ -983,6 +987,14 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     : subjectiveHouseholdShareRequested ? ['porcentaje de hogares, no solo proporción de población residente en hogares que responden así', 'periodo, territorio y población comparables']
     : subjectiveIndividualClaim ? ['medición directa de la situación del hogar o la persona concreta; la encuesta publicada resume a la población']
     : asksAboutMakingEndsMeet ? ['cruce de la dificultad declarada con la situación laboral y la jornada de las personas consultadas', 'periodo y población comparables']
+    : focus.id === 'waiter-vacancy-and-conditions' && requestedGeographyScopes(claim).some(({ type }) => type === 'region')
+      ? ['valor público para la ocupación ISCO-08 OC513 en el territorio solicitado; no sustituir celdas regionales confidenciales por la estimación nacional']
+      : focus.id === 'waiter-vacancy-and-conditions' && exactWaiterVacancyCountQuestion(normalizedClaim)
+        ? ['estimación anual de vacantes para ISCO-08 OC513 (camareros y bármanes), territorio y periodo solicitados']
+        : focus.id === 'waiter-vacancy-and-conditions' && waiterActivityScopeRequested(normalizedClaim)
+          ? ['vacantes de camareros y bármanes desglosadas por actividad económica para aislar hostelería']
+          : focus.id === 'waiter-vacancy-and-conditions' && waiterVacancyTrendRequest(normalizedClaim)
+            ? ['una serie de vacantes para la misma ocupación y territorio sin rupturas metodológicas entre periodos']
     : focus.id === 'working-poverty' && workingPovertyCountRequested ? ['recuento anual de personas ocupadas bajo el umbral de riesgo de pobreza, con población y periodos comparables']
     : focus.id === 'working-poverty' && workingPovertyWorktimeComparisonRequested ? ['tasas de riesgo de pobreza comparables para jornada completa y parcial en el mismo periodo, con definición y población compatibles']
     : focus.id === 'working-poverty' && partTime ? ['tasa de riesgo de pobreza entre personas ocupadas a tiempo parcial, con periodo y población definidos']
@@ -1002,7 +1014,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         ] : typeof focus.needsForClaim === 'function' ? focus.needsForClaim(claim) : focus.needs;
   const directIds = asksAboutMakingEndsMeet || workingPovertyCountRequested ? [] : ids.filter((id) =>
     (!subjectiveHouseholdShareRequested || !['subjective_poverty_rate', ...Object.values(SUBJECTIVE_POVERTY_COMPONENT_METRICS)].includes(id))
-      && (allowedDirect.includes(id) || allowedDirect.includes(id.replace(/_europe$/, ''))));
+      && (allowedDirect.includes(id) || allowedDirect.includes(id.replace(/_europe$/, ''))
+        || focus.id === 'waiter-vacancy-and-conditions' && exactWaiterVacancyCountQuestion(normalizedClaim) && id === 'experimental_job_vacancies_waiters'));
   const fitsClaim = observationFitsClaim(claim);
   const subjectiveComponentIds = new Set(Object.values(SUBJECTIVE_POVERTY_COMPONENT_METRICS));
   const displayIds = ids.filter((id) => !subjectiveComponentIds.has(id) || !ids.includes('subjective_poverty_rate'));
@@ -1032,6 +1045,14 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         : 'La cuota incluida es nacional y no describe el empleo turístico de cada región.',
     ].join(' ')
     : educationOutcome ? educationOutcomeLimitation(ids, focus.limitation, educationQuestion, educationOutcomeCausalClaim)
+    : focus.id === 'waiter-vacancy-and-conditions' ? [
+      focus.limitation,
+      requestedGeographyScopes(claim).some(({ type }) => type === 'region')
+        ? snapshotLifecycle(WAITER_VACANCY_SNAPSHOT, now).usable
+          ? 'La tabla tiene desglose NUTS 1, pero las celdas regionales españolas de OC513 en 2023 y 2024 están marcadas confidenciales; el total nacional no responde al territorio solicitado.'
+          : 'La evidencia consultada no contiene un valor regional; no se sustituye por el total nacional.' : '',
+      waiterActivityScopeRequested(normalizedClaim) ? 'La fuente no cruza la ocupación con la actividad económica; no identifica solo hostelería.' : '',
+    ].filter(Boolean).join(' ')
     : focus.id === 'working-poverty' ? 'El umbral relativo de pobreza y la respuesta subjetiva del hogar son medidas distintas. EU-SILC no cruza la dificultad declarada con la jornada laboral; el desglose por jornada tampoco incluye la edad. El dato no demuestra que el tipo de jornada cause el riesgo. El periodo es el año de la encuesta EU-SILC y los ingresos del umbral de pobreza pueden referirse a un año anterior.'
     : focus.id === 'sector-wage-comparison' ? [
       comparesSectorEmployment
@@ -1079,7 +1100,11 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const subjectiveDefinitionSources = focus.id === 'subjective-financial-strain'
     || focus.id === 'working-poverty' && asksAboutMakingEndsMeet
     ? measurementDefinitions.subjective_poverty_rate?.definition?.sources || [] : [];
-  const sources = [...new Map([...facts.flatMap((fact) => fact.items.map((item) => item.source)), ...subjectiveDefinitionSources, ...(explanation?.sources || [])].map((source) => [source.id, source])).values()];
+  const waiterScopeEvidenceAvailable = focus.id === 'waiter-vacancy-and-conditions'
+    && snapshotLifecycle(WAITER_VACANCY_SNAPSHOT, now).usable;
+  const waiterScopeSources = waiterScopeEvidenceAvailable
+    ? [WAITER_VACANCY_SNAPSHOT.observations[0]?.source, WAITER_VACANCY_SNAPSHOT.methodologySource].filter(Boolean) : [];
+  const sources = [...new Map([...facts.flatMap((fact) => fact.items.map((item) => item.source)), ...subjectiveDefinitionSources, ...(explanation?.sources || []), ...waiterScopeSources].map((source) => [source.id, source])).values()];
   const workingPovertyTrends = new Map(facts.flatMap((fact) => {
     const trend = workingPovertyTrendRequested ? workingPovertyTrend(fact) : undefined;
     return trend ? [[fact.id, trend]] : [];
@@ -1090,6 +1115,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && (!workingPovertyTrendRequested || workingPovertyTrends.has(fact.id)));
   const foreignAffiliateExactShareMeasured = foreignAffiliateExactShareClaim
     && direct.length === ids.length && ids.length > 0;
+  const waiterVacancyExactCountMeasured = focus.id === 'waiter-vacancy-and-conditions'
+    && exactWaiterVacancyCountQuestion(normalizedClaim)
+    && direct.some((fact) => fact.id === 'experimental_job_vacancies_waiters');
   const context = facts.filter((fact) => !direct.includes(fact));
   const factFinding = (fact) => educationOutcome ? educationOutcomeFinding(fact)
     : fact.id === 'subjective_poverty_rate' ? subjectivePovertyFinding(fact)
@@ -1166,6 +1194,17 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     ? [...new Set(context.flatMap((fact) => fact.sourceIds))] : [];
   const contextualForeignAffiliateFinding = focus.id === 'foreign-affiliation-in-tourism-and-agriculture'
     ? context.map((fact) => factFinding(fact)).join(' ') : '';
+  const contextualWaiterVacancySourceIds = focus.id === 'waiter-vacancy-and-conditions'
+    ? [...new Set([
+      ...context.flatMap((fact) => fact.sourceIds),
+      ...(waiterScopeEvidenceAvailable && direct.length === 0 ? waiterScopeSources.map((source) => source.id) : []),
+    ])] : [];
+  const contextualWaiterVacancyFinding = focus.id === 'waiter-vacancy-and-conditions'
+    ? context.map((fact) => factFinding(fact)).join(' ') || (waiterScopeEvidenceAvailable
+      ? requestedGeographyScopes(claim).some(({ type }) => type === 'region')
+        ? 'Eurostat publica la desagregación NUTS 1, pero las celdas regionales españolas de OC513 en 2023 y 2024 llevan la marca C (confidencial); no hay un recuento regional público.'
+        : `La extracción revisada de Eurostat disponible a ${WAITER_VACANCY_SNAPSHOT.asOf} no contiene una observación compatible con el periodo y el territorio solicitados.`
+      : '') : '';
   const explanationMeasuresClaim = Boolean(explanationSupportsClaim && explanationFacts.length && explanation.sources?.length);
   const subjectivePovertyHeadline = focus.id === 'subjective-financial-strain' && direct.length === 1
     ? (() => {
@@ -1364,6 +1403,48 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       !exactShareQuestion ? 'Para comprobar esa explicación hacen falta datos comparables de vacantes, contrataciones y condiciones por sector, territorio y periodo.' : '',
     ].filter(Boolean).join('\n\n');
   })();
+  const waiterVacancyReply = (() => {
+    if (focus.id !== 'waiter-vacancy-and-conditions') return undefined;
+    const fact = facts.find((item) => item.id === 'experimental_job_vacancies_waiters');
+    const requestedYear = normalizedClaim.match(/\b(?:19|20)\d{2}\b/)?.[0];
+    const requestedRegion = requestedGeographyScopes(claim).some(({ type }) => type === 'region');
+    const requestedCountryOutsideSpain = requestedGeographyScopes(claim).some(({ id, type }) => type === 'country' && id !== 'ES');
+    const activityScope = waiterActivityScopeRequested(normalizedClaim);
+    const requestedRegionalCellIsKnownConfidential = waiterScopeEvidenceAvailable && requestedRegion
+      && (!requestedYear || WAITER_VACANCY_SNAPSHOT.regionalAvailability.periods.includes(requestedYear));
+    if (!fact) return [
+      requestedYear ? `No se ha localizado una estimación compatible para ${requestedYear}.` : 'No se ha localizado una estimación compatible en la evidencia revisada.',
+      requestedRegionalCellIsKnownConfidential
+        ? `Eurostat ofrece un desglose NUTS 1, pero las celdas regionales de España para OC513 en ${requestedYear || WAITER_VACANCY_SNAPSHOT.regionalAvailability.periods.join(' y ')} están marcadas «C» (confidenciales); no hay una cifra regional pública.`
+        : requestedRegion ? 'La estimación nacional no permite responder para la comunidad autónoma o el territorio solicitado.' : '',
+      requestedCountryOutsideSpain ? 'La estimación revisada corresponde a España; no se usa para responder sobre otro país.' : '',
+      activityScope ? 'La estimación disponible no está desglosada por actividad económica y no permite aislar hostelería.' : '',
+      'No presentamos una cifra de otro periodo o territorio como si respondiera a esta pregunta.',
+    ].filter(Boolean).join('\n\n');
+    const latest = fact.latest;
+    const count = `${number(latest.value, fact.id)} mil puestos vacantes`;
+    const year = periodLabel(latest.period);
+    const source = latest.source?.publisher || 'Eurostat';
+    const exactCount = exactWaiterVacancyCountQuestion(normalizedClaim);
+    const trendRequest = waiterVacancyTrendRequest(normalizedClaim);
+    if (exactCount) return [
+      `${source} (España, ${year}): estimó ${count} para la ocupación ISCO-08 OC513 (camareros y bármanes), en todas las actividades económicas.`,
+      'Es una estimación experimental, no un recuento exclusivo de hostelería.',
+      String(latest.status || '').toLowerCase().includes('b') ? 'Eurostat marca 2024 con «b» por ruptura de serie; no debe compararse con 2023 como una tendencia.' : '',
+    ].filter(Boolean).join('\n\n');
+    const periods = fact.items.map((item) => ({ period: item.period, value: item.value, status: item.status }))
+      .sort((left, right) => String(left.period).localeCompare(String(right.period)));
+    const periodFindings = periods.map((item) => `${periodLabel(item.period)}: ${number(item.value, fact.id)} mil`).join('; ');
+    const breakYear = periods.find((item) => String(item.status || '').toLowerCase().includes('b'))?.period;
+    return [
+      `${source} estima vacantes para España y la ocupación ISCO-08 OC513 (camareros y bármanes), en todas las actividades económicas: ${periodFindings || `${year}: ${count}`}.`,
+      trendRequest
+        ? `No puede establecerse la tendencia: ${breakYear ? `el dato de ${breakYear} lleva la marca «b» por ruptura de serie` : 'la evidencia no aporta una serie comparable'}. No calculamos una subida o bajada entre periodos no comparables.`
+        : breakYear ? `La marca «b» en ${breakYear} señala una ruptura; no interpretes las cifras como una tendencia.` : '',
+      activityScope ? 'La tabla no cruza la ocupación con la actividad económica, así que no identifica solo vacantes de hostelería.' : '',
+      'El dato no mide salarios, horarios ni las razones por las que quedan vacantes; por sí solo no demuestra que las condiciones expliquen la falta de camareros.',
+    ].filter(Boolean).join('\n\n');
+  })();
   const workingPovertyEndsMeetReply = (() => {
     if (focus.id !== 'working-poverty' || !asksAboutMakingEndsMeet) return undefined;
     const povertyFact = primaryFacts.find((fact) => /^in_work_poverty_/.test(fact.id));
@@ -1453,6 +1534,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const foreignAffiliateSectorHeadline = focus.id === 'foreign-affiliation-in-tourism-and-agriculture' && facts.length
     ? `Afiliación extranjera por sector · ${periodLabel(facts[0].latest.period)}`
     : undefined;
+  const waiterVacancyHeadline = focus.id === 'waiter-vacancy-and-conditions' && facts.length
+    ? `Vacantes estimadas para camareros y bármanes · ${periodLabel(facts.find((fact) => fact.id === 'experimental_job_vacancies_waiters')?.latest.period || facts[0].latest.period)}`
+    : undefined;
   const directThresholdComparisonNote = directThresholdAssessment
     ? (() => {
       const fact = direct.find((item) => item.id === directThresholdAssessment.metricId);
@@ -1464,12 +1548,14 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       return `El dato (${number(directThresholdAssessment.actual, fact.id)}${suffix}) ${position}; ${directThresholdAssessment.verdict === 'supported' ? 'respalda' : 'contradice'} esa parte.`;
     })()
     : '';
-  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || foreignAffiliateSectorReply || tourismEmploymentReply || workingPovertyEndsMeetReply || touristHousingReply || educationPayReply || electricityIndustryCostsReply || ruralUrbanAccessReply || mentalHealthPsychologistCountReply || mentalHealthPsychologistCapacityReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || foreignAffiliateSectorReply || waiterVacancyReply || tourismEmploymentReply || workingPovertyEndsMeetReply || touristHousingReply || educationPayReply || electricityIndustryCostsReply || ruralUrbanAccessReply || mentalHealthPsychologistCountReply || mentalHealthPsychologistCapacityReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
     directThresholdComparisonNote,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const hasReviewedForeignAffiliateContext = focus.id === 'foreign-affiliation-in-tourism-and-agriculture'
     && context.some((fact) => fact.sourceIds.length > 0);
-  const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length || hasReviewedForeignAffiliateContext ? 'limited' : 'insufficient';
+  const hasReviewedWaiterVacancyContext = focus.id === 'waiter-vacancy-and-conditions'
+    && (context.some((fact) => fact.sourceIds.length > 0) || contextualWaiterVacancySourceIds.length > 0);
+  const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length || hasReviewedForeignAffiliateContext || hasReviewedWaiterVacancyContext ? 'limited' : 'insufficient';
   const families = displayIds.map((id) => {
     const matching = facts.filter((fact) => fact.id === id);
     return {
@@ -1557,7 +1643,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   }
   return {
     id: `measurement-${focus.id}`, schemaVersion: '1', evidenceLevel, coverage: facts.length || explanation ? 'qualified' : 'insufficient',
-    claimType, headline: subjectivePovertyHeadline || specialistOutpatientComparisonHeadline || workingPovertyComparison?.headline || workingPovertyTrends.get(direct[0]?.id)?.headline || tourismEmploymentHeadline || foreignAffiliateSectorHeadline
+    claimType, headline: subjectivePovertyHeadline || specialistOutpatientComparisonHeadline || workingPovertyComparison?.headline || workingPovertyTrends.get(direct[0]?.id)?.headline || tourismEmploymentHeadline || foreignAffiliateSectorHeadline || waiterVacancyHeadline
       || (focus.id === 'working-poverty' && direct.length
         ? fullTime && partTime ? 'Datos de riesgo de pobreza por jornada'
           : fullTime ? 'El empleo a jornada completa no elimina el riesgo de pobreza'
@@ -1569,11 +1655,13 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     blocks: [
       { type: 'claim_breakdown', items: [{ text: claim, type: claimType, explicit: true, evidenceIds: educationOutcomeCausalClaim ? [] : directEvidenceIds, sourceIds: educationOutcomeCausalClaim ? [] : directSourceIds,
         ...(contextualForeignAffiliateSourceIds.length ? { contextSourceIds: contextualForeignAffiliateSourceIds, contextFinding: contextualForeignAffiliateFinding } : {}),
+        ...(contextualWaiterVacancySourceIds.length ? { contextSourceIds: contextualWaiterVacancySourceIds, contextFinding: contextualWaiterVacancyFinding } : {}),
         verdict: explanationMeasuresClaim ? explanation.claimVerdictFor?.(claim) || explanation.claimVerdict || specialistOutpatientComparison?.verdict || 'mixed'
+          : waiterVacancyExactCountMeasured ? 'supported'
           : foreignAffiliateExactShareMeasured ? 'supported'
           : educationOutcome ? directThresholdAssessment?.verdict || 'insufficient'
-            : directThresholdAssessment?.verdict || (focus.id === 'working-poverty' ? workingPovertyVerdict : 'insufficient'), evidenceLevel: directEvidenceIds.length && !educationOutcomeCausalClaim ? 'limited' : 'none',
-        finding: educationOutcomeCausalClaim ? undefined : explanationMeasuresClaim ? explanationFacts.join(' ') : workingPovertyComparison?.finding || (direct.length ? direct.slice(0, 2).map(factFinding).join(' ') : undefined) }], propositionIds: ['submitted-claim'] },
+            : directThresholdAssessment?.verdict || (focus.id === 'working-poverty' ? workingPovertyVerdict : 'insufficient'), evidenceLevel: directEvidenceIds.length && !educationOutcomeCausalClaim || contextualWaiterVacancySourceIds.length ? 'limited' : 'none',
+        finding: educationOutcomeCausalClaim ? undefined : explanationMeasuresClaim ? explanationFacts.join(' ') : workingPovertyComparison?.finding || (direct.length ? direct.slice(0, 2).map(factFinding).join(' ') : contextualWaiterVacancyFinding || undefined) }], propositionIds: ['submitted-claim'] },
       ...explanationBlocks,
       ...facts.map((fact) => ({ type: 'data_finding', ...(educationOutcomeCausalClaim || context.includes(fact) ? { dataKind: 'context' } : {}), evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [factFinding(fact)] })),
       ...(missing.length ? [{ type: 'evidence_gap', missing, needed: missing, nextAction: tourismRegionalSectorComparison

@@ -3711,4 +3711,90 @@ export const textAnswerAccuracyCases = [
       maxReplyWords: 100,
     },
   },
+  {
+    id: 'waiter-shortage-conditions-context',
+    equivalenceGroup: 'waiter-shortage-conditions-context-spain-2023-2024',
+    now: '2026-11-26T12:00:00Z',
+    input: 'La supuesta falta de camareros es en realidad una falta de empleos con salario y horario aceptables',
+    expected: {
+      state: 'limited', family: 'waiter-vacancy-and-conditions', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['2023: 4,73 mil', '2024: 5,12 mil', 'ruptura', 'no mide salarios, horarios', 'no demuestra que las condiciones expliquen'],
+      replyExcludes: ['la ruptura demuestra una subida', 'la falta está causada por los salarios'],
+      evidence: [{
+        familyId: 'experimental_job_vacancies_waiters', sourceIds: ['eurostat-experimental-waiter-vacancies-2024'],
+        dataIncludes: ['5,12 thousand posts (2024)'],
+        dimensions: { period: '2024', geography: 'España', population: 'ISCO-08 OC513', unit: 'thousand posts' },
+      }],
+      maxReplyWords: 130,
+    },
+  },
+  {
+    id: 'waiter-shortage-conditions-context-paraphrase',
+    equivalenceGroup: 'waiter-shortage-conditions-context-spain-2023-2024',
+    now: '2026-11-26T12:00:00Z',
+    input: 'Los salarios y horarios de los puestos ofrecidos explican la escasez de camareros',
+    expected: {
+      state: 'limited', family: 'waiter-vacancy-and-conditions', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['2023: 4,73 mil', '2024: 5,12 mil', 'ruptura', 'no mide salarios, horarios', 'no demuestra que las condiciones expliquen'],
+      replyExcludes: ['la ruptura demuestra una subida', 'la falta está causada por los salarios'],
+      evidence: [{
+        familyId: 'experimental_job_vacancies_waiters', sourceIds: ['eurostat-experimental-waiter-vacancies-2024'],
+        dataIncludes: ['5,12 thousand posts (2024)'],
+        dimensions: { period: '2024', geography: 'España', population: 'ISCO-08 OC513', unit: 'thousand posts' },
+      }],
+      maxReplyWords: 130,
+    },
+  },
+  {
+    id: 'waiter-vacancy-exact-count-2024',
+    now: '2026-11-26T12:00:00Z',
+    input: '¿Cuántas vacantes estimó Eurostat para camareros y bármanes en España en 2024?',
+    expected: {
+      state: 'limited', family: 'waiter-vacancy-and-conditions', verdict: 'supported', directSourceIds: ['eurostat-experimental-waiter-vacancies-2024'],
+      replyIncludes: ['5,12 mil puestos vacantes', 'España, 2024', 'ISCO-08 OC513', 'estimación experimental', 'ruptura de serie'],
+      replyExcludes: ['4,73 mil', 'hostelería exclusivamente'],
+      evidence: [{
+        familyId: 'experimental_job_vacancies_waiters', sourceIds: ['eurostat-experimental-waiter-vacancies-2024'],
+        dataIncludes: ['5,12 thousand posts (2024)'],
+        dimensions: { period: '2024', geography: 'España', population: 'ISCO-08 OC513', denominator: 'Not a rate', unit: 'thousand posts' },
+      }],
+      maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'waiter-vacancy-trend-break-2023-2024',
+    now: '2026-11-26T12:00:00Z',
+    input: '¿Aumentaron las vacantes de camareros entre 2023 y 2024?',
+    expected: {
+      state: 'limited', family: 'waiter-vacancy-and-conditions', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['2023: 4,73 mil', '2024: 5,12 mil', 'No puede establecerse la tendencia', 'ruptura de serie', 'No calculamos una subida'],
+      replyExcludes: ['aumentaron en 0,39', 'subieron un 8'],
+      evidence: [{
+        familyId: 'experimental_job_vacancies_waiters', sourceIds: ['eurostat-experimental-waiter-vacancies-2024'],
+        dataIncludes: ['5,12 thousand posts (2024)'],
+        dimensions: { period: '2024', geography: 'España', population: 'ISCO-08 OC513' },
+      }],
+      maxReplyWords: 130,
+    },
+  },
+  {
+    id: 'waiter-vacancy-regional-scope-madrid',
+    now: '2026-11-26T12:00:00Z',
+    input: '¿Cuántas vacantes de camarero hay en Madrid?',
+    expected: {
+      state: 'limited', family: 'waiter-vacancy-and-conditions', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['No se ha localizado una estimación compatible', 'desglose NUTS 1', 'celdas regionales de España', 'confidenciales', 'no hay una cifra regional pública'],
+      replyExcludes: ['5,12 mil', '4,73 mil'], evidence: [], maxReplyWords: 80,
+    },
+  },
+  {
+    id: 'waiter-vacancy-unavailable-year-2026',
+    now: '2026-11-26T12:00:00Z',
+    input: '¿Cuántas vacantes de camareros había en España en 2026?',
+    expected: {
+      state: 'limited', family: 'waiter-vacancy-and-conditions', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['No se ha localizado una estimación compatible para 2026', 'No presentamos una cifra de otro periodo o territorio'],
+      replyExcludes: ['5,12 mil', '4,73 mil'], evidence: [], maxReplyWords: 60,
+    },
+  },
 ];

@@ -135,21 +135,22 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   const missingPublicEvidence = (sources.length === 0 && (hasVisibleFindings || plan.evidenceLevel !== 'insufficient'))
     || (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length));
   const coverageGap = blocks.find((block) => block?.type === 'evidence_gap');
-  const coverageGapReply = !sources.length && coverageGap
+  const reviewedScopeGap = plan.answerScope?.family === 'waiter-vacancy-and-conditions' && Boolean(plan.shareableReply?.trim());
+  const coverageGapReply = !sources.length && coverageGap && !reviewedScopeGap
     ? publicEvidenceGapReply(plan, { attributionUnavailable: true, claim }) || plan.limitation?.trim() || coverageGap.nextAction
     : undefined;
   const claimNeedsQualification = requiresPublicClaimQualification(plan, argumentsList);
   const answerNeedsQualification = claimNeedsQualification || plan.evidenceLevel === 'insufficient';
   const evidenceLevel = missingPublicEvidence ? 'insufficient' : plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
-  const affiliateContextCanSupportLimitedState = plan.answerScope?.family === 'foreign-affiliation-in-tourism-and-agriculture';
+  const reviewedContextCanSupportLimitedState = ['foreign-affiliation-in-tourism-and-agriculture', 'waiter-vacancy-and-conditions'].includes(plan.answerScope?.family);
   const claimHasTraceableEvidence = argumentsList.some((item) => item.evidenceIds.length > 0
-    || affiliateContextCanSupportLimitedState && (item.contextSourceIds?.length || 0) > 0);
+    || reviewedContextCanSupportLimitedState && (item.contextSourceIds?.length || 0) > 0);
   const publicEvidenceLevel = evidenceLevel === 'limited' && claimItems.length > 0 && !claimHasTraceableEvidence
     ? 'insufficient'
     : publicEvidenceLevelForArguments(evidenceLevel, plan, argumentsList);
   const publicReply = coverageGapReply
     || (missingPublicEvidence ? 'No hemos podido recuperar datos y fuentes verificables para esta frase. Por eso no la damos por confirmada.'
-      : answerNeedsQualification ? qualifyPublicClaimReply(reply, argumentsList) : reply);
+      : answerNeedsQualification && !reviewedScopeGap ? qualifyPublicClaimReply(reply, argumentsList) : reply);
   const alreadyQualifiedShareableReply = !missingPublicEvidence && Boolean(plan.shareableReply?.trim()) && publicReply === reply;
   const suppressShareableReply = missingPublicEvidence || answerNeedsQualification && !alreadyQualifiedShareableReply;
   const publishedSlug = !extraction && missingPublicEvidence ? exactPublishedSlugFor(safePayload, claim) : undefined;

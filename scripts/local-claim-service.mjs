@@ -49,6 +49,7 @@ import { latestGovernmentPeriod, scorecardMetrics, makeScorecard, makePopulation
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../src/lib/knowledge/scorecard-snapshot.mjs';
 import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/tourism-employment-snapshot.mjs';
 import { FOREIGN_AFFILIATE_SECTOR_SNAPSHOT } from '../src/lib/knowledge/foreign-affiliate-sector-snapshot.mjs';
+import { WAITER_VACANCY_SNAPSHOT } from '../src/lib/knowledge/waiter-vacancy-snapshot.mjs';
 import { EDUCATION_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/education-employment-snapshot.mjs';
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../src/lib/knowledge/education-earnings-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from '../src/lib/knowledge/tourist-housing-snapshot.mjs';
@@ -2250,6 +2251,13 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         const observed = new Set(observations.map((item) => `${item.metricId || ''}|${item.period || ''}`));
         const missingSnapshotObservations = FOREIGN_AFFILIATE_SECTOR_SNAPSHOT.observations
           .filter((item) => !observed.has(`${item.metricId}|${item.period}`));
+        return [...observations, ...missingSnapshotObservations];
+      })()
+    : focus?.id === 'waiter-vacancy-and-conditions' && snapshotLifecycle(WAITER_VACANCY_SNAPSHOT).usable
+      ? (() => {
+        const observed = new Set(observations.map((item) => `${item.metricId || ''}|${item.period || ''}|${item.dimensions?.geo || ''}`));
+        const missingSnapshotObservations = WAITER_VACANCY_SNAPSHOT.observations
+          .filter((item) => !observed.has(`${item.metricId}|${item.period}|${item.dimensions?.geo || ''}`));
         return [...observations, ...missingSnapshotObservations];
       })()
     : focus?.id === 'education-employment-outcomes' && educationMetricIds.length > 0

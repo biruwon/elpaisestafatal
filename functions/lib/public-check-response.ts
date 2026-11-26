@@ -162,10 +162,11 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   const scorecard = scorecardFromPlan(plan, sources);
   const claimNeedsQualification = requiresPublicClaimQualification(plan, argumentsList);
   const answerNeedsQualification = claimNeedsQualification || plan.evidenceLevel === 'insufficient';
+  const reviewedScopeGap = plan.answerScope?.family === 'waiter-vacancy-and-conditions' && Boolean(plan.shareableReply?.trim());
   const replyQualityNotes = [...new Set((plan.evidenceSummary?.families || []).flatMap((family) => family.qualityNotes || []))];
   const originalReply = plan.shareableReply?.trim() || replyFromPlan(plan);
   const replyWithQualityNotes = replyQualityNotes.reduce((current, note) => current.includes(note) ? current : `${current} ${note}`, originalReply).trim();
-  const reply = answerNeedsQualification ? qualifyPublicClaimReply(replyWithQualityNotes, argumentsList) : replyWithQualityNotes;
+  const reply = answerNeedsQualification && !reviewedScopeGap ? qualifyPublicClaimReply(replyWithQualityNotes, argumentsList) : replyWithQualityNotes;
   const alreadyQualifiedShareableReply = Boolean(plan.shareableReply?.trim()) && reply === replyWithQualityNotes;
   const suppressShareableReply = answerNeedsQualification && !alreadyQualifiedShareableReply;
   const visuals = visualsFromPlan(plan);
@@ -176,7 +177,7 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
   const missingPublicEvidence = (sources.length === 0 && (hasVisibleFindings || plan.evidenceLevel !== 'insufficient'))
     || (plan.evidenceLevel === 'supported' && (!criteria.length || !sources.length));
   const coverageGap = plan.blocks.find((block) => block.type === 'evidence_gap');
-  const coverageGapReply = !sources.length && coverageGap
+  const coverageGapReply = !sources.length && coverageGap && !reviewedScopeGap
     ? publicEvidenceGapReply(plan, { attributionUnavailable: true, claim }) || plan.limitation?.trim() || coverageGap.nextAction
     : undefined;
   const publicReply = coverageGapReply || (missingPublicEvidence
@@ -184,9 +185,9 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
     : reply);
   const publicLimitation = 'La respuesta no contiene hallazgos atribuibles a una fuente que se pueda consultar.';
   const result: CheckResult = { claim, interpretation, nextQuestion: plan.clarificationQuestion, thesis: evaluative ? { text: claim, kind: 'evaluative', conclusion: thesisConclusion, criteria: ['resultados económicos y sociales', 'calidad institucional', 'cumplimiento legal', 'comparación con otros gobiernos'] } : undefined, reply: publicReply, answer: publicReply || plan.summary || plan.headline, shareableReply: suppressShareableReply ? undefined : plan.shareableReply ? reply : undefined, shareableSourceIds: suppressShareableReply ? undefined : plan.shareableSourceIds, keyFact: answerNeedsQualification ? 'La evidencia no basta para confirmar toda la afirmación' : plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: sources.length ? [plan.limitation].filter((value): value is string => Boolean(value)) : [publicLimitation], scope: { checkedAt: plan.asOf }, answerScope: plan.answerScope, sources, visual: visuals[0], visuals: visuals.length > 1 ? visuals : undefined, scorecard, evidenceSummary: publicEvidenceSummary(plan.evidenceSummary) };
-  const foreignAffiliateContext = plan.answerScope?.family === 'foreign-affiliation-in-tourism-and-agriculture';
+  const reviewedContextFamily = ['foreign-affiliation-in-tourism-and-agriculture', 'waiter-vacancy-and-conditions'].includes(plan.answerScope?.family || '');
   const argumentEvidence = argumentsList.reduce((count, item) => count + item.evidenceIds.length
-    + (foreignAffiliateContext ? item.contextSourceIds?.length || 0 : 0), 0);
+    + (reviewedContextFamily ? item.contextSourceIds?.length || 0 : 0), 0);
   const effectiveEvidenceLevel = publicEvidenceLevelForArguments(plan.evidenceLevel || (supported ? 'supported' : 'limited'), plan, argumentsList) || (supported ? 'supported' : 'limited');
   const state = missingPublicEvidence ? 'insufficient' : argumentsList.length && argumentEvidence === 0
     ? 'insufficient'

@@ -15,6 +15,7 @@ import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care
 import { WORKING_POVERTY_SNAPSHOT } from '../../src/lib/knowledge/working-poverty-snapshot.mjs';
 import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/tourism-employment-snapshot.mjs';
 import { FOREIGN_AFFILIATE_SECTOR_SNAPSHOT } from '../../src/lib/knowledge/foreign-affiliate-sector-snapshot.mjs';
+import { WAITER_VACANCY_SNAPSHOT } from '../../src/lib/knowledge/waiter-vacancy-snapshot.mjs';
 import { EDUCATION_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/education-employment-snapshot.mjs';
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../../src/lib/knowledge/education-earnings-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from '../../src/lib/knowledge/tourist-housing-snapshot.mjs';
@@ -23,6 +24,7 @@ import { validateAnswerPlan } from './answer-plan-validation.mjs';
 import { alignPropositionOutcomes, comparableObservationGroups, composePropositionFindings, evidenceForProposition } from '../lib/compound-evidence.mjs';
 import { hasSufficientClaimTermOverlap, rankWarehouseObservations } from './warehouse-query.mjs';
 import { preferredMetricIdsForQuery } from './metric-query-hints.mjs';
+import { vacancyMeasurementMetricIdsForQuery } from '../../src/lib/knowledge/vacancy-measurement-route.mjs';
 import { deterministicFallbackCompiler } from './fallback-compiler.mjs';
 
 const cases = [
@@ -1578,10 +1580,103 @@ assert.match(exactAgricultureSpecialAffiliateSharePlan.shareableReply, /42,7 %/)
 assert.doesNotMatch(exactAgricultureSpecialAffiliateSharePlan.shareableReply, /33,5 %|29,1 %/);
 assert.equal(claimFocusFor('La inmigración presiona a la baja los salarios de los trabajadores nativos del sector de la hostelería')?.id, 'migration-wage-effects');
 assert.notEqual(claimFocusFor('Las vacantes de hostelería no se cubren por las condiciones que ofrece el sector')?.id, 'foreign-affiliation-in-tourism-and-agriculture', 'A claim about vacancies without foreign workers must not borrow nationality shares');
+const waiterShortageParaphrases = [
+  'La supuesta falta de camareros es en realidad una falta de empleos con salario y horario aceptables',
+  'Los salarios y horarios de los puestos ofrecidos explican la escasez de camareros',
+];
+assert.deepEqual(WAITER_VACANCY_SNAPSHOT.regionalAvailability.geographies, ['ES1', 'ES2', 'ES3', 'ES4', 'ES5', 'ES6', 'ES7']);
+assert.deepEqual(WAITER_VACANCY_SNAPSHOT.regionalAvailability.periods, ['2023', '2024']);
+assert.equal(WAITER_VACANCY_SNAPSHOT.regionalAvailability.status, 'C');
+assert.ok(WAITER_VACANCY_SNAPSHOT.observations.every((item) => item.dimensions.freq === 'A'));
+let waiterSourceIds;
+for (const claim of waiterShortageParaphrases) {
+  assert.equal(claimFocusFor(claim)?.id, 'waiter-vacancy-and-conditions');
+  assert.deepEqual([...focusedMetricIdsFor(claim)], ['experimental_job_vacancies_waiters']);
+  assert.deepEqual([...preferredMetricIdsForQuery(claim)], ['experimental_job_vacancies_waiters']);
+  assert.equal(vacancyMeasurementMetricIdsForQuery(claim), undefined, 'Occupation-specific vacancy claims must not inherit the all-occupation total');
+  const plan = focusedEvidencePlan(claim, { observations: WAITER_VACANCY_SNAPSHOT.observations, now: Date.parse('2026-11-26') });
+  assert.equal(plan.answerScope.family, 'waiter-vacancy-and-conditions');
+  assert.equal(plan.claimType, 'causal');
+  assert.deepEqual(plan.answerScope.directMetrics, [], 'Occupation vacancy counts are context for claims about why posts remain vacant');
+  assert.deepEqual(plan.answerScope.contextMetrics, ['experimental_job_vacancies_waiters']);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.match(plan.shareableReply, /2023: 4,73 mil.*2024: 5,12 mil/s);
+  assert.match(plan.shareableReply, /ruptura/);
+  assert.match(plan.shareableReply, /no mide salarios, horarios ni las razones/);
+  assert.doesNotMatch(plan.shareableReply, /aumentaron en 0,39|la falta está causada por los salarios/i);
+  assert.deepEqual(plan.sourceIds, [
+    'eurostat-experimental-waiter-vacancies-2024', 'eurostat-job-vacancies-occupation-methodology',
+  ]);
+  if (waiterSourceIds) assert.deepEqual(plan.sourceIds, waiterSourceIds, 'Semantic paraphrases should use the same reviewed evidence source');
+  waiterSourceIds = plan.sourceIds;
+  const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: 'waiter-shortage-context', result: plan }, claim);
+  assert.equal(publicResponse.state, 'limited');
+  assert.deepEqual(publicResponse.result.arguments[0].sourceIds, []);
+  assert.deepEqual(publicResponse.result.arguments[0].contextSourceIds, waiterSourceIds);
+}
+const waiterEnglishConditions = 'Waiter vacancies are hard to fill because pay and schedules are poor';
+assert.equal(claimFocusFor(waiterEnglishConditions)?.id, 'waiter-vacancy-and-conditions');
+const waiterEnglishContextPlan = focusedEvidencePlan(waiterEnglishConditions, { observations: WAITER_VACANCY_SNAPSHOT.observations, now: Date.parse('2026-11-26') });
+assert.equal(waiterEnglishContextPlan.claimType, 'causal');
+assert.deepEqual(waiterEnglishContextPlan.answerScope.directMetrics, []);
+assert.deepEqual(waiterEnglishContextPlan.answerScope.contextMetrics, ['experimental_job_vacancies_waiters']);
+const waiterEnglishCount = 'How many waiter vacancies did Eurostat estimate in Spain in 2024?';
+assert.deepEqual([...focusedMetricIdsFor(waiterEnglishCount)], ['experimental_job_vacancies_waiters']);
+assert.deepEqual(focusedEvidencePlan(waiterEnglishCount, { observations: WAITER_VACANCY_SNAPSHOT.observations, now: Date.parse('2026-11-26') }).answerScope.directMetrics, ['experimental_job_vacancies_waiters']);
+const waiterCountQuestion = '¿Cuántas vacantes estimó Eurostat para camareros y bármanes en España en 2024?';
+const waiterCountPlan = focusedEvidencePlan(waiterCountQuestion, { observations: WAITER_VACANCY_SNAPSHOT.observations, now: Date.parse('2026-11-26') });
+assert.deepEqual([...focusedMetricIdsFor(waiterCountQuestion)], ['experimental_job_vacancies_waiters']);
+assert.deepEqual(waiterCountPlan.answerScope.directMetrics, ['experimental_job_vacancies_waiters']);
+assert.deepEqual(waiterCountPlan.answerScope.contextMetrics, []);
+assert.equal(waiterCountPlan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'supported');
+assert.match(waiterCountPlan.shareableReply, /5,12 mil puestos vacantes/);
+assert.match(waiterCountPlan.shareableReply, /España, 2024/);
+assert.match(waiterCountPlan.shareableReply, /estimación experimental/);
+assert.match(waiterCountPlan.shareableReply, /ruptura de serie/);
+const unrelatedRegionalWaiterValue = {
+  ...WAITER_VACANCY_SNAPSHOT.observations.find((item) => item.period === '2024'),
+  id: 'test-regional-waiter-cell', value: 99, geography: 'Madrid',
+  dimensions: { ...WAITER_VACANCY_SNAPSHOT.observations.find((item) => item.period === '2024').dimensions, geo: 'ES3' },
+};
+const unspecifiedWaiterGeography = focusedEvidencePlan('¿Cuántas vacantes de camareros hay en 2024?', {
+  observations: [unrelatedRegionalWaiterValue, ...WAITER_VACANCY_SNAPSHOT.observations], now: Date.parse('2026-11-26'),
+});
+assert.match(unspecifiedWaiterGeography.shareableReply, /5,12 mil puestos vacantes/);
+assert.doesNotMatch(unspecifiedWaiterGeography.shareableReply, /99/);
+const waiterTrendPlan = focusedEvidencePlan('¿Aumentaron las vacantes de camareros entre 2023 y 2024?', { observations: WAITER_VACANCY_SNAPSHOT.observations, now: Date.parse('2026-11-26') });
+assert.equal(waiterTrendPlan.claimType, 'trend');
+assert.deepEqual(waiterTrendPlan.answerScope.directMetrics, []);
+assert.equal(waiterTrendPlan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
+assert.match(waiterTrendPlan.shareableReply, /No puede establecerse la tendencia.*ruptura de serie/s);
+assert.doesNotMatch(waiterTrendPlan.shareableReply, /subi[oó] un 8|aument[oó] en 0,39/i);
+const waiterRegionalPlan = focusedEvidencePlan('¿Cuántas vacantes de camarero hay en Madrid?', { observations: WAITER_VACANCY_SNAPSHOT.observations, now: Date.parse('2026-11-26') });
+assert.deepEqual(waiterRegionalPlan.answerScope.directMetrics, ['experimental_job_vacancies_waiters'], 'The requested regional measure should be queried directly even when the public cell is suppressed');
+assert.deepEqual(waiterRegionalPlan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.sourceIds, []);
+assert.deepEqual(waiterRegionalPlan.sourceLinks.map((source) => source.id).sort(), [
+  'eurostat-experimental-waiter-vacancies-2024', 'eurostat-job-vacancies-occupation-methodology',
+].sort(), 'The public regional suppression and source dimensions should be traceable');
+const waiterRegionalResponse = localPublicCheckResponse({ status: 'complete', requestId: 'waiter-regional-gap', result: waiterRegionalPlan }, '¿Cuántas vacantes de camarero hay en Madrid?');
+assert.equal(waiterRegionalResponse.state, 'limited');
+assert.match(waiterRegionalResponse.result.reply, /celdas regionales de España.*confidenciales/);
+assert.deepEqual(waiterRegionalResponse.result.arguments[0].contextSourceIds.sort(), waiterRegionalPlan.sourceLinks.map((source) => source.id).sort());
+assert.doesNotMatch(waiterRegionalResponse.result.reply, /5,12 mil|4,73 mil/);
+const waiterUnsupportedYear = focusedEvidencePlan('¿Cuántas vacantes de camareros había en España en 2026?', { observations: WAITER_VACANCY_SNAPSHOT.observations, now: Date.parse('2026-11-26') });
+assert.match(waiterUnsupportedYear.shareableReply, /para 2026/);
+assert.doesNotMatch(waiterUnsupportedYear.shareableReply, /5,12 mil|4,73 mil/);
+const waiterHospitalityScope = focusedEvidencePlan('¿Cuántas vacantes de camareros hay en hostelería?', { observations: WAITER_VACANCY_SNAPSHOT.observations, now: Date.parse('2026-11-26') });
+assert.deepEqual(waiterHospitalityScope.answerScope.directMetrics, [], 'The occupation estimate does not isolate hospitality activity');
+assert.match(waiterHospitalityScope.shareableReply, /no identifica solo vacantes de hostelería/);
+const waiterWageOnly = 'Los camareros cobran salarios bajos';
+assert.notEqual(claimFocusFor(waiterWageOnly)?.id, 'waiter-vacancy-and-conditions', 'Wage-only claims must not cross-route into waiter vacancy evidence');
+assert.ok(!focusedMetricIdsFor(waiterWageOnly)?.has('experimental_job_vacancies_waiters'));
 assert.equal(claimFocusFor('El turismo genera más empleo que la agricultura')?.id, 'sector-employment-level-comparison');
 const expiredForeignAffiliateFallback = deterministicApiFallback({ text: migrantAgriculture, inputType: 'text', now: Date.parse('2027-01-01') });
 assert.equal(expiredForeignAffiliateFallback.status, 'uncovered');
 assert.doesNotMatch(expiredForeignAffiliateFallback.result?.shareableReply || '', /33,5 %|29,1 %|42,7 %/, 'Expired nationality shares must not be returned as current data');
+const expiredWaiterVacancyFallback = deterministicApiFallback({ text: waiterCountQuestion, inputType: 'text', now: Date.parse('2027-02-19') });
+assert.equal(expiredWaiterVacancyFallback.status, 'uncovered');
+assert.doesNotMatch(expiredWaiterVacancyFallback.result?.shareableReply || '', /5,12 mil|4,73 mil|5,12 thousand/, 'Expired waiter vacancy estimates must not be returned as current data');
 const tourismEmploymentFallback = deterministicApiFallback({ text: tourismEmploymentParaphrases[0], inputType: 'text', now: Date.parse('2026-11-24') });
 assert.equal(tourismEmploymentFallback.status, 'partial');
 assert.deepEqual(tourismEmploymentFallback.result.sourceIds, tourismEmploymentPlan.sourceIds);

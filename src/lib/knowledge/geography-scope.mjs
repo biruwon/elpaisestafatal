@@ -68,7 +68,7 @@ export const knownSubnationalGeographyIds = Object.freeze(territoryAliases
   .map(([id]) => id));
 
 const regionCodes = new Map([
-  ['ES11', 'galicia'], ['ES12', 'asturias'], ['ES13', 'cantabria'], ['ES21', 'pais vasco'], ['ES22', 'navarra'], ['ES23', 'la rioja'],
+  ['ES3', 'madrid'], ['ES11', 'galicia'], ['ES12', 'asturias'], ['ES13', 'cantabria'], ['ES21', 'pais vasco'], ['ES22', 'navarra'], ['ES23', 'la rioja'],
   ['ES24', 'aragon'], ['ES30', 'madrid'], ['ES41', 'castilla y leon'], ['ES42', 'castilla la mancha'], ['ES43', 'extremadura'],
   ['ES51', 'cataluna'], ['ES52', 'comunidad valenciana'], ['ES53', 'baleares'], ['ES61', 'andalucia'], ['ES62', 'murcia'],
   ['ES63', 'ceuta'], ['ES64', 'melilla'], ['ES70', 'canarias'],
