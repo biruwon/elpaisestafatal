@@ -5,7 +5,7 @@ export const RUNTIME_VERSIONS = Object.freeze({
   evidencePacketSchema: '1',
   compilerContract: '3',
   knowledge: '2026-08-04.2',
-  fallbackKnowledge: 'deterministic-fallback-99-ecv-personal-benefit-receipt-ine-housing-access-barriers-2026-11',
-  warehouseKnowledge: 'warehouse-2026-11-26.53-ecv-personal-benefit-receipt-ine-housing-access-barriers',
+  fallbackKnowledge: 'deterministic-fallback-100-ecv-personal-benefit-receipt-ine-housing-access-barriers-public-psychotherapy-access-2026-11',
+  warehouseKnowledge: 'warehouse-2026-11-26.54-ecv-personal-benefit-receipt-ine-housing-access-barriers-public-psychotherapy-access',
   indexKnowledge: 'index-only-2026-08-05.9',
 });

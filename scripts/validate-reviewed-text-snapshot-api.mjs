@@ -1046,6 +1046,24 @@ assert.match(psychologistCapacity.body.result.reply, /no desglosa cuántos son e
 assert.match(psychologistCapacity.body.result.reply, /Tampoco mide solicitudes, pacientes en espera o demanda no atendida/);
 assert.match(psychologistCapacity.body.result.reply, /no permite concluir si la plantilla es suficiente o insuficiente/);
 
+let psychotherapyAccessReply;
+for (const claim of [
+  'Conseguir psicoterapia frecuente en la sanidad pública es muy difícil',
+  'Es difícil tener sesiones frecuentes de terapia psicológica en la sanidad pública',
+]) {
+  const response = await check(claim);
+  assert.equal(response.body.state, 'insufficient', claim);
+  assert.equal(response.body.result.answerScope.family, 'public-mental-health-psychologist-capacity', claim);
+  assert.equal(response.body.result.arguments[0].verdict, 'insufficient', claim);
+  assert.deepEqual(response.body.result.arguments[0].sourceIds, [], 'Staffing context must not be attributed as proof of therapy access');
+  assert.deepEqual(response.body.result.sources.map((source) => source.id), ['ministry-sns-psychology-primary-care-2023']);
+  assert.match(response.body.result.reply, /548 profesionales.*datos de 2023/s, claim);
+  assert.match(response.body.result.reply, /no registra la frecuencia de las sesiones ni el tiempo hasta recibir psicoterapia/);
+  assert.match(response.body.result.reply, /no permite confirmar lo f[aá]cil que es conseguir terapia frecuente/);
+  if (psychotherapyAccessReply === undefined) psychotherapyAccessReply = response.body.result.reply;
+  else assert.equal(response.body.result.reply, psychotherapyAccessReply, 'Psychotherapy access paraphrases should use the same source and missing measure');
+}
+
 const unavailable = await check('Trabajar a jornada completa no impide estar en riesgo de pobreza', brokenDatabase);
 assert.equal(unavailable.body.state, 'unavailable');
 assert.match(unavailable.body.message, /no hemos podido consultar las series estadísticas/i);

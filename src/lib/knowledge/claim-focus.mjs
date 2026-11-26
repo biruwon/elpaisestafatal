@@ -371,11 +371,11 @@ const healthPerceptionAndOutcomeClaim = (t) => {
   const serviceSpecific = /\b(atencion primaria|consultas?|lista\w* de espera|urgencias?|cirug\w*|sanidad privada|sistema sanitari\w* privad\w*|sector privado|seguro privado)\b/.test(t);
   return publicHealthSystem && perception && healthOutcome && !serviceSpecific;
 };
-const publicMentalHealthPsychologistContext = (t) => /\b(psicolog\w*)\b/.test(t)
+const publicMentalHealthPsychologistContext = (t) => /\b(psicolog\w*|psicoterap\w*|terapia\w*)\b/.test(t)
   && /\b(public\w*|sistema public\w*)\b/.test(t)
   && /\b(salud mental|sanidad|sistema sanitari\w*|atencion psicologic\w*|psicolog\w* clinic\w*)\b/.test(t);
-const publicMentalHealthPsychologistShortage = (t) => /\b(falt\w*|escasez|deficit|poc\w*|insuficient\w*|demasiad\w*|no cubr\w*|no bast\w*)\b/.test(t)
-  && !/\bno (?:falt\w*|hay (?:tan )?poc\w*|(?:es|resulta|parece) insuficient\w*)\b/.test(t);
+const publicMentalHealthPsychologistShortage = (t) => /\b(falt\w*|escasez|deficit|poc\w*|insuficient\w*|demasiad\w*|no cubr\w*|no bast\w*|dificil\w*|complicad\w*|imposible\w*)\b/.test(t)
+  && !/\bno (?:falt\w*|hay (?:tan )?poc\w*|(?:es|resulta|parece) insuficient\w*|(?:es|resulta|parece) (?:muy |tan )?dificil\w*)\b/.test(t);
 const publicMentalHealthPsychologistCount = (t) => publicMentalHealthPsychologistContext(t)
   && /\b(cuant\w*|numero\w*|recuent\w*|total\w*|cifra\w*)\b/.test(t)
   && !publicMentalHealthPsychologistShortage(t);

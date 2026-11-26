@@ -179,7 +179,13 @@ const cases = [
   ['migrant-credential-recognition', ['La homologación lenta de títulos obliga a inmigrantes cualificados a trabajar por debajo de su formación', 'El retraso en convalidar estudios superiores deja a personas migrantes en puestos por debajo de su preparación', 'Los títulos obtenidos fuera de España no se reconocen y los profesionales extranjeros acaban en empleos de baja cualificación']],
   ['healthcare-staffing-causality', ['La falta de médicos en algunas zonas se debe más a las condiciones de trabajo que al número total de titulados', 'Hay vacantes médicas en pueblos porque las plazas ofrecen condiciones poco atractivas', 'Faltan facultativos en la periferia pese a que hay suficientes graduados']],
   ['public-mental-health-psychologist-count', ['¿Cuántos psicólogos clínicos trabajan en la sanidad pública?', '¿Qué número de psicólogos clínicos atiende la salud mental pública?']],
-  ['public-mental-health-psychologist-capacity', ['La salud mental pública tiene demasiados pocos psicólogos clínicos para la demanda existente', 'En la sanidad pública faltan psicólogos clínicos para atender a quienes los necesitan', 'La plantilla pública de psicología clínica no cubre la demanda de atención']],
+  ['public-mental-health-psychologist-capacity', [
+    'La salud mental pública tiene demasiados pocos psicólogos clínicos para la demanda existente',
+    'En la sanidad pública faltan psicólogos clínicos para atender a quienes los necesitan',
+    'La plantilla pública de psicología clínica no cubre la demanda de atención',
+    'Conseguir psicoterapia frecuente en la sanidad pública es muy difícil',
+    'Es difícil tener sesiones frecuentes de terapia psicológica en la sanidad pública',
+  ]],
   ['internship-labour-substitution', ['Las prácticas y becas sustituyen puestos de entrada que antes eran empleos normales', 'Muchas empresas usan becarios para hacer trabajo ordinario con menor coste', 'Las empresas cubren funciones de plantilla con personas en prácticas para pagar menos']],
   ['work-housing-independence', ['Tener un trabajo a jornada completa ya no garantiza poder independizarse', 'Un empleo a tiempo completo no basta para vivir por cuenta propia', 'Trabajar a jornada completa no asegura poder emanciparse']],
   ['housing-labour-mobility', [
@@ -3301,6 +3307,25 @@ for (const claim of publicPsychologistCapacityClaims) {
   if (publicPsychologistCapacityReply) assert.equal(plan.shareableReply, publicPsychologistCapacityReply, 'Psychologist-capacity paraphrases should share the same evidence contract');
   publicPsychologistCapacityReply = plan.shareableReply;
 }
+let publicPsychotherapyAccessReply;
+for (const claim of [
+  'Conseguir psicoterapia frecuente en la sanidad pública es muy difícil',
+  'Es difícil tener sesiones frecuentes de terapia psicológica en la sanidad pública',
+]) {
+  const plan = focusedEvidencePlan(claim, { now: Date.parse('2026-11-26T12:00:00Z') });
+  assert.equal(plan.answerScope.family, 'public-mental-health-psychologist-capacity');
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['ministry-sns-psychology-primary-care-2023']);
+  assert.match(plan.shareableReply, /548 profesionales.*datos de 2023/s);
+  assert.match(plan.shareableReply, /no registra la frecuencia de las sesiones ni el tiempo hasta recibir psicoterapia/);
+  assert.match(plan.shareableReply, /no permite confirmar lo f[aá]cil que es conseguir terapia frecuente/);
+  const response = localPublicCheckResponse({ status: 'complete', requestId: 'psychotherapy-access-context', result: plan }, claim);
+  assert.equal(response.state, 'insufficient');
+  assert.equal(response.result.arguments[0].verdict, 'insufficient');
+  assert.deepEqual(response.result.sources.map((source) => source.id), ['ministry-sns-psychology-primary-care-2023']);
+  if (publicPsychotherapyAccessReply) assert.equal(plan.shareableReply, publicPsychotherapyAccessReply, 'Psychotherapy-access paraphrases should share one scoped staffing context and missing measure');
+  publicPsychotherapyAccessReply = plan.shareableReply;
+}
 const publicPsychologistCountClaim = '¿Cuántos psicólogos clínicos trabajan en la sanidad pública?';
 const publicPsychologistCountPlan = focusedEvidencePlan(publicPsychologistCountClaim, { now: Date.parse('2026-11-26T12:00:00Z') });
 assert.equal(publicPsychologistCountPlan.answerScope.family, 'public-mental-health-psychologist-count', 'A direct staffing count must not be graded as a claim that staffing is insufficient');
@@ -3321,6 +3346,11 @@ assert.equal(psychologistCountWrongGeography.evidenceLevel, 'insufficient', 'A n
 assert.deepEqual(psychologistCountWrongGeography.sourceLinks, []);
 assert.doesNotMatch(psychologistCountWrongGeography.shareableReply, /548/);
 assert.notEqual(claimFocusFor('La sanidad privada tiene pocos psicólogos clínicos para atender la demanda')?.id, 'public-mental-health-psychologist-capacity', 'Public-SNS staffing context must not attach to private-care capacity');
+for (const claim of [
+  'La alternativa privada para terapia es demasiado cara para muchas personas',
+  'La atención psicológica depende demasiado de la capacidad económica de la familia',
+  'No es difícil conseguir psicoterapia frecuente en la sanidad pública',
+]) assert.notEqual(claimFocusFor(claim)?.id, 'public-mental-health-psychologist-capacity', `A private-cost or negated-access claim must not inherit the staffing context: ${claim}`);
 const causalPsychologistWaitClaim = 'La falta de psicólogos clínicos causa largas listas de espera en la sanidad pública';
 assert.equal(claimFocusFor(causalPsychologistWaitClaim), undefined, 'A causal waiting-list claim must not be graded by a comparative capacity family');
 assert.equal(broadDomainPacketsFor(causalPsychologistWaitClaim).length, 0, 'A causal waiting-list claim must not inherit broad healthcare indicators');

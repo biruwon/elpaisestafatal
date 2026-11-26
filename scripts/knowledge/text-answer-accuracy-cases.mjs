@@ -233,6 +233,54 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'public-psychotherapy-frequency-context',
+    equivalenceGroup: 'public-psychotherapy-frequency-context',
+    now: '2026-11-26',
+    input: 'Conseguir psicoterapia frecuente en la sanidad pública es muy difícil',
+    expected: {
+      state: 'insufficient', family: 'public-mental-health-psychologist-capacity', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['548 profesionales', 'datos de 2023', 'no registra la frecuencia de las sesiones', 'tiempo hasta recibir psicoterapia', 'no permite confirmar lo fácil que es conseguir terapia frecuente'],
+      replyExcludes: ['confirma que sea difícil', 'no hay psicólogos'],
+      evidence: [
+        {
+          familyId: 'public-mental-health-psychologist-capacity', sourceIds: ['ministry-sns-psychology-primary-care-2023'],
+          dataIncludes: ['548 profesionales', 'categoría «Psicología»'],
+          dimensions: { period: '2023', geography: 'España, Sistema Nacional de Salud', denominator: 'recuento absoluto de la categoría Psicología; sin denominador de jornada o demanda', unit: 'profesionales registrados' },
+        },
+        {
+          familyId: 'public-mental-health-psychologist-capacity', sourceIds: ['ministry-sns-psychology-primary-care-2023'],
+          dataIncludes: ['Tampoco mide solicitudes, pacientes en espera o demanda no atendida'],
+          dimensions: { period: '2023', geography: 'España, Sistema Nacional de Salud' },
+        },
+      ],
+      maxReplyWords: 130,
+    },
+  },
+  {
+    id: 'public-psychotherapy-frequency-context-paraphrase',
+    equivalenceGroup: 'public-psychotherapy-frequency-context',
+    now: '2026-11-26',
+    input: 'Es difícil tener sesiones frecuentes de terapia psicológica en la sanidad pública',
+    expected: {
+      state: 'insufficient', family: 'public-mental-health-psychologist-capacity', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['548 profesionales', 'datos de 2023', 'no registra la frecuencia de las sesiones', 'tiempo hasta recibir psicoterapia', 'no permite confirmar lo fácil que es conseguir terapia frecuente'],
+      replyExcludes: ['confirma que sea difícil', 'no hay psicólogos'],
+      evidence: [
+        {
+          familyId: 'public-mental-health-psychologist-capacity', sourceIds: ['ministry-sns-psychology-primary-care-2023'],
+          dataIncludes: ['548 profesionales', 'categoría «Psicología»'],
+          dimensions: { period: '2023', geography: 'España, Sistema Nacional de Salud', denominator: 'recuento absoluto de la categoría Psicología; sin denominador de jornada o demanda', unit: 'profesionales registrados' },
+        },
+        {
+          familyId: 'public-mental-health-psychologist-capacity', sourceIds: ['ministry-sns-psychology-primary-care-2023'],
+          dataIncludes: ['Tampoco mide solicitudes, pacientes en espera o demanda no atendida'],
+          dimensions: { period: '2023', geography: 'España, Sistema Nacional de Salud' },
+        },
+      ],
+      maxReplyWords: 130,
+    },
+  },
+  {
     id: 'room-rental-only-option-context',
     equivalenceGroup: 'room-rental-worker-only-option',
     input: 'El alquiler de una habitación se ha convertido en la única opción viable para muchos trabajadores adultos',

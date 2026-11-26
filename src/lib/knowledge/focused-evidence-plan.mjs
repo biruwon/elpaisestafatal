@@ -1839,6 +1839,12 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   })();
   const mentalHealthPsychologistCapacityReply = (() => {
     if (focus.id !== 'public-mental-health-psychologist-capacity') return undefined;
+    const asksAboutTherapyFrequency = /\b(psicoterap\w*|terapia\w*|sesion\w*|frecuent\w*)\b/.test(normalize(claim));
+    if (explanationFacts.length && asksAboutTherapyFrequency) return [
+      explanationFacts[0],
+      explanationFacts[1],
+      'La tabla no registra la frecuencia de las sesiones ni el tiempo hasta recibir psicoterapia; por eso este recuento no permite confirmar lo fácil que es conseguir terapia frecuente.',
+    ].filter(Boolean).join('\n\n');
     if (explanationFacts.length) return [
       explanationFacts[0],
       explanationFacts[1],

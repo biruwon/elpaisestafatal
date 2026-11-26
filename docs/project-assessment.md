@@ -1750,6 +1750,19 @@ operational audit now reports 177 candidates with a metric or focused-family
 route and 123 without one; these are routing counts over unverified claims,
 not an accuracy score.
 
+## Psychotherapy-access wording — 26 November 2026
+
+The next text audit found that claims about how difficult it is to get frequent
+psychotherapy in the public system did not reach the existing mental-health
+staffing context. Those phrasings now use the same reusable public psychologist
+capacity family as staffing-versus-demand claims. The answer reports the
+Ministry's 548 professionals registered in the primary-care “Psicología”
+category in 2023 as context, and remains insufficient: that headcount does not
+measure how often sessions occur, time to therapy, unmet demand or access
+difficulty. Tests cover two paraphrases and reject private-care affordability
+and negated difficulty as neighbours. This improves routing for one observed
+family; it is not a measure of the accuracy of arbitrary claims.
+
 ## Tax and service-perception comparisons — 25 November 2026
 
 A text audit found two substring collisions in deterministic claim typing.
