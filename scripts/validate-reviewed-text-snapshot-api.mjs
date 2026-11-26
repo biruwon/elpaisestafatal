@@ -909,6 +909,16 @@ assert.match(graduatePay.body.result.reply, /no una distribuci[oó]n salarial/);
 assert.ok(graduatePay.body.result.sources.some((source) => source.id === 'eurostat-spain-ses-2022-education'));
 assert.doesNotMatch(graduatePay.body.result.reply, /80,2 %|34 %/);
 
+const doctorEmigration = await check('España forma médicos que luego se marchan a otros países por mejores condiciones');
+assert.equal(doctorEmigration.body.state, 'insufficient');
+assert.deepEqual(doctorEmigration.body.result.sources.map((source) => source.id), [
+  'ine-emcr-2024-professional-emigration', 'ine-emcr-methodology-faq',
+]);
+assert.match(doctorEmigration.body.result.reply, /2023.*18,3\s*%/s);
+assert.match(doctorEmigration.body.result.reply, /no es una cifra de médicos formados en España/i);
+assert.match(doctorEmigration.body.result.reply, /no identifica dónde se formó cada persona.*por qué emigró/s);
+assert.doesNotMatch(doctorEmigration.body.result.reply, /confirma que.*médicos.*emigraran por/);
+
 const regionalPayHousing = await check('El coste de vivienda ha eliminado la ventaja salarial de trabajar en Madrid o Barcelona');
 assert.equal(regionalPayHousing.body.state, 'insufficient');
 assert.deepEqual(regionalPayHousing.body.result.sources.map((source) => source.id), ['bank-spain-housing-mobility-annual-2025']);

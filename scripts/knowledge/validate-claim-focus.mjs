@@ -2515,6 +2515,8 @@ const professionalEmigrationClaims = [
   'Muchos titulados formados en España se van a trabajar a otros países porque allí pagan mejor',
   'Graduados universitarios españoles emigran por la falta de salarios competitivos',
   'Muchos jóvenes titulados se mudan fuera porque los salarios son más altos',
+  'España forma médicos que luego se marchan a otros países por mejores condiciones',
+  'Médicos españoles emigran por mejores salarios',
 ];
 let professionalEmigrationSourceIds;
 for (const [index, claim] of professionalEmigrationClaims.entries()) {
@@ -2530,6 +2532,7 @@ for (const [index, claim] of professionalEmigrationClaims.entries()) {
   assert.match(plan.shareableReply, /18,3\s*%/);
   assert.match(plan.shareableReply, /2023/);
   assert.match(plan.shareableReply, /no identifica.*d[oó]nde se form[oó]|no demuestra que.*salarios.*causaran/i);
+  if (/\b(?:m[eé]dic\w*|doctor\w*)\b/i.test(claim)) assert.match(plan.shareableReply, /no es una cifra de médicos formados en España/i);
   assert.doesNotMatch(plan.shareableReply, /tasa de empleo|renta disponible mediana|tasa de desempleo/);
   const response = localPublicCheckResponse({ status: 'complete', requestId: `professional-emigration-${index}`, result: plan }, claim);
   assert.equal(response.state, 'insufficient', 'Occupational context must not confirm that wages caused emigration');
@@ -2544,6 +2547,9 @@ for (const neighbour of [
   'La tasa de empleo de titulados universitarios en España supera el 80 %',
   'Los trabajadores cualificados que vuelven del extranjero aceptan salarios más bajos',
   'Los profesionales de Madrid se mudan fuera de Madrid por mejores salarios',
+  'Médicos extranjeros emigran desde España por mejores salarios',
+  'Los médicos se trasladan a otra comunidad por mejores salarios',
+  'La homologación de títulos médicos extranjeros impide trabajar en hospitales',
 ]) {
   assert.notEqual(claimFocusFor(neighbour)?.id, 'professional-emigration', `A nearby wage or migration claim crossed into professional emigration: ${neighbour}`);
 }

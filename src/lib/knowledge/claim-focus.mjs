@@ -110,9 +110,11 @@ const professionalEmigration = (t) => {
   const outwardMovement = /\b(emigr\w*|fuga de cerebros|brain drain|perdid\w* de talent\w*|pierde[n]? talent\w*|trabaj\w* (?:en|fuera de) (?:otro\w* pais\w*|el extranjero|fuera de espana)|se (?:van|marchan|trasladan|mud\w*) (?:a|al) (?:otro\w* pais\w*|extranjero)|se (?:van|marchan) a trabaj\w* a (?:otro\w* pais\w*|el extranjero)|se mud\w* fuera de espana|march\w* a (?:otro\w* pais\w*|extranjero))\b/.test(t);
   const ambiguousMoveAbroadForPay = /\bse mud\w* fuera\b/.test(t)
     && /\b(salari\w*|sueld\w*|remuner\w*|pagan? mejor|cobr\w* mejor|gan\w* mas)\b/.test(t);
-  const professionalGroup = /\b(profesion\w*|cualificad\w*|titulad\w*|graduad\w*|universitari\w*|cientific\w*|ingenier\w*|talento)\b/.test(t);
-  const inwardMigrantGroup = /\b(inmigr\w*|persona\w* extranjer\w*|trabajador\w* extranjer\w*|ciudadania extranjera|nacionalidad extranjera|nacid\w* fuera de espana)\b/.test(t)
-    && !/\b(espanol\w*|nacionalidad espanola|nacid\w* en espana)\b/.test(t);
+  const professionalGroup = /\b(profesion\w*|cualificad\w*|titulad\w*|graduad\w*|universitari\w*|cientific\w*|ingenier\w*|medic\w*|talento)\b/.test(t);
+  const inwardMigrantGroup = (
+    /\b(inmigr\w*|persona\w* extranjer\w*|trabajador\w* extranjer\w*|ciudadania extranjera|nacionalidad extranjera|nacid\w* fuera de espana)\b/.test(t)
+    || /\bmedic\w* extranjer\w*\b/.test(t)
+  ) && !/\b(espanol\w*|nacionalidad espanola|nacid\w* en espana)\b/.test(t);
   const requestedScopeFits = requestedGeographyScopes(t).every(({ id, type }) => type === 'country' && id === 'ES');
   return (outwardMovement || ambiguousMoveAbroadForPay) && professionalGroup && requestedScopeFits && !inwardMigrantGroup
     && !migrationCredentialRecognition(t) && !migrationOverqualification(t)
@@ -2980,12 +2982,16 @@ const focuses = [
     explanationHeadline: 'El INE observa emigrantes en ocupaciones profesionales; no atribuye sus salidas al salario',
     explanation: 'La EMCR ofrece contexto sobre la ocupación de algunas personas que emigran desde España, pero no vincula esa ocupación con el lugar donde se formaron, un empleo posterior en destino o el motivo de emigración.',
     explanationEvidence: PROFESSIONAL_EMIGRATION_SNAPSHOT,
-    shareableReplyForContext: ({ facts }) => [
-      facts[0],
-      'La EMCR clasifica la ocupación, pero no identifica dónde se formó cada persona, si trabajó en destino o por qué emigró.',
-      'Por eso, el 18,3 % no demuestra que salarios poco competitivos causaran esas salidas.',
-    ].filter(Boolean).join('\n\n'),
-    limitation: 'El 18,3 % describe la composición ocupacional de las emigraciones españolas de 2023; no mide cuántas personas tituladas en España trabajan después en otro país ni qué salario habrían recibido si se quedaban.',
+    shareableReplyForContext: ({ claim, facts }) => {
+      const medicalOccupationRequested = /\b(?:m[eé]dic\w*|doctor\w*)\b/i.test(claim);
+      return [
+        facts[0],
+        ...(medicalOccupationRequested ? ['El 18,3 % corresponde a una categoría ocupacional amplia; no es una cifra de médicos formados en España.'] : []),
+        'La EMCR clasifica la ocupación, pero no identifica dónde se formó cada persona, si trabajó en destino o por qué emigró.',
+        'Por eso, el 18,3 % no demuestra que salarios poco competitivos causaran esas salidas.',
+      ].filter(Boolean).join('\n\n');
+    },
+    limitation: 'El 18,3 % describe una categoría ocupacional amplia entre las emigraciones españolas de 2023; no mide cuántos médicos o titulados en España trabajan después en otro país ni qué salario habrían recibido si se quedaban.',
   },
   {
     id: 'migration-wage-effects', label: 'salarios y efecto de la inmigración en el mercado laboral',
