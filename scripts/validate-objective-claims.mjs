@@ -6,7 +6,7 @@ import { answerPlanForBroadDomains, broadDomainPacketsFor } from '../src/lib/kno
 import { broadObservationFits } from '../src/lib/knowledge/broad-observation-fit.mjs';
 import { familyResearchRequests, researchFamilyGaps } from './knowledge/research-family-gaps.mjs';
 import { reviewedContextualAnswer } from '../functions/lib/reviewed-contextual-answer.mjs';
-import { shouldRetainReviewedPreview } from '../src/lib/knowledge/reviewed-answer-stability.mjs';
+import { shouldRetainReviewedPreview, shouldShowReviewedPreview } from '../src/lib/knowledge/reviewed-answer-stability.mjs';
 const claims = JSON.parse(await readFile(new URL('./fixtures/claim-objective-cases.json', import.meta.url)));
 const expected = ['broad-compound-claim', 'broad-public-administration', 'broad-demography-pension-finance', 'broad-youth-living-housing', 'broad-security', 'broad-population-replacement', 'broad-tax-burden-purchasing-power'];
 const variants = [
@@ -126,6 +126,8 @@ const broadenedLateAnswer = {
 assert.equal(shouldRetainReviewedPreview(focusedPreview, broadenedLateAnswer), true, 'A delayed answer that drops the regularization family and adds general migration must not replace the reviewed scope');
 assert.equal(shouldRetainReviewedPreview(focusedPreview, focusedPreview), false, 'A final answer with the reviewed families and charts may replace its preview');
 assert.equal(shouldRetainReviewedPreview(focusedPreview, { ...focusedPreview, result: { ...focusedPreview.result, visuals: [{ title: 'Lista SNS' }] } }), true, 'A final answer must retain every chart from the reviewed preview');
+assert.equal(shouldShowReviewedPreview(focusedPreview, { state: 'clarification' }), false, 'A clarification must replace any provisional answer so the user can clarify the input');
+assert.equal(shouldShowReviewedPreview(focusedPreview, { state: 'unavailable' }), true, 'A failed enrichment may retain its explicitly provisional answer');
 const endpoint = await readFile(new URL('../functions/api/check.ts', import.meta.url), 'utf8');
 const pollRoute = await readFile(new URL('../functions/api/check/[id].ts', import.meta.url), 'utf8');
 const browserClient = await readFile(new URL('../src/scripts/claim-checker.ts', import.meta.url), 'utf8');
@@ -137,7 +139,7 @@ assert.match(browserClient, /method: 'POST'[\s\S]*?JSON\.stringify\(\{ claim: or
 assert.doesNotMatch(browserClient, /x-claim-text/, 'The browser must not transmit Unicode claims in a custom header');
 const accentedPollClaim = 'La regularización extraordinaria de inmigrantes en España';
 assert.equal(JSON.parse(JSON.stringify({ claim: accentedPollClaim })).claim, accentedPollClaim, 'The poll payload must preserve Spanish accents through UTF-8 JSON');
-assert.match(browserClient, /shouldRetainReviewedPreview\(initialPreview, response\)/, 'The UI must keep a reviewed preview when a delayed answer changes its scope or drops reviewed charts');
+assert.match(browserClient, /shouldShowReviewedPreview\(initialPreview, response\)/, 'The UI must apply the state-aware preview policy after a delayed answer');
 // Changing the combination must not reuse the immigration-specific answer.
 const novel = answerPlanForBroadDomains('La regularización de inmigrantes aumenta el precio del alquiler');
 assert.equal(novel, undefined, 'A causal claim linking immigration policy and rental prices must not inherit either broad snapshot as an answer');

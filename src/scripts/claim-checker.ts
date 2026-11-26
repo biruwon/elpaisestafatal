@@ -2,7 +2,7 @@ import { INPUT_LIMITS, validateInputMetadata, inputErrorMessage } from '../lib/k
 import { LOCAL_COMPILER_TEXT_LIMIT, textAnalysisLimitFor } from '../lib/knowledge/text-analysis-coverage.mjs';
 import type { InputExtraction } from '../lib/knowledge/public-check';
 import { isMissingTextClaim } from '../lib/knowledge/text-claim-intent.mjs';
-import { shouldRetainReviewedPreview } from '../lib/knowledge/reviewed-answer-stability.mjs';
+import { shouldShowReviewedPreview } from '../lib/knowledge/reviewed-answer-stability.mjs';
 import { publicDirectionLabel, publicMetricLabel } from '../lib/knowledge/public-presentation';
 import { trackAnalyticsEvent } from '../lib/analytics';
 
@@ -500,8 +500,7 @@ const submit = async (event: SubmitEvent): Promise<void> => {
       trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: 'processing_timeout', preview_available: false });
       renderUnavailable({ state: 'unavailable', id: response.id, claim: original, message: 'La comprobación está tardando más de lo esperado. Puedes intentarlo de nuevo.', retryable: true }); return;
     }
-    if (initialPreview && (response.state === 'unavailable' || response.state === 'clarification'
-      || ((response.state === 'supported' || response.state === 'limited' || response.state === 'insufficient') && shouldRetainReviewedPreview(initialPreview, response)))) {
+    if (initialPreview && shouldShowReviewedPreview(initialPreview, response)) {
       trackAnalyticsEvent('claim_check_result', { input_type: inputType, result_state: response.state, displayed: 'reviewed_preview' });
       renderResult(initialPreview, 'reviewed', original);
       const copyButton = result?.querySelector<HTMLButtonElement>('[data-copy-answer]');

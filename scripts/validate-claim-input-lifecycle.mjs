@@ -5,6 +5,7 @@ const required = [
   "fetchJson('/api/check'",
   "fetchJson(`/api/check/${encodeURIComponent(response.id)}`",
   "state: 'clarification'",
+  'shouldShowReviewedPreview(initialPreview, response)',
   'validateInputMetadata',
   'isMissingTextClaim(original)',
   "form?.addEventListener('submit', submit)",

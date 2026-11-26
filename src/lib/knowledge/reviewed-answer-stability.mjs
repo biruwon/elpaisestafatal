@@ -34,3 +34,12 @@ export const shouldRetainReviewedPreview = (preview, completed) => {
   return reviewedVisuals.length > 0
     && reviewedVisuals.some((title) => !completedVisuals.includes(title));
 };
+
+// A preview can stand in for a failed enrichment, or for a completed answer
+// that drops reviewed evidence. It must never stand in for a request to clarify
+// the input: the user needs to answer that question before we assess a claim.
+export const shouldShowReviewedPreview = (preview, completed) => {
+  if (completed?.state === 'unavailable') return true;
+  if (!['supported', 'limited', 'insufficient'].includes(completed?.state)) return false;
+  return shouldRetainReviewedPreview(preview, completed);
+};
