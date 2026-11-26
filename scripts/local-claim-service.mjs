@@ -51,6 +51,7 @@ import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/tourism-employ
 import { FOREIGN_AFFILIATE_SECTOR_SNAPSHOT } from '../src/lib/knowledge/foreign-affiliate-sector-snapshot.mjs';
 import { WAITER_VACANCY_SNAPSHOT } from '../src/lib/knowledge/waiter-vacancy-snapshot.mjs';
 import { EDUCATION_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/education-employment-snapshot.mjs';
+import { EDUCATION_FIRST_JOB_SNAPSHOT } from '../src/lib/knowledge/education-first-job-snapshot.mjs';
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../src/lib/knowledge/education-earnings-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from '../src/lib/knowledge/tourist-housing-snapshot.mjs';
 import { governmentScorecardGapPlan, isBroadGovernmentScorecardClaim } from '../src/lib/knowledge/scorecard-interpretation.mjs';
@@ -2261,7 +2262,6 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         return [...observations, ...missingSnapshotObservations];
       })()
     : focus?.id === 'education-employment-outcomes' && educationMetricIds.length > 0
-      && snapshotLifecycle(EDUCATION_EMPLOYMENT_SNAPSHOT).usable
       ? (() => {
         const selectedMetrics = new Set(educationMetricIds);
         const observationKey = (item) => {
@@ -2269,8 +2269,9 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
           return [item.metricId || '', item.period || '', dimensions].join('|');
         };
         const observed = new Set(observations.map(observationKey));
-        const missingSnapshotObservations = EDUCATION_EMPLOYMENT_SNAPSHOT.observations
-          .filter((item) => selectedMetrics.has(item.metricId) && !observed.has(observationKey(item)));
+        const missingSnapshotObservations = [EDUCATION_EMPLOYMENT_SNAPSHOT, EDUCATION_FIRST_JOB_SNAPSHOT]
+          .filter((snapshot) => snapshotLifecycle(snapshot).usable)
+          .flatMap((snapshot) => snapshot.observations.filter((item) => selectedMetrics.has(item.metricId) && !observed.has(observationKey(item))));
         return [...observations, ...missingSnapshotObservations];
       })()
     : focus?.id === 'education-pay-comparison' && snapshotLifecycle(EDUCATION_EARNINGS_SNAPSHOT).usable

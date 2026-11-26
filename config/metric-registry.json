@@ -940,6 +940,82 @@
       "sources": [{"id": "definition-employment-rate-tertiary-education", "title": "Eurostat · Employment rates by educational attainment level and citizenship (lfsa_ergaedn)", "publisher": "Eurostat", "url": "https://ec.europa.eu/eurostat/databrowser/view/lfsa_ergaedn/default/table?lang=en", "retrievedAt": "2026-11-16"}]
     }
   },
+  "first_job_under_three_months_vocational_graduates": {
+    "name": "Share of CFGS graduates with a first job in under three months, 2013–14 cohort",
+    "aliases": ["primer empleo de CFGS en menos de tres meses", "titulados de grado superior que encontraron su primer empleo antes de tres meses", "vocational graduates first job under three months"],
+    "unit": "percent of graduates who had worked since completing studies",
+    "population": "Spain's higher vocational education (CFGS) graduates from academic year 2013–14 who had held at least one paid job since completing their studies",
+    "denominator": "all CFGS graduates from academic year 2013–14 who reported at least one paid job since completing their studies",
+    "notEquivalentTo": ["continued_study_job_six_months_vocational_graduates", "first_job_under_three_months_university_graduates", "continued_study_job_six_months_university_graduates", "employment_rate_recent_graduates_vocational", "recent_graduate_employment_rate"],
+    "dimensions": ["geo", "unit", "cohort", "surveyYear", "educationPath", "category"],
+    "dimensionConstraints": {"geo": "ES", "unit": "PC", "cohort": "2013-14", "surveyYear": "2019", "educationPath": "CFGS", "category": "first_job_under_3_months"},
+    "supports": ["descriptive", "comparative"],
+    "limitations": ["The cohort is CFGS graduates from 2013–14, not every vocational pathway or a recent cohort.", "The denominator includes only graduates who had held a paid job since finishing; the percentage is not the share of all graduates.", "The measure is the under-three-month category, not mean time to first job or evidence of causality. The survey is separate from EILU."],
+    "definition": {
+      "label": "Titulados de CFGS con primer empleo en menos de tres meses",
+      "explanation": "Porcentaje de titulados de Ciclos Formativos de Grado Superior del curso 2013-14 que habían tenido algún trabajo remunerado desde que terminaron y tardaron menos de tres meses en encontrar su primer empleo.",
+      "numerator": "titulados de CFGS del curso 2013-14 que tuvieron su primer empleo en menos de tres meses",
+      "denominator": "titulados de CFGS del curso 2013-14 que declararon haber tenido algún trabajo remunerado desde que terminaron los estudios",
+      "sources": [{"id": "ine-etefil-first-job-2019", "title": "Encuesta de transición educativa-formativa e inserción laboral · Año 2019", "publisher": "INE", "url": "https://www.ine.es/prensa/etefil_2019.pdf", "retrievedAt": "2026-11-26"}]
+    }
+  },
+  "continued_study_job_six_months_vocational_graduates": {
+    "name": "Share of CFGS graduates working during study and staying in that job at least six months after, 2013–14 cohort",
+    "aliases": ["trabajaba mientras estudiaba y siguió en ese empleo CFGS", "CFGS job during studies continued six months after graduation"],
+    "unit": "percent of graduates who had worked since completing studies",
+    "population": "Spain's higher vocational education (CFGS) graduates from academic year 2013–14 who had held at least one paid job since completing their studies",
+    "denominator": "all CFGS graduates from academic year 2013–14 who reported at least one paid job since completing their studies",
+    "notEquivalentTo": ["first_job_under_three_months_vocational_graduates", "first_job_under_three_months_university_graduates", "continued_study_job_six_months_university_graduates", "employment_rate_recent_graduates_vocational", "recent_graduate_employment_rate"],
+    "dimensions": ["geo", "unit", "cohort", "surveyYear", "educationPath", "category"],
+    "dimensionConstraints": {"geo": "ES", "unit": "PC", "cohort": "2013-14", "surveyYear": "2019", "educationPath": "CFGS", "category": "working_during_studies_continued_6_months"},
+    "supports": ["descriptive", "comparative"],
+    "limitations": ["This is continued employment that began during study, not a new first job after graduation.", "The cohort is CFGS graduates from 2013–14, not every vocational pathway or a recent cohort.", "The denominator includes only graduates who had held a paid job since finishing. The survey is separate from EILU."],
+    "definition": {
+      "label": "Titulados de CFGS que continuaron un empleo iniciado durante los estudios",
+      "explanation": "Porcentaje de titulados de Ciclos Formativos de Grado Superior del curso 2013-14 que trabajaban mientras estudiaban y siguieron en ese empleo al menos seis meses después de titularse.",
+      "numerator": "titulados de CFGS del curso 2013-14 que trabajaban durante los estudios y continuaron en ese empleo al menos seis meses tras titularse",
+      "denominator": "titulados de CFGS del curso 2013-14 que declararon haber tenido algún trabajo remunerado desde que terminaron los estudios",
+      "sources": [{"id": "ine-etefil-first-job-2019", "title": "Encuesta de transición educativa-formativa e inserción laboral · Año 2019", "publisher": "INE", "url": "https://www.ine.es/prensa/etefil_2019.pdf", "retrievedAt": "2026-11-26"}]
+    }
+  },
+  "first_job_under_three_months_university_graduates": {
+    "name": "Share of university graduates with a first job in under three months, 2013–14 cohort",
+    "aliases": ["primer empleo universitario en menos de tres meses", "graduados universitarios que encontraron su primer empleo antes de tres meses", "university graduates first job under three months"],
+    "unit": "percent of graduates who had worked since completing studies",
+    "population": "Spain's university graduates from academic year 2013–14 who had held at least one paid job since completing their studies",
+    "denominator": "all university graduates from academic year 2013–14 who reported at least one paid job since completing their studies",
+    "notEquivalentTo": ["continued_study_job_six_months_university_graduates", "first_job_under_three_months_vocational_graduates", "continued_study_job_six_months_vocational_graduates", "employment_rate_recent_graduates_tertiary", "recent_graduate_employment_rate"],
+    "dimensions": ["geo", "unit", "cohort", "surveyYear", "educationPath", "category"],
+    "dimensionConstraints": {"geo": "ES", "unit": "PC", "cohort": "2013-14", "surveyYear": "2019", "educationPath": "university", "category": "first_job_under_3_months"},
+    "supports": ["descriptive", "comparative"],
+    "limitations": ["The cohort is university graduates from 2013–14, not recent graduates.", "The denominator includes only graduates who had held a paid job since finishing; the percentage is not the share of all graduates.", "The measure is the under-three-month category, not mean time to first job or evidence of causality. The survey is separate from ETEFIL."],
+    "definition": {
+      "label": "Graduados universitarios con primer empleo en menos de tres meses",
+      "explanation": "Porcentaje de graduados universitarios del curso 2013-14 que habían tenido algún trabajo remunerado desde que terminaron y tardaron menos de tres meses en encontrar su primer empleo.",
+      "numerator": "graduados universitarios del curso 2013-14 que tuvieron su primer empleo en menos de tres meses",
+      "denominator": "graduados universitarios del curso 2013-14 que declararon haber tenido algún trabajo remunerado desde que terminaron los estudios",
+      "sources": [{"id": "ine-eilu-first-job-2019", "title": "Encuesta de inserción laboral de titulados universitarios · Año 2019", "publisher": "INE", "url": "https://www.ine.es/prensa/eilu_2019.pdf", "retrievedAt": "2026-11-26"}]
+    }
+  },
+  "continued_study_job_six_months_university_graduates": {
+    "name": "Share of university graduates working during study and staying in that job at least six months after, 2013–14 cohort",
+    "aliases": ["trabajaba mientras estudiaba y siguió en ese empleo universitarios", "university job during studies continued six months after graduation"],
+    "unit": "percent of graduates who had worked since completing studies",
+    "population": "Spain's university graduates from academic year 2013–14 who had held at least one paid job since completing their studies",
+    "denominator": "all university graduates from academic year 2013–14 who reported at least one paid job since completing their studies",
+    "notEquivalentTo": ["first_job_under_three_months_university_graduates", "first_job_under_three_months_vocational_graduates", "continued_study_job_six_months_vocational_graduates", "employment_rate_recent_graduates_tertiary", "recent_graduate_employment_rate"],
+    "dimensions": ["geo", "unit", "cohort", "surveyYear", "educationPath", "category"],
+    "dimensionConstraints": {"geo": "ES", "unit": "PC", "cohort": "2013-14", "surveyYear": "2019", "educationPath": "university", "category": "working_during_studies_continued_6_months"},
+    "supports": ["descriptive", "comparative"],
+    "limitations": ["This is continued employment that began during study, not a new first job after graduation.", "The cohort is university graduates from 2013–14, not recent graduates.", "The denominator includes only graduates who had held a paid job since finishing. The survey is separate from ETEFIL."],
+    "definition": {
+      "label": "Graduados universitarios que continuaron un empleo iniciado durante los estudios",
+      "explanation": "Porcentaje de graduados universitarios del curso 2013-14 que trabajaban mientras estudiaban y siguieron en ese empleo al menos seis meses después de titularse.",
+      "numerator": "graduados universitarios del curso 2013-14 que trabajaban durante los estudios y continuaron en ese empleo al menos seis meses tras titularse",
+      "denominator": "graduados universitarios del curso 2013-14 que declararon haber tenido algún trabajo remunerado desde que terminaron los estudios",
+      "sources": [{"id": "ine-eilu-first-job-2019", "title": "Encuesta de inserción laboral de titulados universitarios · Año 2019", "publisher": "INE", "url": "https://www.ine.es/prensa/eilu_2019.pdf", "retrievedAt": "2026-11-26"}]
+    }
+  },
   "recent_graduate_employment_rate": {
     "name": "Employment rate of recent graduates aged 20 to 34, ISCED levels 3 to 8",
     "aliases": ["tasa de empleo de recién graduados", "porcentaje de recién titulados con empleo", "empleo de graduados en los primeros años", "tasa de inserción laboral de recién graduados"],

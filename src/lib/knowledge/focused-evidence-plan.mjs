@@ -24,7 +24,21 @@ import { metricDimensionContractFits } from './metric-contract.mjs';
 import { WAITER_VACANCY_SNAPSHOT } from './waiter-vacancy-snapshot.mjs';
 
 const vocabulary = new Map(metricVocabulary.map((metric) => [metric.id, metric]));
+const educationFirstJobMetricIds = new Set([
+  'first_job_under_three_months_vocational_graduates',
+  'continued_study_job_six_months_vocational_graduates',
+  'first_job_under_three_months_university_graduates',
+  'continued_study_job_six_months_university_graduates',
+]);
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
+const educationFirstJobPeriodFitsClaim = (claim, item) => {
+  const years = [...String(claim || '').matchAll(/\b(?:19|20|21)\d{2}\b/g)].map(([year]) => year);
+  if (!years.length) return true;
+  if (years.every((year) => year === '2019')) return item.period === '2019';
+  const cohortReference = /\b(curso|cohorte|cohort|class of)\b/.test(normalize(claim));
+  return cohortReference && years.every((year) => ['2013', '2014', '2019'].includes(year))
+    && item.dimensions?.cohort === '2013-14' && item.dimensions?.surveyYear === '2019';
+};
 const observationFitsClaim = (claim) => {
   const matchesAge = ageScopeMatcherFor(claim);
   const matchesPeriod = periodScopeMatcherFor(claim);
@@ -36,7 +50,9 @@ const observationFitsClaim = (claim) => {
       : /\b(?:tercera|3(?:a|era)?)\s+(?:oleada|ola)\b|\b(?:oleada|ola)\s+3\b/.test(text) ? '3' : undefined;
   const requestedTerritories = requestedGeographyScopes(claim);
   return (item) => {
-    if (!matchesAge(item) || !matchesPeriod(item) || !matchesGeography(item) || !matchesSex(item)) return false;
+    const periodFits = educationFirstJobMetricIds.has(item.metricId)
+      ? educationFirstJobPeriodFitsClaim(claim, item) : matchesPeriod(item);
+    if (!matchesAge(item) || !periodFits || !matchesGeography(item) || !matchesSex(item)) return false;
     if (/^primary_care_wait_/.test(item.metricId || '') && requestedPrimaryCareWave
       && String(item.dimensions?.surveyWave || '') !== requestedPrimaryCareWave) return false;
     if (!tertiaryOverqualificationCitizenshipFitsClaim(claim, item)) return false;
@@ -400,6 +416,10 @@ const educationOutcomeFinding = (fact) => {
   const period = periodLabel(item.period);
   const place = placeLabel(item) || 'el territorio consultado';
   const source = item.source?.publisher || 'Eurostat';
+  if (fact.id === 'first_job_under_three_months_vocational_graduates') return `INE (ETEFIL, España, encuesta de ${period}): el ${value} de los titulados de Ciclos Formativos de Grado Superior del curso 2013-14 que habían tenido algún trabajo remunerado desde que acabaron encontró su primer empleo en menos de tres meses.`;
+  if (fact.id === 'continued_study_job_six_months_vocational_graduates') return `INE (ETEFIL, España, encuesta de ${period}): el ${value} de los titulados de Ciclos Formativos de Grado Superior del curso 2013-14 que habían tenido algún trabajo remunerado desde que acabaron ya trabajaba durante los estudios y continuó en ese empleo al menos seis meses.`;
+  if (fact.id === 'first_job_under_three_months_university_graduates') return `INE (EILU, España, encuesta de ${period}): el ${value} de los graduados universitarios del curso 2013-14 que habían tenido algún trabajo remunerado desde que acabaron encontró su primer empleo en menos de tres meses.`;
+  if (fact.id === 'continued_study_job_six_months_university_graduates') return `INE (EILU, España, encuesta de ${period}): el ${value} de los graduados universitarios del curso 2013-14 que habían tenido algún trabajo remunerado desde que acabaron ya trabajaba durante los estudios y continuó en ese empleo al menos seis meses.`;
   if (fact.id === 'recent_graduate_employment_rate') return `${source}: en ${place}, el ${value} de las personas residentes de 20 a 34 años fuera de educación o formación, que completaron su nivel educativo más alto (ISCED 3–8) entre 1 y 3 años antes de la encuesta, estaba ocupada en ${period}.`;
   if (fact.id === 'employment_rate_recent_graduates_vocational') return `${source}: en ${place}, el ${value} de las personas residentes de 20 a 34 años fuera de educación o formación, con educación profesional ISCED 35 o 45 completada entre 1 y 3 años antes de la encuesta, estaba ocupada en ${period}.`;
   if (fact.id === 'employment_rate_recent_graduates_tertiary') return `${source}: en ${place}, el ${value} de las personas residentes de 20 a 34 años fuera de educación o formación, con educación terciaria ISCED 5–8 completada entre 1 y 3 años antes de la encuesta, estaba ocupada en ${period}.`;
@@ -454,6 +474,37 @@ const recentGraduateEmploymentComparison = (claim, facts, question) => {
     verdict: supported ? 'supported' : 'contradicted',
     headline: `Empleo de recién graduados en ${place} · ${period}`,
     assessment: `En ${period}, la tasa de empleo fue mayor en ${higherGroup}, por ${number(delta, vocational.id)} puntos porcentuales. Esa dirección ${supported ? 'coincide' : 'no coincide'} con la comparación afirmada.`,
+  };
+};
+const educationFirstJobTimingComparison = (facts, question) => {
+  if (!question?.asksFirstJobTiming || !question.comparesEducationPaths) return undefined;
+  const byId = new Map(facts.map((fact) => [fact.id, fact]));
+  const metricIds = [
+    'first_job_under_three_months_vocational_graduates',
+    'continued_study_job_six_months_vocational_graduates',
+    'first_job_under_three_months_university_graduates',
+    'continued_study_job_six_months_university_graduates',
+  ];
+  const selected = metricIds.map((id) => byId.get(id));
+  if (selected.some((fact) => !fact)) return undefined;
+  const items = selected.map((fact) => fact.latest);
+  const expectedSources = ['ine-etefil-first-job-2019', 'ine-etefil-first-job-2019', 'ine-eilu-first-job-2019', 'ine-eilu-first-job-2019'];
+  if (items.some((item, index) => !Number.isFinite(item.value)
+    || item.period !== '2019' || item.dimensions?.geo !== 'ES' || item.dimensions?.unit !== 'PC'
+    || item.dimensions?.cohort !== '2013-14' || item.dimensions?.surveyYear !== '2019'
+    || item.source?.id !== expectedSources[index]
+    || item.denominator !== items[0].denominator)) return undefined;
+
+  const [vocationalFirstJob, vocationalContinuingJob, universityFirstJob, universityContinuingJob] = items;
+  const vocationalByThreeMonths = Number((vocationalFirstJob.value + vocationalContinuingJob.value).toFixed(1));
+  const universityByThreeMonths = Number((universityFirstJob.value + universityContinuingJob.value).toFixed(1));
+  const underThreeMonthDifference = Number((vocationalFirstJob.value - universityFirstJob.value).toFixed(1));
+  const reply = `En las cohortes españolas que terminaron en el curso 2013-14, las encuestas del INE de 2019 registraron que, entre quienes habían tenido algún trabajo remunerado desde que acabaron, encontraron su primer empleo en menos de tres meses el ${number(vocationalFirstJob.value, vocationalFirstJob.metricId)} % de los titulados de Ciclos Formativos de Grado Superior y el ${number(universityFirstJob.value, universityFirstJob.metricId)} % de los graduados universitarios (${number(underThreeMonthDifference, vocationalFirstJob.metricId)} puntos más en CFGS). La categoría de quienes ya trabajaban durante los estudios y siguieron al menos seis meses en ese empleo fue ${number(vocationalContinuingJob.value, vocationalContinuingJob.metricId)} % entre CFGS y ${number(universityContinuingJob.value, universityContinuingJob.metricId)} % entre universitarios. Sumando esas dos categorías publicadas y redondeadas, las proporciones fueron ${number(vocationalByThreeMonths, vocationalFirstJob.metricId)} % y ${number(universityByThreeMonths, universityFirstJob.metricId)} %: no muestran una diferencia clara en empleo durante o antes de tres meses. Son dos encuestas distintas de una cohorte histórica y no describen a graduados actuales; CFGS no representa toda la FP, la universidad no se desglosa por carrera y los datos no miden el tiempo medio ni prueban causalidad.`;
+  return {
+    verdict: 'mixed',
+    headline: 'La cohorte de 2013–14 no muestra una diferencia clara',
+    assessment: reply,
+    reply,
   };
 };
 const specialistOutpatientMagnitudeNotAssessed = (claim) => {
@@ -645,30 +696,33 @@ const educationOutcomeQuestion = (claim) => {
     asksQualificationFit: /\b(sobrecualific\w*|desajust\w*|desencaj\w*|no requier\w*|no exig\w*|acorde\w*|adecuad\w*|relacionad\w*|correspond\w*|encaj\w*|ajust\w*|por debajo|nivel de estudios|campo de estudios)\b/.test(text),
     asksCredentialRequirements: /\b(master|maestria|doctorad\w*)\b/.test(text)
       && /\b(exig\w*|requier\w*|pid\w*|ped\w*|anunci\w*|ofert\w*)\b/.test(text),
-    asksFirstJobTiming: /\b(entr\w* antes|antes al mercado laboral|primer (?:empleo|trabajo|puesto)|tiempo.{0,24}(?:empleo|trabajo)|tard\w*.{0,24}(?:empleo|trabajo)|meses? hasta (?:el )?(?:empleo|trabajo)|mas rapido|mas pronto|rapidamente|tardan? menos|time to first job|faster|sooner)\b/.test(text),
+    asksFirstJobTiming: /\b(entr\w* antes|antes al mercado laboral|entr\w*.{0,30}(?:mercado laboral|empleo|trabajo).{0,20}antes|primer (?:empleo|trabajo|puesto)|tiempo.{0,24}(?:empleo|trabajo)|tard\w*.{0,24}(?:empleo|trabajo)|meses? hasta (?:el )?(?:empleo|trabajo)|mas rapido|mas pronto|rapidamente|tardan? menos|time to first job|first job|first employment|faster|sooner|enter\w*.{0,30}(?:job|labor market).{0,20}(?:before|earlier))\b/.test(text)
+      && !/\b(salari\w*|sueldo\w*|cobr\w*|pag\w*|wages?|pay|calidad|quality|condiciones|conditions|contrat\w*|contract|jornada|horas?|hours|estabilidad|temporalidad)\b/.test(text),
     asksEmploymentProspects: /\b(salida laboral|salidas laborales|empleabilidad|perspectivas laborales)\b/.test(text),
     asksTrend: /\b(ya no|antes|ahora|cada vez|ha aumentado|ha subido|ha bajado|desde \d{4}|evoluci\w*)\b/.test(text),
-    comparesEducationPaths: /\b(formacion profesional|fp|grado medio|grado superior|ciclo formativo|vocational(?: education| graduates?)?)\b/.test(text)
+    comparesEducationPaths: /\b(cfgs|formacion profesional|fp|grado medio|grado superior|ciclo (?:formativo|superior)|vocational(?: education| graduates?)?)\b/.test(text)
       && /\b(universidad\w*|universitari\w*|university|universities|carrer\w*|titul\w*|estudios superiores|tertiary education)\b/.test(text)
-      && /\b(mas|menos|mejor|peor|mayor|menor|frente|compar\w*|diferenc\w*|que|y|and|vs|versus|between)\b/.test(text),
+      && /\b(mas|menos|mejor|peor|mayor|menor|frente|compar\w*|diferenc\w*|que|than|y|and|vs|versus|between)\b/.test(text),
   };
 };
 const educationOutcomeLimitForQuestion = (question) => {
   if (question.asksDegreeDemand && !question.comparesEducationPaths) return 'La afiliación de una cohorte describe algunos resultados laborales, pero no mide cuántas vacantes existen por titulación ni si hay «demasiadas» carreras. Para comprobar demanda hacen falta egresados, vacantes y contrataciones por campo, territorio y periodo comparables.';
   if (question.asksCredentialRequirements) return 'Las tasas de empleo y sobrecualificación no muestran qué titulación piden las ofertas. Para saber si ahora se exige más formación hay que comparar anuncios de las mismas ocupaciones, territorios y periodos.';
-  if (question.asksFirstJobTiming) return 'Una tasa de empleo no indica cuánto tardan las personas tituladas en encontrar su primer trabajo. Hace falta medir el tiempo desde la graduación y comparar cohortes de FP y universidad en el mismo territorio y periodo.';
+  if (question.asksFirstJobTiming) return 'Una tasa general de empleo no indica cuánto tardan las personas tituladas en encontrar su primer trabajo. Hace falta comparar directamente las categorías de tiempo desde la graduación, para cohortes y territorios compatibles.';
   if (question.recentGraduateEmploymentRate) return 'Esta medida cubre a personas de 20 a 34 años que completaron su nivel educativo más alto entre 1 y 3 años antes y no estudiaban ni se formaban. La tasa muestra qué proporción tenía empleo; no mide el tiempo hasta el primer empleo ni la calidad del puesto.';
   if (question.comparesEducationPaths && !question.recentGraduateEmploymentRate) return 'La tasa de empleo disponible describe solo a residentes de 20 a 64 años con educación terciaria; no compara por sí sola los grupos que menciona la afirmación. Hace falta medirlos con el mismo resultado, territorio, periodo y criterios de graduación.';
   if (question.asksEmploymentProspects) return 'La tasa de empleo terciaria no mide las salidas laborales de FP ni garantiza la contratación de una persona. Para valorar la empleabilidad hace falta una tasa de empleo de titulados con edad, tiempo desde la graduación y denominador definidos.';
   return '';
 };
 const educationOutcomeLimitation = (ids, fallback, question, causalClaim = false) => {
+  const firstJobTiming = ids.some((id) => educationFirstJobMetricIds.has(id));
   const recentGraduateEmployment = ids.some((id) => ['recent_graduate_employment_rate', 'employment_rate_recent_graduates_vocational', 'employment_rate_recent_graduates_tertiary'].includes(id));
   const employment = ids.includes('employment_rate_tertiary_education');
   const unemployment = ids.includes('unemployment_rate_tertiary_education');
   const overqualification = ids.includes('tertiary_overqualification_rate');
   const youthOverqualification = ids.includes('tertiary_overqualification_rate_age_20_34');
-  const scope = recentGraduateEmployment ? 'La tasa mide si esas personas estaban ocupadas, no cuánto tardaron en conseguir su primer empleo ni la calidad o adecuación del puesto. «Recién graduados» se limita aquí a personas de 20 a 34 años que completaron el nivel educativo más alto 1 a 3 años antes de la encuesta y no estaban estudiando ni formándose.'
+  const scope = firstJobTiming ? 'La comparación cubre a titulados de CFGS y graduados universitarios del curso 2013-14 en encuestas distintas del INE realizadas en 2019. El denominador son quienes declararon algún trabajo remunerado desde que acabaron; no representa a todos los titulados. CFGS no abarca todos los itinerarios de FP, y la categoría de menos de tres meses no mide un tiempo medio ni prueba causalidad.'
+    : recentGraduateEmployment ? 'La tasa mide si esas personas estaban ocupadas, no cuánto tardaron en conseguir su primer empleo ni la calidad o adecuación del puesto. «Recién graduados» se limita aquí a personas de 20 a 34 años que completaron el nivel educativo más alto 1 a 3 años antes de la encuesta y no estaban estudiando ni formándose.'
     : youthOverqualification ? 'Aquí, «jóvenes» se interpreta con el grupo estadístico de Eurostat de 20 a 34 años. El denominador son solo las personas ocupadas de ese grupo con educación terciaria: no equivale a recién graduados, no cuenta a quienes siguen desempleados y no mide si el puesto coincide con el campo de estudios ni qué titulación piden los anuncios.'
     : employment && overqualification ? 'Estas tasas describen grupos, no garantizan el resultado de cada persona. La tasa de empleo abarca a residentes de 20 a 64 años, no solo a recién graduados; la de sobrecualificación solo cuenta a quienes ya trabajan y no mide si el puesto coincide con el campo de estudios.'
       : unemployment ? 'La tasa de paro usa como denominador a la población activa de 20 a 64 años con educación terciaria, no a todas las personas tituladas. No se limita a recién graduados ni predice el resultado de una persona.'
@@ -1065,7 +1119,15 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       ? 'tasa de empleo de personas de 20 a 34 años fuera de educación o formación que completaron educación profesional ISCED 35 o 45 entre 1 y 3 años antes; denominador: todas las personas de ese grupo'
       : id === 'employment_rate_recent_graduates_tertiary'
         ? 'tasa de empleo de personas de 20 a 34 años fuera de educación o formación que completaron educación terciaria ISCED 5–8 entre 1 y 3 años antes; denominador: todas las personas de ese grupo'
-        : id === 'employment_rate_tertiary_education'
+        : id === 'first_job_under_three_months_vocational_graduates'
+          ? 'porcentaje de titulados de CFGS del curso 2013-14 que encontraron su primer empleo en menos de tres meses; denominador: quienes habían tenido algún trabajo remunerado desde que acabaron'
+          : id === 'continued_study_job_six_months_vocational_graduates'
+            ? 'porcentaje de titulados de CFGS del curso 2013-14 que trabajaban durante los estudios y continuaron en ese empleo al menos seis meses; denominador: quienes habían tenido algún trabajo remunerado desde que acabaron'
+            : id === 'first_job_under_three_months_university_graduates'
+              ? 'porcentaje de graduados universitarios del curso 2013-14 que encontraron su primer empleo en menos de tres meses; denominador: quienes habían tenido algún trabajo remunerado desde que acabaron'
+              : id === 'continued_study_job_six_months_university_graduates'
+                ? 'porcentaje de graduados universitarios del curso 2013-14 que trabajaban durante los estudios y continuaron en ese empleo al menos seis meses; denominador: quienes habían tenido algún trabajo remunerado desde que acabaron'
+                : id === 'employment_rate_tertiary_education'
     ? 'tasa de empleo entre residentes de 20 a 64 años con educación terciaria; denominador: toda la población residente de ese grupo'
     : id === 'unemployment_rate_tertiary_education'
       ? 'tasa de paro entre personas activas de 20 a 64 años con educación terciaria; denominador: ocupados más desempleados de ese grupo'
@@ -1133,7 +1195,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   });
   const educationQuestion = educationOutcome ? educationOutcomeQuestion(claim) : undefined;
   const educationRecentGraduateComparison = educationOutcome
-    ? recentGraduateEmploymentComparison(claim, facts, educationQuestion) : undefined;
+    ? educationFirstJobTimingComparison(facts, educationQuestion) || recentGraduateEmploymentComparison(claim, facts, educationQuestion) : undefined;
   const specialistMagnitudeNotAssessed = focus.id === 'specialist-outpatient-regional-waits'
     && specialistOutpatientMagnitudeNotAssessed(claim);
   let limitation = tourismRegionalSectorComparison
@@ -1406,8 +1468,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       limitation,
     })
     : undefined;
-  const educationRecentGraduateComparisonReply = educationRecentGraduateComparison && shareableContextReply
-    ? [shareableContextReply, educationRecentGraduateComparison.assessment].join('\n\n') : undefined;
+  const educationRecentGraduateComparisonReply = educationRecentGraduateComparison
+    ? educationRecentGraduateComparison.reply || (shareableContextReply
+      ? [shareableContextReply, educationRecentGraduateComparison.assessment].join('\n\n') : undefined)
+    : undefined;
   const findingLead = direct.length ? 'Datos de la fuente: ' : focus.id === 'sector-wage-comparison' ? '' : 'Como contexto: ';
   const primaryCareCausalityReply = (() => {
     if (focus.id !== 'primary-care-wait-causes') return undefined;

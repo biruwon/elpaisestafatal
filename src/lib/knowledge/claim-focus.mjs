@@ -889,10 +889,18 @@ const educationCrossGroupComparison = (t) => /\b(?:mas|menos|mayor|menor|mejor|p
   || /\b(?:en comparacion con|comparad\w* con|que quienes)\b/.test(t);
 const educationOutcomeMetrics = (claim) => {
   const t = normalize(claim);
+  const firstJobTimingClaim = /\b(primer (?:empleo|trabajo|puesto)|antes al mercado laboral|entr\w* antes|entr\w*.{0,30}(?:mercado laboral|empleo|trabajo).{0,20}antes|mas rapido|mas pronto|rapidamente|tardan? menos|tiempo.{0,24}(?:empleo|trabajo)|meses? hasta (?:el )?(?:empleo|trabajo)|weeks? to (?:a )?job|time to first job|first job|faster|sooner|enter\w*.{0,30}(?:job|labor market).{0,20}(?:before|earlier))\b/.test(t)
+    && !/\b(salari\w*|sueldo\w*|cobr\w*|pag\w*|wages?|pay|calidad|quality|condiciones|conditions|contrat\w*|contract|jornada|horas?|hours|estabilidad|temporalidad)\b/.test(t);
   const recentGraduateCue = /\b(recien (?:titulad\w*|graduad\w*|egresad\w*)|gradu\w* (?:hace poco|recientemente)|graduad\w* recientes?|titulad\w* recientes?|egresad\w* recientes?|tras (?:graduarse|titularse|terminar (?:los )?estudios)|despues de (?:graduarse|titularse|terminar (?:los )?estudios)|de 1 a 3 a[nñ]os (?:de|desde|tras)|1 a 3 a[nñ]os antes de la encuesta|recent(?: university| vocational| tertiary)?(?: and (?:university|vocational|tertiary))? graduates?|recently graduated)\b/.test(t);
-  const recentGraduateTimingClaim = /\b(primer (?:empleo|trabajo|puesto)|antes al mercado laboral|mas rapido|mas pronto|rapidamente|tardan? menos|tiempo.{0,24}(?:empleo|trabajo)|meses? hasta (?:el )?(?:empleo|trabajo)|weeks? to (?:a )?job|time to first job|faster|sooner)\b/.test(t);
-  const vocationalPath = /\b(formacion profesional|fp|grado medio|grado superior|ciclo formativo|ciclos formativos|vocational(?: education| graduates?)?|medium vocational)\b/.test(t);
+  const vocationalPath = /\b(cfgs|formacion profesional|fp|grado medio|grado superior|ciclo (?:formativo|superior)|ciclos formativos|vocational(?: education| graduates?)?|medium vocational)\b/.test(t);
   const tertiaryPath = /\b(universidad\w*|universitari\w*|university|universities|carrer\w*|educacion terciaria|estudios superiores|tertiary education)\b/.test(t);
+  const firstJobYears = [...String(claim).matchAll(/\b(?:19|20|21)\d{2}\b/g)].map(([year]) => year);
+  const firstJobCohortYearScope = firstJobYears.length === 0
+    || firstJobYears.every((year) => ['2013', '2014', '2019'].includes(year))
+      && (firstJobYears.every((year) => year === '2019') || /\b(curso|cohorte|cohort|class of)\b/.test(t));
+  const firstJobAgeScopeFits = !/\b(?:de|con|entre|from|aged|age)\s+\d{1,2}\s*(?:[-–—]|a|hasta|to|y)\s*\d{1,2}\s*(?:a[nñ]os|years?)?\b/.test(t)
+    && !/\b(?:menores? de|under|over|mayores? de)\s+\d{1,2}\s*(?:a[nñ]os|years?)?\b/.test(t);
+  const firstJobTerritoryFits = requestedGeographyScopes(t).every(({ id, type }) => type === 'country' && id === 'ES');
   const recentGraduateUnemploymentClaim = /\b(paro|desemple\w*|unemployment)\b/.test(t);
   const recentGraduateEmploymentClaim = recentGraduateCue && !recentGraduateUnemploymentClaim
     && /\b(emple\w*|trabaj\w*|ocupaci\w*|employment|work)\b/.test(t);
@@ -902,8 +910,20 @@ const educationOutcomeMetrics = (claim) => {
     || requestedAgeRanges.length === 1 && requestedAgeRanges[0][1] === '20' && requestedAgeRanges[0][2] === '34';
   const territoryScopeFitsRecentGraduateMeasure = requestedGeographyScopes(t).every(({ id, type }) => type === 'country' && id === 'ES');
   const asksGraduateCount = /\b(cuantos|cuantas|numero de|recuento|how many)\b/.test(t);
+  if (firstJobTimingClaim) {
+    if (!firstJobAgeScopeFits || !firstJobTerritoryFits || !firstJobCohortYearScope) return [];
+    if (vocationalPath && tertiaryPath) return [
+      'first_job_under_three_months_vocational_graduates',
+      'continued_study_job_six_months_vocational_graduates',
+      'first_job_under_three_months_university_graduates',
+      'continued_study_job_six_months_university_graduates',
+    ];
+    if (vocationalPath) return ['first_job_under_three_months_vocational_graduates', 'continued_study_job_six_months_vocational_graduates'];
+    if (tertiaryPath) return ['first_job_under_three_months_university_graduates', 'continued_study_job_six_months_university_graduates'];
+    return [];
+  }
   if (recentGraduateEmploymentClaim) {
-    if (recentGraduateTimingClaim || qualificationFit || asksGraduateCount || !ageScopeFitsRecentGraduateMeasure || !territoryScopeFitsRecentGraduateMeasure) return [];
+    if (qualificationFit || asksGraduateCount || !ageScopeFitsRecentGraduateMeasure || !territoryScopeFitsRecentGraduateMeasure) return [];
     if (vocationalPath && tertiaryPath) return ['employment_rate_recent_graduates_vocational', 'employment_rate_recent_graduates_tertiary'];
     if (vocationalPath) return ['employment_rate_recent_graduates_vocational'];
     if (tertiaryPath) return ['employment_rate_recent_graduates_tertiary'];

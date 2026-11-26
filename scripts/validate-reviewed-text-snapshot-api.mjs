@@ -4,6 +4,7 @@ import { LABOUR_PRODUCTIVITY_SNAPSHOT } from '../src/lib/knowledge/labour-produc
 import { HICP_BASKET_SNAPSHOT } from '../src/lib/knowledge/hicp-basket-snapshot.mjs';
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../src/lib/knowledge/education-earnings-snapshot.mjs';
 import { EDUCATION_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/education-employment-snapshot.mjs';
+import { EDUCATION_FIRST_JOB_SNAPSHOT } from '../src/lib/knowledge/education-first-job-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from '../src/lib/knowledge/tourist-housing-snapshot.mjs';
 import { SECTORAL_VALUE_ADDED_SNAPSHOT } from '../src/lib/knowledge/sectoral-value-added-snapshot.mjs';
 
@@ -700,10 +701,11 @@ assert.match(educationNeighbour.body.result.reply, /tasas de empleo de los grupo
 assert.doesNotMatch(educationNeighbour.body.result.reply, /83,2 %|34 %/);
 
 const fpTiming = await check('La Formación Profesional permite entrar antes al mercado laboral que muchas carreras');
-assert.equal(fpTiming.body.state, 'insufficient');
-assert.match(fpTiming.body.result.reply, /tiempo desde terminar FP o universidad hasta el primer empleo, por cohorte, territorio y periodo comparables/);
+assert.equal(fpTiming.body.state, 'limited');
+assert.match(fpTiming.body.result.reply, /26,7 %.*22,9 %.*23,4 %.*28,1 %/s);
+assert.equal(fpTiming.body.result.arguments[0].verdict, 'mixed');
 assert.doesNotMatch(fpTiming.body.result.reply, /83,2 %|34,4 %/);
-assert.deepEqual(fpTiming.body.result.sources, []);
+assert.deepEqual(fpTiming.body.result.sources.map((source) => source.id), ['ine-etefil-first-job-2019', 'ine-eilu-first-job-2019']);
 
 const degreeRequirementTrend = await check('Cada vez se exige un máster para trabajos que antes pedían solo una carrera');
 assert.equal(degreeRequirementTrend.body.state, 'insufficient');
@@ -1061,12 +1063,52 @@ assert.equal(partialRecentGraduatePathRate.body.result.arguments[0].verdict, 'co
 assert.match(partialRecentGraduatePathRate.body.result.reply, /68,8 %.*FP.*86,1 %.*educación terciaria/s, 'A partial D1 result should be completed only with the missing reviewed series for the same metric comparison');
 assert.deepEqual(partialRecentGraduatePathRate.body.result.sources.map((source) => source.id), ['eurostat-recent-graduate-employment']);
 const recentGraduateTimingClaim = 'La Formación Profesional permite encontrar el primer empleo más rápido que la universidad';
-const recentGraduateTimingGap = await checkWithoutDatabase(recentGraduateTimingClaim);
-assert.equal(recentGraduateTimingGap.body.state, 'insufficient');
-assert.deepEqual(recentGraduateTimingGap.body.result.sources, []);
-assert.deepEqual(recentGraduateTimingGap.body.result.answerScope.directMetrics, []);
-assert.match(recentGraduateTimingGap.body.result.reply, /tiempo desde terminar FP o universidad hasta el primer empleo/);
-assert.doesNotMatch(recentGraduateTimingGap.body.result.reply, /68,8 %|86,1 %|81,2 %/);
+const recentGraduateTiming = await checkWithoutDatabase(recentGraduateTimingClaim);
+assert.equal(recentGraduateTiming.body.state, 'limited');
+assert.deepEqual(recentGraduateTiming.body.result.answerScope.directMetrics, [
+  'first_job_under_three_months_vocational_graduates',
+  'continued_study_job_six_months_vocational_graduates',
+  'first_job_under_three_months_university_graduates',
+  'continued_study_job_six_months_university_graduates',
+]);
+assert.equal(recentGraduateTiming.body.result.arguments[0].verdict, 'mixed');
+assert.match(recentGraduateTiming.body.result.reply, /26,7 %.*22,9 %.*23,4 %.*28,1 %/s);
+assert.match(recentGraduateTiming.body.result.reply, /50,1 %.*51 %/s);
+assert.deepEqual(recentGraduateTiming.body.result.sources.map((source) => source.id), [
+  'ine-etefil-first-job-2019', 'ine-eilu-first-job-2019',
+]);
+assert.doesNotMatch(recentGraduateTiming.body.result.reply, /68,8 %|86,1 %|81,2 %/);
+const recentGraduateTiming2025 = await checkWithoutDatabase('La FP permite encontrar antes el primer empleo que la universidad en España en 2025');
+assert.equal(recentGraduateTiming2025.body.state, 'insufficient');
+assert.deepEqual(recentGraduateTiming2025.body.result.sources, []);
+assert.deepEqual(recentGraduateTiming2025.body.result.answerScope.directMetrics, []);
+assert.doesNotMatch(recentGraduateTiming2025.body.result.reply, /26,7 %|22,9 %/);
+const partialFirstJobRows = EDUCATION_FIRST_JOB_SNAPSHOT.observations
+  .filter((item) => item.metricId.endsWith('_vocational_graduates'))
+  .map((item) => ({
+    id: item.id, kind: 'observation', dataset_id: item.source.title, metric: item.metric,
+    metric_id: item.metricId, value: item.value, unit: item.unit, period: item.period,
+    geography: item.geography, population: item.population, dimensions_json: JSON.stringify(item.dimensions),
+    dimension_labels_json: JSON.stringify(item.dimensionLabels || {}), url: null, excerpt: null,
+    payload_json: JSON.stringify({ denominator: item.denominator, dataKind: 'observed' }),
+    source_id: item.source.id, publisher: item.source.publisher, title: item.source.title, source_url: item.source.url,
+    published_at: null, retrieved_at: item.source.retrievedAt, trust_tier: 'primary', aliases_json: '[]',
+  }));
+const partialFirstJobDatabase = {
+  prepare() {
+    let metricId;
+    return {
+      bind(value) { metricId = value; return this; },
+      async all() { return { results: partialFirstJobRows.filter((row) => row.metric_id === metricId) }; },
+      async run() { return {}; },
+    };
+  },
+};
+const partialFirstJob = await check(recentGraduateTimingClaim, partialFirstJobDatabase);
+assert.equal(partialFirstJob.body.state, 'limited');
+assert.equal(partialFirstJob.body.result.arguments[0].verdict, 'mixed');
+assert.match(partialFirstJob.body.result.reply, /26,7 %.*22,9 %.*23,4 %.*28,1 %/s, 'Partial D1 rows should be completed only with missing rows for the reviewed 2013–14 comparison');
+assert.deepEqual(partialFirstJob.body.result.sources.map((source) => source.id), ['ine-etefil-first-job-2019', 'ine-eilu-first-job-2019']);
 
 const unlinkedSourceClaim = await checkWithoutDatabase('Los jóvenes con salarios españoles compiten por vivienda con trabajadores remotos que cobran salarios extranjeros');
 const unlinkedSourceParaphrase = await checkWithoutDatabase('Los jóvenes que cobran en España compiten por pisos con trabajadores remotos cuyos ingresos proceden del extranjero');

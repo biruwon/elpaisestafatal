@@ -2349,17 +2349,35 @@ survey. Eurostat marks the Spanish observations with `d`; the answer retains
 that quality note and the source, period, population and education-level
 limits.
 
-The FP-versus-tertiary comparison is assessed only when both matching
-observations share the same period, territory, unit and source. The result is
-limited to the dataset's vocational levels 35/45; it does not generalize to
-all Spanish FP qualifications. An employment rate does not measure time to a
-first job or job quality, so faster-entry claims still receive an evidence
-gap instead of inheriting the employment-rate comparison.
+The FP-versus-tertiary employment-rate comparison is assessed only when both
+matching observations share the same period, territory, unit and source. The
+result is limited to the dataset's vocational levels 35/45; it does not
+generalize to all Spanish FP qualifications. An employment rate does not
+measure time to a first job or job quality, so timing claims use dedicated
+evidence when available rather than inheriting the employment-rate comparison.
 
 Regression coverage checks Spanish and English paraphrases, the 2025 rates,
 the scoped comparison, partial D1 fallback and nearby unemployment,
 overqualification, job-quality, geography, age and first-job-timing claims.
-The focused evidence suite passes 385 cases, the reviewed Pages fallback
-passes, and the held-out answer benchmark remains 283/283 across 74 paraphrase
-groups. These are regression checks, not a claim that arbitrary text has been
-fact-checked.
+The focused evidence suite and reviewed Pages fallback are rerun for each
+change; these checks do not establish correctness for arbitrary user text.
+
+## First-job timing comparison — 26 November 2026
+
+The education family now selects dedicated INE evidence for a narrow timing
+comparison: CFGS and university graduates from the 2013–14 course, measured by
+separate 2019 surveys. Among graduates who reported at least one paid job
+since finishing, 26.7% of CFGS graduates and 22.9% of university graduates
+found their first job in under three months. Another 23.4% and 28.1%,
+respectively, had worked during their studies and continued in that job for at
+least six months. The two published categories sum to 50.1% and 51.0%; this is
+a derived sum of rounded percentages, not a direct estimate of average time.
+
+The result is limited evidence and a mixed verdict: the under-three-month
+category is higher for CFGS, while the combined shares are nearly equal. It
+does not establish a general or causal advantage, represent every FP pathway,
+or describe current graduates. Explicit requests for other years, ages or
+territories do not receive this historical comparison. Regression checks
+cover Spanish and English paraphrases, the 2013–14 cohort scope, partial D1
+completion, and nearby current-year, geography, age, unemployment, job-quality
+and salary claims.

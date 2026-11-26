@@ -17,6 +17,7 @@ import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/tourism-emp
 import { FOREIGN_AFFILIATE_SECTOR_SNAPSHOT } from '../../src/lib/knowledge/foreign-affiliate-sector-snapshot.mjs';
 import { WAITER_VACANCY_SNAPSHOT } from '../../src/lib/knowledge/waiter-vacancy-snapshot.mjs';
 import { EDUCATION_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/education-employment-snapshot.mjs';
+import { EDUCATION_FIRST_JOB_SNAPSHOT } from '../../src/lib/knowledge/education-first-job-snapshot.mjs';
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../../src/lib/knowledge/education-earnings-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from '../../src/lib/knowledge/tourist-housing-snapshot.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
@@ -2838,8 +2839,8 @@ assert.deepEqual([...focusedMetricIdsFor('¿Qué tasa de empleo tuvieron los rec
 assert.deepEqual([...focusedMetricIdsFor('Employment rates of recent vocational and university graduates in Spain in 2025')], [
   'employment_rate_recent_graduates_vocational', 'employment_rate_recent_graduates_tertiary',
 ]);
+const educationEvidence = [...EDUCATION_EMPLOYMENT_SNAPSHOT.observations, ...EDUCATION_FIRST_JOB_SNAPSHOT.observations];
 for (const claim of [
-  'La Formación Profesional permite encontrar el primer empleo más rápido que la universidad',
   'La tasa de desempleo de recién graduados universitarios es alta',
   'La sobrecualificación afecta a los recién titulados universitarios',
   'El empleo de recién graduados de formación profesional es mayor en la Unión Europea que en España',
@@ -2850,7 +2851,7 @@ for (const claim of [
 }
 const recentGraduatePathRateComparison = focusedEvidencePlan(
   'En 2025, la tasa de empleo de los recién graduados de FP fue mayor que la de los universitarios en España',
-  { observations: EDUCATION_EMPLOYMENT_SNAPSHOT.observations },
+  { observations: educationEvidence },
 );
 assert.deepEqual(recentGraduatePathRateComparison.answerScope.directMetrics, [
   'employment_rate_recent_graduates_vocational', 'employment_rate_recent_graduates_tertiary',
@@ -2860,11 +2861,49 @@ assert.equal(recentGraduatePathRateComparison.blocks.find((block) => block.type 
 assert.match(recentGraduatePathRateComparison.shareableReply, /68,8 %.*FP.*86,1 %.*educaci[oó]n terciaria/s);
 assert.match(recentGraduatePathRateComparison.shareableReply, /17,3 puntos porcentuales/);
 assert.match(recentGraduatePathRateComparison.shareableReply, /no coincide con la comparaci[oó]n afirmada/);
-const firstJobTimingGap = focusedEvidencePlan('La Formación Profesional permite encontrar el primer empleo más rápido que la universidad', { observations: EDUCATION_EMPLOYMENT_SNAPSHOT.observations });
-assert.equal(firstJobTimingGap.claimType, 'comparative');
-assert.deepEqual(firstJobTimingGap.answerScope.directMetrics, []);
-assert.deepEqual(firstJobTimingGap.sourceLinks, [], 'An employment rate must not be presented as evidence about time to first job');
-assert.match(firstJobTimingGap.shareableReply, /no indica cu[aá]nto tardan.*primer trabajo/);
+const firstJobTimingClaims = [
+  'La Formación Profesional permite encontrar el primer empleo más rápido que la universidad',
+  '¿Los graduados universitarios entran al mercado laboral antes que quienes terminan un ciclo superior?',
+  'Did CFGS graduates find their first job faster than university graduates?',
+  'En la cohorte de 2013-14, ¿qué porcentaje de titulados de CFGS y universidad halló su primer empleo en menos de tres meses?',
+];
+let firstJobTimingSources;
+for (const claim of firstJobTimingClaims) {
+  const plan = focusedEvidencePlan(claim, { observations: educationEvidence });
+  assert.equal(claimFocusFor(claim)?.id, 'education-employment-outcomes', claim);
+  assert.deepEqual(plan.answerScope.directMetrics, [
+    'first_job_under_three_months_vocational_graduates',
+    'continued_study_job_six_months_vocational_graduates',
+    'first_job_under_three_months_university_graduates',
+    'continued_study_job_six_months_university_graduates',
+  ], claim);
+  assert.equal(plan.claimType, 'comparative', claim);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'mixed', claim);
+  assert.equal(plan.evidenceLevel, 'limited', claim);
+  assert.equal(plan.sourceLinks.length, 2, claim);
+  assert.match(plan.shareableReply, /26,7 %.*22,9 %/s, claim);
+  assert.match(plan.shareableReply, /3,8 puntos m[aá]s en CFGS/);
+  assert.match(plan.shareableReply, /23,4 %.*28,1 %/s, claim);
+  assert.match(plan.shareableReply, /50,1 %.*51 %/s, claim);
+  assert.match(plan.shareableReply, /curso 2013-14.*2019/s, claim);
+  assert.match(plan.shareableReply, /no representa a todos los titulados|CFGS no representa toda la FP/);
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  if (firstJobTimingSources) assert.deepEqual(sourceIds, firstJobTimingSources, `First-job paraphrases changed sources: ${claim}`);
+  firstJobTimingSources = sourceIds;
+}
+const firstJobTiming2025 = focusedEvidencePlan('La FP permite encontrar antes el primer empleo que la universidad en España en 2025', { observations: educationEvidence });
+assert.deepEqual(firstJobTiming2025.answerScope.directMetrics, [], 'Historical first-job evidence must not answer an explicit 2025 claim');
+assert.deepEqual(firstJobTiming2025.sourceLinks, []);
+assert.doesNotMatch(firstJobTiming2025.shareableReply, /26,7 %|22,9 %/);
+for (const nearby of [
+  'La Formación Profesional permite encontrar el primer empleo más rápido que la universidad en Francia',
+  'Los graduados de FP de 20 a 34 años encuentran su primer empleo antes que los universitarios',
+  'La FP garantiza trabajo inmediato al terminar',
+  'Los graduados de FP cobran más que los universitarios en su primer empleo',
+]) {
+  assert.deepEqual([...focusedMetricIdsFor(nearby)], [], `Historical first-job evidence must not cross-route: ${nearby}`);
+}
+assert.match(focusedEvidencePlan('El primer empleo de titulados CFGS en España', { observations: educationEvidence }).shareableReply, /ETEFIL.*2019/);
 const skillDemandClaim = 'Los idiomas y competencias digitales pesan más en el empleo que muchas asignaturas del título';
 const skillDemand = focusedEvidencePlan(skillDemandClaim, { observations: [
   { id: 'tertiary-employment-neighbour', metricId: 'employment_rate_tertiary_education', value: 83.2, period: '2025', unit: '%', geography: 'España' },
@@ -3034,14 +3073,6 @@ const educationOutcomeGapFamilies = [
     ],
     missing: /anuncios de las mismas ocupaciones en periodos comparables/,
     limitation: /no muestran qu[eé] titulaci[oó]n piden las ofertas/,
-  },
-  {
-    claims: [
-      'La Formación Profesional permite entrar antes al mercado laboral que muchas carreras',
-      'Los titulados de FP consiguen su primer empleo antes que quienes estudian una carrera',
-    ],
-    missing: /tiempo desde terminar FP o universidad hasta el primer empleo/,
-    limitation: /no indica cu[aá]nto tardan las personas tituladas en encontrar su primer trabajo/,
   },
   {
     claims: [
