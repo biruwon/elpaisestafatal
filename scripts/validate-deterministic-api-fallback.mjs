@@ -431,7 +431,7 @@ for (const { family, claim, context = false } of rentalMechanismClaims) {
   const reply = result.result?.shareableReply || '';
   const claimItem = result.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0];
   const expectedSourceIds = context
-    ? family === 'rental-landlord-motives' ? ['observatorio-alquiler-landlord-profile-2025'] : ['catalonia-seasonal-rental-deposits']
+    ? family === 'rental-landlord-motives' ? ['observatorio-alquiler-landlord-profile-2025'] : ['catalonia-seasonal-rental-deposits-q2-2026']
     : [];
   if (result.status !== (context ? 'partial' : 'uncovered') || result.result?.id !== `measurement-${family}`
     || result.result?.claimType !== 'causal' || result.result?.evidenceLevel !== (context ? 'limited' : 'insufficient')
@@ -441,9 +441,11 @@ for (const { family, claim, context = false } of rentalMechanismClaims) {
     || !result.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.length)) {
     throw new Error(`A rental-market mechanism did not preserve its own evidence gap: ${claim}`);
   }
-  if (context && family === 'rental-regulation-contract-shift' && (!/9\.330/.test(reply) || !/13\.517/.test(reply) || !/44,9 %/.test(reply)
-    || !/Catalu[nñ]a/.test(reply) || !result.result?.blocks?.some((block) => block.type === 'data_finding' && block.dataKind === 'context'))) {
-    throw new Error(`The seasonal-rental trend lost its region, figures, or context-only label: ${claim}`);
+  if (context && family === 'rental-regulation-contract-shift' && (!/9\.330/.test(reply) || !/13\.517/.test(reply) || !/13\.152/.test(reply)
+    || !/Catalu[nñ]a/.test(reply) || !/no viviendas [uú]nicas/.test(reply)
+    || !/No demuestra que la regulaci[oó]n causara el cambio/.test(reply)
+    || !result.result?.blocks?.some((block) => block.type === 'data_finding' && block.dataKind === 'context'))) {
+    throw new Error(`The seasonal-rental trend lost its region, period, limitation, or context-only label: ${claim}`);
   }
   if (/26,7|31,6|32,4|34,5|98,7/.test(reply)) {
     throw new Error(`A neighboring rent-affordability statistic crossed into a landlord or screening claim: ${claim}`);

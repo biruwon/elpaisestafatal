@@ -211,7 +211,7 @@ try {
   assert.deepEqual(internshipSubstitution.result.answerScope.contextMetrics, []);
   assert.equal(internshipSubstitution.result.arguments?.[0]?.verdict, 'insufficient');
   assert.match(internshipSubstitution.result.reply, /1\.580\.637.*2\.688.*6\.519/s);
-  assert.match(internshipSubstitution.result.reply, /no miden la frecuencia de sustituci[oó]n de puestos de entrada/i);
+  assert.match(internshipSubstitution.result.reply, /no indican cu[aá]ntos puestos sustituyen las pr[aá]cticas ni el ahorro empresarial/i);
   assert.deepEqual(internshipSubstitution.result.sources.map((source) => source.id).sort(), [
     'mites-false-intern-inspection-detections-2021-2025',
     'social-security-unpaid-training-practice-registrations-2025',

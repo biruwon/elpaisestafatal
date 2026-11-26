@@ -1731,8 +1731,8 @@ const internshipLabourSubstitutionEvidence = {
     unit: 'personas registradas y personas detectadas; no equivalen a puestos sustituidos ni a una tasa de prevalencia',
   },
   facts: [
-    'Entre el 1 de enero de 2024 y el 30 de junio de 2025, la Tesorería General de la Seguridad Social dio de alta al menos un día a 1.580.637 alumnos de prácticas formativas no remuneradas. La cifra incluye prácticas universitarias, de FP no intensiva y de enseñanzas artísticas y deportivas; desde enero de 2024 también cotizan estas prácticas no remuneradas.',
-    'El Ministerio de Trabajo informó de que la Inspección de Trabajo detectó 2.688 falsos becarios en 6.519 actuaciones entre 2021 y 2025. La publicación no da el total de prácticas o empresas que permitiría estimar qué proporción representan esas detecciones.',
+    'Entre el 1 de enero de 2024 y el 30 de junio de 2025, la Tesorería General de la Seguridad Social registró 1.580.637 alumnos en prácticas no remuneradas; cada uno cotizó al menos un día. Incluye prácticas universitarias, FP no intensiva y enseñanzas artísticas o deportivas.',
+    'Entre 2021 y 2025, la Inspección de Trabajo detectó 2.688 falsos becarios en 6.519 actuaciones; no publica el total de prácticas o empresas.',
   ],
   factSourceIds: [
     ['social-security-unpaid-training-practice-registrations-2025'],
@@ -1762,7 +1762,7 @@ const internshipLabourSubstitutionEvidence = {
   ],
   shareableReplyForContext: ({ facts }) => [
     ...facts,
-    'No se deben sumar ni dividir estos recuentos: cubren periodos y poblaciones distintos. Las altas registran alumnado; las inspecciones no ofrecen un total de prácticas como denominador. Estas cifras no miden la frecuencia de sustitución de puestos de entrada ni el ahorro empresarial. Para comprobar esa afirmación hacen falta tareas y planes formativos, puestos y costes comparables, y un denominador representativo de empresas y prácticas.',
+    'Son recuentos de periodos y bases distintos, no comparables. No indican cuántos puestos sustituyen las prácticas ni el ahorro empresarial. Para saberlo hacen falta tareas, planes formativos, costes y un denominador representativo.',
   ].join('\n\n'),
 };
 const wageGrowthJobMobility = (t) => (/\b(salari\w*|sueld\w*|remuner\w*|nomina\w*)\b/.test(t) || /\b(cobr\w*|pag\w*)\b/.test(t))
@@ -2625,31 +2625,24 @@ const focuses = [
     when: rentalRegulationContractShift,
     direct: [], context: [], claimType: 'causal',
     needsForClaim: (claim) => [
-      'oferta y contratos residenciales en régimen regulado y no regulado, antes y después de la medida',
-      'misma zona y periodo, con una zona comparable no afectada',
-      'fecha de aplicación y viviendas realmente expuestas a la norma',
-      'comparación que separe la regulación de cambios de demanda y nueva construcción',
+      'oferta residencial y contratos en régimen regulado y no regulado, antes y después de la norma',
+      'mismos periodos en zonas afectadas y en zonas similares no afectadas',
+      'fecha de aplicación y viviendas expuestas; separar demanda y obra nueva',
       ...(/\b(turism\w*|turistic\w*|vacacional\w*)\b/.test(normalize(claim))
         ? ['actividad turística y contratos estacionales en la misma zona y periodo'] : []),
     ],
-    explanation: 'Los anuncios y contratos pueden cambiar tras una norma sin que eso demuestre que la norma causara el cambio.',
+    explanation: 'Que los anuncios bajen después de una norma no demuestra que esta causara la salida de viviendas del alquiler regulado.',
     explanationEvidence: {
-      expiresAt: '2027-11-02', territories: ['ES', 'cataluna'],
-      when: (claim) => /\b(temporad\w*|temporal(?:es)?|habitual\w*)\b/.test(claim),
-      evidenceLabel: 'Contratos de temporada con fianza registrada en Cataluña',
-      dimensions: {
-        subject: 'contratos de alquiler de temporada con fianza registrada en el INCASÒL',
-        population: 'contratos de temporada registrados; no viviendas identificadas como retiradas del alquiler habitual',
-        period: '2023–2024', geography: 'Cataluña',
-        denominator: 'contratos de temporada con fianza depositada en cada año', unit: 'contratos registrados',
-      },
-      facts: [
-        'El registro de fianzas del INCASÒL contabilizó 9.330 contratos de temporada en 2023 y 13.517 en 2024 (+44,9 %).',
-        'La serie cuenta contratos con fianza registrada en Cataluña. No identifica viviendas que pasaron del alquiler habitual al temporal ni el motivo del cambio; por sí sola no mide un efecto de la regulación.',
-      ],
-      sources: [{ id: 'catalonia-seasonal-rental-deposits', title: 'Lloguer de temporada per trimestres fins al segon trimestre de 2026', publisher: 'Agència de l’Habitatge de Catalunya · INCASÒL', url: 'https://habitatge.gencat.cat/ca/dades/indicadors_estadistiques/estadistiques_de_construccio_i_mercat_immobiliari/mercat_de_lloguer/lloguer-de-temporada/', publishedAt: '2026-11-02', retrievedAt: '2026-11-17', role: 'primary' }],
+      ...SEASONAL_RENTAL_SHIFT_EVIDENCE,
+      when: (claim) => /\b(temporad\w*|temporal(?:es)?|habitual\w*)\b/.test(claim)
+        && SEASONAL_RENTAL_SHIFT_EVIDENCE.when(claim),
     },
-    limitation: 'Las cifras generales de precios o anuncios no muestran cuántas viviendas entran, salen o cambian de régimen. Para atribuirlo a la norma hay que comparar zonas similares no afectadas.',
+    shareableReplyForContext: ({ facts }) => [
+      facts[0],
+      'La estadística cuenta contratos con fianza depositada en Cataluña, no viviendas únicas ni conversiones desde el alquiler habitual.',
+      'No demuestra que la regulación causara el cambio. Para medirlo hacen falta datos comparables de oferta y contratos en zonas afectadas y similares no afectadas, con las viviendas expuestas identificadas y controles por demanda y obra nueva.',
+    ].join('\n\n'),
+    limitation: 'Los anuncios no equivalen al conjunto de viviendas disponibles ni muestran por sí solos cuántas salieron del mercado.',
   },
   {
     id: 'rental-landlord-motives', label: 'motivos de propietarios para retirar o cambiar el uso de una vivienda',

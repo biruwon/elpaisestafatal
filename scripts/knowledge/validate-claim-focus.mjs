@@ -400,6 +400,7 @@ const internshipEvidenceSourceIds = [
   'social-security-unpaid-training-practice-registrations-2025',
   'mites-false-intern-inspection-detections-2021-2025',
 ];
+const internshipContextReplies = [];
 for (const claim of [
   'Las prácticas y becas sustituyen puestos de entrada que antes eran empleos normales',
   'Muchas empresas usan becarios para hacer trabajo ordinario con menor coste',
@@ -413,16 +414,20 @@ for (const claim of [
   assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
   assert.deepEqual(plan.sourceLinks.map((source) => source.id).sort(), [...internshipEvidenceSourceIds].sort(), 'Paraphrases should reuse the same official context sources');
   assert.match(plan.shareableReply, /entre el 1 de enero de 2024.*30 de junio de 2025.*1\.580\.637/is);
-  assert.match(plan.shareableReply, /2\.688.*6\.519.*2021 y 2025/s);
-  assert.match(plan.shareableReply, /estas cifras no miden la frecuencia de sustituci[oó]n de puestos de entrada/i);
-  assert.match(plan.shareableReply, /no (?:da|ofrecen) (?:el )?total de pr[aá]cticas/i);
+  assert.match(plan.shareableReply, /entre 2021 y 2025.*2\.688.*6\.519/is);
+  assert.match(plan.shareableReply, /no indican cu[aá]ntos puestos sustituyen las pr[aá]cticas/i);
+  assert.match(plan.shareableReply, /no publica el total de pr[aá]cticas o empresas/i);
+  assert.ok(plan.shareableReply.trim().split(/\s+/).length <= 115, 'Internship substitution context should remain concise while preserving each survey scope.');
+  internshipContextReplies.push(plan.shareableReply);
 }
+assert.equal(new Set(internshipContextReplies).size, 1, 'Internship substitution paraphrases should reuse the same concise, scoped evidence response.');
 const publicInternshipResponse = localPublicCheckResponse({
   status: 'complete', requestId: 'internship-text-evidence',
   result: focusedEvidencePlan('Las prácticas y becas sustituyen puestos de entrada que antes eran empleos normales'),
 }, 'Las prácticas y becas sustituyen puestos de entrada que antes eran empleos normales');
 assert.equal(publicInternshipResponse.state, 'insufficient', 'Contextual inspection counts must not upgrade the causal claim verdict');
 assert.match(publicInternshipResponse.result.reply, /La evidencia no basta.*1\.580\.637.*2\.688/s, 'The public text answer should keep the scoped context instead of collapsing to a generic gap');
+assert.ok(publicInternshipResponse.result.reply.trim().split(/\s+/).length <= 125, 'The public internship answer should preserve context in a compact form.');
 assert.deepEqual(publicInternshipResponse.result.sources.map((source) => source.id).sort(), [...internshipEvidenceSourceIds].sort());
 const housingMobilityParaphrases = [
   'La crisis de vivienda está frenando la movilidad laboral entre ciudades',
@@ -1439,9 +1444,27 @@ assert.equal(claimFocusFor('La tasa de sobrecualificación de inmigrantes obliga
 const rentalRegulationPlan = focusedEvidencePlan('La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales');
 assert.equal(rentalRegulationPlan.answerScope.family, 'rental-regulation-contract-shift');
 assert.doesNotMatch(rentalRegulationPlan.shareableReply, /Como contexto:\s*Como contexto/);
+assert.equal(rentalRegulationPlan.evidenceLevel, 'limited', 'Seasonal-contract counts are context, not direct evidence of a regulation effect');
+assert.equal(rentalRegulationPlan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
+assert.deepEqual(rentalRegulationPlan.sourceLinks.map((source) => source.id), ['catalonia-seasonal-rental-deposits-q2-2026']);
+assert.match(rentalRegulationPlan.shareableReply, /947 municipios de Catalu[nñ]a.*9\.330.*2023.*13\.517.*2024.*13\.152.*2025/s);
+assert.match(rentalRegulationPlan.shareableReply, /contratos con fianza depositada.*no viviendas [uú]nicas ni conversiones/s);
+assert.match(rentalRegulationPlan.shareableReply, /No demuestra que la regulaci[oó]n causara el cambio/);
+assert.doesNotMatch(rentalRegulationPlan.shareableReply, /6\.594|4\.191/);
+assert.ok(rentalRegulationPlan.shareableReply.trim().split(/\s+/).length <= 85, 'Rental regulation context should be concise while retaining geography, period, and denominator.');
+const rentalRegulationParaphrase = focusedEvidencePlan('El control de rentas hizo que propietarios pasaran viviendas habituales a temporales en Cataluña');
+assert.equal(rentalRegulationParaphrase.answerScope.family, 'rental-regulation-contract-shift');
+assert.deepEqual(rentalRegulationParaphrase.sourceLinks.map((source) => source.id), ['catalonia-seasonal-rental-deposits-q2-2026']);
+assert.equal(rentalRegulationParaphrase.shareableReply, rentalRegulationPlan.shareableReply, 'Regulatory seasonal-rental paraphrases should share the same scoped evidence and answer.');
 const rentCapSupplyPlan = focusedEvidencePlan('Los topes de alquiler hacen que parte de la oferta desaparezca del mercado regulado');
 assert.equal(rentCapSupplyPlan.answerScope.family, 'rental-regulation-contract-shift');
+assert.deepEqual(rentCapSupplyPlan.sourceLinks, [], 'General rent-supply claims must not inherit seasonal-contract counts.');
+assert.doesNotMatch(rentCapSupplyPlan.shareableReply, /9\.330|13\.517|13\.152/);
 assert.doesNotMatch(rentCapSupplyPlan.shareableReply, /turismo|pernoctaciones|viviendas tur[ií]sticas/i, 'A rent-cap claim must not receive a tourism-specific evidence gap');
+const historicalRentalRegulation = focusedEvidencePlan('En 2022 el control de rentas convirtió viviendas habituales en temporales en Cataluña');
+assert.deepEqual(historicalRentalRegulation.sourceLinks, [], 'The Catalonia seasonal-contract series must not answer a pre-2023 claim.');
+const cityRentalRegulation = focusedEvidencePlan('El control de rentas convirtió viviendas habituales en contratos de temporada en Barcelona');
+assert.deepEqual(cityRentalRegulation.sourceLinks, [], 'Catalonia-wide seasonal-contract totals must not answer a Barcelona-specific effect claim.');
 assert.deepEqual([...focusedMetricIdsFor('¿Cuántos pisos turísticos hay en España?')], ['tourist_housing_count']);
 assert.equal(directMetricIdsForQuery('¿Cuántos pisos turísticos hay en España?').has('tourist_housing_count'), true, 'An asserted tourist-housing metric must remain retrievable');
 assert.deepEqual([...focusedMetricIdsFor('¿Qué proporción del parque de viviendas es turístico?')], ['tourist_housing_share']);

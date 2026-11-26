@@ -2455,9 +2455,9 @@ export const textAnswerAccuracyCases = [
     input: 'Los topes de alquiler hacen que parte de la oferta desaparezca del mercado regulado',
     expected: {
       state: 'insufficient', family: 'rental-regulation-contract-shift', verdict: 'insufficient', directSourceIds: [],
-      replyIncludes: ['oferta y contratos residenciales en régimen regulado y no regulado', 'misma zona y periodo', 'fecha de aplicación', 'comparación'],
+      replyIncludes: ['oferta residencial y contratos en régimen regulado y no regulado', 'mismos periodos en zonas afectadas', 'fecha de aplicación', 'obra nueva'],
       replyExcludes: ['turismo', 'pernoctaciones', 'viviendas turísticas'],
-      evidence: [], maxReplyWords: 110,
+      evidence: [], maxReplyWords: 90,
     },
   },
   {
@@ -2466,9 +2466,61 @@ export const textAnswerAccuracyCases = [
     input: 'El control de rentas reduce las viviendas anunciadas en las zonas afectadas',
     expected: {
       state: 'insufficient', family: 'rental-regulation-contract-shift', verdict: 'insufficient', directSourceIds: [],
-      replyIncludes: ['oferta y contratos residenciales en régimen regulado y no regulado', 'misma zona y periodo', 'fecha de aplicación', 'comparación'],
+      replyIncludes: ['oferta residencial y contratos en régimen regulado y no regulado', 'mismos periodos en zonas afectadas', 'fecha de aplicación', 'obra nueva'],
       replyExcludes: ['turismo', 'pernoctaciones', 'viviendas turísticas'],
-      evidence: [], maxReplyWords: 110,
+      evidence: [], maxReplyWords: 90,
+    },
+  },
+  {
+    id: 'rent-regulation-seasonal-contract-context',
+    equivalenceGroup: 'rent-regulation-seasonal-contract-context-catalonia',
+    input: 'La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'rental-regulation-contract-shift', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['9.330 contratos de temporada con fianza en 2023', '13.517 en 2024', '13.152 en 2025', 'contratos con fianza depositada en Cataluña', 'no viviendas únicas ni conversiones', 'no demuestra que la regulación causara el cambio'],
+      replyExcludes: ['6.594', '4.191', 'la regulación causó el cambio'],
+      evidence: [
+        {
+          familyId: 'rental-regulation-contract-shift',
+          sourceIds: ['catalonia-seasonal-rental-deposits-q2-2026'],
+          dataIncludes: ['9.330', '13.517', '13.152'],
+          dimensions: { period: '2023–2025', geography: 'Cataluña', denominator: 'no es un recuento de viviendas únicas' },
+        },
+        {
+          familyId: 'rental-regulation-contract-shift',
+          sourceIds: ['catalonia-seasonal-rental-deposits-q2-2026'],
+          dataIncludes: ['no enlaza un contrato temporal con el contrato previo de larga duración'],
+          dimensions: { period: 'serie publicada desde 2023', geography: 'Cataluña', denominator: 'no enlaza cambios de régimen en una misma vivienda' },
+        },
+      ],
+      maxReplyWords: 95,
+    },
+  },
+  {
+    id: 'rent-regulation-seasonal-contract-context-paraphrase',
+    equivalenceGroup: 'rent-regulation-seasonal-contract-context-catalonia',
+    input: 'El control de rentas hizo que propietarios pasaran viviendas habituales a temporales en Cataluña',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'rental-regulation-contract-shift', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['9.330 contratos de temporada con fianza en 2023', '13.517 en 2024', '13.152 en 2025', 'contratos con fianza depositada en Cataluña', 'no viviendas únicas ni conversiones', 'no demuestra que la regulación causara el cambio'],
+      replyExcludes: ['6.594', '4.191', 'la regulación causó el cambio'],
+      evidence: [
+        {
+          familyId: 'rental-regulation-contract-shift',
+          sourceIds: ['catalonia-seasonal-rental-deposits-q2-2026'],
+          dataIncludes: ['9.330', '13.517', '13.152'],
+          dimensions: { period: '2023–2025', geography: 'Cataluña', denominator: 'no es un recuento de viviendas únicas' },
+        },
+        {
+          familyId: 'rental-regulation-contract-shift',
+          sourceIds: ['catalonia-seasonal-rental-deposits-q2-2026'],
+          dataIncludes: ['no enlaza un contrato temporal con el contrato previo de larga duración'],
+          dimensions: { period: 'serie publicada desde 2023', geography: 'Cataluña', denominator: 'no enlaza cambios de régimen en una misma vivienda' },
+        },
+      ],
+      maxReplyWords: 95,
     },
   },
   {
@@ -3618,6 +3670,31 @@ export const textAnswerAccuracyCases = [
       replyExcludes: ['30,4 %', '25 %', '3 %'],
       evidence: [{ familyId: 'public-dental-coverage', sourceIds: ['sns-common-dental-basket-2026'], dataIncludes: ['para toda la población', 'extracciones', 'implantes o prótesis dentales'], dimensions: { period: 'texto consolidado vigente a 2026-07-31', geography: 'España: cartera común del SNS' } }],
       maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'internship-substitution-context',
+    input: 'Las prácticas y becas sustituyen puestos de entrada que antes eran empleos normales',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'internship-labour-substitution', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['La evidencia no basta para confirmar toda la afirmación', '1.580.637 alumnos', '1 de enero de 2024', '30 de junio de 2025', '2.688 falsos becarios', '6.519 actuaciones', 'no publica el total de prácticas o empresas', 'recuentos de periodos y bases distintos', 'no indican cuántos puestos sustituyen las prácticas', 'ahorro empresarial', 'denominador representativo'],
+      replyExcludes: ['41,2 %', '2.688 / 6.519', 'la mayoría de prácticas sustituye empleos'],
+      evidence: [
+        {
+          familyId: 'internship-labour-substitution',
+          sourceIds: ['social-security-unpaid-training-practice-registrations-2025'],
+          dataIncludes: ['1.580.637', 'al menos un día', 'prácticas no remuneradas'],
+          dimensions: { period: '1 de enero de 2024–30 de junio de 2025', geography: 'España', denominator: 'recuento de alumnos con al menos un día cotizado' },
+        },
+        {
+          familyId: 'internship-labour-substitution',
+          sourceIds: ['mites-false-intern-inspection-detections-2021-2025'],
+          dataIncludes: ['2.688', '6.519 actuaciones', '2021 y 2025', 'no publica el total de prácticas o empresas'],
+          dimensions: { period: '2021–2025', geography: 'España', denominator: '6.519 actuaciones inspectoras' },
+        },
+      ],
+      maxReplyWords: 120,
     },
   },
   {
