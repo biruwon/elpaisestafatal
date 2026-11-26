@@ -1545,6 +1545,51 @@
     "notEquivalentTo": ["gross_value_added"],
     "dimensions": ["period", "geography", "activity"]
   },
+  "gva_chain_volume_by_activity": {
+    "name": "Gross value added by main activity, chain-linked volumes",
+    "displayName": "Valor añadido bruto por actividad · volúmenes encadenados",
+    "aliases": ["valor añadido bruto real por actividad", "VAB real por sector", "valor añadido bruto por rama económica"],
+    "unit": "million euro, chain-linked volumes (2020)",
+    "population": "Gross value added (B1G) for Spain's main NACE Rev. 2 economic activities in national accounts; values may be provisional",
+    "notEquivalentTo": ["gross_value_added", "gross_value_added_by_activity", "gdp_real_annual"],
+    "dimensions": ["freq", "period", "geo", "nace_r2", "unit", "na_item"],
+    "dimensionConstraints": {"freq": "A", "geo": "ES", "unit": "CLV20_MEUR", "na_item": "B1G"},
+    "supports": ["descriptive", "trend", "comparative"],
+    "limitations": [
+      "This is gross value added for broad economic activities, not output or productivity for an individual job or worker. It must be paired with hours worked for the same NACE activity and period before calculating value added per hour.",
+      "Chain-linked volumes use 2020 as the reference year. Recent observations may be provisional and should retain the source status flag."
+    ]
+  },
+  "employment_hours_by_activity": {
+    "name": "Total hours worked by main activity, national accounts",
+    "displayName": "Horas trabajadas por actividad · cuentas nacionales",
+    "aliases": ["horas trabajadas por actividad económica", "horas totales trabajadas por sector", "horas de trabajo por rama económica"],
+    "unit": "thousand hours",
+    "population": "Total employment (EMP_DC) hours worked under the domestic concept for Spain's main NACE Rev. 2 economic activities; values may be provisional",
+    "notEquivalentTo": ["employment_rate", "employment_persons_per_capita_national_accounts"],
+    "dimensions": ["freq", "period", "geo", "nace_r2", "unit", "na_item"],
+    "dimensionConstraints": {"freq": "A", "geo": "ES", "unit": "THS_HW", "na_item": "EMP_DC"},
+    "supports": ["descriptive", "trend", "comparative"],
+    "limitations": [
+      "This counts hours worked in an economic activity under the national-accounts domestic concept; it does not count individual jobs or describe wages or job quality.",
+      "It must be matched to gross value added for the same NACE activity and period. Recent observations may be provisional and should retain the source status flag."
+    ]
+  },
+  "employment_jobs_by_activity": {
+    "name": "Employment jobs by main activity, national accounts",
+    "displayName": "Puestos de trabajo por actividad · cuentas nacionales",
+    "aliases": ["puestos de trabajo por actividad económica", "empleo por rama económica", "puestos por sector económico"],
+    "unit": "thousand jobs",
+    "population": "Employment jobs under the domestic concept for Spain's main NACE Rev. 2 economic activities; this counts jobs, not unique employed persons, and values may be provisional",
+    "notEquivalentTo": ["employment_rate", "employment_persons_per_capita_national_accounts", "employment_hours_by_activity"],
+    "dimensions": ["freq", "period", "geo", "nace_r2", "unit", "na_item"],
+    "dimensionConstraints": {"freq": "A", "geo": "ES", "unit": "THS_JOB", "na_item": "EMP_DC"},
+    "supports": ["descriptive", "trend", "comparative"],
+    "limitations": [
+      "This is a count of jobs under the national-accounts domestic concept, not a count of unique people or a measure of wages or job quality.",
+      "It may be used to describe the share of jobs in broad activity groups only when the numerator and total denominator use the same period, territory, and revision. Recent observations may be provisional and should retain the source status flag."
+    ]
+  },
   "retail_turnover_index": {
     "name": "Retail trade turnover index",
     "aliases": ["ventas minoristas", "comercio minorista", "facturación del comercio", "ventas de tiendas"],

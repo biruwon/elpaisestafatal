@@ -2211,3 +2211,43 @@ responses, with 259 public insufficient states and 41 limited states. A total
 of 43 claims receive structured multi-part answers. These are routing and
 response-structure measures, not factual-accuracy estimates for arbitrary
 user text. All discovery claims remain unverified.
+
+## Employment mix and value added by activity — 26 November 2026
+
+The text-first route now combines Eurostat's [real gross value added by NACE
+activity](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_a10?freq=A&geo=ES&na_item=B1G&unit=CLV20_MEUR&sinceTimePeriod=2015),
+[hours worked](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_a10_e?freq=A&geo=ES&na_item=EMP_DC&unit=THS_HW&sinceTimePeriod=2015)
+and [jobs](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_a10_e?freq=A&geo=ES&na_item=EMP_DC&unit=THS_JOB&sinceTimePeriod=2015)
+for Spain. It derives value added per hour for the same year and broad NACE
+branch, then reports the share of jobs in branches below the whole-economy
+average. The calculation uses the ten non-overlapping main branches; it omits
+the separately published manufacturing code C because C is nested inside B-E.
+
+In the latest common year, 2025, the whole-economy average was €34.5 per hour
+in chain-linked 2020 volumes. Six of ten branches were below that mean. They
+accounted for 19.3 million of 23.3 million jobs (83.0%). Eurostat flags all
+three 2025 series as provisional. It last updated the value-added table on
+24 November 2026 and the hours/jobs tables on 21 October; the periods match,
+but the tables may incorporate revisions from different dates. The answer
+states these dates and keeps the claim-level verdict insufficient.
+
+“Below average” is a transparent comparison threshold, not an official
+low-value-job category. The measure is a branch average, counts jobs rather
+than unique people, and says nothing by itself about salaries, job quality or
+whether that share is excessive. NACE G-I combines commerce, transport and
+accommodation/food services; it cannot isolate hospitality. Imputed housing
+rents are included in real-estate value added and influence the total-economy
+benchmark.
+
+The reviewed answer is tested on live-refreshed Eurostat rows and synthetic
+revision-boundary cases. Its paraphrase suite checks source reuse, provisional
+labels, trends, unavailable periods, geography, release-date mismatch, and
+nearby wage, firm-productivity, aging and presentism claims. The D1 export now
+preserves source-table update dates with each observation, and the focused D1
+lookup can retrieve enough annual rows for a 2019–2025 comparison. The new
+family adds one route in the discovery audit: 193 of 300 claims now have a
+metric or family route, while 107 have neither. The deterministic audit has
+no live rows for this family and therefore leaves the particular discovery
+claim as an evidence gap until the configured feeds are imported to D1. These
+counts describe routing and regression coverage, not factual accuracy for
+arbitrary text.

@@ -100,7 +100,11 @@ const manifest = { id: `source-${manifestId.slice(0, 16)}`, sourceRegistryId: so
 await writeFile(join(root, 'manifests', `${manifest.id}.json`), JSON.stringify(manifest, null, 2));
 let records = [];
 if (contentType.includes('json')) {
-  try { records = normalizeJsonPayload(JSON.parse(bytes.toString('utf8')), { id: manifest.id, title: manifest.title, metricId, metricIdByDimension, unit, dimensions }); } catch { /* Keep the raw source when it is not a supported JSON shape. */ }
+  try {
+    const payload = JSON.parse(bytes.toString('utf8'));
+    if (typeof payload.updated === 'string' && Number.isFinite(Date.parse(payload.updated))) manifest.dataUpdatedAt = payload.updated;
+    records = normalizeJsonPayload(payload, { id: manifest.id, title: manifest.title, metricId, metricIdByDimension, unit, dimensions });
+  } catch { /* Keep the raw source when it is not a supported JSON shape. */ }
 }
 if (contentType.includes('csv') || contentType.includes('tab-separated')) records = parseDelimitedRows(bytes.toString('utf8'), { rowId: (index) => `${manifest.id}-row-${index + 1}`, sourceId: manifest.id, metricId, retrievedAt: manifest.retrievedAt });
 if (contentType.includes('xml')) {

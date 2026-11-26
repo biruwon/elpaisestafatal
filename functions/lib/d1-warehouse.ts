@@ -66,6 +66,7 @@ const hydrateRows = (rows: WarehouseRow[]): Record<string, unknown>[] => rows.ma
     source: {
       id: row.source_id, publisher: row.publisher, title: row.title || row.publisher, url: row.source_url,
       publishedAt: row.published_at ?? undefined, retrievedAt: row.retrieved_at, trust: row.trust_tier,
+      dataUpdatedAt: typeof payload.dataUpdatedAt === 'string' ? payload.dataUpdatedAt : undefined,
       aliases: Array.isArray(parseJson<unknown>(row.aliases_json, [])) ? parseJson<string[]>(row.aliases_json, []) : [],
       sourceRegistryId: row.source_registry_id, schedule: row.schedule, domain: payload.sourceDomain,
     },
@@ -75,14 +76,15 @@ const hydrateRows = (rows: WarehouseRow[]): Record<string, unknown>[] => rows.ma
 // A direct metric contract must not depend on its words winning a broad FTS
 // ranking. Retain a bounded, recent source revision for each requested annual
 // series so a comparison sees both series and their full interval.
-export const searchD1WarehouseByMetricIds = async (database: D1Database, metricIds: string[]): Promise<Record<string, unknown>[]> => {
+export const searchD1WarehouseByMetricIds = async (database: D1Database, metricIds: string[], rowLimit = 40): Promise<Record<string, unknown>[]> => {
   const ids = [...new Set(metricIds)].slice(0, 4);
+  const limit = Number.isFinite(rowLimit) ? Math.min(240, Math.max(1, Math.floor(rowLimit))) : 40;
   const results = await Promise.all(ids.map((id) => database.prepare(`
     SELECT ${warehouseColumns}
     FROM observations o JOIN source_documents s ON s.id = o.source_document_id
     WHERE o.metric_id = ? AND COALESCE(s.source_registry_id, '') <> 'llm-research'
     ORDER BY s.retrieved_at DESC, o.period DESC
-    LIMIT 40
+    LIMIT ${limit}
   `).bind(id).all<WarehouseRow>()));
   return hydrateRows(results.flatMap((result) => result.results));
 };

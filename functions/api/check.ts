@@ -30,7 +30,7 @@ import { vacancyMeasurementClarificationMetricIdsForQuery, vacancyMeasurementMet
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-education-earnings-tourist-housing-snapshots-rail-punctuality-sourced-family-selection-intergenerational-housing-landlord-context-pension-finance-routing-energy-price-pass-through-fixed-discontinuous-status-price-wage-eu-convergence-real-wage-living-standard-reported-worked-hours-rural-health-access-retirement-age-61-pension-private-savings-62-rent-series-scope-advertised-rent-claim-scope-metric-quality-notes-adult-conviction-rate-nationality-2026-11-scoped-source-2026-11-direct-metric-d1-2026-11-second-home-scope-2026-11-pension-wage-distribution-2026-11-business-size-productivity-context-2026-11-foreign-affiliation-sector-snapshot-2026-11-waiter-vacancy-experimental-context-2026-11';
+const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-education-earnings-tourist-housing-snapshots-rail-punctuality-sourced-family-selection-intergenerational-housing-landlord-context-pension-finance-routing-energy-price-pass-through-fixed-discontinuous-status-price-wage-eu-convergence-real-wage-living-standard-reported-worked-hours-rural-health-access-retirement-age-61-pension-private-savings-62-rent-series-scope-advertised-rent-claim-scope-metric-quality-notes-adult-conviction-rate-nationality-2026-11-scoped-source-2026-11-direct-metric-d1-2026-11-second-home-scope-2026-11-pension-wage-distribution-2026-11-business-size-productivity-context-2026-11-foreign-affiliation-sector-snapshot-2026-11-waiter-vacancy-experimental-context-2026-11-sectoral-value-added-activity-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -276,7 +276,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
   if (effectiveClaim.length > INPUT_LIMITS.maxTextCharacters || (body.clarification?.prompt.length || 0) > INPUT_LIMITS.maxTextCharacters) return json(unavailableCheck('', inputErrorMessage('text_too_large')), 413);
   if (body.inputType === 'text' && isMissingTextClaim(effectiveClaim)) return json(missingTextClaimResponse(body.text));
   const initialFocus = body.inputType === 'text' ? claimFocusFor(effectiveClaim) : undefined;
-  const vacancyRoute = body.inputType === 'text' && !['foreign-affiliation-in-tourism-and-agriculture', 'waiter-vacancy-and-conditions'].includes(initialFocus?.id || '')
+  const vacancyRoute = body.inputType === 'text' && !['foreign-affiliation-in-tourism-and-agriculture', 'waiter-vacancy-and-conditions', 'employment-value-added-by-activity'].includes(initialFocus?.id || '')
     ? vacancyMeasurementMetricIdsForQuery(effectiveClaim) : undefined;
   if (vacancyRoute && vacancyRoute.size === 0) return json(vacancyClarificationFor(effectiveClaim));
   const vacancyMetrics = [...(vacancyRoute || [])].filter((id) => vacancyMetricIds.has(id));
@@ -359,7 +359,8 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       }
       if (env.DB && metricIds.length) {
         let lookupFailed = false;
-        focusedObservations = await searchD1WarehouseByMetricIds(env.DB, metricIds).catch(() => {
+        const warehouseRowLimit = focus.id === 'employment-value-added-by-activity' ? 240 : 40;
+        focusedObservations = await searchD1WarehouseByMetricIds(env.DB, metricIds, warehouseRowLimit).catch(() => {
           lookupFailed = true;
           return [];
         });

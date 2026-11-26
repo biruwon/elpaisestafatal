@@ -11,6 +11,7 @@ import { gdpPerCapitaComparisonPlan, gdpPerCapitaEvidenceGapPlan } from './gdp-p
 import { GDP_REAL_PER_CAPITA_SNAPSHOT } from './gdp-real-per-capita-snapshot.mjs';
 import { labourProductivityAnalysisPlan, labourProductivityEvidenceGapPlan } from './labour-productivity-analysis.mjs';
 import { LABOUR_PRODUCTIVITY_SNAPSHOT } from './labour-productivity-snapshot.mjs';
+import { sectoralValueAddedAnalysisPlan, sectoralValueAddedEvidenceGapPlan } from './sectoral-value-added-analysis.mjs';
 import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 import { comparisonQuality, observationFlagNotes } from './observation-quality.mjs';
 import { ageScopeMatcherFor } from './age-scope.mjs';
@@ -918,6 +919,15 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       if (reviewed) return reviewed;
     }
     return labourProductivityEvidenceGapPlan(claim, { reason: /\b(?:19|20|21)\d{2}\b|\b(?:ultim\w*|hace|durante)\b/.test(normalizedClaim) ? 'period' : 'missing-period' });
+  }
+  if (focus.id === 'employment-value-added-by-activity') {
+    const requestedTerritories = requestedGeographyScopes(claim);
+    if (requestedTerritories.some((scope) => scope.id !== 'ES')) return sectoralValueAddedEvidenceGapPlan(claim, { reason: 'geography' });
+    const matched = sectoralValueAddedAnalysisPlan(claim, { observations, now });
+    if (matched) return matched;
+    return sectoralValueAddedEvidenceGapPlan(claim, {
+      reason: /\b(?:19|20|21)\d{2}\b|\b(?:ultim\w*|hace|durante|desde|entre)\b/.test(normalizedClaim) ? 'period' : 'data',
+    });
   }
   const fullTime = /\b(?:jornada completa|tiempo completo)\b/i.test(claim);
   const partTime = /\b(?:jornada parcial|tiempo parcial|media jornada|empleo parcial|trabajo parcial)\b/i.test(claim);

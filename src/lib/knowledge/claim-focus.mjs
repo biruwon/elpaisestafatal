@@ -819,6 +819,17 @@ const gdpTotalPerCapitaComparison = (t) => {
 const labourProductivityTrend = (t) => /\bproductividad\b/.test(t)
   && /\b(?:laboral|pib|gdp|crecimiento|crece|crecio|poblacion|empleo|por trabajador|por persona ocupada|por empleado|por hora|horas trabajadas|estanc\w*|lent\w*|avanz\w*|tendencia|lleva anos|desde hace anos)\b/.test(t)
   && !/\b(?:empres\w*|negocio\w*|sector\w*|industr\w*|productividad total de los factores|salari\w*|sueld\w*|antiguedad|premia\w*)\b/.test(t);
+const lowValueAddedEmploymentClaim = (t) => {
+  const lowValueCue = /\b(?:baj\w*|poc\w*|escas\w*|reducid\w*)\b[\s\w]{0,24}\b(?:valor anadid\w*|valor agregad\w*|productiv\w*)\b/.test(t)
+    || /\b(?:valor anadid\w*|valor agregad\w*|productiv\w*)\b[\s\w]{0,24}\b(?:baj\w*|poc\w*|escas\w*|reducid\w*)\b/.test(t)
+    || /\blow value added\b|\blow productivity\b/.test(t);
+  const employmentScope = /\b(?:emple\w*|trabaj\w*|puesto\w*|ocupaci\w*|actividad\w*|sector\w*|economia)\b/.test(t);
+  const sectorMeasureRequest = /\b(?:vab|valor anadid\w*|valor agregad\w*|productividad por hora)\b/.test(t)
+    && /\b(?:actividad\w*|sector\w*|rama\w*|horas trabajadas)\b/.test(t);
+  return (lowValueCue && employmentScope || sectorMeasureRequest)
+    && !labourProductivityTrend(t)
+    && !/\b(?:antiguedad|presentismo|empres\w* peque\w*|pymes?|salari\w*|sueld\w*)\b/.test(t);
+};
 const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios?|formaci\w*|preparaci\w*|educacion (?:superior|terciaria)|cualific\w*|sobrecualific\w*|fp)\b/.test(t)
   && !migrationPopulation.test(t) && !healthcareWorkforceCausality(t)
   && !/\b(estigma|estereotip\w*|prestigio|percepcion\w*|reputacion\w*)\b/.test(t)
@@ -1926,6 +1937,21 @@ const focuses = [
     explanationEvidence: PUBLIC_TAX_SERVICE_PERCEPTION_SNAPSHOT,
     shareableReplyForContext: PUBLIC_TAX_SERVICE_PERCEPTION_SNAPSHOT.shareableReplyForContext,
     limitation: 'Los ingresos agregados sobre el PIB no miden el pago medio individual. La pregunta CIS mide percepción general, no resultados objetivos de cada servicio; dos encuestas con universos y métodos diferentes no bastan para atribuir un deterioro ni relacionarlo con los impuestos.',
+  },
+  {
+    id: 'employment-value-added-by-activity', label: 'composición del empleo y valor añadido por hora trabajada',
+    when: lowValueAddedEmploymentClaim,
+    direct: [], context: ['gva_chain_volume_by_activity', 'employment_hours_by_activity', 'employment_jobs_by_activity'],
+    claimTypeFor: (t) => /\b(?:caus\w*|provoc\w*|porque|debido|por culpa)\b/.test(normalize(t)) ? 'causal'
+      : /\b(?:cada vez|aument\w*|sub\w*|crec\w*|desde (?:19|20)\d{2}|entre (?:19|20)\d{2})\b/.test(normalize(t)) ? 'trend'
+        : /\b(?:demasiad\w*|excesiv\w*|too many|too much|too dependent)\b/.test(normalize(t)) ? 'normative' : 'comparative',
+    needsForClaim: () => [
+      'valor añadido bruto en volúmenes encadenados y horas trabajadas para la misma actividad económica, territorio y año',
+      'una definición de qué sectores u ocupaciones cuentan como de «bajo valor añadido» y un umbral de comparación',
+      'una proporción de empleo y un criterio externo para decidir qué nivel de concentración sería excesivo',
+    ],
+    explanation: 'Eurostat permite comparar el valor añadido bruto por hora trabajada entre grandes actividades económicas. Esa media sectorial no clasifica cada empleo ni determina si hay demasiados puestos en una actividad.',
+    limitation: 'El cociente usa valor añadido bruto en volúmenes encadenados de 2020 y horas trabajadas de cuentas nacionales, para ramas NACE Rev. 2 de España. No mide salarios, calidad del empleo, productividad individual ni el nivel «adecuado» de empleo por sector; los últimos datos pueden ser provisionales.',
   },
   {
     id: 'labour-productivity-and-growth', label: 'Productividad laboral real y crecimiento económico',

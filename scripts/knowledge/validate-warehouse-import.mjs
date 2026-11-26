@@ -104,8 +104,9 @@ try {
     publisher: 'Fixture office', title: 'Fixture data', contentType: 'application/json', metricId: 'fixture_metric',
     sourceRegistryId: 'fixture', connector: 'fixture-v1', parserVersion: 'fixture-v1', trust: 'primary', recordPath: fixtureRecordPath,
   };
+  const fixtureDataUpdatedAt = '2026-11-14T00:00:00.000Z';
   const writeFixtureRecord = async (value, metricId = 'fixture_metric') => writeFile(fixtureRecordPath, JSON.stringify({
-    source: { publisher: 'Fixture office', sourceRegistryId: 'fixture' },
+    source: { publisher: 'Fixture office', sourceRegistryId: 'fixture', dataUpdatedAt: fixtureDataUpdatedAt },
     records: [{ id: 'fixture-row', value, metric: 'Fixture metric', metricId, period: '2025', unit: 'people', datasetId: 'fixture-series', dimensions: { indic_em: metricId === 'fixture_rate' ? 'JVR' : 'JOBVAC' } }],
   }));
   await writeFixtureRecord(2);
@@ -152,6 +153,8 @@ try {
   exportDatabase.exec(firstSql);
   assert.equal(exportDatabase.prepare("SELECT status FROM warehouse_source_imports WHERE source_id = 'fixture-source'").get().status, 'complete');
   assert.equal(exportDatabase.prepare("SELECT value FROM observations WHERE id = 'fixture-row'").get().value, 2);
+  assert.equal(JSON.parse(exportDatabase.prepare("SELECT payload_json FROM observations WHERE id = 'fixture-row'").get().payload_json).dataUpdatedAt, fixtureDataUpdatedAt,
+    'Source dataset update dates must survive the D1 SQL export for downstream revision checks.');
   const changesBeforeRepeat = exportDatabase.prepare('SELECT total_changes() AS n').get().n;
   await applyThroughLoader(firstSql);
   assert.equal(exportDatabase.prepare('SELECT total_changes() AS n').get().n, changesBeforeRepeat, 'The production filter must skip completed unchanged snapshots');

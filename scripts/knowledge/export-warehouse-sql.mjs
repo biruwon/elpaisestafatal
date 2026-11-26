@@ -100,6 +100,7 @@ for (const manifest of latestManifests.values()) {
       comparison: record.comparison,
       limitations: record.limitations,
       denominator: record.denominator,
+      dataUpdatedAt: source.dataUpdatedAt,
       sourceDomain: source.domain,
     }).filter(([, value]) => value !== undefined));
     if (Buffer.byteLength(JSON.stringify(preserved), 'utf8') > 32_000) {

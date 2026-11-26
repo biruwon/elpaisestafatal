@@ -790,6 +790,24 @@
       "metricId": "gross_value_added_by_activity"
     },
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_a10?freq=A&geo=ES&na_item=B1G&unit=CLV20_MEUR&sinceTimePeriod=2015",
+      "title": "Valor añadido bruto real por actividad en España · Eurostat",
+      "aliases": ["VAB real por sector", "valor añadido bruto en volúmenes encadenados"],
+      "metricId": "gva_chain_volume_by_activity"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_a10_e?freq=A&geo=ES&na_item=EMP_DC&unit=THS_HW&sinceTimePeriod=2015",
+      "title": "Horas trabajadas por actividad en España · Eurostat",
+      "aliases": ["horas trabajadas por actividad económica", "horas trabajadas por sector"],
+      "metricId": "employment_hours_by_activity"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/nama_10_a10_e?freq=A&geo=ES&na_item=EMP_DC&unit=THS_JOB&sinceTimePeriod=2015",
+      "title": "Puestos de trabajo por actividad en España · Eurostat",
+      "aliases": ["puestos de trabajo por actividad económica", "empleo por rama económica"],
+      "metricId": "employment_jobs_by_activity"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/sts_trtu_a?geo=ES&sinceTimePeriod=2015",
       "title": "Índice de ventas minoristas en España · Eurostat",
       "aliases": ["ventas minoristas", "comercio minorista", "facturación del comercio"],
