@@ -370,16 +370,27 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           return [];
         });
         if (lookupFailed) {
-          if (focus.id === 'rental-price-amount') {
+          if (focus.id === 'migration-benefit-receipt' && snapshotLifecycle(INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT).usable) {
+            // This reviewed ECV snapshot is complete for the bounded measure
+            // and carries its own source, period and scope. D1 is only a
+            // retrieval mirror here, so a temporary warehouse failure need
+            // not erase this independently verified comparison.
+            const selectedMetrics = new Set(metricIds);
+            const snapshotObservations = INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT.observations
+              .filter((item) => selectedMetrics.has(item.metricId));
+            const plan = focusedEvidencePlan(effectiveClaim, { observations: snapshotObservations }) as AnswerPlan | undefined;
+            if (plan) warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
+          } else if (focus.id === 'rental-price-amount') {
             return json(unavailableCheck(effectiveClaim, 'No hemos podido consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'));
+          } else {
+            // An exception is different from a successful lookup with no rows.
+            // Keep this distinction for context-only families too: their
+            // contextual series may still exist even when they cannot prove the
+            // submitted claim on their own.
+            warehouseUnavailableResponse = unavailableCheck(effectiveClaim, warehouseUnavailableMessage);
+            if (!localResolverAvailable || focus.id === 'tourism-seasonal-employment') return json(warehouseUnavailableResponse);
+            focusedObservations = undefined;
           }
-          // An exception is different from a successful lookup with no rows.
-          // Keep this distinction for context-only families too: their
-          // contextual series may still exist even when they cannot prove the
-          // submitted claim on their own.
-          warehouseUnavailableResponse = unavailableCheck(effectiveClaim, warehouseUnavailableMessage);
-          if (!localResolverAvailable || focus.id === 'tourism-seasonal-employment') return json(warehouseUnavailableResponse);
-          focusedObservations = undefined;
         } else {
           if (focus.id === 'migration-benefit-receipt' && snapshotLifecycle(INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT).usable) {
             const selectedMetrics = new Set(metricIds);
@@ -448,7 +459,8 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
             return json(warehouseFocusedResponse || unavailableCheck(effectiveClaim, warehouseUnavailableMessage));
           }
           if (warehouseFocusedResponse
-            && (focus.id === 'rental-price-amount' || !env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now())) return json(warehouseFocusedResponse);
+            && (focus.id === 'rental-price-amount' || focus.id === 'migration-benefit-receipt'
+              || !env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now())) return json(warehouseFocusedResponse);
         }
       } else if (focus.id !== 'rental-price-amount' && focus.direct.length === 0 && metricIds.length === 0) {
         // If no warehouse metric is defined for this family, its reviewed

@@ -161,6 +161,14 @@ const ecvPartialDatabase = {
 const migrationBenefitPartialDatabase = await check(migrationBenefitClaim, ecvPartialDatabase);
 assert.match(migrationBenefitPartialDatabase.body.result.reply, /39,21 %.*24,45 %/s,
   'A partial warehouse response should be completed with the missing group from the reviewed ECV snapshot');
+const migrationBenefitBrokenDatabase = await check(migrationBenefitClaim, brokenDatabase);
+assert.equal(migrationBenefitBrokenDatabase.body.result.answerScope.family, 'migration-benefit-receipt',
+  'A reviewed, complete ECV snapshot may answer this bounded family when its D1 retrieval mirror is unavailable');
+assert.equal(migrationBenefitBrokenDatabase.body.result.arguments[0].verdict, 'insufficient');
+assert.match(migrationBenefitBrokenDatabase.body.result.reply, /39,21 %.*24,45 %/s);
+assert.deepEqual(migrationBenefitBrokenDatabase.body.result.sources.map((source) => source.id), [
+  'ine-ecv-2025-personal-benefit-receipt', 'ine-ecv-2025-design-register',
+]);
 const ecvWrongIncomeYear = await checkWithoutDatabase('¿En 2025 recibían más ayudas personales las personas extranjeras?');
 assert.deepEqual(ecvWrongIncomeYear.body.result?.sources || [], [], 'Survey data for 2024 income must not answer an unqualified 2025 income-period question');
 assert.doesNotMatch(JSON.stringify(ecvWrongIncomeYear.body), /39,21 %|24,45 %|38,59 %|21,7 %/);
