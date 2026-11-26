@@ -452,7 +452,7 @@ if (migrationHousingCause.status !== 'uncovered' || migrationHousingCause.result
 }
 
 const rentalMechanismClaims = [
-  { family: 'rental-tenant-screening-exclusion', claim: 'Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares' },
+  { family: 'rental-tenant-screening-exclusion', claim: 'Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares', screeningContext: true },
   { family: 'rental-regulation-contract-shift', claim: 'La regulación del alquiler ha empujado a algunos propietarios hacia contratos temporales', context: true },
   { family: 'rental-regulation-contract-shift', claim: 'El control de precios provoca que viviendas pasen del alquiler habitual al de temporada', context: true },
   { family: 'rental-regulation-contract-shift', claim: 'La regulación en Cataluña desplazó viviendas del alquiler habitual a contratos de temporada', context: true },
@@ -461,20 +461,27 @@ const rentalMechanismClaims = [
   { family: 'rental-landlord-motives', claim: 'Hay viviendas vacías que no se alquilan por miedo a problemas legales con inquilinos', context: true },
   { family: 'rental-landlord-motives', claim: 'Los propietarios prefieren el alquiler de temporada porque les da más flexibilidad que el alquiler habitual' },
 ];
-for (const { family, claim, context = false } of rentalMechanismClaims) {
+for (const { family, claim, context = false, screeningContext = false } of rentalMechanismClaims) {
   const result = deterministicApiFallback({ text: claim, inputType: 'text' });
   const reply = result.result?.shareableReply || '';
   const claimItem = result.result?.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0];
-  const expectedSourceIds = context
+  const hasContext = context || screeningContext;
+  const expectedSourceIds = screeningContext ? ['ine-ecv-vivienda-familia-2025'] : context
     ? family === 'rental-landlord-motives' ? ['observatorio-alquiler-landlord-profile-2025'] : ['catalonia-seasonal-rental-deposits-q2-2026']
     : [];
-  if (result.status !== (context ? 'partial' : 'uncovered') || result.result?.id !== `measurement-${family}`
-    || result.result?.claimType !== 'causal' || result.result?.evidenceLevel !== (context ? 'limited' : 'insufficient')
+  if (result.status !== (hasContext ? 'partial' : 'uncovered') || result.result?.id !== `measurement-${family}`
+    || result.result?.claimType !== 'causal' || result.result?.evidenceLevel !== (hasContext ? 'limited' : 'insufficient')
     || JSON.stringify(result.result?.sourceIds || []) !== JSON.stringify(expectedSourceIds)
     || !claimItem || claimItem.sourceIds?.length || claimItem.evidenceIds?.length
     || result.result?.answerScope?.contextMetrics?.length
     || !result.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.length)) {
     throw new Error(`A rental-market mechanism did not preserve its own evidence gap: ${claim}`);
+  }
+  if (screeningContext && (!/7,6 %/.test(reply) || !/6,6 %/.test(reply)
+    || !/no mide solicitudes de alquiler rechazadas/.test(reply)
+    || !/no permite determinar si esos requisitos excluyen/.test(reply)
+    || !result.result?.blocks?.some((block) => block.type === 'data_finding' && block.dataKind === 'context'))) {
+    throw new Error(`Rental-screening context was not sourced and bounded: ${claim}`);
   }
   if (context && family === 'rental-regulation-contract-shift' && (!/9\.330/.test(reply) || !/13\.517/.test(reply) || !/13\.152/.test(reply)
     || !/Catalu[nñ]a/.test(reply) || !/no viviendas [uú]nicas/.test(reply)

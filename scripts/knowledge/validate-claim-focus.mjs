@@ -194,7 +194,16 @@ const cases = [
     'Las personas que viven solas tienen más sobrecarga de vivienda que quienes viven en hogares de dos adultos',
     '¿Cómo se compara el esfuerzo de vivienda entre hogares de un solo adulto y hogares de dos adultos?',
   ]],
-  ['rental-tenant-screening-exclusion', ['Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares', 'Los avales y requisitos de solvencia dejan fuera a inquilinos con ingresos variables', 'Personas con nóminas inestables son rechazadas para alquilar por no cumplir las garantías', 'El mercado del alquiler penaliza a autónomos y personas sin nómina indefinida', 'Las inmobiliarias y los seguros de impago exigen condiciones que dejan fuera a muchos trabajadores normales']],
+  ['rental-tenant-screening-exclusion', [
+    'Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares',
+    'Los avales y requisitos de solvencia dejan fuera a inquilinos con ingresos variables',
+    'Personas con nóminas inestables son rechazadas para alquilar por no cumplir las garantías',
+    'El mercado del alquiler penaliza a autónomos y personas sin nómina indefinida',
+    'Las inmobiliarias y los seguros de impago exigen condiciones que dejan fuera a muchos trabajadores normales',
+    '¿Qué porcentaje de las personas que buscaron vivienda en España sin mudarse no reunía las condiciones para alquilar o comprar en 2025?',
+    '¿Qué proporción de quienes buscaron casa sin cambiar de residencia no cumplió los requisitos para alquilar o comprar?',
+    '¿Qué porcentaje de quienes buscaron vivienda sin cambiar de residencia no pudieron cumplir los requisitos para alquilar o comprar?',
+  ]],
   ['rental-screening-requirements-trend', ['Los requisitos para alquilar son más difíciles de cumplir que hace una década', 'Ahora cuesta más cumplir las garantías que piden para arrendar una vivienda']],
   ['seasonal-rental-substitution', [
     'El alquiler temporal está sustituyendo al alquiler de larga duración en zonas de alta demanda',
@@ -211,7 +220,10 @@ const cases = [
 ];
 for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
   assert.equal(claimFocusFor(claim)?.id, family, claim);
-  assert.equal(broadDomainPacketsFor(claim).length, 0, `A precise claim inherited a broad packet: ${claim}`);
+  if (broadDomainPacketsFor(claim).length) {
+    const plan = focusedEvidencePlan(claim);
+    assert.equal(plan?.answerScope?.family, family, `A broad candidate overrode the specific family ${family}: ${claim}`);
+  }
 }
 const wageMobilityParaphrases = [
   'Cambiar de empresa es la única forma de conseguir una subida salarial importante',
@@ -389,15 +401,25 @@ for (const claim of [
   const plan = focusedEvidencePlan(claim);
   assert.equal(plan.answerScope.family, 'rental-screening-requirements-trend', `A rental screening trend lost its family: ${claim}`);
   assert.equal(plan.claimType, 'trend');
-  assert.equal(plan.evidenceLevel, 'insufficient');
-  assert.deepEqual(plan.sourceLinks, [], 'A related rent statistic must not be presented as evidence about screening requirements');
-  assert.match(plan.shareableReply, /No hay una serie comparable de requisitos de alquiler/);
-  assert.match(plan.shareableReply, /no miden los requisitos de selección/);
+  assert.equal(plan.evidenceLevel, 'limited', 'A related survey can provide scoped context without establishing a trend');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['ine-ecv-vivienda-familia-2025']);
+  assert.match(plan.shareableReply, /ECV 2025.*7,6 %.*6,6 %/s);
+  assert.match(plan.shareableReply, /no permite confirmar.*m[aá]s dif[ií]cil/);
+  assert.match(plan.shareableReply, /requisitos y resultados de solicitudes comparables/);
 }
+const directHousingAccessMeasure = focusedEvidencePlan('¿Qué porcentaje de las personas que buscaron vivienda en España sin mudarse no reunía las condiciones para alquilar o comprar en 2025?', { now: Date.parse('2026-11-26T12:00:00Z') });
+assert.equal(directHousingAccessMeasure.answerScope.family, 'rental-tenant-screening-exclusion');
+assert.equal(directHousingAccessMeasure.claimType, 'descriptive');
+assert.equal(directHousingAccessMeasure.evidenceLevel, 'limited');
+assert.match(directHousingAccessMeasure.shareableReply, /7,6 %.*6,6 %/s);
+assert.match(directHousingAccessMeasure.evidenceSummary.families[0].dimensions.denominator, /7,6 %.*6,6 %/);
+assert.deepEqual(directHousingAccessMeasure.sourceLinks.map((source) => source.id), ['ine-ecv-vivienda-familia-2025']);
 const generalTenantScreeningPlan = focusedEvidencePlan('Las inmobiliarias y los seguros de impago exigen condiciones que dejan fuera a muchos trabajadores normales');
 assert.equal(generalTenantScreeningPlan.answerScope.family, 'rental-tenant-screening-exclusion');
-assert.match(generalTenantScreeningPlan.shareableReply, /no indica cuántas solicitudes se rechazan/);
+assert.match(generalTenantScreeningPlan.shareableReply, /no mide solicitudes de alquiler rechazadas/);
 assert.doesNotMatch(generalTenantScreeningPlan.shareableReply, /ingresos irregulares/, 'An answer must not assume an income group that the claim did not name');
+assert.notEqual(claimFocusFor('El alquiler se lleva más de la mitad del salario joven')?.id, 'rental-tenant-screening-exclusion', 'Rent affordability must not inherit screening evidence');
+assert.notEqual(claimFocusFor('La falta de vivienda disponible hace que suban los alquileres')?.id, 'rental-tenant-screening-exclusion', 'Housing supply claims must not inherit screening evidence');
 const internshipEvidenceSourceIds = [
   'social-security-unpaid-training-practice-registrations-2025',
   'mites-false-intern-inspection-detections-2021-2025',
@@ -1305,6 +1327,16 @@ for (const [family, claim] of crossTopicClaims) {
     const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim);
     assert.equal(publicResponse.state, 'insufficient', 'Migration context must not verify a city wage-housing comparison');
     assert.deepEqual(publicResponse.result.sources.map((source) => source.id), ['bank-spain-housing-mobility-annual-2025']);
+  } else if (family === 'rental-tenant-screening-exclusion') {
+    assert.equal(plan.evidenceLevel, 'limited', 'The ECV may describe a related housing-search barrier without proving screening by work profile');
+    assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['ine-ecv-vivienda-familia-2025']);
+    assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+    assert.match(plan.shareableReply, /7,6 %.*6,6 %/s);
+    assert.match(plan.shareableReply, /no permite determinar si esos requisitos excluyen a ese perfil/);
+    assert.doesNotMatch(plan.shareableReply, /17 €/);
+    const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim);
+    assert.equal(publicResponse.state, 'insufficient', 'The housing-search context must not verify work-profile exclusion');
+    assert.deepEqual(publicResponse.result.sources.map((source) => source.id), ['ine-ecv-vivienda-familia-2025']);
   } else {
     assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should leave this claim unsupported: ${claim}`);
     assert.equal(plan.sourceLinks.length, 0, `An unrelated wage survey was attached to this claim: ${claim}`);

@@ -26,6 +26,7 @@ import { EUROPEAN_PRICE_WAGE_CONVERGENCE_EVIDENCE } from './european-price-wage-
 import { PUBLIC_PRIVATE_PAY_SNAPSHOT } from './public-private-pay-snapshot.mjs';
 import { PUBLIC_SOCIAL_HOUSING_SNAPSHOT, asksForPublicSocialStockCount } from './public-social-housing-snapshot.mjs';
 import { YOUTH_HOUSING_INDEPENDENCE_SNAPSHOT } from './youth-housing-independence-snapshot.mjs';
+import { INE_HOUSING_ACCESS_BARRIERS_SNAPSHOT, asksINEHousingAccessRequirementsMeasure } from './ine-housing-access-barriers-snapshot.mjs';
 import { HOUSING_LABOUR_MOBILITY_EVIDENCE } from './housing-labour-mobility-snapshot.mjs';
 import { SEASONAL_RENTAL_SHIFT_EVIDENCE } from './seasonal-rental-shift-snapshot.mjs';
 import { HOUSEHOLD_HOUSING_BURDEN_EVIDENCE } from './household-housing-burden-snapshot.mjs';
@@ -1091,13 +1092,34 @@ const rentalScreeningRequirementsTrend = (t) => {
   const temporalComparison = /\b(antes|ahora|hace (?:una? )?(?:decada|a[nñ]os?)|desde (?:19|20)\d{2}|ultim\w* a[nñ]os|cada vez|se ha vuelto|han cambiado)\b/.test(t);
   return explicitRentalContext && screeningRequirements && increasedDifficulty && temporalComparison;
 };
+const rentalScreeningAccessReply = ({ claim, facts = [] }) => {
+  const text = normalize(claim);
+  const directMeasure = asksINEHousingAccessRequirementsMeasure(claim);
+  const asksForAgeBreakdown = /\b(16 a 29|65 o mas|personas? mayores|joven\w*)\b/.test(text);
+  const namesIncomeGroup = /\b(autonom\w*|tempor\w*|ingresos? (?:irregulares?|variables?)|n[oó]min\w*)\b/.test(text);
+  const measureFacts = asksForAgeBreakdown ? facts.slice(0, 2) : facts.slice(0, 1);
+  if (directMeasure) return [
+    ...measureFacts,
+    'Es el motivo principal declarado por las personas encuestadas; combina alquiler y compra y no cuenta solicitudes rechazadas ni identifica qué requisito faltaba.',
+  ].filter(Boolean).join('\n\n');
+  if (rentalScreeningRequirementsTrend(text)) return [
+    facts[0],
+    'La ECV ofrece una observación de 2025, no una serie comparable de requisitos. Una sola observación no permite confirmar que cumplirlos sea ahora más difícil que antes; para medir el cambio hacen falta requisitos y resultados de solicitudes comparables en los periodos afirmados.',
+  ].filter(Boolean).join('\n\n');
+  return [
+    facts[0],
+    namesIncomeGroup
+      ? 'La encuesta combina alquiler y compra; no mide solicitudes de alquiler rechazadas ni desglosa los resultados por la situación laboral o estabilidad de ingresos mencionada. Por eso no permite determinar si esos requisitos excluyen a ese perfil.'
+      : 'La encuesta combina alquiler y compra; no mide solicitudes de alquiler rechazadas ni identifica qué requisito faltaba o el perfil de quienes no llegaron a mudarse. Por eso no permite confirmar que esos requisitos excluyan a trabajadores.',
+  ].filter(Boolean).join('\n\n');
+};
 const rentalTenantScreeningExclusion = (t) => {
   const directRentalTerms = /\b(alquil\w*|arrend\w*|inquilin\w*)\b/.test(t);
   const explicitRentalContext = directRentalTerms
     || /\b(inmobiliari\w*)\b/.test(t) && /\b(seguro\w* de impago|impag\w*)\b/.test(t);
   const screeningRequirements = /\b(fianz\w*|garanti\w*|aval\w*|seguro\w* de impago|solvenci\w*|ingresos? irregulares?|n[oó]min\w*|requisit\w*|condicion\w*)\b/.test(t);
   const accessBarrier = /\b(exclu\w*|dej\w* fuera|rechaz\w*|deneg\w*|impid\w*|barrer\w*|filtr\w*|penaliz\w*|discrimin\w*|no pueden? alquilar|dif[ií]cil\w* alquilar)\b/.test(t);
-  return explicitRentalContext && screeningRequirements && accessBarrier;
+  return asksINEHousingAccessRequirementsMeasure(t) || explicitRentalContext && screeningRequirements && accessBarrier;
 };
 const rentalRegulationContractShift = (t) => rentalSubject(t)
   && /\b(regulaci\w*|topes?\b|control de (?:precios|rentas?)|l[ií]mite\w* (?:al|del) alquiler|limit\w* (?:el )?precio del alquiler|ley de vivienda)\b/.test(t)
@@ -2697,20 +2719,24 @@ const focuses = [
     id: 'rental-screening-requirements-trend', label: 'evolución de los requisitos para alquilar',
     when: rentalScreeningRequirementsTrend,
     direct: [], context: [], claimType: 'trend',
+    claimTypeFor: (t) => asksINEHousingAccessRequirementsMeasure(t) ? 'descriptive' : 'trend',
     needs: [
       'requisitos y garantías exigidos para alquilar, medidos con el mismo criterio en los periodos comparados',
       'tasas de aceptación y rechazo, con motivos y perfil de quienes solicitan una vivienda',
       'mismo territorio, tipo de vivienda y población en ambos periodos',
     ],
     explanation: 'Que hoy parezca más difícil cumplir los requisitos no demuestra que hayan cambiado: hace falta comparar qué se exigía y qué proporción de solicitantes podía cumplirlo en ambos periodos.',
-    explanationHeadline: 'Falta una comparación de los requisitos de alquiler a lo largo del tiempo',
+    explanationHeadline: 'El dato de 2025 no muestra cómo cambiaron los requisitos para alquilar',
     evidenceGap: 'No hay una serie comparable de requisitos de alquiler y resultados de las solicitudes para los periodos que afirma el enunciado.',
+    explanationEvidence: INE_HOUSING_ACCESS_BARRIERS_SNAPSHOT,
+    shareableReplyForContext: rentalScreeningAccessReply,
     limitation: 'Los precios del alquiler y el esfuerzo medio de hogares que ya alquilan no miden los requisitos de selección ni qué proporción de solicitantes puede cumplirlos.',
   },
   {
     id: 'rental-tenant-screening-exclusion', label: 'requisitos de acceso y rechazo de inquilinos',
     when: rentalTenantScreeningExclusion,
     direct: [], context: [], claimType: 'causal',
+    claimTypeFor: (t) => asksINEHousingAccessRequirementsMeasure(t) ? 'descriptive' : 'causal',
     needsForClaim: (claim) => {
       const namesIncomeGroup = /\b(autonom\w*|tempor\w*|ingresos? (?:irregulares?|variables?)|n[oó]min\w*)\b/.test(normalize(claim));
       return [
@@ -2721,7 +2747,10 @@ const focuses = [
         'misma población solicitante, territorio y periodo',
       ];
     },
+    explanationHeadline: 'El INE registró motivos declarados de búsqueda de vivienda sin mudanza',
     explanation: 'Que una inmobiliaria exija garantías no indica cuántas solicitudes se rechazan ni si esos requisitos excluyen más a un perfil laboral concreto.',
+    explanationEvidence: INE_HOUSING_ACCESS_BARRIERS_SNAPSHOT,
+    shareableReplyForContext: rentalScreeningAccessReply,
     limitation: 'El precio y el esfuerzo medio del alquiler describen viviendas u hogares que ya alquilan; no miden solicitudes rechazadas ni qué requisito influyó en cada decisión.',
   },
   {

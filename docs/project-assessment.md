@@ -2381,3 +2381,9 @@ territories do not receive this historical comparison. Regression checks
 cover Spanish and English paraphrases, the 2013–14 cohort scope, partial D1
 completion, and nearby current-year, geography, age, unemployment, job-quality
 and salary claims.
+
+## Rental-screening evidence — 26 November 2026
+
+The INE's 2025 Living Conditions Survey gives a bounded measure for rental-screening claims: 7.6% of people aged 16 or older searched for housing in the previous 12 months without moving; among that group, 6.6% said they did not meet the conditions required to rent or buy. The reported reason was 9.3% among unsuccessful searchers aged 16–29 and 1.8% among those aged 65 or older. These are self-reported main reasons, with separate denominators by age; the question combines renting and buying.
+
+The text answer uses these figures for the exact survey-rate question and as context for claims about guarantees, unstable income or stricter screening. It keeps those causal claims insufficient because the survey does not record rental applications, rejection decisions, the requirement a person failed, or their employment status. A single 2025 observation also cannot establish that requirements became harder over time. Regression coverage checks paraphrases, source and denominator fit, and nearby rental-affordability claims.

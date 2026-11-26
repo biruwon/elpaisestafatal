@@ -840,6 +840,75 @@ assert.equal(housingPressureWrongPeriod.body.state, 'insufficient');
 assert.deepEqual(housingPressureWrongPeriod.body.result.sources, []);
 assert.doesNotMatch(housingPressureWrongPeriod.body.result.reply, /240\.000|92\.000|750\.000/);
 
+let housingAccessMeasureReply;
+for (const claim of [
+  '¿Qué porcentaje de las personas que buscaron vivienda en España sin mudarse no reunía las condiciones para alquilar o comprar en 2025?',
+  '¿Qué proporción de quienes buscaron casa sin cambiar de residencia no cumplió los requisitos para alquilar o comprar?',
+  '¿Qué porcentaje de quienes buscaron vivienda sin cambiar de residencia no pudieron cumplir los requisitos para alquilar o comprar?',
+]) {
+  const response = await check(claim);
+  assert.equal(response.body.state, 'limited', claim);
+  assert.equal(response.body.result.answerScope.family, 'rental-tenant-screening-exclusion', claim);
+  assert.equal(response.body.result.arguments[0].kind, 'descriptive', claim);
+  assert.equal(response.body.result.arguments[0].verdict, 'supported', claim);
+  assert.deepEqual(response.body.result.sources.map((source) => source.id), ['ine-ecv-vivienda-familia-2025']);
+  assert.match(response.body.result.reply, /ECV 2025.*7,6 %.*6,6 %/s, claim);
+  assert.match(response.body.result.reply, /16 años o más.*sin llegar a cambiar de residencia/s, claim);
+  assert.match(response.body.result.evidenceSummary.families[0].dimensions.denominator, /7,6 %.*poblaci[oó]n de 16 años o m[aá]s.*6,6 %.*buscaron vivienda sin cambiar de residencia/);
+  assert.match(response.body.result.reply, /combina alquiler y compra.*no cuenta solicitudes rechazadas/);
+  assert.doesNotMatch(response.body.result.reply, /9,3 %|1,8 %/, 'A general rate answer should not add unrequested age comparisons');
+  if (housingAccessMeasureReply === undefined) housingAccessMeasureReply = response.body.result.reply;
+  else assert.equal(response.body.result.reply, housingAccessMeasureReply, 'Equivalent measure paraphrases should compose the same scoped answer');
+}
+
+const housingAccessWrongYear = await check('¿Qué porcentaje de quienes buscaron vivienda sin cambiar de residencia no pudieron cumplir los requisitos para alquilar o comprar en 2024?');
+assert.equal(housingAccessWrongYear.body.state, 'insufficient');
+assert.equal(housingAccessWrongYear.body.result.answerScope.family, 'rental-tenant-screening-exclusion');
+assert.deepEqual(housingAccessWrongYear.body.result.sources, [], 'The 2025 survey must not answer a different year');
+assert.doesNotMatch(housingAccessWrongYear.body.result.reply, /7,6 %|6,6 %|9,3 %|1,8 %/);
+
+let rentalScreeningContextReply;
+for (const claim of [
+  'Las garantías, fianzas y seguros de impago excluyen del alquiler a trabajadores con ingresos irregulares',
+  'Los avales y requisitos de solvencia dejan fuera a inquilinos con ingresos variables',
+]) {
+  const response = await check(claim);
+  assert.equal(response.body.state, 'insufficient', claim);
+  assert.equal(response.body.result.answerScope.family, 'rental-tenant-screening-exclusion', claim);
+  assert.equal(response.body.result.arguments[0].verdict, 'insufficient', claim);
+  assert.deepEqual(response.body.result.arguments[0].sourceIds, [], 'Contextual survey data must not be attributed as direct proof of exclusion');
+  assert.deepEqual(response.body.result.sources.map((source) => source.id), ['ine-ecv-vivienda-familia-2025']);
+  assert.match(response.body.result.reply, /7,6 %.*6,6 %/s, claim);
+  assert.match(response.body.result.reply, /no mide solicitudes de alquiler rechazadas/);
+  assert.match(response.body.result.reply, /no permite determinar si esos requisitos excluyen a ese perfil/);
+  assert.doesNotMatch(response.body.result.reply, /la encuesta demuestra|fueron rechazados por no tener/);
+  if (rentalScreeningContextReply === undefined) rentalScreeningContextReply = response.body.result.reply;
+  else assert.equal(response.body.result.reply, rentalScreeningContextReply, 'Equivalent causal paraphrases should reuse the same context and limitation');
+}
+
+for (const claim of [
+  'Los requisitos para alquilar son más difíciles de cumplir que hace una década',
+  'Ahora cuesta más cumplir las garantías que piden para arrendar una vivienda',
+]) {
+  const response = await check(claim);
+  assert.equal(response.body.state, 'insufficient', claim);
+  assert.equal(response.body.result.answerScope.family, 'rental-screening-requirements-trend', claim);
+  assert.equal(response.body.result.arguments[0].verdict, 'insufficient', claim);
+  assert.deepEqual(response.body.result.arguments[0].sourceIds, []);
+  assert.deepEqual(response.body.result.sources.map((source) => source.id), ['ine-ecv-vivienda-familia-2025']);
+  assert.match(response.body.result.reply, /ECV 2025.*7,6 %.*6,6 %/s, claim);
+  assert.match(response.body.result.reply, /una sola observaci[oó]n no permite confirmar/i);
+  assert.match(response.body.result.reply, /requisitos y resultados de solicitudes comparables/);
+  assert.doesNotMatch(response.body.result.reply, /ha aumentado la dificultad|los requisitos son ahora m[aá]s estrictos/);
+}
+
+const affordabilityScreeningNeighbour = await check('El alquiler se lleva más de la mitad del salario joven');
+assert.equal(affordabilityScreeningNeighbour.body.result.answerScope.family, 'rental-affordability');
+assert.doesNotMatch(JSON.stringify(affordabilityScreeningNeighbour.body.result.sources), /ine-ecv-vivienda-familia-2025/);
+const housingSupplyScreeningNeighbour = await check('La falta de vivienda disponible hace que suban los alquileres');
+assert.equal(housingSupplyScreeningNeighbour.body.result.answerScope.family, 'housing-supply');
+assert.doesNotMatch(JSON.stringify(housingSupplyScreeningNeighbour.body.result.sources), /ine-ecv-vivienda-familia-2025/);
+
 const rentPriceNeighbour = await check('El precio del alquiler subió en España durante 2025');
 assert.notEqual(rentPriceNeighbour.body.result?.answerScope?.family, 'housing-construction-pressure');
 assert.doesNotMatch(JSON.stringify(rentPriceNeighbour.body.result?.sources || []), /bde-housing-supply-2025/);
