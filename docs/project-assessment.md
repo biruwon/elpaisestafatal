@@ -2175,3 +2175,38 @@ states are 260 insufficient and 40 limited. Forty-three claims retain
 structured multi-part answers. All discovery claims remain unverified. These
 counts describe routing and response structure, not population-wide factual
 accuracy.
+
+## Waiter vacancies and working-condition claims — 26 November 2026
+
+Text claims that link a lack of waiters to pay or schedules now use Eurostat's
+experimental annual job-vacancy estimates by occupation. For Spain, the table
+reports 4.73 thousand vacant posts in 2023 and 5.12 thousand in 2024 for
+ISCO-08 OC513 (waiters and bartenders). Eurostat marks 2024 with `b` for a
+break in the series, so the answer does not calculate or describe a change as
+a trend. The estimates use online job advertisements and EU-LFS employment
+data; they cover the occupation across activities and cannot isolate
+hospitality vacancies. Sources: [Eurostat dataset](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/jvs_a_isco3_r1?geo=ES&freq=A&isco08=OC513&indic_em=JOBVAC&unit=THS&sinceTimePeriod=2023),
+[methodology](https://ec.europa.eu/eurostat/cache/metadata/EN/jvs_a_isco3_r1_esmsip2.htm).
+
+The published Spanish NUTS 1 cells for this occupation are flagged `C`
+(confidential) in both years. Regional questions therefore receive no numeric
+answer and do not inherit the national estimate. Claims that wages or schedules
+cause vacancies remain insufficient: the source does not measure those
+conditions, applications, hiring outcomes or reasons posts remain open. A
+2026 request also receives no 2024 substitute.
+
+Held-out checks cover equivalent causal paraphrases, the exact 2024 count, the
+2023–2024 break, Madrid's confidential regional cell, an unavailable 2026
+period and nearby non-vacancy claims. The text-answer benchmark passes 272/272
+cases across 70 paraphrase groups, and the claim-focus suite checks 385
+formulations and nearby claims. The reviewed-snapshot API validator and Astro
+type check pass.
+
+The refreshed audit of the 300 explicitly unverified discovery claims routes
+192 candidates to a metric or focused family (77 metric matches and 175 family
+matches, with 60 overlaps); 108 have neither deterministic route. The
+deterministic fallback produces 7 complete, 114 limited and 179 uncovered
+responses, with 259 public insufficient states and 41 limited states. A total
+of 43 claims receive structured multi-part answers. These are routing and
+response-structure measures, not factual-accuracy estimates for arbitrary
+user text. All discovery claims remain unverified.
