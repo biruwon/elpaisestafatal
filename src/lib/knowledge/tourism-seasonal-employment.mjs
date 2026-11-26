@@ -101,6 +101,12 @@ const claimTypeFor = (claim) => {
   if (/\b(?:demasiad\w*|excesiv\w*|too many|too much)\b/.test(text)) return 'normative';
   return /\b(?:compar\w*|mas|menos|mayor|menor|verano|invierno|entre)\b/.test(text) ? 'comparative' : 'descriptive';
 };
+const asksForQuarterlyVariation = (claim) => {
+  const text = normalize(claim);
+  return /\b(?:cuant\w*|cuanto|cuanta)\b/.test(text)
+    && /\b(?:vari\w*|cambi\w*|fluctu\w*)\b/.test(text)
+    && /\b(?:trimest\w*|quarter\w*)\b/.test(text);
+};
 
 export const tourismSeasonalEmploymentPlan = (claim, { observations = [], now = Date.now() } = {}) => {
   const seriesByMetric = Object.fromEntries(METRICS.map((metricId) => [metricId, seriesFor(observations, metricId, now)]));
@@ -122,10 +128,10 @@ export const tourismSeasonalEmploymentPlan = (claim, { observations = [], now = 
   const sourceIds = sources.map((source) => source.id);
   const evidenceIds = [...new Set(rows.map((row) => row.id))];
   const hasDefinitionFlag = rows.some(hasDefinitionDifference);
+  const directVariationQuestion = asksForQuarterlyVariation(claim);
+  const hospitalitySourceId = seriesByMetric[HOSPITALITY].source.id;
+  const totalSourceId = seriesByMetric[TOTAL].source.id;
   const updatedAt = [...new Set(sources.map((source) => source.dataUpdatedAt))];
-  const updateNote = updatedAt.length === 1
-    ? 'Eurostat actualizó la tabla el ' + releaseDate(updatedAt[0]) + '.'
-    : 'Las tablas consultadas tienen fechas de actualización distintas; se informa esta comparación solo si coinciden en los periodos y superan el control de revisión.';
   const finding = 'En ' + year + ', la encuesta de Eurostat estimó ' + formatPeople(analysis.low.hospitality.value)
     + ' en el ' + quarterLabel(analysis.low.period) + ' y ' + formatPeople(analysis.high.hospitality.value)
     + ' en el ' + quarterLabel(analysis.high.period) + ' en ' + ACTIVITY + '. El máximo fue un '
@@ -136,8 +142,7 @@ export const tourismSeasonalEmploymentPlan = (claim, { observations = [], now = 
   const limitation = [
     'Cuenta personas residentes de 15 a 74 años por su actividad principal. NACE I agrupa alojamiento y comidas, solo una parte del turismo; no mide puestos ni contratos.',
     'Un año no confirma un patrón que se repita. Los recuentos tampoco identifican transiciones de las mismas personas a la inactividad ni prueban que el turismo cause la variación.',
-    hasDefinitionFlag ? 'Eurostat marca España con «d» (definición distinta de la armonizada); solo se comparan trimestres del mismo año en España.' : 'Solo se comparan trimestres del mismo año en España.',
-    updatedAt.length === 1 ? 'Tabla actualizada: ' + releaseDate(updatedAt[0]) + '.' : updateNote,
+    'Solo se comparan trimestres del mismo año en España.',
   ].filter(Boolean).join(' ');
   const reply = finding + '\n\n' + limitation;
   const contextFamily = {
@@ -161,7 +166,10 @@ export const tourismSeasonalEmploymentPlan = (claim, { observations = [], now = 
     ])],
     limitation,
   };
-  const verdict = 'insufficient';
+  const directEvidenceIds = directVariationQuestion
+    ? rows.filter((row) => row.metricId === HOSPITALITY).map((row) => row.id)
+    : [];
+  const verdict = directVariationQuestion ? 'supported' : 'insufficient';
   const claimType = claimTypeFor(claim);
   const missing = [
     'una serie longitudinal que observe a las mismas personas y sus transiciones entre empleo, paro e inactividad',
@@ -178,9 +186,13 @@ export const tourismSeasonalEmploymentPlan = (claim, { observations = [], now = 
     },
     blocks: [
       { type: 'claim_breakdown', propositionIds: ['submitted-claim'], items: [{
-        text: claim, type: claimType, explicit: true, evidenceIds: [], sourceIds: [],
-        contextSourceIds: sourceIds, contextFinding: finding, verdict, evidenceLevel: 'limited',
-        finding: 'La variación trimestral aporta contexto, pero no demuestra transiciones individuales ni causalidad turística.',
+        text: claim, type: claimType, explicit: true, evidenceIds: directEvidenceIds,
+        sourceIds: directVariationQuestion ? [hospitalitySourceId] : [],
+        contextSourceIds: directVariationQuestion ? [totalSourceId] : sourceIds,
+        contextFinding: finding, verdict, evidenceLevel: directVariationQuestion ? 'limited' : 'none',
+        finding: directVariationQuestion
+          ? 'La serie trimestral mide la variación observada en alojamiento y servicios de comida durante el año indicado.'
+          : 'La variación trimestral aporta contexto, pero no demuestra transiciones individuales ni causalidad turística.',
       }] },
       { type: 'data_finding', evidenceIds, points: [finding, ...contextFamily.data] },
       { type: 'evidence_gap', missing, needed: missing, nextAction: 'Consultar datos longitudinales de las mismas personas y una fuente que identifique el papel de la demanda turística.' },
@@ -189,7 +201,11 @@ export const tourismSeasonalEmploymentPlan = (claim, { observations = [], now = 
     ],
     limitation, evidenceIds, sourceIds, sourceLinks: sources,
     evidenceSummary: { mode: 'dynamic', families: [contextFamily] },
-    answerScope: { kind: 'measurement', family: 'tourism-seasonal-employment', directMetrics: [], contextMetrics: METRICS },
+    answerScope: {
+      kind: 'measurement', family: 'tourism-seasonal-employment',
+      directMetrics: directVariationQuestion ? [HOSPITALITY] : [],
+      contextMetrics: directVariationQuestion ? [TOTAL] : METRICS,
+    },
     knowledgeVersion: RUNTIME_VERSIONS.warehouseKnowledge,
   };
 };

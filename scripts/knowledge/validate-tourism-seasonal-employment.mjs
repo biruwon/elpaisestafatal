@@ -82,11 +82,18 @@ assert.match(mainPlan.shareableReply, /1,91 millones de personas/);
 assert.match(mainPlan.shareableReply, /12,4\s*%/);
 assert.match(mainPlan.shareableReply, /2,9\s*%/);
 assert.match(mainPlan.shareableReply, /7,8\s*%.*8,5\s*%/);
-assert.match(mainPlan.shareableReply, /Eurostat marca España con «d»/);
+assert.ok(mainPlan.evidenceSummary.families[0].qualityNotes.some((note) => /diferencia de definición/.test(note)));
+assert.ok(mainPlan.evidenceSummary.families[0].qualityNotes.some((note) => /11 de septiembre de 2026/.test(note)));
 assert.match(mainPlan.limitation, /ni prueban que el turismo cause la variación/i);
 assert.match(mainPlan.limitation, /Un año no confirma un patrón que se repita/i);
 assert.match(mainPlan.limitation, /no mide puestos ni contratos/i);
 assert.ok(validateAnswerPlan(mainPlan, { provisional: true }).ok, JSON.stringify(validateAnswerPlan(mainPlan, { provisional: true }).errors));
+const quarterlyQuestionPlan = plans[3];
+const quarterlyQuestionItem = quarterlyQuestionPlan.blocks.find((block) => block.type === 'claim_breakdown').items[0];
+assert.equal(quarterlyQuestionItem.verdict, 'supported', 'A question about measured quarterly variation is distinct from a causal claim about individual transitions.');
+assert.equal(quarterlyQuestionItem.evidenceIds.length, 4);
+assert.deepEqual(quarterlyQuestionPlan.answerScope.directMetrics, ['lfs_employed_persons_hospitality_quarterly']);
+assert.deepEqual(quarterlyQuestionPlan.answerScope.contextMetrics, ['lfs_employed_persons_total_quarterly']);
 
 const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: 'tourism-seasonality', result: mainPlan }, mainClaim);
 assert.equal(publicResponse.state, 'limited', 'Reviewed sector context is useful while the compound claim verdict remains insufficient.');
@@ -100,10 +107,12 @@ assert.match(publicResponse.result.reply, /ni prueban que el turismo cause la va
 const quantitativePlan = plans[3];
 const quantitativeResponse = localPublicCheckResponse({ status: 'complete', requestId: 'tourism-seasonality-amount', result: quantitativePlan }, paraphrases[3]);
 assert.equal(quantitativeResponse.state, 'limited');
+assert.equal(quantitativeResponse.result.arguments?.[0]?.verdict, 'supported');
 assert.deepEqual(quantitativeResponse.result.sources.map((source) => source.id), publicResponse.result.sources.map((source) => source.id));
-assert.match(quantitativeResponse.result.reply, /En 2025/);
+assert.match(quantitativeResponse.result.reply, /^En 2025,/);
 assert.match(quantitativeResponse.result.reply, /1,70 millones.*1,91 millones/s,
   'A direct question about quarterly variation should return the available same-year values.');
+assert.doesNotMatch(quantitativeResponse.result.reply, /La evidencia no basta para confirmar toda la afirmación/);
 
 // Exercise the Pages handler with the seasonal D1 binding and a configured
 // generic resolver. This family should answer from its reviewed plan without
@@ -161,7 +170,13 @@ try {
 }
 await Promise.all(pendingCaptures);
 assert.equal(pagesResponse.state, 'limited');
+assert.deepEqual(pagesResponse.result.answerScope.directMetrics, ['lfs_employed_persons_hospitality_quarterly']);
 assert.match(pagesResponse.result.reply, /1,70 millones.*1,91 millones/s);
+assert.doesNotMatch(pagesResponse.result.reply, /La evidencia no basta para confirmar toda la afirmación/);
+assert.match(pagesResponse.result.reply, /Eurostat marca la serie española con una diferencia de definición/);
+assert.match(pagesResponse.result.reply, /Fecha de actualización de la fuente: 11 de septiembre de 2026/);
+assert.equal((pagesResponse.result.reply.match(/11 de septiembre de 2026/g) || []).length, 1,
+  'The source update date should not be repeated in the answer and its quality note.');
 assert.equal(pagesResponse.result.sources.length, 2);
 assert.equal(missingBindingResponse.state, 'unavailable', 'Missing retrieval infrastructure must not be reported as missing evidence.');
 assert.equal(resolverRequests, 0, 'The reviewed seasonal route must not queue a generic resolver search.');
