@@ -4,6 +4,7 @@ import { LABOUR_PRODUCTIVITY_SNAPSHOT } from '../src/lib/knowledge/labour-produc
 import { HICP_BASKET_SNAPSHOT } from '../src/lib/knowledge/hicp-basket-snapshot.mjs';
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../src/lib/knowledge/education-earnings-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from '../src/lib/knowledge/tourist-housing-snapshot.mjs';
+import { SECTORAL_VALUE_ADDED_SNAPSHOT } from '../src/lib/knowledge/sectoral-value-added-snapshot.mjs';
 
 const compiled = await build({ entryPoints: ['functions/api/check.ts'], bundle: true, platform: 'node', format: 'esm', write: false, logLevel: 'silent' });
 const api = await import(`data:text/javascript;base64,${Buffer.from(compiled.outputFiles[0].contents).toString('base64')}`);
@@ -970,6 +971,27 @@ assert.ok(waiterCount.body.result.sources.some((source) => source.id === 'eurost
 const waiterCountNoDatabase = await checkWithoutDatabase('¿Cuántas vacantes estimó Eurostat para camareros y bármanes en España en 2024?');
 assert.equal(waiterCountNoDatabase.body.state, 'limited', 'The reviewed text snapshot should remain usable without a D1 binding');
 assert.match(waiterCountNoDatabase.body.result.reply, /5,12 mil puestos vacantes/);
+
+const valueAddedClaim = 'España depende demasiado de empleos de poco valor añadido';
+const valueAddedNoDatabase = await checkWithoutDatabase(valueAddedClaim);
+assert.equal(valueAddedNoDatabase.body.state, 'limited');
+assert.equal(valueAddedNoDatabase.body.result.answerScope.family, 'employment-value-added-by-activity');
+assert.equal(valueAddedNoDatabase.body.result.arguments[0].verdict, 'insufficient', 'A relative sector average cannot establish that the employment mix is excessive');
+assert.match(valueAddedNoDatabase.body.result.reply, /83,0 %.*2025/s);
+assert.match(valueAddedNoDatabase.body.result.reply, /Eurostat marca como provisionales los datos de 2025/);
+assert.match(valueAddedNoDatabase.body.result.reply, /no mide cada puesto, salarios ni calidad del empleo/);
+assert.deepEqual(valueAddedNoDatabase.body.result.sources.map((source) => source.id), SECTORAL_VALUE_ADDED_SNAPSHOT.observations
+  .filter((item) => item.period === '2025').map((item) => item.source.id).filter((id, index, ids) => ids.indexOf(id) === index));
+const valueAddedEmptyD1 = await check(valueAddedClaim);
+assert.equal(valueAddedEmptyD1.body.result.answerScope.family, valueAddedNoDatabase.body.result.answerScope.family);
+assert.deepEqual(valueAddedEmptyD1.body.result.sources.map((source) => source.id), valueAddedNoDatabase.body.result.sources.map((source) => source.id));
+const valueAddedParaphrase = await check('España se apoya excesivamente en puestos con poco valor agregado');
+assert.equal(valueAddedParaphrase.body.result.answerScope.family, valueAddedNoDatabase.body.result.answerScope.family);
+assert.deepEqual(valueAddedParaphrase.body.result.sources.map((source) => source.id), valueAddedNoDatabase.body.result.sources.map((source) => source.id));
+assert.match(valueAddedParaphrase.body.result.reply, /83,0 %/);
+const valueAddedUnavailable = await check(valueAddedClaim, brokenDatabase);
+assert.equal(valueAddedUnavailable.body.state, 'unavailable', 'A failed D1 read must remain distinct from a successful empty read');
+assert.doesNotMatch(valueAddedUnavailable.body.result?.reply || '', /83,0 %|34,5 €/);
 
 for (const claim of [
   'La supuesta falta de camareros es en realidad una falta de empleos con salario y horario aceptables',

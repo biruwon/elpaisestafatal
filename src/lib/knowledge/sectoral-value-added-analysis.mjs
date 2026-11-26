@@ -49,12 +49,12 @@ const acceptedStatus = (item) => {
   const status = String(item.status || item.dimensions?.status || '').toLowerCase();
   return !status || ['p', 'a', 'e'].includes(status);
 };
-const eligibleRow = (item, metricId, now) => {
+const eligibleRow = (item, metricId, now, allowReviewedSnapshot = false) => {
   const expected = EXPECTED[metricId];
   const dimensions = item?.dimensions || {};
   if (item?.metricId !== metricId || item?.kind && item.kind !== 'observation'
     || !/^\d{4}$/.test(String(item.period || '')) || !Number.isFinite(item.value) || item.value <= 0 || !item.id
-    || ['stale', 'invalid'].includes(item.freshness) || item.dataKind === 'snapshot' || !acceptedStatus(item)) return false;
+    || ['stale', 'invalid'].includes(item.freshness) || item.dataKind === 'snapshot' && !allowReviewedSnapshot || !acceptedStatus(item)) return false;
   if (dimensions.freq !== 'A' || dimensions.geo !== 'ES' || dimensions.unit !== expected.unit || dimensions.na_item !== expected.na_item
     || !['TOTAL', ...ACTIVITIES.map(({ code }) => code), 'C'].includes(dimensions.nace_r2)) return false;
   const retrievedAt = Date.parse(item.source?.retrievedAt || '');
@@ -67,9 +67,9 @@ const eligibleRow = (item, metricId, now) => {
       && url.pathname.toLowerCase().endsWith(`/data/${expected.dataset}`);
   } catch { return false; }
 };
-const seriesFor = (observations, metricId, now) => {
+const seriesFor = (observations, metricId, now, allowReviewedSnapshot = false) => {
   const groups = new Map();
-  for (const item of observations.filter((row) => eligibleRow(row, metricId, now))) {
+  for (const item of observations.filter((row) => eligibleRow(row, metricId, now, allowReviewedSnapshot))) {
     const key = `${item.source.id}:${item.source.retrievedAt}`;
     const group = groups.get(key) || { source: item.source, retrievedAt: Date.parse(item.source.retrievedAt), rows: new Map() };
     const period = Number(item.period);
@@ -125,8 +125,8 @@ const typeForClaim = (claim) => {
   return isTrend(claim) ? 'trend' : 'comparative';
 };
 
-export const sectoralValueAddedAnalysisPlan = (claim, { observations = [], now = Date.now() } = {}) => {
-  const seriesByMetric = Object.fromEntries(METRICS.map((metricId) => [metricId, seriesFor(observations, metricId, now)]));
+export const sectoralValueAddedAnalysisPlan = (claim, { observations = [], now = Date.now(), allowReviewedSnapshot = false } = {}) => {
+  const seriesByMetric = Object.fromEntries(METRICS.map((metricId) => [metricId, seriesFor(observations, metricId, now, allowReviewedSnapshot)]));
   if (METRICS.some((metricId) => !seriesByMetric[metricId])) return undefined;
   const retrievedAt = METRICS.map((metricId) => seriesByMetric[metricId].retrievedAt);
   if (Math.max(...retrievedAt) - Math.min(...retrievedAt) > 7 * 86400000) return undefined;

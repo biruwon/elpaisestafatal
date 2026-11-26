@@ -3,6 +3,7 @@ import { claimFocusFor, focusedMetricIdsFor } from '../../src/lib/knowledge/clai
 import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
 import { localPublicCheckResponse } from '../lib/local-public-check-response.mjs';
 import { validateAnswerPlan } from './answer-plan-validation.mjs';
+import { SECTORAL_VALUE_ADDED_SNAPSHOT } from '../../src/lib/knowledge/sectoral-value-added-snapshot.mjs';
 
 const now = Date.parse('2026-11-26T10:00:00Z');
 const METRICS = {
@@ -84,6 +85,20 @@ assert.match(mainPlan.shareableReply, /21 de octubre de 2026.*24 de noviembre de
 assert.match(mainPlan.limitation, /no mide cada puesto, salarios ni calidad del empleo/i);
 assert.match(mainPlan.limitation, /alquileres imputados/i);
 assert.ok(validateAnswerPlan(mainPlan, { provisional: true }).ok, JSON.stringify(validateAnswerPlan(mainPlan, { provisional: true }).errors));
+
+const reviewedSnapshotPlan = focusedEvidencePlan(mainClaim, { observations: [], now, allowReviewedSnapshotFallback: true });
+assert.equal(reviewedSnapshotPlan.id, mainPlan.id, 'A reviewed snapshot should preserve the same family interpretation when the warehouse has no rows.');
+assert.match(reviewedSnapshotPlan.headline, /83,0\s*%.*2025/, 'The reviewed snapshot should answer from the official latest period.');
+assert.deepEqual(reviewedSnapshotPlan.sourceLinks.map((source) => source.id), SECTORAL_VALUE_ADDED_SNAPSHOT.observations
+  .filter((item) => item.period === '2025').map((item) => item.source.id).filter((id, index, ids) => ids.indexOf(id) === index));
+assert.match(reviewedSnapshotPlan.shareableReply, /Eurostat marca como provisionales los datos de 2025/i);
+assert.equal(focusedEvidencePlan(mainClaim, { observations: [], now }).id, 'measurement-employment-value-added-gap', 'Snapshots require an explicit reviewed-snapshot fallback path.');
+assert.equal(focusedEvidencePlan('España depende demasiado de empleos de poco valor añadido en 2021.', { observations: [], now, allowReviewedSnapshotFallback: true }).id, 'measurement-employment-value-added-gap', 'The snapshot must not invent unsupported periods.');
+assert.equal(focusedEvidencePlan(mainClaim, { observations: [], now: Date.parse('2027-01-27T00:00:00Z'), allowReviewedSnapshotFallback: true }).id, 'measurement-employment-value-added-gap', 'Expired snapshot data must not be presented.');
+const partialLiveFallback = focusedEvidencePlan(mainClaim, { observations: fixture.filter((item) => item.metricId === 'gva_chain_volume_by_activity'), now, allowReviewedSnapshotFallback: true });
+assert.equal(partialLiveFallback.id, reviewedSnapshotPlan.id, 'A partial live series may use the complete reviewed snapshot.');
+assert.deepEqual(partialLiveFallback.sourceLinks.map((source) => source.id), reviewedSnapshotPlan.sourceLinks.map((source) => source.id), 'Fallback evidence must stay wholly within the reviewed snapshot and never mix revisions.');
+
 const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: 'sectoral-value-added', result: mainPlan }, mainClaim);
 assert.equal(publicResponse.state, 'limited', 'The response may share reviewed context while the claim verdict stays insufficient.');
 assert.equal(publicResponse.result.arguments?.[0]?.verdict, 'insufficient');
