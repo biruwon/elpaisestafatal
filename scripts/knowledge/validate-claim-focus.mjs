@@ -2350,9 +2350,10 @@ assert.notEqual(claimFocusFor(pensionerSupportTransferClaim)?.id, 'pension-worke
 assert.ok(!pensionerSupportTransferPlan?.sourceLinks?.some((source) => source.id === 'social-security-affiliation-source'), 'The headcount ratio must not be attached to a claim about sector financing shares');
 assert.equal(focusedEvidencePlan('El PIB de Francia no refleja cómo viven los hogares')?.sourceLinks.length, 0, 'Spain-scoped evidence must not be attached to an explicitly French claim');
 assert.equal(focusedEvidencePlan('Las cifras de crecimiento del PIB no reflejan cómo vive el hogar medio', { now: Date.parse('2027-03-01') })?.sourceLinks.length, 0, 'Expired household-welfare snapshot evidence must not appear as current');
-for (const claim of ['Las listas de espera sanitarias son muy largas', 'La temporalidad laboral ha bajado, pero no resume toda la precariedad']) {
+for (const claim of ['Las listas de espera sanitarias son muy largas']) {
   assert.ok(broadDomainPacketsFor(claim).length, `A broad claim lost its reviewed context: ${claim}`);
 }
+assert.equal(claimFocusFor('La temporalidad laboral ha bajado, pero no resume toda la precariedad')?.id, 'precarious-employment-shift', 'A claim about what temporality does not measure should use the reviewed employment-quality context');
 assert.equal(claimFocusFor('¿El alquiler se lleva más de la mitad del sueldo?')?.id, 'rental-affordability', 'A question about rent relative to income must remain an affordability claim');
 const cityRentAffordability = focusedEvidencePlan('Con un sueldo normal ya no se puede alquilar un piso entero solo en las grandes ciudades españolas');
 assert.equal(cityRentAffordability.evidenceLevel, 'limited');
@@ -2531,6 +2532,75 @@ for (const paraphrase of [
   assert.deepEqual(answer.evidenceSummary.families[0].data, unemploymentWageAnswer.evidenceSummary.families[0].data, `An unemployment/wages paraphrase changed facts: ${paraphrase}`);
   assert.ok(answer.shareableReply.trim().split(/\s+/).length <= 160, `An unemployment/wages paraphrase exceeded the digestible answer length: ${paraphrase}`);
   assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'unemployment-wage-paraphrase', result: answer }, paraphrase).state, 'insufficient');
+}
+const temporaryEmploymentSource = {
+  id: 'eurostat-temporary-employment-test', title: 'Temporary employees by citizenship', publisher: 'Eurostat',
+  url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_etpgan?geo=ES&sex=T&age=Y15-64&citizen=TOTAL',
+  retrievedAt: '2026-11-16',
+};
+const partTimeEmploymentSource = {
+  id: 'eurostat-part-time-employment-test', title: 'Persons in part-time employment by age', publisher: 'Eurostat',
+  url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_eppga?geo=ES&sex=T&age=Y15-64',
+  retrievedAt: '2026-11-16',
+};
+const employmentQualityObservations = [
+  ...[
+    ['2022', 21.4], ['2025', 15.4],
+  ].map(([period, value]) => ({
+    id: `temporary-employment-${period}`, metricId: 'temporary_employment_rate', value, period, unit: 'Percentage',
+    geography: 'España', population: 'Employees aged 15 to 64', denominator: 'Total employees aged 15 to 64', status: 'd', freshness: 'fresh',
+    dimensions: { geo: 'ES', sex: 'T', age: 'Y15-64', citizen: 'TOTAL', time: period }, source: temporaryEmploymentSource,
+  })),
+  ...[
+    ['2022', 13.4], ['2025', 13.5],
+  ].map(([period, value]) => ({
+    id: `part-time-employment-${period}`, metricId: 'part_time_employment_rate', value, period, unit: 'Percentage',
+    geography: 'España', population: 'Employed persons aged 15 to 64', denominator: 'Total employed persons aged 15 to 64', status: 'd', freshness: 'fresh',
+    dimensions: { geo: 'ES', sex: 'T', age: 'Y15-64', time: period }, source: partTimeEmploymentSource,
+  })),
+];
+const precariousEmploymentShiftClaims = [
+  'La temporalidad se ha reducido en las estadísticas, pero parte de la precariedad se ha desplazado a otras fórmulas',
+  'El empleo temporal ha bajado, aunque parte de la inseguridad laboral se haya trasladado a otras modalidades',
+  'La temporalidad disminuyó mientras la precariedad laboral cambió a otras formas de empleo',
+  'La temporalidad laboral ha bajado, pero no resume toda la precariedad',
+];
+let employmentShiftSourceIds;
+for (const claim of precariousEmploymentShiftClaims) {
+  assert.equal(claimFocusFor(claim)?.id, 'precarious-employment-shift', `An employment-quality paraphrase changed family: ${claim}`);
+  assert.deepEqual([...focusedMetricIdsFor(claim)], ['temporary_employment_rate', 'part_time_employment_rate']);
+  const plan = focusedEvidencePlan(claim, { observations: employmentQualityObservations, now: Date.parse('2026-11-26T12:00:00Z') });
+  assert.equal(plan.answerScope.family, 'precarious-employment-shift');
+  assert.equal(plan.claimType, claim.includes('no resume') ? 'comparative' : 'causal', 'A shift is causal; a measurement-scope comparison stays comparative');
+  assert.deepEqual(plan.answerScope.directMetrics, [], 'Aggregate contract and working-time shares are context, not direct evidence of a shift in precarity');
+  assert.deepEqual(plan.answerScope.contextMetrics, ['temporary_employment_rate', 'part_time_employment_rate']);
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.match(plan.shareableReply, /no demuestra que la precariedad se haya desplazado/);
+  assert.match(plan.shareableReply, /21,4 % \(2022\) y 15,4 % \(2025\)/);
+  assert.match(plan.shareableReply, /13,4 % \(2022\) y 13,5 % \(2025\)/);
+  assert.match(plan.shareableReply, /denominador: todos los empleados de 15 a 64 a[nñ]os/);
+  assert.match(plan.shareableReply, /marca las observaciones espa[nñ]olas con «d»/);
+  assert.match(plan.shareableReply, /no siguen a las mismas personas/);
+  assert.ok(plan.shareableReply.trim().split(/\s+/).length <= 180, 'The employment-quality answer should remain digestible');
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  if (!employmentShiftSourceIds) employmentShiftSourceIds = sourceIds;
+  else assert.deepEqual(sourceIds, employmentShiftSourceIds, `A paraphrase changed the reviewed employment sources: ${claim}`);
+  const publicPlan = localPublicCheckResponse({ status: 'partial', requestId: 'employment-precarity-shift', result: plan }, claim);
+  assert.equal(publicPlan.state, 'insufficient', 'Aggregate context must not verify a claim that precarity moved between job forms');
+  assert.match(publicPlan.result.reply, /no demuestra que la precariedad se haya desplazado/);
+}
+const employmentShiftSince2022 = focusedEvidencePlan('Desde 2022, el empleo temporal ha bajado y la precariedad se ha desplazado a otras fórmulas', { observations: employmentQualityObservations, now: Date.parse('2026-11-26T12:00:00Z') });
+assert.match(employmentShiftSince2022.shareableReply, /21,4 % \(2022\) y 15,4 % \(2025\)/, 'A since-year request should compare the requested start with the latest available year');
+const employmentShiftIn2025 = focusedEvidencePlan('En 2025, la temporalidad bajó, pero parte de la precariedad se desplazó a otras fórmulas', { observations: employmentQualityObservations, now: Date.parse('2026-11-26T12:00:00Z') });
+assert.match(employmentShiftIn2025.shareableReply, /15,4 % \(2025\)/);
+assert.doesNotMatch(employmentShiftIn2025.shareableReply, /2022/, 'A single-year claim must not inherit an unrequested baseline');
+for (const neighbour of [
+  'La tasa de temporalidad laboral bajó en España',
+  'La temporalidad bajó, pero la precariedad laboral aumentó',
+  'El empleo a tiempo parcial aumenta la precariedad laboral',
+  'Los contratos fijos discontinuos esconden paro estacional',
+]) {
+  assert.notEqual(claimFocusFor(neighbour)?.id, 'precarious-employment-shift', `A nearby employment claim crossed into the shift family: ${neighbour}`);
 }
 const fixedDiscontinuousClaims = [
   'Los contratos fijos discontinuos esconden parte del desempleo estacional',

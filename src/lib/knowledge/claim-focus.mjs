@@ -204,6 +204,15 @@ const fixedDiscontinuousEmploymentStatus = (t) => /\b(fij\w* discontinu\w*|contr
   && /\b(paro|desemple\w*|ocupad\w*|inactiv\w*|sin actividad|actividad|trabaj\w*|temporad\w*|campan\w*|prestaci\w*|subsid\w*|estadistic\w*|epa|contabiliz\w*|escond\w*|ocult\w*|encubiert\w*|maquill\w*|cuant\w*|numero\w*|recuento\w*)\b/.test(t)
   && !/\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|jornada\w*|horas? extra\w*)\b/.test(t)
   && !/\b(puedo|tengo derecho|solicitar|tramitar|como cobro)\b/.test(t);
+const precariousEmploymentShift = (t) => {
+  const temporaryWork = /\b(temporal\w*|temporar\w*|duracion determinada)\b/.test(t);
+  const jobQuality = /\b(precar\w*|inseguridad laboral|calidad del empleo|condiciones laborales)\b/.test(t);
+  const transition = /\b(desplaz\w*|traslad\w*|sustit\w*|reemplaz\w*|otras? (?:formas?|formulas?|modalidades?)|nuevas? modalidades?)\b/.test(t);
+  const scopeCaveat = /\b(no resume\w*|no mide\w*|no refleja\w*|no abarca\w*|no equivale\w*|no representa\w*)\b/.test(t);
+  return temporaryWork && jobQuality && (transition || scopeCaveat)
+    && !/\b(fij\w* discontinu\w*)\b/.test(t)
+    && !fixedDiscontinuousEmploymentStatus(t);
+};
 const localSafetyTrend = (t) => {
   const safetyClaim = t.replace(/\bseguridad social\b/g, '');
   return !migrationPopulation.test(t)
@@ -252,6 +261,59 @@ const localSafetyMeasurementEvidence = {
   sources: [
     { id: 'interior-criminality-balance-2026-q2', title: 'Balance de Criminalidad · segundo trimestre de 2026', publisher: 'Ministerio del Interior', url: 'https://www.interior.gob.es/opencms/export/sites/default/.galleries/galeria-de-prensa/documentos-y-multimedia/balances-e-informes/2026/Balance-de-Criminalidad-Segundo-Trimestre-2026.pdf', retrievedAt: '2026-11-17', role: 'primary' },
     { id: 'ine-neighbourhood-crime-perception-ecv-2023', title: 'Delincuencia o vandalismo en la zona · Indicadores de calidad de vida', publisher: 'INE', url: 'https://www.ine.es/ss/Satellite?L=es_ES&c=INESeccion_C&cid=1259944569502&p=1254735110672%3B&pagename=ProductosYServicios%2FPYSLayout&param1=PYSDetalleFichaIndicador&param3=1259937499084', retrievedAt: '2026-11-17', role: 'primary' },
+  ],
+};
+const precariousEmploymentShiftEvidence = {
+  directClaimEvidence: false,
+  expiresAt: '2027-11-26', territories: ['ES'],
+  evidenceLabel: 'Qué miden las estadísticas de empleo temporal y a tiempo parcial',
+  dimensions: {
+    subject: 'proporción de empleados con empleo temporal y proporción de personas ocupadas que trabajan a tiempo parcial; no es un indicador único de precariedad',
+    population: 'Eurostat EU-LFS: empleados de 15 a 64 años para temporalidad; personas ocupadas de 15 a 64 años para tiempo parcial',
+    period: 'series anuales; la metodología EU-LFS cambió en 2021 y Eurostat marca observaciones españolas con diferencias de definición',
+    geography: 'España',
+    denominator: 'total de empleados de 15 a 64 años para temporalidad; total de ocupados de 15 a 64 años para tiempo parcial',
+    unit: 'porcentaje de cada población; ninguna serie sigue transiciones individuales entre modalidades',
+  },
+  facts: [
+    'Eurostat define un empleo temporal como aquel cuyo final depende de condiciones objetivas acordadas entre empleador y trabajador, como una fecha, la finalización de una tarea o la reincorporación de la persona sustituida.',
+    'En la EU-LFS, la clasificación a tiempo parcial se refiere al empleo principal y se basa generalmente en la valoración de la persona sobre sus horas habituales. Es una dimensión distinta de la duración del contrato.',
+    'Eurostat señala que la entrada de la nueva metodología EU-LFS en 2021 produjo rupturas en algunas series; las observaciones españolas también llevan una marca de diferencia de definición que debe leerse con los metadatos nacionales.',
+  ],
+  factSourceIds: [
+    ['eurostat-part-time-and-temporary-employment-definitions'],
+    ['eurostat-part-time-and-temporary-employment-definitions'],
+    ['eurostat-employment-lfs-metadata'],
+  ],
+  factDimensions: [
+    {
+      subject: 'empleo temporal según EU-LFS',
+      population: 'empleados de 15 a 64 años',
+      period: 'definición de EU-LFS consultada el 26/11/2026',
+      geography: 'Unión Europea; aplicada a las observaciones de España',
+      denominator: 'total de empleados de 15 a 64 años',
+      unit: 'definición estadística; no mide la calidad global del empleo',
+    },
+    {
+      subject: 'empleo a tiempo parcial según EU-LFS',
+      population: 'personas ocupadas de 15 a 64 años',
+      period: 'definición de EU-LFS consultada el 26/11/2026',
+      geography: 'Unión Europea; aplicada a las observaciones de España',
+      denominator: 'total de personas ocupadas de 15 a 64 años',
+      unit: 'clasificación autorreportada; no mide por sí sola precariedad ni voluntariedad',
+    },
+    {
+      subject: 'rupturas y notas metodológicas de EU-LFS',
+      population: 'estimaciones de empleo y paro de EU-LFS',
+      period: 'cambio metodológico desde 2021; metadatos consultados el 26/11/2026',
+      geography: 'España y países de la Unión Europea',
+      denominator: 'serie estadística; no sigue a las mismas personas entre años',
+      unit: 'nota de comparabilidad y calidad',
+    },
+  ],
+  sources: [
+    { id: 'eurostat-part-time-and-temporary-employment-definitions', title: 'Part-time and full-time employment: definitions and data sources', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Part-time_and_full-time_employment_-_statistics', retrievedAt: '2026-11-26', role: 'primary' },
+    { id: 'eurostat-employment-lfs-metadata', title: 'Employment and unemployment (Labour Force Survey): metadata and comparability', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/cache/metadata/en/employ_esms.htm', retrievedAt: '2026-11-26', role: 'primary' },
   ],
 };
 const residentialDisplacementEvidence = {
@@ -2954,6 +3016,23 @@ const focuses = [
     explanation: 'El Ministerio cuenta delitos registrados; la Encuesta de Condiciones de Vida del INE pregunta por percepción vecinal. Para comparar una tendencia local, dime el municipio y cuál de las dos medidas quieres revisar.',
     explanationEvidence: localSafetyMeasurementEvidence,
     limitation: 'Los datos publicados no miden la tendencia local con el mismo indicador, territorio y periodo que la afirmación.',
+  },
+  {
+    id: 'precarious-employment-shift', label: 'empleo temporal, empleo a tiempo parcial y precariedad laboral',
+    when: precariousEmploymentShift,
+    direct: [], context: ['temporary_employment_rate', 'part_time_employment_rate'],
+    claimTypeFor: (t) => /\b(desplaz\w*|traslad\w*|sustit\w*|reemplaz\w*|otras? (?:formas?|formulas?|modalidades?)|nuevas? modalidades?)\b/.test(t) ? 'causal'
+      : /\b(cada vez|desde (?:19|20)\d{2}|entre (?:19|20)\d{2}|baj\w*|reduc\w*|descend\w*|disminu\w*|aument\w*|cambi\w*|evoluci\w*)\b/.test(t) ? 'comparative' : 'descriptive',
+    needs: [
+      'medida directa y definida de precariedad laboral, con el mismo territorio, población y periodo',
+      'datos comparables sobre temporalidad, parcialidad involuntaria, horas, estabilidad e ingresos',
+      'seguimiento de las mismas personas o transiciones laborales para demostrar que una modalidad sustituyó a otra',
+    ],
+    evidenceGap: 'Las estadísticas agregadas describen temporalidad y jornada parcial por separado; no miden una transferencia de precariedad entre modalidades ni siguen los cambios de las mismas personas.',
+    explanationHeadline: 'Temporalidad y jornada parcial son medidas distintas de la precariedad laboral',
+    explanation: 'Eurostat publica por separado la proporción de empleados con contrato temporal y la proporción de personas ocupadas que trabajan a tiempo parcial. Ninguna de esas dos cuotas, por sí sola, mide toda la calidad del empleo ni demuestra que la inseguridad se haya desplazado de una modalidad a otra.',
+    explanationEvidence: precariousEmploymentShiftEvidence,
+    limitation: 'Las dos series son porcentajes agregados con denominadores distintos. Aunque cambien en el mismo periodo, no muestran que las mismas personas hayan pasado de una modalidad a otra ni permiten afirmar que la precariedad se haya desplazado.',
   },
   {
     id: 'fixed-discontinuous-employment-status', label: 'contratos fijos-discontinuos y clasificación EPA del paro',

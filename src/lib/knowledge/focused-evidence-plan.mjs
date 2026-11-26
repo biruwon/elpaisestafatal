@@ -1775,6 +1775,50 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       'Para medirlo hacen falta precios pagados comparables por contrato, consumo, impuestos, cargos, país, sector, tamaño de empresa y periodo; además del peso de la electricidad en los costes y resultados de productividad o precios de venta.',
     ].filter(Boolean).join('\n\n');
   })();
+  const precariousEmploymentShiftReply = (() => {
+    if (focus.id !== 'precarious-employment-shift') return undefined;
+    const requestedYears = [...String(claim || '').matchAll(/\b(?:19|20|21)\d{2}\b/g)].map(([year]) => year);
+    const requestsSinceYear = /\b(desde|a partir de|since|from)\b/.test(normalizedClaim);
+    const pointsFor = (fact) => {
+      if (!fact) return [];
+      if (requestedYears.length === 1) {
+        const first = fact.items.find((item) => item.period === requestedYears[0]);
+        if (!requestsSinceYear) return first ? [first] : [];
+        return first && first.period !== fact.latest.period ? [first, fact.latest] : first ? [first] : [];
+      }
+      if (requestedYears.length >= 2) {
+        const first = fact.items.find((item) => item.period === requestedYears[0]);
+        const last = fact.items.find((item) => item.period === requestedYears.at(-1));
+        return first && last ? [first, ...(first.period === last.period ? [] : [last])] : [];
+      }
+      const baseline = fact.items.find((item) => item.period === '2022');
+      return baseline && baseline.period !== fact.latest.period ? [baseline, fact.latest] : [fact.latest];
+    };
+    const temporaryPoints = pointsFor(facts.find((fact) => fact.id === 'temporary_employment_rate'));
+    const partTimePoints = pointsFor(facts.find((fact) => fact.id === 'part_time_employment_rate'));
+    const seriesText = (points, label, denominator, id) => points.length
+      ? `${label}: ${points.map((item) => `${number(item.value, id)} % (${item.period})`).join(' y ')}; denominador: ${denominator}.`
+      : '';
+    const qualityItems = [...temporaryPoints, ...partTimePoints];
+    const definitionDiffers = qualityItems.some((item) => String(item.status || '').toLowerCase().includes('d'));
+    const qualityNotes = [...new Set([
+      ...qualityItems.flatMap((item) => observationFlagNotes(item.status)
+        .filter((note) => !/definici[oó]n de este dato difiere/i.test(note))),
+      ...(definitionDiffers ? ['Eurostat marca las observaciones españolas con «d» (la definición difiere); consulta los metadatos antes de interpretar la comparación.'] : []),
+    ].filter(Boolean))];
+    const temporaryCrosses2021Break = temporaryPoints.length > 1
+      && Number(temporaryPoints[0].period) < 2021 && Number(temporaryPoints.at(-1).period) >= 2021;
+    return [
+      'La evidencia consultada no demuestra que la precariedad se haya desplazado de una modalidad a otra.',
+      temporaryCrosses2021Break ? 'La comparación cruza la ruptura metodológica de la EU-LFS en 2021; Eurostat recomienda consultar la serie corregida antes de comparar esos extremos.' : '',
+      requestedYears.length === 0 && temporaryPoints.length > 1 ? 'La comparación empieza en 2022 para no cruzar la ruptura metodológica de la EU-LFS de 2021.' : '',
+      seriesText(temporaryPoints, 'Eurostat (España), empleados de 15 a 64 años con empleo temporal', 'todos los empleados de 15 a 64 años', 'temporary_employment_rate'),
+      seriesText(partTimePoints, 'Eurostat (España), personas ocupadas de 15 a 64 años con jornada parcial', 'total de personas ocupadas de 15 a 64 años', 'part_time_employment_rate'),
+      ...qualityNotes,
+      partTimePoints.length ? 'La jornada parcial se declara según las horas habituales del empleo principal y no equivale por sí sola a precariedad.' : '',
+      'Son cuotas agregadas con denominadores distintos; no siguen a las mismas personas ni demuestran transiciones. Para probar el desplazamiento hacen falta medidas comparables de precariedad, involuntariedad, horas, estabilidad e ingresos, y datos de transiciones laborales.',
+    ].filter(Boolean).join('\n\n');
+  })();
   const ruralUrbanAccessReply = (() => {
     if (focus.id !== 'rural-urban-service-access') return undefined;
     return [
@@ -1832,7 +1876,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       return `El dato (${number(directThresholdAssessment.actual, fact.id)}${suffix}) ${position}; ${directThresholdAssessment.verdict === 'supported' ? 'respalda' : 'contradice'} esa parte.`;
     })()
     : '';
-  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || ecvPersonalBenefitReply || foreignAffiliateSectorReply || waiterVacancyReply || tourismEmploymentReply || workingPovertyEndsMeetReply || tourismUrbanHousingCostReply || touristHousingReply || educationPayReply || electricityIndustryCostsReply || ruralUrbanAccessReply || mentalHealthPsychologistCountReply || mentalHealthPsychologistCapacityReply || educationRecentGraduateComparisonReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || ecvPersonalBenefitReply || foreignAffiliateSectorReply || waiterVacancyReply || tourismEmploymentReply || workingPovertyEndsMeetReply || tourismUrbanHousingCostReply || touristHousingReply || educationPayReply || precariousEmploymentShiftReply || electricityIndustryCostsReply || ruralUrbanAccessReply || mentalHealthPsychologistCountReply || mentalHealthPsychologistCapacityReply || educationRecentGraduateComparisonReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
     directThresholdComparisonNote,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const hasReviewedForeignAffiliateContext = focus.id === 'foreign-affiliation-in-tourism-and-agriculture'
@@ -1928,6 +1972,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   return {
     id: `measurement-${focus.id}`, schemaVersion: '1', evidenceLevel, coverage: facts.length || explanation ? 'qualified' : 'insufficient',
     claimType, headline: educationRecentGraduateComparison?.headline || subjectivePovertyHeadline || specialistOutpatientComparisonHeadline || workingPovertyComparison?.headline || workingPovertyTrends.get(direct[0]?.id)?.headline || tourismEmploymentHeadline || foreignAffiliateSectorHeadline || waiterVacancyHeadline || ecvPersonalBenefitHeadline
+      || (focus.id === 'precarious-employment-shift' ? 'Las series muestran modalidades de empleo, no un desplazamiento de la precariedad' : undefined)
       || (focus.id === 'working-poverty' && direct.length
         ? fullTime && partTime ? 'Datos de riesgo de pobreza por jornada'
           : fullTime ? 'El empleo a jornada completa no elimina el riesgo de pobreza'
