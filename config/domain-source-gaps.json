@@ -4,15 +4,16 @@
       "id": "benefits-by-comparable-population",
       "domain": "immigration_benefits",
       "missingFields": ["complete_administrative_coverage_across_programmes"],
-      "resolvedFields": ["programme_scope", "same-period-beneficiary-counts", "imv-adult-same-nationality-rate", "foreign-jobseeker-benefit-coverage", "survey-comparable-selected-transfer-rate"],
+      "resolvedFields": ["programme_scope", "same-period-beneficiary-counts", "imv-adult-same-nationality-rate", "foreign-jobseeker-benefit-coverage", "ecv-personal-benefit-rate-by-nationality-and-birthplace", "ecv-income-reference-year"],
       "irreducibleFields": ["single-denominator-across-all-benefit-programmes"],
       "status": "partial_programme_coverage",
       "officialSourcesChecked": [
         "https://www.inclusion.gob.es/documents/20121/0/202607%2BCOMPLETO%2BDossier%2Bcomunidad%2Baut%C3%B3noma%2By%2Bprovincia.xlsx/4baf880a-e093-adb0-5728-c4e32b7232e3?t=1786084827072",
         "https://www.seg-social.es/wps/wcm/connect/wss/527f3261-ee28-4105-a7e3-bc1b959fb05b/202506%2BCOMPLETO%2BDossier%2Bcomunidad%2Baut%C3%B3noma%2By%2Bprovincia.pdf?MOD=AJPERES",
-        "https://www.inclusion.gob.es/web/guest/estadisticas/observatorio-permanente-de-la-inmigracion"
-        ,"https://www.sepe.es/SiteSepe/contenidos/que_es_el_sepe/estadisticas/datos_avance/datos/datos_2025/AV_SISPE_2512.pdf",
-        "https://public.tableau.com/views/Oberaxe_MarcoIndicadores_B03/L11?:showVizHome=no&:embed=true"
+        "https://www.inclusion.gob.es/web/guest/estadisticas/observatorio-permanente-de-la-inmigracion",
+        "https://www.sepe.es/SiteSepe/contenidos/que_es_el_sepe/estadisticas/datos_avance/datos/datos_2025/AV_SISPE_2512.pdf",
+        "https://public.tableau.com/views/Oberaxe_MarcoIndicadores_B03/L11?:showVizHome=no&:embed=true",
+        "https://www.ine.es/metodologia/t25/dise%C3%B1o_registro_ecv.pdf"
       ],
       "availableEvidence": [
         "IMV July 2026 workbook with total beneficiaries, title-holder nationality, and average beneficiary age",
@@ -22,13 +23,14 @@
         "SEPE unemployment-benefit recipients and the foreign-recipient share can be reported for November 2025 with the total-recipient denominator",
         "SEPE also publishes foreign-benefit coverage among foreign registered jobseekers for the same monthly publication; this is a valid group-specific denominator but only for unemployment benefits",
         "OBERAXE publishes IMV title holders by Spanish/foreign nationality and an IMV rate against same-nationality residents aged 18+ for January, nationally and provincially",
-        "INE ECV 2025 microdata supports a weighted adult rate for receipt of selected unemployment, retirement, survivor, sickness, disability, family/child, and housing transfers by Spanish, EU-foreign, and non-EU-foreign nationality",
-        "INE ECV 2025 provides a weighted comparable adult denominator for a defined set of selected transfer components by nationality, but not a complete administrative measure for every programme"
+        "A reviewed estimate from INE ECV 2025 microdata measures weighted receipt of five person-level income components (unemployment, old-age, survivor, sickness, and disability benefits) among people aged 16+; these income components refer to 2024",
+        "Country of birth and nationality are separate ECV classifications; each foreign group pools other-EU and rest-of-world codes, and the estimates are not age-standardised",
+        "The estimate excludes household-file transfers such as family/child and housing components; it is not a complete measure of all benefits or an official INE published table"
       ],
-      "permittedConclusion": "The system may report IMV composition, SEPE unemployment-benefit counts/shares, and SEPE foreign-benefit coverage among foreign registered jobseekers for their named programme and period. These programme-specific measures cannot establish that immigrants receive disproportionate aid overall or compared with Spanish citizens across all benefits.",
-      "nextEvidence": "Extend the administrative denominator pattern to each additional benefit programme; the ECV snapshot now supplies a comparable survey measure for selected components, while complete all-programme administrative coverage remains unavailable.",
-      "sourceTargets": ["Ministerio de Inclusión: IMV and benefit microdata", "INE population by nationality and residence", "regional benefit administrators"],
-      "acceptanceCriteria": ["programme and eligibility are explicit", "beneficiary and denominator populations use the same geography and period", "amounts and counts retain source role and retrieval date", "IMV rates use the OBERAXE/INE 18+ same-nationality denominator"]
+      "permittedConclusion": "The system may report programme-specific IMV and SEPE measures for their named period and denominator, plus a derived ECV 2025 rate for receipt of five person-level benefit components in income year 2024 by country of birth or nationality. The survey rate cannot establish that immigrants receive more aid overall: it excludes household-level transfers and other programmes, is not adjusted for age, and is not an administrative count or fiscal balance.",
+      "nextEvidence": "Extend comparable administrative denominators to additional named benefit programmes where official records permit; keep household-level receipt separate from individual receipt and preserve the ECV income-reference year.",
+      "sourceTargets": ["Ministerio de Inclusión: IMV and benefit microdata", "INE ECV person and household microdata", "INE population by nationality and residence", "regional benefit administrators"],
+      "acceptanceCriteria": ["programme and eligibility are explicit", "beneficiary and denominator populations use the same geography and period", "amounts and counts retain source role and retrieval date", "income-reference year is distinct from survey year", "person-level rates use person-file variables and PB040; household-file components are not attributed to every adult", "IMV rates use the OBERAXE/INE 18+ same-nationality denominator"]
     },
     {
       "id": "crime-by-offence-stage-and-denominator",

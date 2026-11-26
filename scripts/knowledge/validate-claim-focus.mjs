@@ -21,6 +21,7 @@ import { EDUCATION_FIRST_JOB_SNAPSHOT } from '../../src/lib/knowledge/education-
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../../src/lib/knowledge/education-earnings-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from '../../src/lib/knowledge/tourist-housing-snapshot.mjs';
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
+import { INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT } from '../../src/lib/knowledge/ine-ecv-personal-benefit-receipt-snapshot.mjs';
 import { validateAnswerPlan } from './answer-plan-validation.mjs';
 import { alignPropositionOutcomes, comparableObservationGroups, composePropositionFindings, evidenceForProposition } from '../lib/compound-evidence.mjs';
 import { hasSufficientClaimTermOverlap, rankWarehouseObservations } from './warehouse-query.mjs';
@@ -3120,6 +3121,60 @@ assert.deepEqual([...focusedMetricIdsFor(migrationWageClaim)], [], 'A total wage
 assert.deepEqual([...focusedMetricIdsFor(migrationFiscalClaim)], [], 'A programme or graduate series must not stand in for group-level net fiscal contribution');
 assert.deepEqual([...focusedMetricIdsFor(migrantCredentialClaim)], ['tertiary_overqualification_rate'], 'Credential claims may use only the citizenship-specific overqualification measure as context');
 assert.deepEqual([...focusedMetricIdsFor(healthcareStaffingClaim)], [], 'Graduate employment must not stand in for regional physician staffing or its causes');
+const migrationBenefitBirthplaceClaims = [
+  'Los inmigrantes reciben más prestaciones que los españoles',
+  '¿Reciben más ayudas las personas nacidas fuera de España que las nacidas aquí?',
+  'La proporción de personas nacidas fuera con algún ingreso personal de prestaciones es mayor que entre quienes nacieron en España',
+];
+for (const claim of migrationBenefitBirthplaceClaims) {
+  assert.equal(claimFocusFor(claim)?.id, 'migration-benefit-receipt', `A broad personal-benefit comparison changed family: ${claim}`);
+  assert.deepEqual([...focusedMetricIdsFor(claim)], ['ecv_selected_personal_benefit_receipt_rate_by_birthplace']);
+  const plan = focusedEvidencePlan(claim, { observations: INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT.observations, now: Date.parse('2026-11-26T12:00:00Z') });
+  assert.equal(plan.answerScope.family, 'migration-benefit-receipt');
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient', 'Selected survey components must not decide a claim about all benefits');
+  assert.match(plan.shareableReply, /ECV 2025.*ingresos referidos a 2024/);
+  assert.match(plan.shareableReply, /39,21 %.*24,45 %/s);
+  assert.match(plan.shareableReply, /denominador.*personas de 16 años o m[aá]s del mismo grupo.*PB040/s);
+  assert.match(plan.shareableReply, /no basta para confirmar o refutar una afirmaci[oó]n general/);
+  assert.doesNotMatch(plan.shareableReply, /prestaciones.*mayor.*grupo nacido fuera/i);
+  validateAnswerPlan(plan);
+}
+const migrationBenefitNationality = '¿Las personas de nacionalidad extranjera reciben prestaciones personales con más frecuencia que las de nacionalidad española?';
+assert.equal(claimFocusFor(migrationBenefitNationality)?.id, 'migration-benefit-receipt');
+assert.deepEqual([...focusedMetricIdsFor(migrationBenefitNationality)], ['ecv_selected_personal_benefit_receipt_rate_by_nationality']);
+const migrationBenefitNationalityPlan = focusedEvidencePlan(migrationBenefitNationality, {
+  observations: INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT.observations, now: Date.parse('2026-11-26T12:00:00Z'),
+});
+assert.match(migrationBenefitNationalityPlan.shareableReply, /38,59 %.*21,7 %/s);
+assert.match(migrationBenefitNationalityPlan.shareableReply, /clasificaci[oó]n por nacionalidad/);
+assert.doesNotMatch(migrationBenefitNationalityPlan.shareableReply, /lugar de nacimiento/);
+const unmatchedBenefitGroup = focusedEvidencePlan(migrationBenefitBirthplaceClaims[0], {
+  observations: INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT.observations.filter((item) => item.dimensions.group === 'born_in_spain'),
+  now: Date.parse('2026-11-26T12:00:00Z'),
+});
+assert.deepEqual(unmatchedBenefitGroup.sourceLinks, [], 'A single group rate must not be reported as a group comparison');
+assert.doesNotMatch(unmatchedBenefitGroup.shareableReply, /39,21 %|24,45 %/);
+for (const claim of [
+  '¿Qué parte de todas las prestaciones reciben extranjeros?',
+  '¿Qué porcentaje de las personas beneficiarias de ayudas son inmigrantes?',
+  '¿Las personas extranjeras reciben más ayudas del IMV?',
+  'Las personas migrantes reciben más ayudas porque tienen más hijos',
+  '¿Hay más personas inmigrantes cobrando ayudas que españolas?',
+  'La administración denegó prestaciones a personas inmigrantes',
+  '¿Los inmigrantes reciben más euros en prestaciones?',
+]) {
+  assert.notEqual(claimFocusFor(claim)?.id, 'migration-benefit-receipt', `A non-comparable denominator, named programme, or causal claim was routed to the ECV subset: ${claim}`);
+}
+const ecvSurveyYearClaim = '¿Qué proporción de personas nacidas fuera declara prestaciones personales según la ECV 2025?';
+const ecvSurveyYearPlan = focusedEvidencePlan(ecvSurveyYearClaim, {
+  observations: INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT.observations, now: Date.parse('2026-11-26T12:00:00Z'),
+});
+assert.ok(ecvSurveyYearPlan.sourceLinks.length, 'The ECV survey-year wording may use the survey while retaining its 2024 income reference period');
+assert.match(ecvSurveyYearPlan.shareableReply, /encuesta\s+2025|ECV 2025/i);
+const unsupportedIncomeYearPlan = focusedEvidencePlan('¿En 2025 recibían más ayudas personales las personas extranjeras?', {
+  observations: INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT.observations, now: Date.parse('2026-11-26T12:00:00Z'),
+});
+assert.deepEqual(unsupportedIncomeYearPlan.sourceLinks, [], 'Survey year 2025 alone must not be substituted for the 2024 income-reference period');
 const publicPsychologistCapacityClaims = [
   'La salud mental pública tiene demasiados pocos psicólogos clínicos para la demanda existente',
   'En la sanidad pública faltan psicólogos clínicos para atender a quienes los necesitan',
@@ -4512,5 +4567,5 @@ for (const claim of [
 
 const paraphraseCount = cases.reduce((count, [, paraphrases]) => count + paraphrases.length, 0) + workHousingParaphrases.length
   + dentalCostContextParaphrases.length + directDentalCostQuestions.length + publicDentalCoverageContextClaims.length + publicDentalLegalQuestions.length
-  + futurePensionCompoundParaphrases.length;
+  + futurePensionCompoundParaphrases.length + migrationBenefitBirthplaceClaims.length + 1;
 console.log(`Claim focus validated: ${paraphraseCount} paraphrases, negative neighbours, survey bases, scope rejection, denominator and source boundaries, missing values and preview replacement.`);

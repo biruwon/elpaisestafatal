@@ -7,6 +7,7 @@ import { EDUCATION_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/education-em
 import { EDUCATION_FIRST_JOB_SNAPSHOT } from '../src/lib/knowledge/education-first-job-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from '../src/lib/knowledge/tourist-housing-snapshot.mjs';
 import { SECTORAL_VALUE_ADDED_SNAPSHOT } from '../src/lib/knowledge/sectoral-value-added-snapshot.mjs';
+import { INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT } from '../src/lib/knowledge/ine-ecv-personal-benefit-receipt-snapshot.mjs';
 
 const compiled = await build({ entryPoints: ['functions/api/check.ts'], bundle: true, platform: 'node', format: 'esm', write: false, logLevel: 'silent' });
 const api = await import(`data:text/javascript;base64,${Buffer.from(compiled.outputFiles[0].contents).toString('base64')}`);
@@ -121,6 +122,48 @@ const checkWithoutDatabase = async (text) => {
   const response = await api.onRequestPost(context(text, undefined));
   return { httpStatus: response.status, body: await response.json() };
 };
+
+const migrationBenefitClaim = 'Los inmigrantes reciben más prestaciones que los españoles';
+const migrationBenefitNoDatabase = await checkWithoutDatabase(migrationBenefitClaim);
+const migrationBenefitEmptyDatabase = await check(migrationBenefitClaim);
+for (const response of [migrationBenefitNoDatabase, migrationBenefitEmptyDatabase]) {
+  assert.equal(response.body.result.answerScope.family, 'migration-benefit-receipt');
+  assert.equal(response.body.result.arguments[0].verdict, 'insufficient', 'The limited INE subset must not settle a claim about all benefits');
+  assert.match(response.body.result.reply, /ECV 2025.*ingresos referidos a 2024/);
+  assert.match(response.body.result.reply, /39,21 %.*24,45 %/s);
+  assert.match(response.body.result.reply, /denominador.*PB040/);
+  assert.deepEqual(response.body.result.sources.map((source) => source.id), [
+    'ine-ecv-2025-personal-benefit-receipt', 'ine-ecv-2025-design-register',
+  ]);
+}
+const ecvPartialRow = INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT.observations.find((item) => item.dimensions.group === 'born_in_spain');
+const ecvPartialDatabase = {
+  prepare() {
+    let metricId;
+    return {
+      bind(value) { metricId = value; return this; },
+      async all() {
+        return { results: metricId === ecvPartialRow.metricId ? [{
+          id: ecvPartialRow.id, kind: 'observation', dataset_id: ecvPartialRow.source.title, metric: ecvPartialRow.metric,
+          metric_id: ecvPartialRow.metricId, value: ecvPartialRow.value, unit: ecvPartialRow.unit, period: ecvPartialRow.period,
+          geography: ecvPartialRow.geography, population: ecvPartialRow.population, dimensions_json: JSON.stringify(ecvPartialRow.dimensions),
+          dimension_labels_json: '{}', url: null, excerpt: null,
+          payload_json: JSON.stringify({ denominator: ecvPartialRow.denominator, dataKind: 'snapshot' }),
+          source_id: ecvPartialRow.source.id, publisher: ecvPartialRow.source.publisher, title: ecvPartialRow.source.title,
+          source_url: ecvPartialRow.source.url, published_at: null, retrieved_at: `${ecvPartialRow.source.retrievedAt}T00:00:00.000Z`,
+          trust_tier: 'primary', aliases_json: '[]', source_registry_id: 'ine', schedule: 'yearly',
+        }] : [] };
+      },
+      async run() { return {}; },
+    };
+  },
+};
+const migrationBenefitPartialDatabase = await check(migrationBenefitClaim, ecvPartialDatabase);
+assert.match(migrationBenefitPartialDatabase.body.result.reply, /39,21 %.*24,45 %/s,
+  'A partial warehouse response should be completed with the missing group from the reviewed ECV snapshot');
+const ecvWrongIncomeYear = await checkWithoutDatabase('¿En 2025 recibían más ayudas personales las personas extranjeras?');
+assert.deepEqual(ecvWrongIncomeYear.body.result?.sources || [], [], 'Survey data for 2024 income must not answer an unqualified 2025 income-period question');
+assert.doesNotMatch(JSON.stringify(ecvWrongIncomeYear.body), /39,21 %|24,45 %|38,59 %|21,7 %/);
 
 const tourismEmploymentClaim = 'España depende demasiado del turismo para sostener el empleo';
 const tourismEmployment = await check(tourismEmploymentClaim);

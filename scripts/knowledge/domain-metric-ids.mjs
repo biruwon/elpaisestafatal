@@ -4,7 +4,8 @@ export const domainMetricIds = Object.freeze({
     'imv_comparable_population_by_nationality', 'imv_title_holder_rate_by_nationality', 'unemployment_rate_by_nationality',
     'unemployment_beneficiaries_by_nationality', 'unemployment_beneficiaries_by_programme_nationality',
     'unemployment_benefit_share_by_nationality', 'unemployment_benefit_coverage_by_nationality',
-    'survey_selected_social_transfer_rate_by_nationality', 'imv_beneficiary_average_age',
+    'ecv_selected_personal_benefit_receipt_rate_by_birthplace', 'ecv_selected_personal_benefit_receipt_rate_by_nationality',
+    'imv_beneficiary_average_age',
   ],
   immigration_crime: [
     'crime_rate_by_group', 'crime_detentions_investigations_by_nationality', 'crime_standardised_conviction_offence_rate_by_nationality',

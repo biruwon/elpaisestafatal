@@ -16,6 +16,7 @@ import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care
 import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/tourism-employment-snapshot.mjs';
 import { FOREIGN_AFFILIATE_SECTOR_SNAPSHOT } from '../../src/lib/knowledge/foreign-affiliate-sector-snapshot.mjs';
 import { WAITER_VACANCY_SNAPSHOT } from '../../src/lib/knowledge/waiter-vacancy-snapshot.mjs';
+import { INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT } from '../../src/lib/knowledge/ine-ecv-personal-benefit-receipt-snapshot.mjs';
 import { EDUCATION_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/education-employment-snapshot.mjs';
 import { EDUCATION_FIRST_JOB_SNAPSHOT } from '../../src/lib/knowledge/education-first-job-snapshot.mjs';
 import { snapshotLifecycle } from '../../src/lib/knowledge/snapshot-lifecycle.mjs';
@@ -79,7 +80,7 @@ const cacheKeyFor = (body: { text: string; inputType: InputType; file?: File; cl
   // Names, sizes and lossy text fingerprints cannot identify submitted content.
   // Uploads and fetched pages are never shared through this response cache.
   if (body.file || body.inputType !== 'text') return '';
-  return JSON.stringify([responseCacheVersion, 'text-reviewed-snapshot-fallback-first-job-timing-2026-11', RUNTIME_VERSIONS.fallbackKnowledge, RUNTIME_VERSIONS.warehouseKnowledge, body.text.normalize('NFC'), body.clarification || null, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue']);
+  return JSON.stringify([responseCacheVersion, 'text-reviewed-snapshot-fallback-ecv-personal-benefit-2026-11', RUNTIME_VERSIONS.fallbackKnowledge, RUNTIME_VERSIONS.warehouseKnowledge, body.text.normalize('NFC'), body.clarification || null, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue']);
 };
 
 const json = (body: PublicCheckResponse, status = 200): Response => Response.json(body, {
@@ -380,6 +381,17 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           if (!localResolverAvailable || focus.id === 'tourism-seasonal-employment') return json(warehouseUnavailableResponse);
           focusedObservations = undefined;
         } else {
+          if (focus.id === 'migration-benefit-receipt' && snapshotLifecycle(INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT).usable) {
+            const selectedMetrics = new Set(metricIds);
+            const observationKey = (item: Record<string, unknown>): string => {
+              const dimensions = item.dimensions as Record<string, unknown> | undefined;
+              return [item.metricId || '', item.period || '', dimensions?.groupKind || '', dimensions?.group || ''].join('|');
+            };
+            const observed = new Set(focusedObservations.map((item) => observationKey(item as Record<string, unknown>)));
+            focusedObservations = [...focusedObservations, ...INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT.observations
+              .filter((item) => selectedMetrics.has(item.metricId)
+                && !observed.has(observationKey(item as unknown as Record<string, unknown>)))];
+          }
           if (['working-poverty', 'education-employment-outcomes', 'education-pay-comparison', 'primary-care-waits', 'primary-care-wait-trend', 'primary-care-wait-causes', 'real-wages', 'collective-agreement-wages', 'gdp-total-per-capita-comparison', 'labour-productivity-and-growth', 'household-inflation-basket', 'tourism-employment-contribution', 'foreign-affiliation-in-tourism-and-agriculture', 'waiter-vacancy-and-conditions', 'tourist-housing-registration', 'tourist-housing-count', 'tourist-housing-share', 'tourist-housing-supply', 'tourism-urban-housing-cost'].includes(focus.id) && focusedObservations.length === 0) {
             // Reviewed text snapshots can answer from their own dated source
             // when a successful warehouse lookup has no rows. A failed D1

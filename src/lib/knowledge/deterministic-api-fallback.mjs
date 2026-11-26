@@ -12,6 +12,7 @@ import { FOREIGN_AFFILIATE_SECTOR_SNAPSHOT } from './foreign-affiliate-sector-sn
 import { WAITER_VACANCY_SNAPSHOT } from './waiter-vacancy-snapshot.mjs';
 import { EDUCATION_EARNINGS_SNAPSHOT } from './education-earnings-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from './tourist-housing-snapshot.mjs';
+import { INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT } from './ine-ecv-personal-benefit-receipt-snapshot.mjs';
 import { spanishInstitutionalScope } from './institutional-scope.mjs';
 import { measurementMeaningPlan } from './measurement-meaning.mjs';
 import { focusedEvidencePlan } from './focused-evidence-plan.mjs';
@@ -170,7 +171,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
     : undefined;
   const propositions = (compiledClaim.explicitPropositions || []).filter((proposition) => proposition?.explicit !== false && proposition?.text);
   const fallbackSnapshots = inputType === 'text'
-    ? [WORKING_POVERTY_SNAPSHOT, SUBJECTIVE_POVERTY_SNAPSHOT, EDUCATION_EMPLOYMENT_SNAPSHOT, EDUCATION_FIRST_JOB_SNAPSHOT, EDUCATION_EARNINGS_SNAPSHOT, PRIMARY_CARE_WAIT_SNAPSHOT, TOURISM_EMPLOYMENT_SNAPSHOT, FOREIGN_AFFILIATE_SECTOR_SNAPSHOT, WAITER_VACANCY_SNAPSHOT, TOURIST_HOUSING_SNAPSHOT].filter((snapshot) => snapshotLifecycle(snapshot, now).usable)
+    ? [WORKING_POVERTY_SNAPSHOT, SUBJECTIVE_POVERTY_SNAPSHOT, EDUCATION_EMPLOYMENT_SNAPSHOT, EDUCATION_FIRST_JOB_SNAPSHOT, EDUCATION_EARNINGS_SNAPSHOT, PRIMARY_CARE_WAIT_SNAPSHOT, TOURISM_EMPLOYMENT_SNAPSHOT, FOREIGN_AFFILIATE_SECTOR_SNAPSHOT, WAITER_VACANCY_SNAPSHOT, TOURIST_HOUSING_SNAPSHOT, INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT].filter((snapshot) => snapshotLifecycle(snapshot, now).usable)
     : [];
   const fallbackObservations = fallbackSnapshots.flatMap((snapshot) => snapshot.observations);
   const focused = analysisWasTruncated ? undefined : focusedEvidencePlan(original, { observations: fallbackObservations, propositions, now, allowReviewedSnapshotFallback: true });

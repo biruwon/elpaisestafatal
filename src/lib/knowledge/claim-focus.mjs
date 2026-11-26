@@ -101,6 +101,22 @@ const migrationFiscalContribution = (t) => migrationPopulation.test(t)
   && /\b(fiscal\w*|impuest\w*|hacienda|recaud\w*|tribut\w*|cotiz\w*|contribucion\w*|arcas? publicas|cuentas? publicas|presupuest\w*|gasto publico)\b/.test(t)
   && /\b(aport\w*|contribu\w*|net\w*|balance\w*|pag\w*|recib\w*|cost\w*|benefici\w*|mas|menos|cualific\w*|salari\w*|sueld\w*|ingres\w*|cotiz\w*)\b/.test(t)
   && !/\b(?:edad (?:legal )?de jubilacion|edad ordinaria de jubilacion|jubilarse a los 67|trabajar hasta los 67)\b/.test(t);
+const migrationPersonalBenefitReceipt = (t) => {
+  if (!migrationPopulation.test(t)
+    || !/\b(prestacion\w*|ayud\w*|benefici\w*|subsidios?|transferencias? sociales?|proteccion social)\b/.test(t)) return false;
+  const denominatorIsAllRecipients = /\b(?:parte|proporcion|porcentaje|fraccion)\b.{0,45}\b(?:del|de todas? las?)\s+(?:total\s+de\s+)?(?:personas? beneficiari\w*|beneficiari\w*|receptores? de prestaciones|quienes reciben|personas que reciben)\b/.test(t)
+    || /\b(?:beneficiari\w*|receptores? de prestaciones|quienes reciben)\b.{0,45}\b(?:inmigr\w*|migr\w*|extranjer\w*|nacid\w* fuera)\b/.test(t)
+    || /\b(?:parte|proporcion|porcentaje|fraccion)\b.{0,35}\b(?:de )?(?:todas? las?|total de las?|conjunto de las?)\s+(?:prestacion\w*|ayud\w*|subsidios?)\b/.test(t)
+    || /\b(?:parte|proporcion|porcentaje|fraccion)\b.{0,45}\b(?:prestacion\w*|ayud\w*|subsidios?)\b.{0,35}\b(?:correspond\w*|recib\w*|va[n]?|destin\w*)\b/.test(t);
+  const namedProgram = /\b(imv|ingreso minimo vital|paro|desempleo|rai|renta activa de insercion|pension\w*|vivienda|alquiler|familiares?|educativ\w*|becas?|dependencia|bono social)\b/.test(t);
+  const amountOrCost = /\b(euros?|eur|cuantia\w*|importe\w*|cuanto dinero|cantidad de dinero|gasto por persona|coste por persona|valor monetario)\b/.test(t);
+  const absoluteCount = /\b(?:cuantos?|numero|cantidad|recuento|total)\b.{0,35}\b(personas?|beneficiari\w*|receptores?)\b/.test(t)
+    || /\bmas personas\b.{0,35}\b(?:recib\w*|cobr\w*|benefici\w*)\b/.test(t);
+  const causalOrNormative = /\b(caus\w*|provoc\w*|por culpa|debido a|porque|merec\w*|deberian?|tendrian que|prioridad|fraud\w*|fraude|ilegal\w*|derecho a|requisit\w*|elegibilidad|conced\w*|deneg\w*|rechaz\w*|impid\w*|acceso|acced\w*|solicit\w*|tramit\w*)\b/.test(t);
+  const trend = /\b(cada vez|ha aumentado|aument\w* desde|crec\w* desde|baj\w* desde|disminu\w* desde|tendencia|evoluci\w*|entre (?:19|20|21)\d{2})\b/.test(t);
+  const fiscal = /\b(fiscal\w*|impuest\w*|hacienda|recaud\w*|tribut\w*|cotiz\w*|balance fiscal|arcas publicas|cuentas publicas|gasto publico total|contribucion neta)\b/.test(t);
+  return !denominatorIsAllRecipients && !namedProgram && !amountOrCost && !absoluteCount && !causalOrNormative && !trend && !fiscal;
+};
 const migrationWageEffects = (t) => migrationPopulation.test(t)
   && /\b(inmigracion|llegad\w*.{0,35}\b(?:mano de obra|trabajador\w*|personas?)\b|entrad\w*.{0,35}\b(?:mano de obra|trabajador\w*|personas?)\b|oferta de mano de obra extranjera)\b/.test(t)
   && /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|ingres\w*|cobr\w*|gan\w*)\b/.test(t)
@@ -3002,6 +3018,15 @@ const focuses = [
     limitation: 'Mide personas adultas condenadas, no todos los delitos registrados ni detenciones. Clasifica por nacionalidad, no por país de nacimiento o situación administrativa; una diferencia entre grupos no demuestra que la inmigración cause delincuencia.',
   },
   {
+    id: 'migration-benefit-receipt', label: 'personas con ingresos personales en prestaciones seleccionadas según nacimiento o nacionalidad',
+    when: migrationPersonalBenefitReceipt,
+    direct: ['ecv_selected_personal_benefit_receipt_rate_by_birthplace', 'ecv_selected_personal_benefit_receipt_rate_by_nationality'], context: [], claimType: 'comparative',
+    needs: ['tasas de personas del mismo grupo que reciben prestaciones, con una definición explícita de persona receptora y denominador', 'datos comparables para todas las ayudas públicas, incluidas las registradas a nivel de hogar', 'ajuste por edad y una medida separada de cuantías si la afirmación se refiere a cuánto dinero recibe cada grupo'],
+    explanationHeadline: 'La ECV permite comparar cinco ingresos personales declarados, no todas las ayudas públicas',
+    explanation: 'Los microdatos de la ECV permiten estimar qué proporción de personas de 16 años o más declaró ingresos positivos en cinco componentes personales de prestaciones. El año de encuesta es 2025, pero los ingresos se refieren a 2024.',
+    limitation: 'Es una estimación propia ponderada con los microdatos de la ECV, no una tabla publicada por el INE; no se calcularon intervalos de confianza ni se ajustó por edad. Cuenta solo desempleo, vejez, supervivencia, enfermedad e invalidez declarados como ingresos personales; excluye las transferencias registradas a nivel de hogar y otros programas. No mide todas las ayudas, importes, elegibilidad ni balance fiscal, así que no decide por sí sola una afirmación general sobre quién recibe más ayudas.',
+  },
+  {
     id: 'migration-fiscal-contribution', label: 'aportación fiscal de la población migrante por nivel laboral',
     when: migrationFiscalContribution,
     direct: [], context: [], claimType: 'causal',
@@ -4087,6 +4112,13 @@ export const focusedMetricIdsFor = (claim) => {
   if (!focus) return undefined;
   const known = new Set(metricVocabulary.map((metric) => metric.id));
   const text = normalize(claim);
+  if (focus.id === 'migration-benefit-receipt') {
+    const explicitNationality = /\b(nacionalidad\w*|ciudadan\w*|nacionalizad\w*|extranjer\w*)\b/.test(text)
+      && !/\b(lugar|pais) de nacimient\w*|nacid\w* fuera\b/.test(text);
+    return new Set([explicitNationality
+      ? 'ecv_selected_personal_benefit_receipt_rate_by_nationality'
+      : 'ecv_selected_personal_benefit_receipt_rate_by_birthplace']);
+  }
   if (focus.id === 'tourism-employment-contribution'
     && requestedGeographyScopes(claim).some((scope) => scope.type === 'region')
     && /\b(mas|menos|mayor|menor|super\w*|inferior\w*)\b/.test(text)

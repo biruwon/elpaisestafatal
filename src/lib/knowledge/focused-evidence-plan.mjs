@@ -22,6 +22,12 @@ import { geographyScopeMatcherFor, requestedGeographyScopes } from './geography-
 import { sexScopeMatcherFor } from './sex-scope.mjs';
 import { metricDimensionContractFits } from './metric-contract.mjs';
 import { WAITER_VACANCY_SNAPSHOT } from './waiter-vacancy-snapshot.mjs';
+import { INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT } from './ine-ecv-personal-benefit-receipt-snapshot.mjs';
+
+const ecvPersonalBenefitMetricIds = new Set([
+  'ecv_selected_personal_benefit_receipt_rate_by_birthplace',
+  'ecv_selected_personal_benefit_receipt_rate_by_nationality',
+]);
 
 const vocabulary = new Map(metricVocabulary.map((metric) => [metric.id, metric]));
 const educationFirstJobMetricIds = new Set([
@@ -50,8 +56,18 @@ const observationFitsClaim = (claim) => {
       : /\b(?:tercera|3(?:a|era)?)\s+(?:oleada|ola)\b|\b(?:oleada|ola)\s+3\b/.test(text) ? '3' : undefined;
   const requestedTerritories = requestedGeographyScopes(claim);
   return (item) => {
-    const periodFits = educationFirstJobMetricIds.has(item.metricId)
-      ? educationFirstJobPeriodFitsClaim(claim, item) : matchesPeriod(item);
+    const ecvPersonalBenefitPeriodFits = (() => {
+      if (!ecvPersonalBenefitMetricIds.has(item.metricId)) return undefined;
+      const years = [...String(claim || '').matchAll(/\b(?:19|20|21)\d{2}\b/g)].map(([year]) => year);
+      if (!years.length) return true;
+      const text = normalize(claim);
+      const explicitlyNamesSurvey = /\b(ecv|encuesta de condiciones de vida|microdatos)\b/.test(text);
+      return years.every((year) => year === '2024' || year === '2025' && explicitlyNamesSurvey)
+        && String(item.period) === '2024';
+    })();
+    const periodFits = ecvPersonalBenefitPeriodFits !== undefined ? ecvPersonalBenefitPeriodFits
+      : educationFirstJobMetricIds.has(item.metricId)
+        ? educationFirstJobPeriodFitsClaim(claim, item) : matchesPeriod(item);
     if (!matchesAge(item) || !periodFits || !matchesGeography(item) || !matchesSex(item)) return false;
     if (/^primary_care_wait_/.test(item.metricId || '') && requestedPrimaryCareWave
       && String(item.dimensions?.surveyWave || '') !== requestedPrimaryCareWave) return false;
@@ -82,6 +98,8 @@ const observationFitsClaim = (claim) => {
   };
 };
 const labels = {
+  ecv_selected_personal_benefit_receipt_rate_by_birthplace: 'Personas con ingresos personales en prestaciones seleccionadas por lugar de nacimiento',
+  ecv_selected_personal_benefit_receipt_rate_by_nationality: 'Personas con ingresos personales en prestaciones seleccionadas por nacionalidad',
   unemployment_rate: 'Tasa de paro entre personas activas de 15 a 74 años',
   unemployment_rate_europe: 'Tasa de paro entre personas activas de 15 a 74 años',
   median_hourly_earnings: 'Salario mediano bruto por hora',
@@ -162,6 +180,18 @@ const citizenshipGroupLabel = (item) => ({
   EU27_2020_FOR: 'ciudadanía de otro país de la UE',
   NEU27_2020_FOR: 'ciudadanía de fuera de la UE',
 }[String(item.dimensions?.citizen || '').toUpperCase()]);
+const ecvPersonalBenefitGroupLabel = (item) => {
+  const group = String(item.dimensions?.group || '');
+  if (item.dimensions?.groupKind === 'birthplace') return ({
+    born_in_spain: 'personas nacidas en España',
+    born_abroad: 'personas nacidas fuera de España',
+  })[group];
+  if (item.dimensions?.groupKind === 'nationality') return ({
+    spanish_nationality: 'personas de nacionalidad española',
+    foreign_nationality: 'personas de nacionalidad extranjera',
+  })[group];
+  return undefined;
+};
 const sourceValid = (source) => {
   try { return Boolean(source?.id && source?.title && new URL(source.url).protocol === 'https:'); } catch { return false; }
 };
@@ -206,12 +236,13 @@ const factsForMetric = (id, observations, fitsClaim) => {
     const value = `${number(latest.value, id)} ${unitFor(latest)}`.trim();
     const metric = vocabulary.get(id);
     const citizenship = citizenshipGroupLabel(latest);
+    const ecvGroup = ecvPersonalBenefitGroupLabel(latest);
     const nationalityGroup = id === 'crime_conviction_rate_by_nationality'
       ? ({ Extranjera: 'nacionalidad extranjera', Española: 'nacionalidad española' }[String(latest.dimensions?.group || '')])
       : undefined;
-    const scope = [latest.geography || latest.dimensionLabels?.geo, citizenship || nationalityGroup, latest.population || metric?.population].filter(Boolean).join(' · ');
+    const scope = [latest.geography || latest.dimensionLabels?.geo, citizenship || nationalityGroup || ecvGroup, latest.population || metric?.population].filter(Boolean).join(' · ');
     const place = placeLabel(latest);
-    const finding = `${labels[id] || metric?.name || latest.metric}${place ? ` · ${place}` : ''}${citizenship || nationalityGroup ? ` · ${citizenship || nationalityGroup}` : ''}: ${value} (${periodLabel(latest.period)}).`;
+    const finding = `${labels[id] || metric?.name || latest.metric}${place ? ` · ${place}` : ''}${ecvGroup ? ` · ${ecvGroup}` : citizenship || nationalityGroup ? ` · ${citizenship || nationalityGroup}` : ''}: ${value} (${periodLabel(latest.period)}).`;
     // Primary-care answers cite the latest matching wave. Its source
     // attribution must not imply that older waves were also cited.
     const answerItems = /^primary_care_wait_/.test(id) ? [latest] : rows;
@@ -1189,6 +1220,25 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const facts = [...ordinaryFacts, ...(subjectivePovertyFacts.length
     ? subjectivePovertyFacts : displayIds.includes('subjective_poverty_rate')
       ? factsForMetric('subjective_poverty_rate', observations, fitsClaim) : [])];
+  if (focus.id === 'migration-benefit-receipt') {
+    const expectedGroups = ids[0].endsWith('_by_birthplace') ? ['born_in_spain', 'born_abroad'] : ['spanish_nationality', 'foreign_nationality'];
+    const selectedFacts = facts.filter((fact) => fact.id === ids[0]);
+    const groupFacts = expectedGroups.map((group) => selectedFacts.find((fact) => fact.latest.dimensions?.group === group));
+    const [first, second] = groupFacts;
+    const comparableDimensions = (item) => JSON.stringify(Object.fromEntries(Object.entries(item.dimensions || {})
+      .filter(([key]) => !['group', 'unweightedSampleSize', 'weightedPopulation', 'weightedRecipients'].includes(key))
+      .sort(([left], [right]) => left.localeCompare(right))));
+    const comparable = first && second
+      && first.latest.period === second.latest.period
+      && first.latest.geography === second.latest.geography
+      && first.latest.unit === second.latest.unit
+      && first.latest.population === second.latest.population
+      && first.latest.denominator === second.latest.denominator
+      && first.latest.source?.id === second.latest.source?.id
+      && first.latest.source?.url === second.latest.source?.url
+      && comparableDimensions(first.latest) === comparableDimensions(second.latest);
+    if (!comparable) facts.length = 0;
+  }
   if (ids.includes('industrial_electricity_price_europe')) facts.sort((left, right) => {
     const order = (fact) => fact.latest.dimensions?.geo === 'ES' ? 0 : /^EU/.test(String(fact.latest.dimensions?.geo || '')) ? 1 : 2;
     return order(left) - order(right);
@@ -1267,7 +1317,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && snapshotLifecycle(WAITER_VACANCY_SNAPSHOT, now).usable;
   const waiterScopeSources = waiterScopeEvidenceAvailable
     ? [WAITER_VACANCY_SNAPSHOT.observations[0]?.source, WAITER_VACANCY_SNAPSHOT.methodologySource].filter(Boolean) : [];
-  const sources = [...new Map([...facts.flatMap((fact) => fact.items.map((item) => item.source)), ...subjectiveDefinitionSources, ...(explanation?.sources || []), ...waiterScopeSources].map((source) => [source.id, source])).values()];
+  const ecvMethodologySources = focus.id === 'migration-benefit-receipt' && facts.length > 0
+    && snapshotLifecycle(INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT, now).usable
+    ? [INE_ECV_PERSONAL_BENEFIT_RECEIPT_SNAPSHOT.methodologySource] : [];
+  const sources = [...new Map([...facts.flatMap((fact) => fact.items.map((item) => item.source)), ...subjectiveDefinitionSources, ...(explanation?.sources || []), ...waiterScopeSources, ...ecvMethodologySources].filter(Boolean).map((source) => [source.id, source])).values()];
   const workingPovertyTrends = new Map(facts.flatMap((fact) => {
     const trend = workingPovertyTrendRequested ? workingPovertyTrend(fact) : undefined;
     return trend ? [[fact.id, trend]] : [];
@@ -1573,6 +1626,31 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       !exactShareQuestion ? 'Para comprobar esa explicación hacen falta datos comparables de vacantes, contrataciones y condiciones por sector, territorio y periodo.' : '',
     ].filter(Boolean).join('\n\n');
   })();
+  const ecvPersonalBenefitReply = (() => {
+    if (focus.id !== 'migration-benefit-receipt') return undefined;
+    const metricId = ids[0];
+    const metricFacts = facts.filter((fact) => fact.id === metricId);
+    const spanishGroup = metricId.endsWith('_by_birthplace') ? 'born_in_spain' : 'spanish_nationality';
+    const foreignGroup = metricId.endsWith('_by_birthplace') ? 'born_abroad' : 'foreign_nationality';
+    const spanish = metricFacts.find((fact) => fact.latest.dimensions?.group === spanishGroup);
+    const foreign = metricFacts.find((fact) => fact.latest.dimensions?.group === foreignGroup);
+    if (!spanish || !foreign || spanish.latest.period !== foreign.latest.period
+      || spanish.latest.source?.id !== foreign.latest.source?.id
+      || spanish.latest.unit !== foreign.latest.unit
+      || spanish.latest.denominator !== foreign.latest.denominator
+      || spanish.latest.dimensions?.incomeReferenceYear !== foreign.latest.dimensions?.incomeReferenceYear
+      || spanish.latest.dimensions?.surveyYear !== foreign.latest.dimensions?.surveyYear) return undefined;
+    const difference = Math.abs(spanish.latest.value - foreign.latest.value);
+    const groupKind = metricId.endsWith('_by_birthplace') ? 'lugar de nacimiento' : 'nacionalidad';
+    const compared = `${ecvPersonalBenefitGroupLabel(spanish.latest)}: ${number(spanish.latest.value, metricId)} %; ${ecvPersonalBenefitGroupLabel(foreign.latest)}: ${number(foreign.latest.value, metricId)} %`;
+    const lowerGroupName = spanish.latest.value <= foreign.latest.value
+      ? ecvPersonalBenefitGroupLabel(spanish.latest) : ecvPersonalBenefitGroupLabel(foreign.latest);
+    return [
+      `ECV ${spanish.latest.dimensions?.surveyYear} (España; ingresos referidos a ${spanish.latest.dimensions?.incomeReferenceYear}), clasificación por ${groupKind}: ${compared}. La diferencia es de ${number(difference, metricId)} puntos porcentuales; la tasa es menor en ${lowerGroupName}.`,
+      `El numerador cuenta personas de 16 años o más con un importe individual positivo en al menos uno de cinco conceptos: desempleo, vejez, supervivencia, enfermedad o invalidez. El denominador son las personas de 16 años o más del mismo grupo, ponderadas con PB040.`,
+      'Es una estimación propia a partir de microdatos del INE, no una tabla publicada por el INE; no se calcularon intervalos de confianza y no está ajustada por edad. No incluye todas las ayudas ni las transferencias registradas solo para hogares, y no compara importes recibidos. Por tanto, no basta para confirmar o refutar una afirmación general sobre todas las prestaciones.',
+    ].join('\n\n');
+  })();
   const waiterVacancyReply = (() => {
     if (focus.id !== 'waiter-vacancy-and-conditions') return undefined;
     const fact = facts.find((item) => item.id === 'experimental_job_vacancies_waiters');
@@ -1740,6 +1818,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const waiterVacancyHeadline = focus.id === 'waiter-vacancy-and-conditions' && facts.length
     ? `Vacantes estimadas para camareros y bármanes · ${periodLabel(facts.find((fact) => fact.id === 'experimental_job_vacancies_waiters')?.latest.period || facts[0].latest.period)}`
     : undefined;
+  const ecvPersonalBenefitHeadline = focus.id === 'migration-benefit-receipt' && facts.length
+    ? 'ECV 2025: ingresos personales por prestaciones en 2024'
+    : undefined;
   const directThresholdComparisonNote = directThresholdAssessment
     ? (() => {
       const fact = direct.find((item) => item.id === directThresholdAssessment.metricId);
@@ -1751,7 +1832,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       return `El dato (${number(directThresholdAssessment.actual, fact.id)}${suffix}) ${position}; ${directThresholdAssessment.verdict === 'supported' ? 'respalda' : 'contradice'} esa parte.`;
     })()
     : '';
-  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || foreignAffiliateSectorReply || waiterVacancyReply || tourismEmploymentReply || workingPovertyEndsMeetReply || tourismUrbanHousingCostReply || touristHousingReply || educationPayReply || electricityIndustryCostsReply || ruralUrbanAccessReply || mentalHealthPsychologistCountReply || mentalHealthPsychologistCapacityReply || educationRecentGraduateComparisonReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || ecvPersonalBenefitReply || foreignAffiliateSectorReply || waiterVacancyReply || tourismEmploymentReply || workingPovertyEndsMeetReply || tourismUrbanHousingCostReply || touristHousingReply || educationPayReply || electricityIndustryCostsReply || ruralUrbanAccessReply || mentalHealthPsychologistCountReply || mentalHealthPsychologistCapacityReply || educationRecentGraduateComparisonReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
     directThresholdComparisonNote,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const hasReviewedForeignAffiliateContext = focus.id === 'foreign-affiliation-in-tourism-and-agriculture'
@@ -1846,7 +1927,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   }
   return {
     id: `measurement-${focus.id}`, schemaVersion: '1', evidenceLevel, coverage: facts.length || explanation ? 'qualified' : 'insufficient',
-    claimType, headline: educationRecentGraduateComparison?.headline || subjectivePovertyHeadline || specialistOutpatientComparisonHeadline || workingPovertyComparison?.headline || workingPovertyTrends.get(direct[0]?.id)?.headline || tourismEmploymentHeadline || foreignAffiliateSectorHeadline || waiterVacancyHeadline
+    claimType, headline: educationRecentGraduateComparison?.headline || subjectivePovertyHeadline || specialistOutpatientComparisonHeadline || workingPovertyComparison?.headline || workingPovertyTrends.get(direct[0]?.id)?.headline || tourismEmploymentHeadline || foreignAffiliateSectorHeadline || waiterVacancyHeadline || ecvPersonalBenefitHeadline
       || (focus.id === 'working-poverty' && direct.length
         ? fullTime && partTime ? 'Datos de riesgo de pobreza por jornada'
           : fullTime ? 'El empleo a jornada completa no elimina el riesgo de pobreza'

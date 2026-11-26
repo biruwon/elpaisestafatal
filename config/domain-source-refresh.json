@@ -130,7 +130,7 @@
       "url": "https://www.ine.es/ftp/microdatos/ecv/ecv_b2013/datos_2025.zip",
       "schedule": "yearly",
       "mode": "discovery",
-      "title": "INE ECV 2025 microdata: selected social-transfer receipt by nationality (derived snapshot)"
+      "title": "INE ECV 2025 microdata: personal-level benefit receipt by nationality and birthplace (income year 2024; derived snapshot)"
     },
     {
       "id": "social-housing-programmes",
