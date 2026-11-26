@@ -169,6 +169,31 @@ assert.match(migrationBenefitBrokenDatabase.body.result.reply, /39,21 %.*24,45 %
 assert.deepEqual(migrationBenefitBrokenDatabase.body.result.sources.map((source) => source.id), [
   'ine-ecv-2025-personal-benefit-receipt', 'ine-ecv-2025-design-register',
 ]);
+const migrationFiscalClaims = [
+  'El impacto fiscal de la inmigración depende mucho de los salarios y de la edad de los inmigrantes',
+  'La inmigración cualificada aporta más fiscalmente que la inmigración atrapada en empleos de bajos salarios',
+];
+for (const claim of migrationFiscalClaims) {
+  const responses = [await checkWithoutDatabase(claim), await check(claim)];
+  for (const response of responses) {
+    const result = response.body.result;
+    assert.equal(response.body.state, 'limited', `Reviewed fiscal context was lost from the Pages API: ${claim}`);
+    assert.equal(result.id, 'broad-immigrant-net-fiscal-contribution');
+    assert.equal(result.evidenceLevel, 'limited');
+    assert.match(result.limitations.join(' '), /ni cuantifica el efecto del salario o de la cualificaci[oó]n/,
+      'The household context must not confirm a current salary or qualification comparison');
+    assert.deepEqual(result.sources.map((source) => source.id), [
+      'airef-immigration-fiscal-review-2025', 'uc3m-immigration-fiscal-study-2020',
+    ]);
+    assert.match(result.reply, /2017.*hogares compuestos exclusivamente por inmigrantes no europeos/s);
+    assert.match(result.reply, /estructura de edad m[aá]s joven/);
+    assert.match(result.reply, /no mide el efecto de los salarios ni compara por cualificaci[oó]n/);
+    assert.match(result.reply, /no hay una cifra que describa a cada inmigrante/);
+    assert.ok(result.evidenceSummary.families.some((family) => family.criterionId === 'immigrant-direct-fiscal-balance'
+      && family.dimensions?.denominator === 'hogar y año'
+      && /hogares compuestos exclusivamente por inmigrantes no europeos/.test(family.dimensions?.population || '')));
+  }
+}
 const ecvWrongIncomeYear = await checkWithoutDatabase('¿En 2025 recibían más ayudas personales las personas extranjeras?');
 assert.deepEqual(ecvWrongIncomeYear.body.result?.sources || [], [], 'Survey data for 2024 income must not answer an unqualified 2025 income-period question');
 assert.doesNotMatch(JSON.stringify(ecvWrongIncomeYear.body), /39,21 %|24,45 %|38,59 %|21,7 %/);

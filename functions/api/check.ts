@@ -473,6 +473,20 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
         // queuing an unrelated warehouse search.
         const plan = focusedEvidencePlan(effectiveClaim, { observations: [], allowReviewedSnapshotFallback: true }) as AnswerPlan | undefined;
         if (plan) {
+          // A focused measurement gap may have a separately reviewed, sourced
+          // family packet that can provide bounded context. Reuse the same
+          // bridge as the deterministic fallback, but only when it returns a
+          // sourced broad packet; otherwise keep the focused gap unchanged.
+          const contextualFallback = plan.evidenceLevel === 'insufficient'
+            ? fallbackResponse(effectiveClaim, 'text')
+            : undefined;
+          const contextualResult = contextualFallback?.state === 'limited' ? contextualFallback.result : undefined;
+          const contextualResultId = contextualResult && 'id' in contextualResult ? String(contextualResult.id) : '';
+          if (contextualFallback?.state === 'limited' && contextualResult
+            && contextualResultId.startsWith('broad-')
+            && contextualResult.sources.length && contextualResult.whatWeKnow.length) {
+            return json(contextualFallback);
+          }
           warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
           return json(warehouseFocusedResponse);
         }
