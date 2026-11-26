@@ -18,10 +18,10 @@ import BaseLayout from '../layouts/BaseLayout.astro';
           </fieldset>
           <label class="sr-only" for="conversation-input">Escribe o pega la afirmación que quieres comprobar</label>
           <div class="conversation-input-wrap">
-            <textarea id="conversation-input" name="q" rows="4" maxlength="12000" autocomplete="off" placeholder="Escribe o pega aquí la afirmación…" aria-describedby="conversation-help"></textarea>
+            <textarea id="conversation-input" name="q" rows="4" autocomplete="off" placeholder="Escribe o pega aquí la afirmación…" aria-describedby="conversation-help"></textarea>
             <button type="submit">Comprobar <span aria-hidden="true">→</span></button>
           </div>
-          <p id="conversation-help" class="conversation-help"><span data-input-help>Pega la afirmación completa; añade fecha, lugar o fuente si los conoces.</span><span>El analizador local admite hasta 4.000 caracteres; lo que exceda no se contrastará.</span><span id="conversation-counter" aria-live="polite">0/12000</span></p>
+          <p id="conversation-help" class="conversation-help"><span data-input-help>Escribe o pega una afirmación o fragmento de hasta 4.000 caracteres.</span><span id="conversation-limit-warning" class="conversation-limit-warning" role="status" aria-live="polite" hidden></span><span id="conversation-counter" aria-live="polite">0/4000</span></p>
         </form>
         <details class="checker-suggestions" id="checker-suggestions">
           <summary><span>¿No sabes qué probar? Mira ejemplos</span><span aria-hidden="true">+</span></summary>

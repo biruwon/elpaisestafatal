@@ -111,6 +111,7 @@
 .conversation-input-wrap>button{align-self:stretch;min-width:145px;padding:18px;border:0;background:var(--ink);color:var(--paper);font:700 .75rem var(--sans)}
 .conversation-input-wrap>button:hover{background:var(--red)}
 .conversation-help{margin:10px 5px 3px;font:.68rem/1.4 var(--sans)}
+.conversation-limit-warning{color:var(--red);font-weight:650}
 .checker-suggestions{margin-top:16px;border-top:0;border-bottom:1px solid var(--line)}
 .checker-suggestions summary{min-height:46px;padding:0 4px;color:var(--muted);text-transform:none;font:600 .76rem var(--sans)}
 .checker-how{max-width:760px;display:grid;grid-template-columns:repeat(3,1fr);gap:1px;margin:34px auto 0;padding:1px;list-style:none;background:var(--line)}

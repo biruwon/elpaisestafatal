@@ -1,4 +1,5 @@
 import { INPUT_LIMITS, validateInputMetadata, inputErrorMessage } from '../lib/knowledge/input-contract.mjs';
+import { LOCAL_COMPILER_TEXT_LIMIT, textAnalysisLimitFor } from '../lib/knowledge/text-analysis-coverage.mjs';
 import type { InputExtraction } from '../lib/knowledge/public-check';
 import { isMissingTextClaim } from '../lib/knowledge/text-claim-intent.mjs';
 import { shouldRetainReviewedPreview } from '../lib/knowledge/reviewed-answer-stability.mjs';
@@ -32,6 +33,7 @@ const form = document.querySelector<HTMLFormElement>('#conversation-form');
 const input = document.querySelector<HTMLTextAreaElement>('#conversation-input');
 const result = document.querySelector<HTMLElement>('#conversation-result');
 const counter = document.querySelector<HTMLElement>('#conversation-counter');
+const limitWarning = document.querySelector<HTMLElement>('#conversation-limit-warning');
 const recent = document.querySelector<HTMLElement>('#recent-checks');
 const recentList = document.querySelector<HTMLElement>('[data-recent-list]');
 const suggestions = document.querySelector<HTMLDetailsElement>('#checker-suggestions');
@@ -72,11 +74,32 @@ const readRecent = (): string[] => { try { const value = JSON.parse(localStorage
 const writeRecent = (text: string): void => { try { localStorage.setItem(recentChecksStorageKey, JSON.stringify([text, ...readRecent().filter((item) => item !== text)].slice(0, 6))); } catch { /* optional */ } };
 const renderRecent = (): void => { if (!recent || !recentList) return; const values = readRecent(); recent.hidden = values.length === 0; recentList.innerHTML = values.map((value) => `<button type="button" data-recent-query="${escapeHtml(value)}">${escapeHtml(value)}</button>`).join(''); };
 const setMode = (active: boolean): void => { checker?.classList.toggle('has-result', active); checkerPage?.classList.toggle('has-result', active); homepage?.classList.toggle('has-result', active); if (active) suggestions?.removeAttribute('open'); };
+const isUrlInput = (): boolean => {
+  const currentValue = input?.value.trim() || '';
+  return selectedInputMode === 'url' || /^https:\/\//i.test(currentValue);
+};
+const inputCharacterLimit = (): number => isUrlInput() ? INPUT_LIMITS.maxTextCharacters : LOCAL_COMPILER_TEXT_LIMIT;
+const inputLimitMessage = (): string => isUrlInput()
+  ? 'El enlace supera 12.000 caracteres. Acórtalo antes de continuar.'
+  : `El texto supera ${LOCAL_COMPILER_TEXT_LIMIT.toLocaleString('es-ES')} caracteres. No analizaremos un recorte; selecciona la afirmación concreta.`;
+const updateInputFeedback = (): void => {
+  if (!input) return;
+  const limit = inputCharacterLimit();
+  const overLimit = input.value.trim().length > limit;
+  if (inputHelp) inputHelp.textContent = isUrlInput()
+    ? 'Pega el enlace HTTPS de la página que contiene la afirmación.'
+    : `Escribe o pega una afirmación o fragmento de hasta ${LOCAL_COMPILER_TEXT_LIMIT.toLocaleString('es-ES')} caracteres.`;
+  if (counter) counter.textContent = `${input.value.length.toLocaleString('es-ES')}/${limit.toLocaleString('es-ES')}`;
+  if (limitWarning) {
+    limitWarning.hidden = !overLimit;
+    limitWarning.textContent = overLimit ? inputLimitMessage() : '';
+  }
+};
 const selectInputMode = (mode: 'text' | 'url'): void => {
   selectedInputMode = mode;
   modeButtons.forEach((button) => { const active = button.dataset.inputMode === mode; button.classList.toggle('is-active', active); button.setAttribute('aria-pressed', String(active)); });
   if (input) { input.placeholder = mode === 'url' ? 'Pega aquí el enlace que quieres comprobar…' : 'Escribe o pega aquí la afirmación…'; input.inputMode = mode === 'url' ? 'url' : 'text'; input.focus(); }
-  if (inputHelp) inputHelp.textContent = mode === 'url' ? 'Leeremos el contenido del enlace para identificar la afirmación.' : 'Puedes pegar una frase, un titular o el texto de un mensaje.';
+  updateInputFeedback();
 };
 const focusResult = (): void => { if (!result) return; window.setTimeout(() => { result.scrollIntoView({ behavior: matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth', block: 'start' }); result.focus({ preventScroll: true }); }, 0); };
 const submitButton = (): HTMLButtonElement | null => form?.querySelector<HTMLButtonElement>('button[type="submit"]') || null;
@@ -92,7 +115,7 @@ const renderClarification = (response: Extract<CheckResponse, { state: 'clarific
   const needsClaim = response.options.length === 0;
   result.innerHTML = `<article class="claim-result claim-clarification">${renderExtraction(response.extraction)}<span class="eyebrow">Antes de comprobar</span><p class="claim-original">${escapeHtml(response.claim)}</p><h2>${escapeHtml(response.question)}</h2><div class="clarification-options">${response.options.map((option) => `<button type="button" data-clarification-id="${escapeHtml(option.id)}" data-clarification-kind="${escapeHtml(option.interpretation.kind || 'specific_fact')}" data-clarification-prompt="${escapeHtml(option.interpretation.normalizedClaim)}">${escapeHtml(option.label)}<span aria-hidden="true">→</span></button>`).join('')}</div><label class="clarification-custom">${needsClaim ? 'Afirmación concreta' : 'Otra precisión'}<textarea rows="2" data-clarification-custom placeholder="${needsClaim ? 'Escribe la frase que quieres contrastar' : 'Añade una precisión'}"></textarea></label><button type="button" class="clarification-submit" data-clarification-submit>${needsClaim ? 'Comprobar afirmación' : 'Continuar'}</button></article>`;
   result.querySelectorAll<HTMLButtonElement>('[data-clarification-id]').forEach((button) => button.addEventListener('click', () => { result.querySelectorAll('[data-clarification-id]').forEach((item) => item.removeAttribute('aria-pressed')); button.setAttribute('aria-pressed', 'true'); clarificationContext = { id: button.dataset.clarificationId || '', prompt: button.dataset.clarificationPrompt || '', interpretation: { kind: button.dataset.clarificationKind || 'specific_fact', normalizedClaim: button.dataset.clarificationPrompt || '' } }; }));
-  result.querySelector<HTMLButtonElement>('[data-clarification-submit]')?.addEventListener('click', () => { const field = result.querySelector<HTMLTextAreaElement>('[data-clarification-custom]'); const custom = field?.value.trim(); if (needsClaim && !custom) { field?.setCustomValidity('Escribe una afirmación concreta.'); field?.reportValidity(); field?.addEventListener('input', () => field.setCustomValidity(''), { once: true }); return; } if (custom) clarificationContext = { id: 'custom', prompt: custom }; if (!clarificationContext) return; if (response.extraction && input) { selectInputMode('text'); input.value = response.claim.slice(0, INPUT_LIMITS.maxTextCharacters); } form?.requestSubmit(); });
+  result.querySelector<HTMLButtonElement>('[data-clarification-submit]')?.addEventListener('click', () => { const field = result.querySelector<HTMLTextAreaElement>('[data-clarification-custom]'); const custom = field?.value.trim(); if (needsClaim && !custom) { field?.setCustomValidity('Escribe una afirmación concreta.'); field?.reportValidity(); field?.addEventListener('input', () => field.setCustomValidity(''), { once: true }); return; } if (custom) clarificationContext = { id: 'custom', prompt: custom }; if (!clarificationContext) return; if (response.extraction && input) { selectInputMode('text'); input.value = response.claim; updateInputFeedback(); } form?.requestSubmit(); });
   bindExtractionCorrection(response.extraction);
   focusResult();
 };
@@ -105,7 +128,7 @@ const bindExtractionCorrection = (extraction?: InputExtraction): void => {
     selectInputMode('text');
     input.value = extraction.text;
     clarificationContext = undefined;
-    if (counter) counter.textContent = `${input.value.length}/${INPUT_LIMITS.maxTextCharacters}`;
+    updateInputFeedback();
     setMode(false);
     if (result) result.innerHTML = '';
     input.focus();
@@ -421,6 +444,17 @@ const submit = async (event: SubmitEvent): Promise<void> => {
   const submission = new AbortController();
   request = submission;
   const inputType = selectedInputMode === 'url' || /^https:\/\//i.test(original) ? 'url' : 'text';
+  if (inputType === 'text' && textAnalysisLimitFor(original)) {
+    trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: 'text_analysis_limit' });
+    finishLoading();
+    request = undefined;
+    clarificationContext = undefined;
+    setMode(false);
+    if (result) result.innerHTML = '';
+    input?.focus();
+    updateInputFeedback();
+    return;
+  }
   const valid = validateInputMetadata({ text: original, inputType });
   if (!valid.ok) { trackAnalyticsEvent('claim_check_error', { input_type: inputType, error_code: valid.code }); finishLoading(); request = undefined; renderUnavailable({ state: 'unavailable', id: `invalid-${Date.now()}`, claim: original, message: inputErrorMessage(valid.code), retryable: false }); return; }
   if (!clarificationContext && !(inputType === 'text' && isMissingTextClaim(original))) writeRecent(original);
@@ -493,10 +527,10 @@ const submit = async (event: SubmitEvent): Promise<void> => {
 };
 
 form?.addEventListener('submit', submit);
-input?.addEventListener('input', () => { if (counter) counter.textContent = `${input.value.length}/${INPUT_LIMITS.maxTextCharacters}`; });
+input?.addEventListener('input', updateInputFeedback);
 modeButtons.forEach((button) => button.addEventListener('click', () => selectInputMode(button.dataset.inputMode === 'url' ? 'url' : 'text')));
 checker?.addEventListener('click', (event) => { const target = event.target as HTMLElement; const query = target.closest<HTMLButtonElement>('[data-example], [data-recent-query]'); if (query && input) { input.value = query.dataset.example || query.dataset.recentQuery || ''; form?.requestSubmit(); } if (target.closest('[data-clear-recent]')) { try { localStorage.removeItem(recentChecksStorageKey); } catch { /* optional */ } renderRecent(); } });
 renderRecent();
-if (counter && input) counter.textContent = `${input.value.length}/${INPUT_LIMITS.maxTextCharacters}`;
+updateInputFeedback();
 const initial = new URLSearchParams(window.location.search).get('q')?.trim();
-if (initial && input) { input.value = initial.slice(0, INPUT_LIMITS.maxTextCharacters); window.setTimeout(() => form?.requestSubmit(), 0); }
+if (initial && input) { input.value = initial; updateInputFeedback(); window.setTimeout(() => form?.requestSubmit(), 0); }

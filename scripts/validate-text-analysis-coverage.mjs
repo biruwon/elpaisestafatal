@@ -5,6 +5,8 @@ import { LOCAL_COMPILER_TEXT_LIMIT, textAnalysisLimitFor, textAnalysisLimitPlan 
 import { validateAnswerPlan } from './knowledge/answer-plan-validation.mjs';
 
 assert.equal(textAnalysisLimitFor('Una afirmación corta'), undefined);
+assert.equal(textAnalysisLimitFor('x'.repeat(LOCAL_COMPILER_TEXT_LIMIT)), undefined,
+  'Text at the published analysis limit must remain eligible for analysis');
 assert.equal(textAnalysisLimitFor('x'.repeat(FALLBACK_CLAIM_MAX_CHARS + 1)), undefined,
   'Text longer than the deterministic API fallback bound remains eligible for the full local compiler');
 assert.equal(textAnalysisLimitFor('x'.repeat(LOCAL_COMPILER_TEXT_LIMIT + 1)), LOCAL_COMPILER_TEXT_LIMIT,

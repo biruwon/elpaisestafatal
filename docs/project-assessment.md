@@ -2124,3 +2124,19 @@ and leaves 112 without either route. It reports 7 complete, 110 limited and
 43 claims retain structured multi-part answers. All discovery claims remain
 unverified. Routing and answer-state counts do not measure factual accuracy
 across arbitrary text.
+
+## Text submission boundary — 26 November 2026
+
+The text field previously showed a 12,000-character counter even though the
+local claim analyzer refuses to assess text longer than 4,000 characters. The
+field now shows the analysis limit for text and the separate 12,000-character
+limit for URLs. Longer pastes remain visible, display an inline warning, and
+are stopped before a request is sent; the page does not clip the text and then
+present an answer to the remaining prefix. The user is asked to select the
+specific claim from a longer passage.
+
+The homepage check, text-analysis coverage check, input-contract check, claim
+submission lifecycle check and Astro type check pass. The rendered local page
+returns HTTP 200 with the 4,000-character text counter, over-limit warning
+region and no textarea truncation attribute. This improves input fidelity; it
+does not change evidence coverage or the 300-claim routing totals.
