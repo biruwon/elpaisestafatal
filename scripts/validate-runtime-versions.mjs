@@ -3,6 +3,7 @@ import { RUNTIME_VERSIONS } from '../src/lib/knowledge/runtime-versions.mjs';
 
 const fallback = await readFile('src/lib/knowledge/deterministic-api-fallback.mjs', 'utf8');
 const resolver = await readFile('scripts/local-claim-service.mjs', 'utf8');
+const pagesCheck = await readFile('functions/api/check.ts', 'utf8');
 const failures = [];
 
 for (const version of Object.values(RUNTIME_VERSIONS)) {
@@ -12,6 +13,8 @@ for (const [name, source, marker] of [
   ['deterministic fallback', fallback, 'RUNTIME_VERSIONS.fallbackKnowledge'],
   ['local resolver', resolver, 'RUNTIME_VERSIONS.warehouseKnowledge'],
   ['local semantic index', resolver, 'RUNTIME_VERSIONS.indexKnowledge'],
+  ['Pages response cache', pagesCheck, 'RUNTIME_VERSIONS.fallbackKnowledge'],
+  ['Pages response cache', pagesCheck, 'RUNTIME_VERSIONS.warehouseKnowledge'],
 ]) {
   if (!source.includes("runtime-versions.mjs")) failures.push(`${name} does not import the central runtime version manifest`);
   if (!source.includes(marker)) failures.push(`${name} does not use ${marker}`);

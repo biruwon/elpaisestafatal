@@ -26,10 +26,12 @@ import type { PublicCheckResponse } from '../../src/lib/knowledge/public-check';
 import { captureClaimDemand, type ClaimDemandDatabase } from '../lib/claim-demand';
 import { searchD1Warehouse, searchD1WarehouseByMetricIds } from '../lib/d1-warehouse';
 import { vacancyMeasurementClarificationMetricIdsForQuery, vacancyMeasurementMetricIdsForQuery } from '../../src/lib/knowledge/vacancy-measurement-route.mjs';
+import { RUNTIME_VERSIONS } from '../../src/lib/knowledge/runtime-versions.mjs';
 
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
-// Bump this when response-selection semantics change so a warm Worker isolate
-// cannot serve a result produced by an older precedence rule.
+// Bump this when response-selection semantics change. The cache key also
+// includes the central knowledge versions so answer revisions cannot reuse an
+// older public response from a warm Worker isolate.
 const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-education-earnings-tourist-housing-snapshots-rail-punctuality-sourced-family-selection-intergenerational-housing-landlord-context-pension-finance-routing-energy-price-pass-through-fixed-discontinuous-status-price-wage-eu-convergence-real-wage-living-standard-reported-worked-hours-rural-health-access-retirement-age-61-pension-private-savings-62-rent-series-scope-advertised-rent-claim-scope-metric-quality-notes-adult-conviction-rate-nationality-2026-11-scoped-source-2026-11-direct-metric-d1-2026-11-second-home-scope-2026-11-pension-wage-distribution-2026-11-business-size-productivity-context-2026-11-foreign-affiliation-sector-snapshot-2026-11-waiter-vacancy-experimental-context-2026-11-sectoral-value-added-activity-2026-11-tourism-seasonal-employment-2026-11-professional-emigration-2026-11-regional-housing-context-2026-11-professional-medical-emigration-context-2026-11-mental-health-psychology-context-2026-11-housing-mobility-concise-2026-11-sme-regulatory-evidence-correction-2026-11-internship-substitution-answer-2026-11-rental-regulation-context-2026-11-rail-maintenance-concise-2026-11-tourism-urban-cost-concise-2026-11-graduate-outcomes-public-reply-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
@@ -75,7 +77,7 @@ const cacheKeyFor = (body: { text: string; inputType: InputType; file?: File; cl
   // Names, sizes and lossy text fingerprints cannot identify submitted content.
   // Uploads and fetched pages are never shared through this response cache.
   if (body.file || body.inputType !== 'text') return '';
-  return JSON.stringify([responseCacheVersion, body.text.normalize('NFC'), body.clarification || null, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue']);
+  return JSON.stringify([responseCacheVersion, RUNTIME_VERSIONS.fallbackKnowledge, RUNTIME_VERSIONS.warehouseKnowledge, body.text.normalize('NFC'), body.clarification || null, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue']);
 };
 
 const json = (body: PublicCheckResponse, status = 200): Response => Response.json(body, {
