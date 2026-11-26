@@ -107,11 +107,14 @@ const migrationWageEffects = (t) => migrationPopulation.test(t)
   && /\b(sector\w*|poblacion nativa|trabajador\w* nativ\w*|emplead\w* nativ\w*|trabajador\w* local\w*|resto de trabajador\w*|otro\w* trabajador\w*|otra\w* persona\w*)\b/.test(t)
   && !/\b(fiscal\w*|impuest\w*|recaud\w*|tribut\w*|cotiz\w*)\b/.test(t);
 const professionalEmigration = (t) => {
-  const outwardMovement = /\b(emigr\w*|fuga de cerebros|brain drain|perdid\w* de talent\w*|pierde[n]? talent\w*|trabaj\w* (?:en|fuera de) (?:otro\w* pais\w*|el extranjero|fuera de espana)|se (?:van|marchan|trasladan) (?:a|al) (?:otro\w* pais\w*|extranjero)|se (?:van|marchan) a trabaj\w* a (?:otro\w* pais\w*|el extranjero)|march\w* a (?:otro\w* pais\w*|extranjero))\b/.test(t);
+  const outwardMovement = /\b(emigr\w*|fuga de cerebros|brain drain|perdid\w* de talent\w*|pierde[n]? talent\w*|trabaj\w* (?:en|fuera de) (?:otro\w* pais\w*|el extranjero|fuera de espana)|se (?:van|marchan|trasladan|mud\w*) (?:a|al) (?:otro\w* pais\w*|extranjero)|se (?:van|marchan) a trabaj\w* a (?:otro\w* pais\w*|el extranjero)|se mud\w* fuera de espana|march\w* a (?:otro\w* pais\w*|extranjero))\b/.test(t);
+  const ambiguousMoveAbroadForPay = /\bse mud\w* fuera\b/.test(t)
+    && /\b(salari\w*|sueld\w*|remuner\w*|pagan? mejor|cobr\w* mejor|gan\w* mas)\b/.test(t);
   const professionalGroup = /\b(profesion\w*|cualificad\w*|titulad\w*|graduad\w*|universitari\w*|cientific\w*|ingenier\w*|talento)\b/.test(t);
   const inwardMigrantGroup = /\b(inmigr\w*|persona\w* extranjer\w*|trabajador\w* extranjer\w*|ciudadania extranjera|nacionalidad extranjera|nacid\w* fuera de espana)\b/.test(t)
     && !/\b(espanol\w*|nacionalidad espanola|nacid\w* en espana)\b/.test(t);
-  return outwardMovement && professionalGroup && !inwardMigrantGroup
+  const requestedScopeFits = requestedGeographyScopes(t).every(({ id, type }) => type === 'country' && id === 'ES');
+  return (outwardMovement || ambiguousMoveAbroadForPay) && professionalGroup && requestedScopeFits && !inwardMigrantGroup
     && !migrationCredentialRecognition(t) && !migrationOverqualification(t)
     && !migrationFiscalContribution(t) && !migrationWageEffects(t);
 };
@@ -3311,8 +3314,19 @@ const focuses = [
     when: regionalWageHousingCost,
     direct: [], context: [], claimType: 'comparative',
     needs: ['empleo, salarios netos y costes de vivienda de las mismas ciudades', 'misma población, ocupación, vivienda y periodo en cada lugar', 'medida de cuánto cambia el poder de compra después del coste de vivienda'],
-    explanation: 'Una ciudad puede concentrar empleo y pagar salarios más altos, pero el coste de vivienda puede reducir o anular esa ventaja para quienes viven allí. Los promedios nacionales no permiten medir ese balance entre ciudades.',
-    limitation: 'El salario mediano nacional y un índice de precios de vivienda no muestran el ingreso disponible tras pagar vivienda en cada ciudad ni demuestran que el empleo adicional quede compensado.',
+    explanationHeadline: 'El alquiler se relaciona con las mudanzas entre provincias; falta el salario disponible por ciudad',
+    explanation: 'El Banco de España analiza cómo los alquileres reales relativos se asocian con los cambios de residencia entre provincias. El estudio aporta contexto sobre la relación entre vivienda y movilidad, pero no calcula cuánto salario queda después de pagar vivienda en cada ciudad.',
+    explanationEvidence: HOUSING_LABOUR_MOBILITY_EVIDENCE,
+    shareableReplyForContext: ({ claim }) => {
+      const localScopeRequested = requestedGeographyScopes(claim).some(({ type }) => type === 'region');
+      return [
+        'No se puede confirmar si el alquiler anula la ventaja salarial: el estudio no compara sueldo y vivienda por ciudad.',
+        'Como contexto, un modelo del Banco de España para España en 2014–2024 asoció un alquiler real un 1 % más alto en un destino que en otros con un flujo relativo de migración interna un 0,6 % menor hacia ese destino frente a destinos alternativos.',
+        'El resultado describe movilidad residencial agregada, no el porcentaje de trabajadores que se marcha. Tampoco demuestra que el alquiler causara esas mudanzas ni calcula el sueldo disponible después de pagar la vivienda.',
+        ...(localScopeRequested ? ['El coeficiente está agrupado para España; no permite atribuir ese efecto a la ciudad o provincia mencionada.'] : []),
+      ].join('\n\n');
+    },
+    limitation: 'El salario mediano nacional y un índice de precios de vivienda no muestran el ingreso disponible tras pagar vivienda en cada ciudad ni demuestran que el empleo adicional quede compensado. El estudio de movilidad residencial es un contexto distinto, no una medición del salario neto local.',
   },
   {
     id: 'rental-price-amount', label: 'importe mensual del alquiler',

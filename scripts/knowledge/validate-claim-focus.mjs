@@ -1259,6 +1259,14 @@ for (const [family, claim] of crossTopicClaims) {
     const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: 'gap-' + family, result: plan }, claim);
     assert.equal(publicResponse.state, 'insufficient', 'Contextual data must not turn the causal business-size claim into a factual verdict');
     assert.equal(publicResponse.result.arguments[0].verdict, 'insufficient');
+  } else if (family === 'regional-wage-housing-cost') {
+    assert.equal(plan.evidenceLevel, 'limited', 'Reviewed migration evidence should be available as context for a wage-housing claim');
+    assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['bank-spain-housing-mobility-annual-2025']);
+    assert.match(plan.shareableReply, /no compara sueldo y vivienda por ciudad/i);
+    assert.doesNotMatch(plan.shareableReply, /17 €/);
+    const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim);
+    assert.equal(publicResponse.state, 'insufficient', 'Migration context must not verify a city wage-housing comparison');
+    assert.deepEqual(publicResponse.result.sources.map((source) => source.id), ['bank-spain-housing-mobility-annual-2025']);
   } else {
     assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should leave this claim unsupported: ${claim}`);
     assert.equal(plan.sourceLinks.length, 0, `An unrelated wage survey was attached to this claim: ${claim}`);
@@ -1275,11 +1283,55 @@ for (const claim of [
   assert.ok(['education-pay-comparison', 'regional-wage-housing-cost'].includes(plan.answerScope.family), `The claim lost its scoped measurement route: ${claim}`);
   assert.deepEqual(plan.answerScope.directMetrics, [], `National wage data became direct evidence for a comparison: ${claim}`);
   assert.deepEqual(plan.answerScope.contextMetrics, plan.answerScope.family === 'education-pay-comparison' ? ['mean_hourly_earnings_by_education'] : [], `National wage data became context for an unsupported comparison: ${claim}`);
-  assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should not resolve this claim: ${claim}`);
-  assert.deepEqual(plan.sourceLinks, [], `An unrelated wage survey was attached to this claim: ${claim}`);
+  if (plan.answerScope.family === 'regional-wage-housing-cost') {
+    assert.equal(plan.evidenceLevel, 'limited', `Reviewed migration evidence should be presented as context: ${claim}`);
+    assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['bank-spain-housing-mobility-annual-2025']);
+    assert.match(plan.shareableReply, /2014–2024/);
+    assert.match(plan.shareableReply, /1 %.*0,6 %/s);
+    assert.match(plan.shareableReply, /no compara sueldo y vivienda por ciudad/i);
+    assert.doesNotMatch(plan.shareableReply, /Eurostat.*salario|salario bruto medio por hora/i);
+  } else {
+    assert.equal(plan.evidenceLevel, 'insufficient', `An unrelated salary observation should not resolve this claim: ${claim}`);
+    assert.deepEqual(plan.sourceLinks, [], `An unrelated wage survey was attached to this claim: ${claim}`);
+  }
   assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'scoped-pay-gap', result: plan }, claim).state, 'insufficient');
 }
+const regionalWageHousingClaims = [
+  'Las ciudades con más empleo son aquellas donde la vivienda se come la mejora salarial',
+  'En las áreas con más trabajo el coste del alquiler absorbe las subidas de sueldo',
+  'Los salarios más altos de las grandes ciudades no compensan el gasto de vivienda',
+  'El coste de vivienda ha eliminado la ventaja salarial de trabajar en Madrid o Barcelona',
+];
+let regionalWageHousingSourceIds;
+for (const [index, claim] of regionalWageHousingClaims.entries()) {
+  const plan = focusedEvidencePlan(claim, { observations: [], now: Date.parse('2026-11-26T12:00:00Z') });
+  assert.equal(plan.answerScope.family, 'regional-wage-housing-cost');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  assert.equal(plan.evidenceLevel, 'limited');
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  assert.deepEqual(sourceIds, ['bank-spain-housing-mobility-annual-2025']);
+  assert.match(plan.shareableReply, /2014–2024/);
+  assert.match(plan.shareableReply, /1 %.*0,6 %/s);
+  assert.match(plan.shareableReply, /no compara sueldo y vivienda por ciudad/i);
+  assert.match(plan.shareableReply, /frente a destinos alternativos/);
+  assert.match(plan.shareableReply, /movilidad residencial agregada/);
+  assert.match(plan.shareableReply, /tampoco demuestra que el alquiler causara esas mudanzas/i);
+  assert.ok(plan.shareableReply.length < 700, 'The scoped context should stay concise enough to read as an answer');
+  const response = localPublicCheckResponse({ status: 'complete', requestId: `regional-wage-housing-${index}`, result: plan }, claim);
+  assert.equal(response.state, 'insufficient', 'A national migration-flow model must not confirm a city wage-housing comparison');
+  assert.deepEqual(response.result.sources.map((source) => source.id), sourceIds);
+  assert.ok(response.result.arguments.every((item) => item.verdict !== 'supported'));
+  if (regionalWageHousingSourceIds) assert.deepEqual(sourceIds, regionalWageHousingSourceIds, 'Paraphrases must reuse the same scoped context source');
+  regionalWageHousingSourceIds = sourceIds;
+}
+const citySpecificRegionalHousing = focusedEvidencePlan(regionalWageHousingClaims.at(-1), { observations: [], now: Date.parse('2026-11-26T12:00:00Z') });
+assert.match(citySpecificRegionalHousing.shareableReply, /no permite atribuir ese efecto a la ciudad o provincia mencionada/i);
+const outdatedRegionalHousing = focusedEvidencePlan('En 2025 el alquiler de Madrid eliminó la ventaja salarial de trabajar allí', { observations: [], now: Date.parse('2026-11-26T12:00:00Z') });
+assert.equal(outdatedRegionalHousing.evidenceLevel, 'insufficient', 'A 2014–2024 study must not be presented as evidence for a 2025 outcome');
+assert.deepEqual(outdatedRegionalHousing.sourceLinks, [], 'Out-of-period housing evidence must not be attached');
 assert.equal(claimFocusFor('La vivienda de Barcelona es cara y los salarios suben'), undefined, 'Housing and rising wages in the same city do not establish a wage-versus-housing comparison');
+assert.notEqual(claimFocusFor('Los salarios españoles son menos competitivos que los de la Unión Europea')?.id, 'regional-wage-housing-cost', 'A national wage comparison without housing scope must keep its own route');
 assert.equal(claimFocusFor('Un título universitario ya no garantiza encontrar un empleo cualificado')?.id, 'education-employment-outcomes', 'A graduate employment claim must not cross-route into pay comparisons');
 assert.equal(claimFocusFor('¿Qué entrada necesito para comprar una vivienda con mi salario?')?.id, 'purchase-affordability', 'A genuine home-purchase deposit question must keep its housing route');
 assert.equal(claimFocusFor('Los trabajadores jóvenes cobran salarios de entrada sin progresar')?.id, 'wage-progression', 'Salary-entry wording must not be mistaken for a home-purchase deposit');
@@ -2462,6 +2514,7 @@ const professionalEmigrationClaims = [
   'La fuga de cerebros de profesionales españoles se debe a sueldos bajos y poco competitivos',
   'Muchos titulados formados en España se van a trabajar a otros países porque allí pagan mejor',
   'Graduados universitarios españoles emigran por la falta de salarios competitivos',
+  'Muchos jóvenes titulados se mudan fuera porque los salarios son más altos',
 ];
 let professionalEmigrationSourceIds;
 for (const [index, claim] of professionalEmigrationClaims.entries()) {
@@ -2490,6 +2543,7 @@ for (const neighbour of [
   'La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores',
   'La tasa de empleo de titulados universitarios en España supera el 80 %',
   'Los trabajadores cualificados que vuelven del extranjero aceptan salarios más bajos',
+  'Los profesionales de Madrid se mudan fuera de Madrid por mejores salarios',
 ]) {
   assert.notEqual(claimFocusFor(neighbour)?.id, 'professional-emigration', `A nearby wage or migration claim crossed into professional emigration: ${neighbour}`);
 }

@@ -911,9 +911,13 @@ assert.doesNotMatch(graduatePay.body.result.reply, /80,2 %|34 %/);
 
 const regionalPayHousing = await check('El coste de vivienda ha eliminado la ventaja salarial de trabajar en Madrid o Barcelona');
 assert.equal(regionalPayHousing.body.state, 'insufficient');
-assert.deepEqual(regionalPayHousing.body.result.sources, []);
-assert.match(regionalPayHousing.body.result.reply, /empleo, salarios netos y costes de vivienda de las mismas ciudades/);
-assert.match(regionalPayHousing.body.result.reply, /medida de cuánto cambia el poder de compra después del coste de vivienda/);
+assert.deepEqual(regionalPayHousing.body.result.sources.map((source) => source.id), ['bank-spain-housing-mobility-annual-2025']);
+assert.match(regionalPayHousing.body.result.reply, /2014–2024/);
+assert.match(regionalPayHousing.body.result.reply, /1 %.*0,6 %/s);
+assert.match(regionalPayHousing.body.result.reply, /frente a destinos alternativos/);
+assert.match(regionalPayHousing.body.result.reply, /tampoco demuestra que el alquiler causara esas mudanzas/i);
+assert.match(regionalPayHousing.body.result.reply, /no permite atribuir ese efecto a la ciudad o provincia mencionada/);
+assert.ok(regionalPayHousing.body.result.reply.trim().split(/\s+/).length <= 150);
 assert.doesNotMatch(regionalPayHousing.body.result.reply, /17 € por hora|índice de precios de vivienda.*\d/);
 
 const mortgageEntry = await check('La entrada de una hipoteca es una barrera mayor que la cuota mensual para acceder a una vivienda');
