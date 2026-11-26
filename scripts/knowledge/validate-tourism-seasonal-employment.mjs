@@ -1,4 +1,5 @@
 import assert from 'node:assert/strict';
+import { build } from 'esbuild';
 import { claimFocusFor, focusedMetricIdsFor } from '../../src/lib/knowledge/claim-focus.mjs';
 import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-plan.mjs';
 import { localPublicCheckResponse } from '../lib/local-public-check-response.mjs';
@@ -91,6 +92,79 @@ const publicResponse = localPublicCheckResponse({ status: 'complete', requestId:
 assert.equal(publicResponse.state, 'limited', 'Reviewed sector context is useful while the compound claim verdict remains insufficient.');
 assert.equal(publicResponse.result.arguments?.[0]?.verdict, 'insufficient');
 assert.equal(publicResponse.result.sources.length, 2);
+assert.match(publicResponse.result.reply, /^La evidencia no basta para confirmar toda la afirmación\.\n\nEn 2025,/,
+  'A qualified causal answer should retain the measured quarterly evidence in its main reply.');
+assert.match(publicResponse.result.reply, /12,4\s*%/);
+assert.match(publicResponse.result.reply, /ni prueban que el turismo cause la variación/i);
+
+const quantitativePlan = plans[3];
+const quantitativeResponse = localPublicCheckResponse({ status: 'complete', requestId: 'tourism-seasonality-amount', result: quantitativePlan }, paraphrases[3]);
+assert.equal(quantitativeResponse.state, 'limited');
+assert.deepEqual(quantitativeResponse.result.sources.map((source) => source.id), publicResponse.result.sources.map((source) => source.id));
+assert.match(quantitativeResponse.result.reply, /En 2025/);
+assert.match(quantitativeResponse.result.reply, /1,70 millones.*1,91 millones/s,
+  'A direct question about quarterly variation should return the available same-year values.');
+
+// Exercise the Pages handler with the seasonal D1 binding and a configured
+// generic resolver. This family should answer from its reviewed plan without
+// allowing a resolver result to drop the quarters or their sources.
+const compiledApi = await build({ entryPoints: ['functions/api/check.ts'], bundle: true, platform: 'node', format: 'esm', write: false, logLevel: 'silent' });
+const api = await import(`data:text/javascript;base64,${Buffer.from(compiledApi.outputFiles[0].contents).toString('base64')}`);
+const apiRetrievedAt = new Date().toISOString();
+const seasonalRows = fixture.map((item) => {
+  const sourceId = `fixture-${item.metricId}`;
+  const sourceUrl = `https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsq_egan2?geo=ES&nace_r2=${specs[item.metricId].nace}`;
+  return {
+    id: item.id, kind: 'observation', dataset_id: sourceId, metric: specs[item.metricId].label, metric_id: item.metricId,
+    value: item.value, unit: item.unit, period: item.period, geography: 'ES', population: null,
+    dimensions_json: JSON.stringify(item.dimensions), dimension_labels_json: '{}', url: null, excerpt: null,
+    payload_json: JSON.stringify({ status: item.status || '', dataUpdatedAt: RELEASE }),
+    source_id: sourceId, publisher: 'Eurostat', title: `Fixture: ${specs[item.metricId].label}`, source_url: sourceUrl,
+    published_at: null, retrieved_at: apiRetrievedAt, trust_tier: 'primary',
+    aliases_json: '[]', source_registry_id: 'eurostat', schedule: 'daily',
+  };
+});
+const seasonalDb = {
+  prepare(sql) {
+    let values = [];
+    return {
+      bind(...args) { values = args; return this; },
+      async all() { return { results: sql.includes('WHERE o.metric_id = ?') ? seasonalRows.filter((row) => row.metric_id === values[0]).slice(0, 40) : [] }; },
+      async run() { return {}; },
+    };
+  },
+};
+const emptyDb = { prepare() { return { bind() { return this; }, async all() { return { results: [] }; }, async run() { return {}; } }; } };
+const pendingCaptures = [];
+const checkThroughPages = async (env, claim) => {
+  const request = new Request('https://site.test/api/check?fresh=1', {
+    method: 'POST', headers: { 'content-type': 'application/json', 'x-development-no-cache': '1' },
+    body: JSON.stringify({ text: claim, inputType: 'text' }),
+  });
+  const response = await api.onRequestPost({ request, env, waitUntil: (promise) => pendingCaptures.push(promise) });
+  return response.json();
+};
+const originalFetch = globalThis.fetch;
+let resolverRequests = 0;
+globalThis.fetch = async (input) => {
+  if (String(input).startsWith('https://resolver.test/')) resolverRequests += 1;
+  return Response.json({ status: 'complete', requestId: 'generic-resolver-result', claim: paraphrases[3], result: { status: 'insufficient', result: { reply: 'No hay datos trimestrales.' } } });
+};
+let pagesResponse;
+let missingBindingResponse;
+try {
+  const resolverEnv = { DB: emptyDb, SEASONAL_DB: seasonalDb, LOCAL_CLASSIFIER_ENDPOINT: 'https://resolver.test', LOCAL_CLASSIFIER_TOKEN: 'fixture' };
+  pagesResponse = await checkThroughPages(resolverEnv, paraphrases[3]);
+  missingBindingResponse = await checkThroughPages({ ...resolverEnv, SEASONAL_DB: undefined }, paraphrases[3]);
+} finally {
+  globalThis.fetch = originalFetch;
+}
+await Promise.all(pendingCaptures);
+assert.equal(pagesResponse.state, 'limited');
+assert.match(pagesResponse.result.reply, /1,70 millones.*1,91 millones/s);
+assert.equal(pagesResponse.result.sources.length, 2);
+assert.equal(missingBindingResponse.state, 'unavailable', 'Missing retrieval infrastructure must not be reported as missing evidence.');
+assert.equal(resolverRequests, 0, 'The reviewed seasonal route must not queue a generic resolver search.');
 
 const explicitYear = focusedEvidencePlan('¿Cómo varió la ocupación en hostelería según la temporada en 2024?', { observations: fixture, now });
 assert.equal(explicitYear.id, 'measurement-tourism-seasonal-employment');

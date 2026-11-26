@@ -356,7 +356,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       const focusDatabase = focus.id === 'tourism-seasonal-employment' ? env.SEASONAL_DB : env.DB;
       if (metricIds.length && !focusDatabase) {
         warehouseUnavailableResponse = unavailableCheck(effectiveClaim, warehouseUnavailableMessage);
-        if (!localResolverAvailable) return json(warehouseUnavailableResponse);
+        if (!localResolverAvailable || focus.id === 'tourism-seasonal-employment') return json(warehouseUnavailableResponse);
       }
       if (focusDatabase && metricIds.length) {
         let lookupFailed = false;
@@ -374,7 +374,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           // contextual series may still exist even when they cannot prove the
           // submitted claim on their own.
           warehouseUnavailableResponse = unavailableCheck(effectiveClaim, warehouseUnavailableMessage);
-          if (!localResolverAvailable) return json(warehouseUnavailableResponse);
+          if (!localResolverAvailable || focus.id === 'tourism-seasonal-employment') return json(warehouseUnavailableResponse);
           focusedObservations = undefined;
         } else {
           if (['working-poverty', 'education-employment-outcomes', 'education-pay-comparison', 'primary-care-waits', 'primary-care-wait-trend', 'primary-care-wait-causes', 'real-wages', 'collective-agreement-wages', 'gdp-total-per-capita-comparison', 'labour-productivity-and-growth', 'household-inflation-basket', 'tourism-employment-contribution', 'foreign-affiliation-in-tourism-and-agriculture', 'waiter-vacancy-and-conditions', 'tourist-housing-registration', 'tourist-housing-count', 'tourist-housing-share', 'tourist-housing-supply', 'tourism-urban-housing-cost'].includes(focus.id) && focusedObservations.length === 0) {
@@ -412,6 +412,12 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
               allowReviewedSnapshotFallback: focus.id === 'household-inflation-basket',
             }) as AnswerPlan | undefined;
             if (plan) warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
+          }
+          // This family has a reviewed, deterministic interpretation of its
+          // quarterly series. Do not let a generic resolver replace a sourced
+          // same-year comparison with an unscoped missing-data answer.
+          if (focus.id === 'tourism-seasonal-employment') {
+            return json(warehouseFocusedResponse || unavailableCheck(effectiveClaim, warehouseUnavailableMessage));
           }
           if (warehouseFocusedResponse
             && (focus.id === 'rental-price-amount' || !env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now())) return json(warehouseFocusedResponse);

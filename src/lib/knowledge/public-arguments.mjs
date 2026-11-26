@@ -54,6 +54,8 @@ export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
   const explicitCausalLimit = /\bno (?:demuestra|demuestran|acredita|acreditan|prueba|prueban|establece|establecen) que\b[^.!?]{0,180}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|determin\w*|explique\w*)\b/i.test(text)
     || /\bno mide\b[^.!?]{0,120}\bsi\b[^.!?]{0,100}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|urgencias?)\b/i.test(text);
   if (explicitCausalLimit) return text;
+  const coordinatedCausalLimit = /\b(?:ni|tampoco) (?:demuestra|demuestran|acredita|acreditan|prueba|prueban|establece|establecen) que\b[^.!?]{0,180}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|determin\w*|explique\w*)\b/i.test(text);
+  if (coordinatedCausalLimit) return `${publicClaimQualification}\n\n${text}`;
   if (assertsUnsupportedCausalPart(text, argumentsList)) return publicClaimQualification;
   const alreadyStatesNonConclusion = /\bno (?:se puede|permite|permiten|podemos|alcanza a)\s+(?:confirmar|descartar|demostrar|sostener|afirmar|concluir|determinar|medir|calcular|contar|comparar|establecer|atribuir|saber|evaluar)\b/i.test(text);
   const sourcedLegalExceptionAlreadyExplained = argumentsList.length === 1
