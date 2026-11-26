@@ -2310,6 +2310,56 @@
       "This count covers tourism-characteristic economic branches; it is not the number of jobs caused by visitors or tourism demand and does not measure job quality or seasonality."
     ]
   },
+  "lfs_employed_persons_hospitality_quarterly": {
+    "name": "Employed persons in accommodation and food services, quarterly EU-LFS estimates",
+    "displayName": "Personas ocupadas en alojamiento y comidas · EPA trimestral",
+    "aliases": [
+      "personas ocupadas en hostelería por trimestre",
+      "empleo en alojamiento y servicios de comida por trimestre",
+      "ocupación trimestral en hostelería",
+      "personas empleadas en alojamiento y comidas"
+    ],
+    "unit": "thousand persons",
+    "population": "Resident persons aged 15–74, all sexes, employed in NACE Rev. 2 activity I (accommodation and food service activities), quarterly EU Labour Force Survey estimates for Spain",
+    "notEquivalentTo": [
+      "tourism_characteristic_employment_jobs",
+      "tourism_characteristic_employment_share",
+      "employment_jobs_by_activity",
+      "temporary_employment_rate",
+      "foreign_affiliate_share_hospitality_rg"
+    ],
+    "dimensions": ["freq", "unit", "sex", "age", "nace_r2", "geo", "time"],
+    "dimensionConstraints": {"freq": "Q", "unit": "THS_PER", "sex": "T", "age": "Y15-74", "nace_r2": "I", "geo": "ES"},
+    "supports": ["descriptive", "comparative"],
+    "limitations": [
+      "This is a survey estimate of employed people in accommodation and food services, not a count of jobs, seasonal contracts, unique workers over a year, or transitions between employment, unemployment and inactivity.",
+      "NACE Rev. 2 activity I is only one part of tourism; it excludes other tourism-related activities such as transport, retail, arts and recreation.",
+      "Eurostat marks Spain's observations with a definition-difference flag. Use these data for a within-Spain, same-year description only; do not treat them as fully harmonised comparisons with other countries or as an uninterrupted long-term trend."
+    ]
+  },
+  "lfs_employed_persons_total_quarterly": {
+    "name": "Total employed persons, quarterly EU-LFS estimates",
+    "displayName": "Personas ocupadas en España · EPA trimestral",
+    "aliases": [
+      "ocupados totales por trimestre",
+      "personas ocupadas en España por trimestre",
+      "empleo total de la EPA trimestral"
+    ],
+    "unit": "thousand persons",
+    "population": "Resident persons aged 15–74, all sexes, employed in Spain, quarterly EU Labour Force Survey estimates",
+    "notEquivalentTo": [
+      "employment_jobs_by_activity",
+      "employment_rate",
+      "tourism_characteristic_employment_jobs"
+    ],
+    "dimensions": ["freq", "unit", "sex", "age", "nace_r2", "geo", "time"],
+    "dimensionConstraints": {"freq": "Q", "unit": "THS_PER", "sex": "T", "age": "Y15-74", "nace_r2": "TOTAL", "geo": "ES"},
+    "supports": ["descriptive", "comparative"],
+    "limitations": [
+      "This is a survey estimate of employed resident people, not a count of jobs and not a direct measure of entries into or exits from employment.",
+      "Eurostat marks Spain's observations with a definition-difference flag. The series is used only as a same-period national denominator and not for comparisons with other countries."
+    ]
+  },
   "foreign_affiliate_share_hospitality_rg": {
     "name": "Share of Spanish General Regime hospitality affiliates with foreign nationality",
     "displayName": "Afiliados del Régimen General en hostelería con nacionalidad extranjera",

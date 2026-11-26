@@ -1,4 +1,4 @@
-interface Env { DB?: ClaimDemandDatabase; LOCAL_CLASSIFIER_ENDPOINT?: string; LOCAL_CLASSIFIER_TOKEN?: string; LOCAL_MODEL_VERSION?: string; CATALOGUE_VERSION?: string }
+interface Env { DB?: ClaimDemandDatabase; SEASONAL_DB?: ClaimDemandDatabase; LOCAL_CLASSIFIER_ENDPOINT?: string; LOCAL_CLASSIFIER_TOKEN?: string; LOCAL_MODEL_VERSION?: string; CATALOGUE_VERSION?: string }
 interface Context { request: Request; env: Env; waitUntil(promise: Promise<unknown>): void }
 type InputType = 'text' | 'image' | 'audio' | 'document' | 'video' | 'url';
 
@@ -30,7 +30,7 @@ import { vacancyMeasurementClarificationMetricIdsForQuery, vacancyMeasurementMet
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-education-earnings-tourist-housing-snapshots-rail-punctuality-sourced-family-selection-intergenerational-housing-landlord-context-pension-finance-routing-energy-price-pass-through-fixed-discontinuous-status-price-wage-eu-convergence-real-wage-living-standard-reported-worked-hours-rural-health-access-retirement-age-61-pension-private-savings-62-rent-series-scope-advertised-rent-claim-scope-metric-quality-notes-adult-conviction-rate-nationality-2026-11-scoped-source-2026-11-direct-metric-d1-2026-11-second-home-scope-2026-11-pension-wage-distribution-2026-11-business-size-productivity-context-2026-11-foreign-affiliation-sector-snapshot-2026-11-waiter-vacancy-experimental-context-2026-11-sectoral-value-added-activity-2026-11';
+const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-education-earnings-tourist-housing-snapshots-rail-punctuality-sourced-family-selection-intergenerational-housing-landlord-context-pension-finance-routing-energy-price-pass-through-fixed-discontinuous-status-price-wage-eu-convergence-real-wage-living-standard-reported-worked-hours-rural-health-access-retirement-age-61-pension-private-savings-62-rent-series-scope-advertised-rent-claim-scope-metric-quality-notes-adult-conviction-rate-nationality-2026-11-scoped-source-2026-11-direct-metric-d1-2026-11-second-home-scope-2026-11-pension-wage-distribution-2026-11-business-size-productivity-context-2026-11-foreign-affiliation-sector-snapshot-2026-11-waiter-vacancy-experimental-context-2026-11-sectoral-value-added-activity-2026-11-tourism-seasonal-employment-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -353,14 +353,15 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       }
       // A focused metric family with no D1 binding has not been checked. Do not
       // turn missing retrieval infrastructure into an evidence-gap conclusion.
-      if (metricIds.length && !env.DB) {
+      const focusDatabase = focus.id === 'tourism-seasonal-employment' ? env.SEASONAL_DB : env.DB;
+      if (metricIds.length && !focusDatabase) {
         warehouseUnavailableResponse = unavailableCheck(effectiveClaim, warehouseUnavailableMessage);
         if (!localResolverAvailable) return json(warehouseUnavailableResponse);
       }
-      if (env.DB && metricIds.length) {
+      if (focusDatabase && metricIds.length) {
         let lookupFailed = false;
         const warehouseRowLimit = focus.id === 'employment-value-added-by-activity' ? 240 : 40;
-        focusedObservations = await searchD1WarehouseByMetricIds(env.DB, metricIds, warehouseRowLimit).catch(() => {
+        focusedObservations = await searchD1WarehouseByMetricIds(focusDatabase, metricIds, warehouseRowLimit).catch(() => {
           lookupFailed = true;
           return [];
         });

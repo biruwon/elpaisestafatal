@@ -2251,3 +2251,48 @@ no live rows for this family and therefore leaves the particular discovery
 claim as an evidence gap until the configured feeds are imported to D1. These
 counts describe routing and regression coverage, not factual accuracy for
 arbitrary text.
+
+## Seasonal tourism employment claims — 26 November 2026
+
+Text claims that seasonal tourism makes workers move between employment and
+inactivity now use Eurostat's quarterly Labour Force Survey table for Spain
+(`lfsq_egan2`). The comparison pairs NACE I (accommodation and food service
+activities) with total employment, for both sexes aged 15–74. It uses the
+lowest and highest quarterly sector counts in one complete year and compares
+their shares against total employment in those same quarters. The source is
+[Eurostat's quarterly employment table](https://ec.europa.eu/eurostat/databrowser/view/lfsq_egan2/default/table?lang=en).
+
+For 2025, the NACE I estimate ranged from 1,699,800 people in Q1 to 1,910,800
+in Q3, a 12.4% difference. Its share of total employment was 7.8% and 8.5%;
+total employment at those dates differed by 2.9%. Eurostat marks Spain's
+series with `d`, meaning a definition differs from the harmonised one, so the
+answer confines the comparison to Spain and the same year. See
+[Eurostat's flag definitions](https://ec.europa.eu/eurostat/statistics-explained/index.php?title=Tutorial:Symbols_and_abbreviations).
+
+This is context, not proof of the submitted compound claim. One year's
+quarterly counts do not establish a recurring seasonal pattern, identify
+individual transitions into inactivity, or show that tourism caused the
+change. NACE I is only one tourism-related activity group; the Labour Force
+Survey counts people by main activity, not jobs or seasonal contracts. The
+answer keeps the proposition verdict insufficient while exposing the data as
+limited context. Its regression covers four paraphrases, same-year selection,
+missing years and regions, freshness and data-flag failures, and nearby wage,
+vacancy, housing, sector-dependence and fixed-discontinuous-work claims.
+
+The main production D1 database is 1,111,240,704 bytes and rejected the
+warehouse tracking-table migration with `Exceeded maximum DB size`. Existing
+data was left in place. To keep this small text family refreshable without
+writing into that full database, a separate WEUR D1 shard
+(`elpaisestafatal-seasonal-evidence`) now holds only its two Eurostat feeds.
+The current import contains 60 observations and uses 0.16 MB. The scheduled
+refresh exports only those metric IDs to the shard; the main warehouse sync
+continues to report its own failure until its storage limit is resolved.
+Cloudflare documents the current [D1 database and account storage limits](https://developers.cloudflare.com/d1/platform/limits/).
+
+The refreshed 300-claim discovery audit now finds metric or focused-family
+routes for 194 claims (79 metric matches and 177 family matches, with 62
+overlapping); 106 have neither route. The deterministic replies are 7
+complete, 114 limited and 179 uncovered, with public states of 259
+insufficient and 41 limited. Every input remains an explicitly unverified
+discovery example, so these counts describe route coverage and fallback state,
+not factual accuracy for arbitrary user text.

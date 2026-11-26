@@ -3,13 +3,18 @@ import { spawn } from 'node:child_process';
 import { createReadStream } from 'node:fs';
 import { createInterface } from 'node:readline';
 import { coalesceObservationInserts, parseD1CompletedSourceSnapshots, skipUnchangedSourceData, warehouseImportBatches } from './warehouse-import.mjs';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 
 const root = new URL('../../', import.meta.url).pathname;
 const warehouseRoot = join(root, '.local/source-warehouse');
-const inputPath = process.env.WAREHOUSE_D1_INPUT || join(warehouseRoot, 'warehouse-load.sql');
+const optionValue = (name) => {
+  const index = process.argv.indexOf(name);
+  return index >= 0 ? process.argv[index + 1] : undefined;
+};
+const configuredInput = optionValue('--input') || process.env.WAREHOUSE_D1_INPUT || join(warehouseRoot, 'warehouse-load.sql');
+const inputPath = resolve(root, configuredInput);
 const tempPath = join(warehouseRoot, 'd1-import');
-const database = process.env.WAREHOUSE_D1_DATABASE || 'elpaisestafatal-ops';
+const database = optionValue('--database') || process.env.WAREHOUSE_D1_DATABASE || 'elpaisestafatal-ops';
 
 const capture = (command, args) => new Promise((resolve, reject) => {
   const child = spawn(command, args, { cwd: root, stdio: ['ignore', 'pipe', 'pipe'], shell: false });

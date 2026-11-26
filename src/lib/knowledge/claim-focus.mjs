@@ -1787,6 +1787,16 @@ const tourismEmploymentContribution = (t) => {
   return !foreignAffiliateSectorPresence(t) && !unpaidOvertime(t) && !reportedVsWorkedHours(t) && tourism && employment && (contributionOrDependence || regionalSectorComparison)
     && (!sectorEmploymentComparison(t) || regionalSectorComparison) && !differentFamily;
 };
+const tourismSeasonalEmployment = (t) => {
+  const seasonal = /\b(estacional\w*|temporad\w*|verano|invierno|seasonal|seasonality)\b/.test(t)
+    || /\b(?:vari\w*|cambi\w*|fluctu\w*)\b/.test(t) && /\b(?:trimest\w*|quarter\w*)\b/.test(t);
+  const tourism = /\b(turism\w*|turistic\w*|hosteler\w*|hotel\w*|alojam\w*|restaurante\w*|servicios? de comida)\b/.test(t);
+  const employment = /\b(emple\w*|ocupaci\w*|ocupad\w*|trabajad\w*|personal|puestos? de trabajo)\b/.test(t);
+  const asksDifferentQuestion = /\b(salari\w*|sueld\w*|remuner\w*|vacant\w*|contrat\w*|fij\w* discontinu\w*|productiv\w*|valor anadid\w*)\b/.test(t)
+    || /\b(depende\w*|dependencia|demasiad\w*|excesiv\w*)\b/.test(t)
+    || foreignAffiliateSectorPresence(t) || unpaidOvertime(t) || waiterVacancyFamilyPresence(t);
+  return seasonal && tourism && employment && !asksDifferentQuestion;
+};
 const selfEmploymentCostViability = (t) => {
   const selfEmployed = /\b(autonom\w*|trabajador\w* por cuenta propia|cuenta propia|freelance)\b/.test(t);
   const businessStart = /\b(emprend\w*|empez\w*|inici\w*|comenz\w*|mont\w*|abr\w*|cre\w*)\b/.test(t)
@@ -2686,6 +2696,21 @@ const focuses = [
     ],
     explanation: 'El número de viviendas turísticas puede describir actividad de alojamiento, pero no mide el coste de vivir para residentes ni demuestra que el turismo lo haya causado.',
     limitation: 'La estimación experimental del INE cuenta anuncios de tres plataformas y su porcentaje usa como denominador el parque total del Censo de 2021. Ninguno de esos datos mide alquileres e ingresos disponibles de hogares residentes, a escala nacional o de barrio, ni permite atribuir al turismo los cambios de coste.',
+  },
+  {
+    id: 'tourism-seasonal-employment', label: 'variación trimestral de la ocupación en alojamiento y comidas',
+    when: tourismSeasonalEmployment,
+    direct: [], context: ['lfs_employed_persons_hospitality_quarterly', 'lfs_employed_persons_total_quarterly'],
+    claimTypeFor: (t) => /\b(oblig\w*|caus\w*|provoc\w*|fuerz\w*|because|force\w*)\b/.test(t) ? 'causal'
+      : /\b(demasiad\w*|excesiv\w*|too many|too much)\b/.test(t) ? 'normative'
+        : /\b(cada vez|aument\w*|crec\w*|sub\w*|desde|entre|tendencia)\b/.test(t) ? 'trend' : 'comparative',
+    needsForClaim: () => [
+      'personas ocupadas en la misma actividad y en el total de España por trimestre',
+      'datos longitudinales que sigan a las mismas personas para medir entradas y salidas del empleo y la inactividad',
+      'una fuente que atribuya el patrón observado a la demanda turística y no a otros cambios estacionales',
+    ],
+    explanation: 'La EPA trimestral puede mostrar cómo cambia el número estimado de personas ocupadas en alojamiento y servicios de comida a lo largo del año. No sigue a las mismas personas entre trimestres ni mide por sí sola la causa de los cambios.',
+    limitation: 'El dato europeo de actividad NACE I agrupa alojamiento y servicios de comida: es una parte del turismo, no todo el empleo turístico. Cuenta personas ocupadas residentes de 15 a 74 años, no puestos ni contratos estacionales. Eurostat marca los datos de España con una diferencia de definición; la comparación se limita a España y a los trimestres de un mismo año.',
   },
   {
     id: 'tourism-employment-contribution', label: 'peso del empleo en las ramas características del turismo',

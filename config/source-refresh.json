@@ -50,6 +50,18 @@
   ],
   "eurostat": [
     {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsq_egan2?freq=Q&unit=THS_PER&sex=T&age=Y15-74&nace_r2=I&geo=ES&sinceTimePeriod=2019",
+      "title": "Personas ocupadas en alojamiento y comidas por trimestre · Eurostat",
+      "aliases": ["empleo trimestral en hostelería", "ocupación en alojamiento y servicios de comida", "EU Labour Force Survey quarterly employment by activity"],
+      "metricId": "lfs_employed_persons_hospitality_quarterly"
+    },
+    {
+      "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsq_egan2?freq=Q&unit=THS_PER&sex=T&age=Y15-74&nace_r2=TOTAL&geo=ES&sinceTimePeriod=2019",
+      "title": "Personas ocupadas totales por trimestre · Eurostat",
+      "aliases": ["empleo trimestral total en España", "ocupación total de la EPA europea"],
+      "metricId": "lfs_employed_persons_total_quarterly"
+    },
+    {
       "url": "https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/earn_mw_cur?geo=ES&currency=EUR&sinceTimePeriod=2015",
       "title": "Salario mínimo legal mensual en España · Eurostat",
       "aliases": ["salario mínimo", "SMI", "salario mínimo interprofesional", "sueldo mínimo", "ha subido el salario mínimo"],

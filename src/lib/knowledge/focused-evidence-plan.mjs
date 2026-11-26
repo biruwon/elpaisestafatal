@@ -12,6 +12,7 @@ import { GDP_REAL_PER_CAPITA_SNAPSHOT } from './gdp-real-per-capita-snapshot.mjs
 import { labourProductivityAnalysisPlan, labourProductivityEvidenceGapPlan } from './labour-productivity-analysis.mjs';
 import { LABOUR_PRODUCTIVITY_SNAPSHOT } from './labour-productivity-snapshot.mjs';
 import { sectoralValueAddedAnalysisPlan, sectoralValueAddedEvidenceGapPlan } from './sectoral-value-added-analysis.mjs';
+import { tourismSeasonalEmploymentPlan, tourismSeasonalEmploymentEvidenceGapPlan } from './tourism-seasonal-employment.mjs';
 import { snapshotLifecycle } from './snapshot-lifecycle.mjs';
 import { comparisonQuality, observationFlagNotes } from './observation-quality.mjs';
 import { ageScopeMatcherFor } from './age-scope.mjs';
@@ -927,6 +928,15 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     if (matched) return matched;
     return sectoralValueAddedEvidenceGapPlan(claim, {
       reason: /\b(?:19|20|21)\d{2}\b|\b(?:ultim\w*|hace|durante|desde|entre)\b/.test(normalizedClaim) ? 'period' : 'data',
+    });
+  }
+  if (focus.id === 'tourism-seasonal-employment') {
+    const requestedTerritories = requestedGeographyScopes(claim);
+    if (requestedTerritories.some((scope) => scope.id !== 'ES')) return tourismSeasonalEmploymentEvidenceGapPlan(claim, { reason: 'geography' });
+    const matched = tourismSeasonalEmploymentPlan(claim, { observations, now });
+    if (matched) return matched;
+    return tourismSeasonalEmploymentEvidenceGapPlan(claim, {
+      reason: /\b(?:19|20|21)\d{2}\b|\b(?:desde|entre|ultim\w*|hace|durante|cada vez|tendencia)\b/.test(normalizedClaim) ? 'period' : 'data',
     });
   }
   const fullTime = /\b(?:jornada completa|tiempo completo)\b/i.test(claim);

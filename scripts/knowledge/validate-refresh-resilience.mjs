@@ -19,6 +19,8 @@ assert(!workflow.includes('--config config/source-refresh.example.json'), 'produ
 assert(domainRefresh.includes('failures.push') && domainRefresh.includes('continuing with remaining feeds') && domainRefresh.includes('domain-refresh-report.json'), 'domain refresh must separate one-feed failures and persist a batch report');
 assert(workflow.includes('Validate domain refresh report') && workflow.includes('path: .local/domain-refresh-report.json'), 'refresh workflow must validate and upload the operational report');
 assert(/id:\s*coverage\s*\n\s*continue-on-error:\s*true/.test(workflow), 'missing coverage must be reported without blocking validated sources from syncing');
+assert(/id:\s*primary_d1\s*\n\s*if: steps\.d1\.outputs\.configured == 'true'\s*\n\s*continue-on-error:\s*true/.test(workflow), 'a failed full warehouse sync must not prevent the dedicated seasonal evidence shard from refreshing');
+assert(workflow.includes('knowledge:warehouse:seasonal:sql') && workflow.includes('knowledge:warehouse:seasonal:d1'), 'the scheduled source refresh must export and load the seasonal shard');
 assert(workflow.includes("steps.coverage.outcome == 'failure'") && workflow.includes("steps.d1.outputs.configured != 'true'"), 'incomplete coverage and skipped production sync must fail the scheduled job visibly');
 const refreshConfig = JSON.parse(await readFile(new URL('../../config/source-refresh.json', import.meta.url), 'utf8'));
 const priceFeeds = Object.values(refreshConfig).flat().filter((item) => ['inflation_rate', 'inflation_rate_europe', 'rental_price_index', 'harmonised_price_index'].includes(item.metricId));

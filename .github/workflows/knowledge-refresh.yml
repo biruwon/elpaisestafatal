@@ -82,10 +82,22 @@ jobs:
           npm run knowledge:coverage:validate:materialized
 
       - name: Apply D1 migrations and load the warehouse
+        id: primary_d1
         if: steps.d1.outputs.configured == 'true'
+        continue-on-error: true
         run: |
           npm run d1:migrate
           npm run knowledge:warehouse:d1
+
+      - name: Export quarterly tourism employment evidence
+        if: steps.d1.outputs.configured == 'true'
+        run: npm run knowledge:warehouse:seasonal:sql
+
+      - name: Apply seasonal evidence schema and load its source rows
+        if: steps.d1.outputs.configured == 'true'
+        run: |
+          npm run d1:seasonal:migrate
+          npm run knowledge:warehouse:seasonal:d1
 
       - name: Generate and validate coverage audit
         run: |
@@ -144,6 +156,12 @@ jobs:
         if: always() && (steps.sources.outcome == 'failure' || steps.domains.outcome == 'failure' || steps.coverage.outcome == 'failure')
         run: |
           echo 'Some sources or coverage checks failed. Inspect the refresh and coverage reports.'
+          exit 1
+
+      - name: Report incomplete primary warehouse sync
+        if: always() && steps.primary_d1.outcome == 'failure'
+        run: |
+          echo 'The main D1 migration or warehouse import failed. The seasonal evidence shard was synced separately; inspect the main D1 logs.' >> "$GITHUB_STEP_SUMMARY"
           exit 1
 
       - name: Report missing production sync configuration
