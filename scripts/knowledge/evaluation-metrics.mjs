@@ -23,6 +23,7 @@ const planTraceability = (plan) => {
         if (item?.explicit === false) continue;
         appendArray(evidenceRefs, item?.evidenceIds);
         appendArray(sourceRefs, item?.sourceIds);
+        appendArray(sourceRefs, item?.contextSourceIds);
         if (['supported', 'contradicted', 'mixed'].includes(item?.verdict)
           && (!strings(item.evidenceIds) || item.evidenceIds.length === 0 || !strings(item.sourceIds) || item.sourceIds.length === 0)) {
           untraceableProposition = true;
@@ -72,6 +73,7 @@ const publicCheckTraceability = (response) => {
   for (const argument of check.arguments || []) {
     appendArray(evidenceRefs, argument?.evidenceIds);
     appendArray(sourceRefs, argument?.sourceIds);
+    appendArray(sourceRefs, argument?.contextSourceIds);
     if (['supported', 'contradicted', 'mixed'].includes(argument?.verdict)
       && (!strings(argument.evidenceIds) || argument.evidenceIds.length === 0 || !strings(argument.sourceIds) || argument.sourceIds.length === 0)) {
       issues.push(`claim part ${argument?.id || 'unknown'} has a verdict without evidence and source IDs`);

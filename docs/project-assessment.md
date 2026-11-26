@@ -2022,3 +2022,32 @@ focused family and leaves 116 without either route. It reports 7 complete, 104
 limited and 189 uncovered answers; public states remain 263 insufficient and
 37 limited. These figures measure routing and coverage, not factual accuracy
 across arbitrary user text.
+
+## Compound text claims and context attribution — 26 November 2026
+
+The deterministic text fallback recognized 43 claims with multiple explicit
+clauses, but only 26 public answers retained a structured breakdown. It now
+keeps the submitted claim and each clause as separate assessments. A clause can
+receive a source only when it resolves to the same reviewed evidence family as
+the full claim. Context citations are carried separately from direct evidence,
+so showing a relevant source does not turn an unconfirmed clause into a
+verified one. The answer page labels those links as context.
+
+Two paraphrases of a compound claim about young workers paying into the pension
+system and receiving a lower future pension now use the same AIReF methodology
+source on both clauses. That document describes an aggregate projection model,
+but its methodology alone does not establish the projected benefit for the
+claim's cohort or compare it with a defined current generation. It also does
+not predict an individual's pension. Both public answers remain insufficient
+and give no invented pension figure. A nearby comparison of current pensions
+and young workers' wages remains in its own family and does not inherit the
+AIReF source.
+
+The held-out answer benchmark passes 254/254 cases across 67 paraphrase groups;
+the claim-focus suite validates 382 formulations and nearby claims. In the
+300-claim discovery audit, structured multi-part answers rose from 26 to 43.
+Routing and outcome totals are unchanged: 187 candidates match a metric or
+focused family, 113 match neither, and deterministic results are 7 complete,
+107 limited and 186 uncovered. Public states are 263 insufficient and 37
+limited. All 300 discovery claims remain unverified; these counts measure
+routing and answer structure, not factual accuracy across arbitrary user text.

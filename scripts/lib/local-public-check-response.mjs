@@ -120,6 +120,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
     ]),
     ...plannedVisuals.flatMap((visual) => [...(visual.evidenceIds || []), ...(visual.sourceId ? [visual.sourceId] : [])]),
     ...argumentsList.flatMap((argument) => [...argument.evidenceIds, ...argument.sourceIds]),
+    ...argumentsList.flatMap((argument) => argument.contextSourceIds || []),
     ...shareableSourceIds,
   ]);
   const sources = (Array.isArray(plan.sourceLinks) ? plan.sourceLinks : [])
@@ -175,6 +176,7 @@ export const localPublicCheckResponse = (payload, claim = '') => {
       ...(argumentsList.length ? { arguments: argumentsList.map((argument) => ({
         ...argument,
         sourceIds: argument.sourceIds.filter((id) => sources.some((source) => source.id === id)),
+        contextSourceIds: (argument.contextSourceIds || []).filter((id) => sources.some((source) => source.id === id)),
       })) } : {}),
       interpretation: plan.interpretation,
       ...(nextQuestion ? { nextQuestion } : {}),

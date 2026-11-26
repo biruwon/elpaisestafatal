@@ -43,8 +43,7 @@ export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
   // A sourced contradiction already has a specific, evidence-backed answer.
   // Keep that answer and label the result instead of replacing it with the
   // generic qualification, which otherwise hides the measured value and scope.
-  const directlyContradicted = argumentsList.length === 1
-    && argumentsList[0].verdict === 'contradicted'
+  const directlyContradicted = argumentsList[0]?.verdict === 'contradicted'
     && argumentsList[0].evidenceIds?.length > 0
     && argumentsList[0].sourceIds?.length > 0;
   if (directlyContradicted) {
@@ -111,6 +110,9 @@ export const publicArgumentsFromPlan = (plan) => {
 
   return breakdown.items.map((item, index) => {
     const evidenceIds = evidenceByItem[index];
+    const contextSourceIds = stringArray(item.contextSourceIds)
+      ? [...new Set(item.contextSourceIds.filter((id) => planSourceIds.has(id)))]
+      : [];
     const relatedFamilySourceIds = (plan.evidenceSummary?.families || [])
       .filter((family) => stringArray(family.evidenceIds) && family.evidenceIds.some((id) => evidenceIds.includes(id)))
       .flatMap((family) => stringArray(family.sourceIds) ? family.sourceIds : []);
@@ -131,7 +133,9 @@ export const publicArgumentsFromPlan = (plan) => {
       ? item.finding || (matchingBlock && Array.isArray(matchingBlock.points) && matchingBlock.points.length
         ? matchingBlock.points.join(' ')
         : plan.summary || plan.headline)
-      : 'No se ha vinculado evidencia directa con una fuente consultable a esta parte.';
+      : contextSourceIds.length && typeof item.contextFinding === 'string' && item.contextFinding.trim()
+        ? item.contextFinding
+        : 'No se ha vinculado evidencia directa con una fuente consultable a esta parte.';
 
     return {
       id: breakdown.propositionIds?.[index] || `argument-${index + 1}`,
@@ -144,7 +148,8 @@ export const publicArgumentsFromPlan = (plan) => {
       finding,
       evidenceIds,
       sourceIds,
-      limitations: hasTraceableEvidence
+      contextSourceIds,
+      limitations: hasTraceableEvidence || contextSourceIds.length
         ? typeof plan.limitation === 'string' && plan.limitation ? [plan.limitation] : []
         : ['No hay una fuente consultable vinculada a esta parte.'],
     };

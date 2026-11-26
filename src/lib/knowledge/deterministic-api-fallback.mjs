@@ -171,8 +171,109 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
     : [];
   const fallbackObservations = fallbackSnapshots.flatMap((snapshot) => snapshot.observations);
   const focused = analysisWasTruncated ? undefined : focusedEvidencePlan(original, { observations: fallbackObservations, propositions, now, allowReviewedSnapshotFallback: true });
+  const focusedWithCompoundBreakdown = (plan) => {
+    if (propositions.length < 2 || plan?.answerScope?.kind !== 'measurement') return plan;
+    const breakdownIndex = plan.blocks?.findIndex((block) => block.type === 'claim_breakdown') ?? -1;
+    if (breakdownIndex < 0) return plan;
+    const propositionPlans = propositions.map((proposition, index) => {
+      const partPlan = focusedEvidencePlan(proposition.text, {
+        observations: fallbackObservations,
+        now,
+        allowReviewedSnapshotFallback: true,
+      });
+      const compatible = partPlan?.answerScope?.kind === 'measurement'
+        && partPlan.answerScope.family === plan.answerScope.family;
+      const partItem = compatible
+        ? partPlan.blocks?.find((block) => block.type === 'claim_breakdown')?.items?.[0]
+        : undefined;
+      const sourceLinks = compatible ? partPlan.sourceLinks || [] : [];
+      const sourceIds = [...new Set(compatible ? partPlan.sourceIds || [] : [])]
+        .filter((id) => sourceLinks.some((source) => source.id === id));
+      const evidenceIds = sourceIds.length
+        ? [...new Set([...(partItem?.evidenceIds || []), ...(partPlan.evidenceIds || [])])]
+        : [];
+      const directEvidenceIds = partItem && ['supported', 'contradicted', 'mixed'].includes(partItem.verdict)
+        ? [...new Set(partItem.evidenceIds || [])]
+        : [];
+      const contextSourceIds = directEvidenceIds.length ? [] : sourceIds;
+      const contextualFinding = compatible
+        ? (partPlan.evidenceSummary?.families || []).find((family) => family.familyId === plan.answerScope.family)?.finding
+        : undefined;
+      const finding = sourceIds.length
+        ? partItem?.finding || contextualFinding || partPlan.shareableReply || partPlan.headline
+        : 'No se ha localizado una fuente compatible para comprobar esta parte por separado.';
+      return {
+        id: proposition.id || `focused-proposition-${index + 1}`,
+        proposition,
+        plan: compatible ? partPlan : undefined,
+        sourceLinks,
+        sourceIds,
+        evidenceIds,
+        item: {
+          text: proposition.text,
+          type: proposition.type || partItem?.type || plan.claimType || 'mixed',
+          explicit: true,
+          evidenceIds: directEvidenceIds,
+          sourceIds: directEvidenceIds.length ? sourceIds : [],
+          contextSourceIds,
+          contextFinding: contextSourceIds.length ? finding : undefined,
+          verdict: partItem?.verdict || 'insufficient',
+          evidenceLevel: sourceIds.length ? partItem?.evidenceLevel || partPlan.evidenceLevel || 'limited' : 'none',
+          finding,
+        },
+      };
+    });
+    const partItems = propositionPlans.map(({ item }) => item);
+    const partIds = propositionPlans.map(({ id }) => id);
+    const items = [...plan.blocks[breakdownIndex].items, ...partItems];
+    const propositionIds = [...(plan.blocks[breakdownIndex].propositionIds || []), ...partIds];
+    const sourceLinks = [...new Map([
+      ...(plan.sourceLinks || []).map((source) => [source.id, source]),
+      ...propositionPlans.flatMap((part) => part.sourceLinks.map((source) => [source.id, source])),
+    ]).values()];
+    const sourceIds = [...new Set([
+      ...(plan.sourceIds || []),
+      ...propositionPlans.flatMap((part) => part.sourceIds),
+    ])].filter((id) => sourceLinks.some((source) => source.id === id));
+    const evidenceIds = [...new Set([
+      ...(plan.evidenceIds || []),
+      ...propositionPlans.flatMap((part) => part.evidenceIds),
+    ])];
+    const familyKey = (family) => `${family.familyId || ''}|${family.label || ''}|${(family.sourceIds || []).join(',')}`;
+    const families = [...(plan.evidenceSummary?.families || [])];
+    const knownFamilyKeys = new Set(families.map(familyKey));
+    for (const family of propositionPlans.flatMap((part) => part.plan?.evidenceSummary?.families || [])) {
+      const key = familyKey(family);
+      if (knownFamilyKeys.has(key)) continue;
+      knownFamilyKeys.add(key);
+      families.push(family);
+    }
+    const evidenceSummary = plan.evidenceSummary ? {
+      ...plan.evidenceSummary,
+      mode: (() => {
+        const modes = [...new Set([
+          plan.evidenceSummary.mode,
+          ...propositionPlans.map((part) => part.plan?.evidenceSummary?.mode),
+        ].filter((mode) => mode && mode !== 'none'))];
+        return modes.length > 1 ? 'mixed' : modes[0] || 'none';
+      })(),
+      families,
+    } : plan.evidenceSummary;
+    return {
+      ...plan,
+      evidenceIds,
+      sourceIds,
+      sourceLinks,
+      shareableSourceIds: [...new Set([...(plan.shareableSourceIds || []), ...sourceIds])],
+      evidenceSummary,
+      blocks: plan.blocks.map((block, index) => index === breakdownIndex
+        ? { ...block, items, propositionIds }
+        : block),
+    };
+  };
   const related = topicReference(original);
   if (focused) {
+    const focusedPlan = focusedWithCompoundBreakdown(focused);
     const reviewedContext = reviewedContextForGap(focused, original, now);
     if (reviewedContext) {
       return {
@@ -180,14 +281,14 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
         evidenceLevel: reviewedContext.evidenceLevel,
         relatedClaims: related ? [related] : [],
         guidance: focusedFollowUp(reviewedContext, { limitation: reviewedContext.limitation, questions: ['¿Quieres concretar el periodo, territorio o indicador?'] }),
-        result: reviewedContext,
+        result: focusedWithCompoundBreakdown(reviewedContext),
       };
     }
     return {
-      status: focused.evidenceLevel === 'limited' || focused.sourceIds?.length ? 'partial' : 'uncovered',
-      result: focused,
+      status: focusedPlan.evidenceLevel === 'limited' || focusedPlan.sourceIds?.length ? 'partial' : 'uncovered',
+      result: focusedPlan,
       relatedClaims: [],
-      guidance: focusedFollowUp(focused, guidance),
+      guidance: focusedFollowUp(focusedPlan, guidance),
     };
   }
   const scorecardLifecycle = snapshotLifecycle(GOVERNMENT_SCORECARD_SNAPSHOT, now);

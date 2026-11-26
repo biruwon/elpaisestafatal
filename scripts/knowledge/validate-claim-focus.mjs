@@ -846,6 +846,43 @@ const focusedTextCompound = 'La cuota y los costes fijos hacen inviable ser aut�
 const focusedTextCompoundCompilation = deterministicFallbackCompiler(focusedTextCompound);
 assert.equal(focusedTextCompoundCompilation.explicitPropositions.length, 2, 'A reviewed claim with an unrelated second proposition must be detected as compound');
 assert.equal(canSkipLocalCompilerForFocusedMeasurement(focusedTextCompound, { propositions: focusedTextCompoundCompilation.explicitPropositions, clarificationRequired: focusedTextCompoundCompilation.clarificationRequired, claimType: focusedTextCompoundCompilation.claimType }), false, 'A compound claim must retain structured interpretation');
+const futurePensionCompoundParaphrases = [
+  'Los jóvenes actuales pagarán pensiones durante décadas pero cobrarán una pensión relativamente menor',
+  'Los jóvenes de hoy pagarán las pensiones actuales durante décadas, pero cobrarán una pensión menor cuando se jubilen',
+];
+let futurePensionCompoundSources;
+for (const claim of futurePensionCompoundParaphrases) {
+  assert.equal(claimFocusFor(claim)?.id, 'future-pension-outlook', `A future-pension compound paraphrase changed family: ${claim}`);
+  const compilation = deterministicFallbackCompiler(claim);
+  assert.equal(compilation.explicitPropositions.length, 2, `A future-pension compound paraphrase lost a clause: ${claim}`);
+  const fallback = deterministicApiFallback({ text: claim, inputType: 'text', now: Date.parse('2026-11-25T23:00:00Z') });
+  assert.equal(fallback.status, 'partial');
+  const breakdown = fallback.result.blocks.find((block) => block.type === 'claim_breakdown');
+  assert.equal(breakdown.items.length, 3, 'The combined claim and both clauses should remain visible');
+  assert.equal(breakdown.items[0].verdict, 'insufficient', 'Context about a projection method must not verify the combined claim');
+  assert.deepEqual(breakdown.items[0].sourceIds, [], 'The whole claim must not inherit a clause-only source link');
+  for (const clause of breakdown.items.slice(1)) {
+    assert.equal(clause.verdict, 'insufficient', 'AIReF method context does not predict the generation\'s pension');
+    assert.deepEqual(clause.evidenceIds, [], 'Method context must not be encoded as direct clause evidence');
+    assert.deepEqual(clause.sourceIds, [], 'Method context must not be encoded as direct clause evidence');
+    assert.deepEqual(clause.contextSourceIds, ['airef-pension-projection-method-2025']);
+    assert.match(clause.contextFinding, /no predice la pensi[oó]n|no predice la tasa de sustituci[oó]n/i);
+  }
+  const publicAnswer = localPublicCheckResponse(fallback, claim);
+  assert.equal(publicAnswer.state, 'insufficient', 'Context-only pension evidence must retain an insufficient public verdict');
+  assert.deepEqual(publicAnswer.result.sources.map((source) => source.id), ['airef-pension-projection-method-2025']);
+  assert.ok(publicAnswer.result.arguments.slice(1).every((argument) => argument.contextSourceIds.includes('airef-pension-projection-method-2025')));
+  assert.ok(publicAnswer.result.arguments.slice(1).every((argument) => argument.evidenceIds.length === 0 && argument.sourceIds.length === 0));
+  assert.match(publicAnswer.result.reply, /no predice la pensi[oó]n/i);
+  assert.ok(validateAnswerPlan(fallback.result).ok, JSON.stringify(validateAnswerPlan(fallback.result).errors));
+  const sourceIds = publicAnswer.result.sources.map((source) => source.id);
+  if (futurePensionCompoundSources) assert.deepEqual(sourceIds, futurePensionCompoundSources, `A future-pension paraphrase changed its context source: ${claim}`);
+  futurePensionCompoundSources = sourceIds;
+}
+const nearbyPensionWageClaim = 'La pensión media de los jubilados actuales es inferior a los salarios de los jóvenes empleados';
+assert.equal(claimFocusFor(nearbyPensionWageClaim)?.id, 'pension-wage-comparison', 'A present-day pension and wage comparison must keep its own evidence family');
+const nearbyPensionWageFallback = deterministicApiFallback({ text: nearbyPensionWageClaim, inputType: 'text', now: Date.parse('2026-11-25T23:00:00Z') });
+assert.ok(!nearbyPensionWageFallback.result.sourceIds.includes('airef-pension-projection-method-2025'), 'Future-pension methodology must not cross-route to a present-day pension and wage comparison');
 const partlyParsedCompound = 'La tasa de paro de titulados universitarios ha subido, y los precios de vivienda suben';
 const partlyParsedCompilation = deterministicFallbackCompiler(partlyParsedCompound);
 assert.equal(partlyParsedCompilation.explicitPropositions.length, 1, 'This nearby conjunction currently remains one fallback proposition');
@@ -3946,5 +3983,6 @@ for (const claim of [
 ]) assert.notEqual(claimFocusFor(claim)?.id, 'public-dental-coverage', `An incompatible claim crossed into public dental coverage: ${claim}`);
 
 const paraphraseCount = cases.reduce((count, [, paraphrases]) => count + paraphrases.length, 0) + workHousingParaphrases.length
-  + dentalCostContextParaphrases.length + directDentalCostQuestions.length + publicDentalCoverageContextClaims.length + publicDentalLegalQuestions.length;
+  + dentalCostContextParaphrases.length + directDentalCostQuestions.length + publicDentalCoverageContextClaims.length + publicDentalLegalQuestions.length
+  + futurePensionCompoundParaphrases.length;
 console.log(`Claim focus validated: ${paraphraseCount} paraphrases, negative neighbours, survey bases, scope rejection, denominator and source boundaries, missing values and preview replacement.`);
