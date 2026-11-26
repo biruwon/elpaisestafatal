@@ -1,5 +1,6 @@
 import { deterministicApiFallback } from '../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { deterministicFallbackCompiler, FALLBACK_CLAIM_MAX_CHARS } from './knowledge/fallback-compiler.mjs';
+import { localPublicCheckResponse } from './lib/local-public-check-response.mjs';
 
 const text = deterministicApiFallback({ text: 'España está destruida', inputType: 'text' });
 if (text.status !== 'uncovered' || !text.result?.blocks?.some((block) => block.type === 'claim_breakdown')) throw new Error('text fallback did not preserve a structured clarification');
@@ -81,6 +82,40 @@ if (legalGap.result?.claimType !== 'legal' || !/jurisdicci[oó]n/.test(legalGap.
 if (normativeGap.result?.claimType !== 'normative' || !/criterio expl[ií]cito/.test(normativeGap.result?.clarificationQuestion || '')
   || !normativeGap.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing.some((item) => /criterio de valoraci[oó]n/.test(item)))) {
   throw new Error('An unsupported value judgment did not ask for a criterion before factual evaluation.');
+}
+
+const comparativeClaims = [
+  'En España es más fácil pagar un impuesto que conseguir una ayuda pública',
+  'Conseguir una ayuda pública resulta más difícil que pagar impuestos en España',
+];
+const comparativeResults = comparativeClaims.map((claim) => deterministicApiFallback({ text: claim, inputType: 'text' }));
+const comparativeGap = comparativeResults[0].result?.blocks?.find((block) => block.type === 'evidence_gap');
+for (const [index, result] of comparativeResults.entries()) {
+  const gap = result.result?.blocks?.find((block) => block.type === 'evidence_gap');
+  if (result.status !== 'uncovered' || result.result?.claimType !== 'comparative'
+    || !gap?.needed?.some((item) => /misma definici[oó]n del indicador/.test(item))
+    || !gap.needed.some((item) => /poblaci[oó]n de referencia, periodo, territorio y denominador comparables/.test(item))
+    || gap.needed.join(' ') !== comparativeGap?.needed.join(' ')
+    || !/indicador, poblaci[oó]n de referencia y periodo/.test(result.result?.clarificationQuestion || '')
+    || result.guidance?.questions?.[0] !== result.result?.clarificationQuestion
+    || result.result?.evidenceIds?.length || result.result?.sourceIds?.length) {
+    throw new Error(`Unsupported comparative paraphrase ${index + 1} did not receive consistent like-for-like evidence requirements without invented support.`);
+  }
+}
+const publicComparative = localPublicCheckResponse(comparativeResults[0], comparativeClaims[0]);
+if (publicComparative.state !== 'insufficient'
+  || !/misma definici[oó]n del indicador/.test(publicComparative.result?.reply || '')
+  || !/una fuente que mida ambos lados/.test(publicComparative.result?.reply || '')
+  || !/poblaci[oó]n de referencia, periodo, territorio y denominador comparables/.test(publicComparative.result?.reply || '')
+  || !/no demuestra que la afirmaci[oó]n sea falsa/i.test(publicComparative.result?.reply || '')
+  || publicComparative.result?.sources?.length) {
+  throw new Error('The public answer to an unsupported comparison must explain the evidence gap, preserve uncertainty, and show no unlinked sources.');
+}
+const descriptiveNeighbour = deterministicApiFallback({ text: 'La administración recauda impuestos y concede ayudas públicas', inputType: 'text' });
+const descriptiveNeighbourGap = descriptiveNeighbour.result?.blocks?.find((block) => block.type === 'evidence_gap');
+if (descriptiveNeighbour.result?.claimType === 'comparative'
+  || descriptiveNeighbourGap?.needed?.some((item) => /misma definici[oó]n del indicador|denominadores compatibles/.test(item))) {
+  throw new Error('A nearby descriptive statement incorrectly inherited comparative evidence requirements.');
 }
 
 const independenceClaim = deterministicApiFallback({ text: 'Tener un trabajo a jornada completa ya no garantiza poder independizarse' });

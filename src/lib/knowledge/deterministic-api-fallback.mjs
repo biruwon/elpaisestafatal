@@ -410,6 +410,8 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
         ? [`observación del indicador en el año inicial solicitado (${requestedStartYear})`]
       : compiledClaim.claimType === 'causal'
         ? ['datos compatibles para las partes relacionadas', 'evidencia que permita valorar el vínculo causal']
+        : compiledClaim.claimType === 'comparative'
+          ? ['un indicador que haga medible la comparación', 'datos de ambos lados con población, territorio y periodo compatibles']
         : compiledClaim.claimType === 'predictive'
           ? ['resultado previsto y plazo definido', 'supuestos de la proyección y evidencia de resultados observados']
           : compiledClaim.claimType === 'legal'
@@ -429,6 +431,8 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
         ? [`serie del mismo indicador que incluya ${requestedStartYear} y el periodo final, con territorio y unidad compatibles`]
       : compiledClaim.claimType === 'causal'
         ? ['medidas comparables de los hechos relacionados', 'evidencia del mecanismo o diseño que permita atribuir causalidad']
+        : compiledClaim.claimType === 'comparative'
+          ? ['una fuente que mida ambos lados con la misma definición del indicador', 'población de referencia, periodo, territorio y denominador comparables']
         : compiledClaim.claimType === 'predictive'
           ? ['una proyección publicada con plazo y supuestos explícitos', 'una medida que permita evaluar el resultado previsto']
           : compiledClaim.claimType === 'legal'
@@ -446,6 +450,8 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
         ? `Buscar una serie del mismo indicador que incluya ${requestedStartYear} y comparar los periodos con la misma definición, territorio y unidad.`
       : compiledClaim.claimType === 'causal'
         ? 'Separar los hechos relacionados y buscar un estudio o comparación que permita valorar el vínculo causal.'
+        : compiledClaim.claimType === 'comparative'
+          ? 'Buscar una fuente con datos de ambos lados y comprobar que mida lo mismo, en la misma población de referencia, territorio y periodo, con denominadores comparables.'
         : compiledClaim.claimType === 'predictive'
           ? 'Fijar qué resultado y plazo se predicen y contrastarlos con un escenario publicado y sus supuestos.'
           : compiledClaim.claimType === 'legal'
@@ -457,6 +463,8 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
     ? guidance.questions[0]
     : compiledClaim.claimType === 'causal'
       ? '¿Qué hechos, población y periodo quieres usar para comprobar también el vínculo causal?'
+      : !fullyAnalyzedCompound && compiledClaim.claimType === 'comparative'
+        ? '¿Qué indicador, población de referencia y periodo quieres comparar en ambos lados?'
       : compiledClaim.claimType === 'predictive'
         ? '¿Qué resultado y horizonte temporal quieres comprobar?'
         : compiledClaim.claimType === 'legal'
@@ -469,7 +477,7 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
   return {
     status: 'uncovered',
     relatedClaims: related ? [related] : [],
-    guidance,
+    guidance: { ...guidance, questions: [clarificationQuestion] },
     result: {
       schemaVersion: '1',
       evidenceLevel: 'insufficient',
@@ -489,8 +497,12 @@ export const deterministicApiFallback = ({ text = '', inputType = 'text', now = 
       researchPlan: {
         claim: original,
         queries: [original, `${original} España datos oficiales`, `${original} estudio evidencia`].map((query) => query.slice(0, 240)),
-        dimensions: ['definición del indicador', 'periodo', 'territorio', 'población', 'fuente primaria'],
-        evidenceTarget: 'Buscar una fuente primaria o un estudio metodológicamente compatible antes de emitir un veredicto.',
+        dimensions: compiledClaim.claimType === 'comparative'
+          ? ['misma definición del indicador para ambos lados', 'periodo', 'territorio', 'población de referencia', 'denominadores compatibles', 'fuente primaria']
+          : ['definición del indicador', 'periodo', 'territorio', 'población', 'fuente primaria'],
+        evidenceTarget: compiledClaim.claimType === 'comparative'
+          ? 'Buscar datos comparables para ambos lados con la misma definición, periodo, territorio, población de referencia y denominador antes de emitir un veredicto.'
+          : 'Buscar una fuente primaria o un estudio metodológicamente compatible antes de emitir un veredicto.',
       },
       evidenceIds: [],
       sourceIds: [],

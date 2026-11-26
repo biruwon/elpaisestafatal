@@ -453,7 +453,8 @@ const adjacentDescriptiveClaim = 'Hay más casos de acoso entre jóvenes que ant
 const adjacentFallback = deterministicApiFallback({ text: adjacentDescriptiveClaim, inputType: 'text' });
 const adjacentAnswer = checkFromPlan(adjacentDescriptiveClaim, adjacentFallback.result, 'descriptive-gap');
 assert.equal(adjacentAnswer.state, 'insufficient');
-assert.match(adjacentAnswer.result.reply, /población, territorio y periodo definidos/);
+assert.match(adjacentAnswer.result.reply, /fuente que mida ambos lados con la misma definición del indicador/);
+assert.match(adjacentAnswer.result.reply, /población de referencia, periodo, territorio y denominador comparables/);
 assert.doesNotMatch(adjacentAnswer.result.reply, /atribuir causalidad|mecanismo o diseño causal/i, 'A descriptive comparison must not inherit the causal evidence gap');
 
 const periodGapPlan = {
