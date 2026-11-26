@@ -64,7 +64,7 @@ const dimensions = {
 };
 
 const findings = [
-  `En España, en 2024, la productividad laboral aparente publicada por Eurostat fue: ${productivityBySize}. La clase de 250 o más personas empleadas registró alrededor de un ${relativeDifference} % más de valor añadido por persona que la clase de 0–9; es una diferencia descriptiva entre grupos, no una estimación del efecto de hacer crecer una empresa.`,
+  `En España, en 2024, Eurostat midió la productividad laboral aparente —valor añadido por persona empleada—: ${productivityBySize}. La clase de 250 o más personas registró un ${relativeDifference} % más que la de 0–9; la comparación es descriptiva, no mide el efecto de crecer.`,
   'Eurostat define la productividad laboral aparente como valor añadido dividido por personas empleadas. El dato no es un salario ni una medida por hora. El agregado B–S_X_O_S94 cubre actividades de mercado de industria, construcción y servicios, con las exclusiones indicadas en la clasificación; no incluye agricultura ni administración pública.',
 ];
 
@@ -102,8 +102,7 @@ export const BUSINESS_SIZE_PRODUCTIVITY_SNAPSHOT = Object.freeze({
 
 export const businessSizeProductivityReply = ({ facts }) => [
   facts[0],
-  'La comparación muestra una asociación entre clase de tamaño y productividad aparente en ese corte; no demuestra que el tamaño cause la diferencia. Tampoco mide inversión, tecnología o salarios por esas mismas clases, ni permite afirmar qué ocurriría si una empresa creciera.',
-  'El indicador es valor añadido por persona empleada, no remuneración ni productividad por hora. El ámbito es el agregado español de actividades de mercado cubierto por Eurostat, no todas las actividades económicas.',
+  'La comparación no demuestra que el tamaño cause la diferencia; tampoco mide inversión, tecnología o salarios por clase. El indicador es valor añadido por persona empleada, no remuneración ni productividad por hora. El agregado de actividades de mercado excluye agricultura y administración pública.',
 ].join('\n\n');
 
 export const firmWageCapacityProductivityContextReply = () => {

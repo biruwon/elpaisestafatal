@@ -505,10 +505,10 @@ const publicDentalCoverageEvidence = {
   when: publicDentalCoverage,
   dimensions: publicDentalCoverageDimensions,
   facts: [
-    'El Real Decreto 1030/2006, vigente a 31 de julio de 2026, incluye para toda la población consejo odontológico, atención de procesos agudos, extracciones, cirugía oral menor y detección de lesiones premalignas. Añade prestaciones para colectivos como menores de 0 a 14 años, embarazadas, ciertas personas con discapacidad y pacientes con cáncer cervicofacial.',
-    'La cartera común excluye, entre otras prestaciones, ortodoncia, tratamientos solo estéticos e implantes o prótesis dentales, salvo excepciones previstas en la norma.',
+    'El Real Decreto 1030/2006, vigente a 31 de julio de 2026, incluye para toda la población consejo odontológico, atención de procesos agudos, extracciones, cirugía oral menor y detección de lesiones premalignas. Añade servicios para menores de 0 a 14 años, embarazadas y ciertos colectivos con discapacidad o cáncer cervicofacial.',
+    'La cartera común excluye ortodoncia, tratamientos solo estéticos e implantes o prótesis dentales, salvo excepciones legales.',
     'El 26 de mayo de 2026, Sanidad comunicó una cobertura del 30,4 % entre la población infantojuvenil, del 25 % entre embarazadas y cercana al 3 % inicial entre mayores de 65 años, incorporados desde 2025.',
-    'El comunicado no define el periodo ni cómo calculó «cobertura». Son tasas de colectivos priorizados, no de toda la población ni de todos los tratamientos.',
+    'El comunicado no define el periodo ni el método de cálculo; sus porcentajes son tasas de colectivos priorizados, no de toda la población ni de todos los tratamientos.',
   ],
   factSourceIds: [
     ['sns-common-dental-basket-2026'],
@@ -552,7 +552,7 @@ const publicDentalCoverageReply = ({ claim, facts }) => {
     facts[2],
     facts[3],
     normative
-      ? 'La cartera pública está delimitada y se amplía por colectivos. Estos datos no permiten concluir si está demasiado limitada sin precisar qué tratamientos, población y nivel de cobertura se consideran suficientes.'
+      ? 'Estos datos no permiten concluir si está demasiado limitada sin definir los tratamientos, la población y qué nivel de cobertura sería suficiente.'
       : 'Estas cifras de colectivos priorizados no equivalen al porcentaje de todas las necesidades dentales que el SNS cubre ni describen la disponibilidad de cada tratamiento en cada territorio.',
   ].join('\n\n');
 };
@@ -1339,12 +1339,12 @@ const pensionMeiReply = ({ claim, facts }) => {
     ? selectedRates.map((row) => `${row.year}${row.through ? `–${row.through}` : ''}: ${percent(row.total)} % (${percent(row.employer)} % empresa; ${percent(row.worker)} % persona trabajadora)`).join('; ')
     : `el tipo en 2026 es ${percent(currentRate.total)} % (${percent(currentRate.employer)} % empresa; ${percent(currentRate.worker)} % persona trabajadora); llega a ${percent(snapshot.rateSchedule[6].total)} % en 2029 y se mantiene hasta 2050`;
   const { modeledImpact } = snapshot;
-  const legalFinding = `${years.includes(2022) ? 'El MEI empezó a aplicarse el 1 de enero de 2023. ' : ''}El MEI es una cotización adicional finalista sobre la base de contingencias comunes: alimenta el Fondo de Reserva y no se computa para calcular prestaciones individuales. En el Régimen General, ${rates}.`;
+  const legalFinding = `${years.includes(2022) ? 'El MEI empezó a aplicarse el 1 de enero de 2023. ' : ''}El MEI es una cotización adicional finalista sobre la base de contingencias comunes: nutre el Fondo de Reserva y no se usa para calcular prestaciones individuales. En el Régimen General, ${rates}.`;
   if (facts?.length <= 2) return legalFinding;
   return [
     legalFinding,
-    `AIReF estima que el MEI aporta ingresos equivalentes al ${percent(modeledImpact.through2025)} % del PIB hasta 2025 y al ${percent(modeledImpact.average2022To2050)} % del PIB como promedio de 2022–2050. Las medidas de ingresos analizadas en conjunto promedian ${percent(modeledImpact.allRevenueMeasuresAverage2022To2050)} % del PIB.`,
-    'AIReF advierte que cumplir formalmente la regla de gasto no resuelve por sí solo la sostenibilidad. Esa conclusión se refiere al sistema; aunque estima una aportación del MEI, el informe no determina si el mecanismo aislado basta para resolver el problema. Los datos confirman que sube las cotizaciones y aporta ingresos, pero no prueban ni descartan que el MEI por sí solo resuelva la sostenibilidad.',
+    `AIReF estima ingresos del MEI equivalentes al ${percent(modeledImpact.through2025)} % del PIB hasta 2025 y al ${percent(modeledImpact.average2022To2050)} % del PIB como promedio de 2022–2050. El conjunto de medidas de ingresos analizadas promedia ${percent(modeledImpact.allRevenueMeasuresAverage2022To2050)} % del PIB.`,
+    'AIReF advierte que cumplir formalmente la regla de gasto en pensiones no garantiza la sostenibilidad. El informe no determina si el mecanismo aislado basta para resolver el problema: estima ingresos, pero no prueba ni descarta su suficiencia.',
   ].join('\n\n');
 };
 const minimumWageCompressionEvidence = (() => {

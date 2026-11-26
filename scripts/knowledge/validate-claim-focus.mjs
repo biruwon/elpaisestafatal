@@ -1987,7 +1987,7 @@ assert.deepEqual(meiPublic.result.criteria.map((criterion) => criterion.sourceId
 assert.match(meiPublic.result.reply, /0,9 %.*0,75 %.*0,15 %/s);
 assert.match(meiPublic.result.reply, /0,3 % del PIB hasta 2025.*0,4 % del PIB como promedio de 2022–2050/s);
 assert.match(meiPublic.result.reply, /no determina si el mecanismo aislado basta para resolver el problema/);
-assert.ok(meiPublic.result.reply.trim().split(/\s+/).length <= 170, 'The MEI assessment should stay digestible');
+assert.ok(meiPublic.result.reply.trim().split(/\s+/).length <= 160, 'The MEI assessment should stay digestible');
 const meiRateOnlyClaim = '¿Qué tipo de cotización del MEI se aplica en el Régimen General en 2026?';
 const meiRateOnlyPlan = focusedEvidencePlan(meiRateOnlyClaim, { now: Date.parse('2026-11-24T12:00:00Z') });
 assert.equal(meiRateOnlyPlan.answerScope.family, 'pension-mei-contribution');

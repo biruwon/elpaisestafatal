@@ -2296,3 +2296,20 @@ complete, 114 limited and 179 uncovered, with public states of 259
 insufficient and 41 limited. Every input remains an explicitly unverified
 discovery example, so these counts describe route coverage and fallback state,
 not factual accuracy for arbitrary user text.
+
+## Text answer length pass — 26 November 2026
+
+Rechecking all 300 unverified discovery claims found four deterministic replies
+over the project's 160-word readability target: electricity-bill components,
+the pension MEI, public dental coverage and business-size productivity. Their
+reusable composers were shortened while retaining the values, measurement
+scope and evidence limits. The updated deterministic pass has no reply over
+160 words (maximum: 160), and the held-out answer benchmark passes 283/283
+cases across 74 paraphrase groups.
+
+The current fallback audit routes 197 claims to a metric or focused family
+(79 metric matches and 180 family matches, with 62 overlaps); 103 have neither
+deterministic route. It returns 7 complete, 120 limited and 173 uncovered
+answers, with 259 public insufficient states and 41 limited states. All 300
+inputs remain unverified; routing, source attachment and reply length do not
+measure factual accuracy or full production-resolver performance.

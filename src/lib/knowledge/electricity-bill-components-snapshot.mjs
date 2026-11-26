@@ -45,8 +45,8 @@ const electricityBillComponentsSnapshotFits = (claim) => {
   return requestedGeographyScopes(claim).every(({ id }) => id === 'ES');
 };
 
-const componentComparison = `En España, para la banda doméstica de 2.500 a menos de 5.000 kWh al año, los tres componentes agregados de Eurostat —energía y suministro, red e impuestos, tasas, gravámenes y cargos— sumaron ${format(0.2383)} €/kWh en 2024 y ${format(0.2638)} €/kWh en 2025. La parte de energía y suministro se mantuvo en ${format(0.1108)} €/kWh; la de red subió de ${format(0.0701)} a ${format(0.0712)}; y la de impuestos, tasas, gravámenes y cargos, de ${format(0.0574)} a ${format(0.0818)}.`;
-const billDefinition = 'La CNMC describe la factura eléctrica como energía, costes regulados de redes y otros conceptos, margen de comercialización e impuestos. La parte variable depende del consumo y del momento en que se consume, salvo que el contrato libre haya fijado un precio.';
+const componentComparison = `En España, el precio minorista medio por kWh para hogares de 2.500 a menos de 5.000 kWh anuales fue ${format(0.2383)} €/kWh en 2024 y ${format(0.2638)} €/kWh en 2025. La parte de energía y suministro se mantuvo en ${format(0.1108)} €/kWh; la de red pasó de ${format(0.0701)} a ${format(0.0712)}, y la de impuestos, tasas y cargos, de ${format(0.0574)} a ${format(0.0818)}.`;
+const billDefinition = 'La CNMC incluye energía, costes regulados de redes, margen de comercialización e impuestos en la factura; el consumo y el horario influyen en su parte variable, salvo que un contrato libre haya fijado un precio.';
 
 const componentDimensions = {
   subject: 'precio minorista anual de electricidad y componentes agregados: energía y suministro, costes de red, impuestos, tasas, gravámenes y cargos',
@@ -92,5 +92,5 @@ export const ELECTRICITY_BILL_COMPONENTS_SNAPSHOT = Object.freeze({
 export const electricityBillComponentsReply = ({ facts }) => [
   facts[0],
   facts[1],
-  'Este ejemplo muestra que el precio minorista puede cambiar de forma distinta a algunos de sus componentes. Pero «energía y suministro» no es el precio mayorista spot: estos datos no prueban por sí solos que los cargos causaran una diferencia frente al mercado mayorista. Para comprobar esa relación hacen falta precios mayoristas, tarifas y facturas del mismo contrato y periodo.',
+  'El total minorista cambió mientras «energía y suministro» se mantuvo estable, pero «energía y suministro» no es el precio mayorista spot. Estos datos no prueban por sí solos que los cargos causaran una diferencia frente al mercado mayorista. Para comprobarlo hacen falta precios mayoristas, tarifas y facturas comparables del mismo contrato y periodo.',
 ].join('\n\n');

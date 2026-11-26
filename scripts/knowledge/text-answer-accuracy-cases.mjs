@@ -2025,7 +2025,7 @@ export const textAnswerAccuracyCases = [
         { familyId: 'pension-mei-contribution', sourceIds: ['airef-mei-impact-pension-rule-2026'], dataIncludes: ['0,3 % del PIB hasta 2025', '0,4 % del PIB como promedio de 2022–2050', '1,6 % del PIB'], dimensions: { period: 'hasta 2025 y promedio 2022–2050', geography: 'España', denominator: 'PIB de España en el escenario de AIReF', unit: 'impacto como porcentaje del PIB' } },
         { familyId: 'pension-mei-contribution', sourceIds: ['airef-mei-impact-pension-rule-2026'], dataIncludes: ['no resuelve por sí solo la sostenibilidad', '14,6 % del PIB', '13,0 % del PIB'], dimensions: { period: 'promedio 2022–2050', geography: 'España', denominator: 'PIB de España en el escenario de AIReF', unit: 'impacto como porcentaje del PIB' } },
       ],
-      maxReplyWords: 170,
+      maxReplyWords: 160,
     },
   },
   {
@@ -2036,7 +2036,7 @@ export const textAnswerAccuracyCases = [
       state: 'limited', family: 'pension-mei-contribution', verdict: 'mixed',
       directSourceIds: ['boe-pension-mei-2023-2050', 'boe-pension-mei-rate-2026', 'airef-mei-impact-pension-rule-2026'],
       replyIncludes: ['0,9 %', '0,4 % del PIB como promedio de 2022–2050', 'el informe no determina si el mecanismo aislado basta para resolver'],
-      replyExcludes: ['el MEI garantiza la sostenibilidad'], evidence: [], maxReplyWords: 170,
+      replyExcludes: ['el MEI garantiza la sostenibilidad'], evidence: [], maxReplyWords: 160,
     },
   },
   {
@@ -2861,7 +2861,7 @@ export const textAnswerAccuracyCases = [
           dimensions: { population: 'consumidores de electricidad en España', geography: 'España' },
         },
       ],
-      maxReplyWords: 190,
+      maxReplyWords: 160,
     },
   },
   {
@@ -2873,7 +2873,7 @@ export const textAnswerAccuracyCases = [
       state: 'insufficient', family: 'electricity-bill-components', verdict: 'insufficient', directSourceIds: [],
       replyIncludes: ['0,2383 €/kWh en 2024', '0,2638 €/kWh en 2025', 'no es el precio mayorista spot'],
       replyExcludes: ['demuestra que los cargos causaron la diferencia frente al mercado mayorista'],
-      evidence: [], maxReplyWords: 190,
+      evidence: [], maxReplyWords: 160,
     },
   },
   {
@@ -2885,7 +2885,7 @@ export const textAnswerAccuracyCases = [
       state: 'insufficient', family: 'electricity-bill-components', verdict: 'insufficient', directSourceIds: [],
       replyIncludes: ['0,2383 €/kWh en 2024', '0,2638 €/kWh en 2025', 'no es el precio mayorista spot'],
       replyExcludes: ['demuestra que los cargos causaron la diferencia frente al mercado mayorista'],
-      evidence: [], maxReplyWords: 190,
+      evidence: [], maxReplyWords: 160,
     },
   },
   {
@@ -2906,7 +2906,7 @@ export const textAnswerAccuracyCases = [
       state: 'insufficient', family: 'electricity-bill-components', verdict: 'insufficient', directSourceIds: [],
       replyIncludes: ['0,2383 €/kWh en 2024', '0,2638 €/kWh en 2025', 'no es el precio mayorista spot'],
       replyExcludes: ['demuestra que los cargos causaron la diferencia frente al mercado mayorista'],
-      evidence: [], maxReplyWords: 190,
+      evidence: [], maxReplyWords: 160,
     },
   },
   {
@@ -3466,7 +3466,7 @@ export const textAnswerAccuracyCases = [
           dimensions: { period: '2024', geography: 'España', unit: 'definición metodológica y cobertura sectorial' },
         },
       ],
-      maxReplyWords: 180,
+      maxReplyWords: 160,
     },
   },
   {
@@ -3477,7 +3477,7 @@ export const textAnswerAccuracyCases = [
     expected: {
       state: 'insufficient', family: 'business-size-productivity', verdict: 'insufficient', directSourceIds: [],
       replyIncludes: ['42,83 miles de euros', '71,95 miles de euros', 'no demuestra que el tamaño cause la diferencia'],
-      evidence: [], maxReplyWords: 180,
+      evidence: [], maxReplyWords: 160,
     },
   },
   {
@@ -3488,7 +3488,7 @@ export const textAnswerAccuracyCases = [
     expected: {
       state: 'insufficient', family: 'business-size-productivity', verdict: 'insufficient', directSourceIds: [],
       replyIncludes: ['42,83 miles de euros', '71,95 miles de euros', 'tampoco mide inversión, tecnología o salarios'],
-      evidence: [], maxReplyWords: 180,
+      evidence: [], maxReplyWords: 160,
     },
   },
   {
@@ -3500,7 +3500,7 @@ export const textAnswerAccuracyCases = [
       state: 'insufficient', family: 'business-size-productivity', verdict: 'insufficient', directSourceIds: [],
       replyIncludes: ['42,83 miles de euros', '71,95 miles de euros', 'no demuestra que el tamaño cause la diferencia'],
       replyExcludes: ['No hay observaciones compatibles suficientes'],
-      evidence: [], maxReplyWords: 180,
+      evidence: [], maxReplyWords: 160,
     },
   },
   {
@@ -3743,7 +3743,7 @@ export const textAnswerAccuracyCases = [
         { familyId: 'public-dental-coverage', sourceIds: ['sanidad-dental-coverage-update-2026'], dataIncludes: ['cobertura del 30,4 %', 'del 25 %', 'cercana al 3 % inicial'], dimensions: { population: 'toda la población para prestaciones básicas; menores y otros colectivos definidos para prestaciones adicionales', period: 'cifras de cobertura reportadas el 2026-05-26', geography: 'España: cartera común del SNS', denominator: 'para las tasas, cada colectivo citado; la nota ministerial no describe el cálculo operativo de cobertura', unit: 'prestaciones legales y % de cobertura reportada' } },
         { familyId: 'public-dental-coverage', sourceIds: ['sanidad-dental-coverage-update-2026'], dataIncludes: ['no define el periodo', 'tasas de colectivos priorizados', 'no de toda la población'], dimensions: { period: 'cifras de cobertura reportadas el 2026-05-26', geography: 'España: cartera común del SNS', denominator: 'para las tasas, cada colectivo citado; la nota ministerial no describe el cálculo operativo de cobertura', unit: 'prestaciones legales y % de cobertura reportada' } },
       ],
-      maxReplyWords: 180,
+      maxReplyWords: 160,
     },
   },
   {
@@ -3755,7 +3755,7 @@ export const textAnswerAccuracyCases = [
       state: 'insufficient', family: 'public-dental-coverage', verdict: 'insufficient', directSourceIds: [],
       replyIncludes: ['para toda la población', '30,4 %', '25 %', 'no permiten concluir si está demasiado limitada'],
       evidence: [{ familyId: 'public-dental-coverage', sourceIds: ['sns-common-dental-basket-2026'], dataIncludes: ['ortodoncia', 'tratamientos solo estéticos', 'implantes o prótesis dentales'], dimensions: { period: 'texto consolidado vigente a 2026-07-31', geography: 'España: cartera común del SNS' } }],
-      maxReplyWords: 180,
+      maxReplyWords: 160,
     },
   },
   {
