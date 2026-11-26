@@ -3627,14 +3627,14 @@ export const textAnswerAccuracyCases = [
     now: '2026-11-26T12:00:00Z',
     expected: {
       state: 'insufficient', family: 'sme-regulatory-compliance-burden', verdict: 'insufficient', directSourceIds: [],
-      replyIncludes: ['84 %', '32 %', '421 pymes', 'no se puede confirmar que muchos autónomos deban pagar una gestoría', 'empieza en cinco empleados', 'no mide esos honorarios'],
+      replyIncludes: ['84 %', '465 pymes', '32 %', '421 pymes', 'no se puede confirmar que autónomos sin empleados', 'empieza en cinco empleados', 'no mide esos honorarios'],
       replyExcludes: ['el 84 % de los autónomos', 'el coste real de una gestoría está confirmado'],
       evidence: [
         {
           familyId: 'sme-regulatory-compliance-burden',
           sourceIds: ['eibis-spain-2025-regulatory-burden'],
-          dataIncludes: ['84 %', '55 %', '29 %', 'obstáculo para invertir'],
-          dimensions: { period: 'EIBIS 2025', geography: 'España', denominator: 'respuestas de pymes' },
+          dataIncludes: ['84 %', '465 pymes', 'obstáculo para invertir'],
+          dimensions: { period: 'EIBIS 2025', geography: 'España', denominator: '465 pymes' },
         },
         {
           familyId: 'sme-regulatory-compliance-burden',
@@ -3643,7 +3643,7 @@ export const textAnswerAccuracyCases = [
           dimensions: { period: 'EIBIS 2025', geography: 'España', denominator: '421 pymes' },
         },
       ],
-      maxReplyWords: 180,
+      maxReplyWords: 120,
     },
   },
   {
@@ -3653,12 +3653,12 @@ export const textAnswerAccuracyCases = [
     now: '2026-11-26T12:00:00Z',
     expected: {
       state: 'insufficient', family: 'sme-regulatory-compliance-burden', verdict: 'insufficient', directSourceIds: [],
-      replyIncludes: ['84 %', '32 %', 'no se puede concluir que la normativa equivalga a un impuesto', 'no cuantifica costes en euros'],
+      replyIncludes: ['84 %', '32 %', 'no se puede concluir que la regulación sea un impuesto', 'no costes en euros'],
       evidence: [
-        { familyId: 'sme-regulatory-compliance-burden', sourceIds: ['eibis-spain-2025-regulatory-burden'], dataIncludes: ['84 %', '55 %', '29 %'] },
+        { familyId: 'sme-regulatory-compliance-burden', sourceIds: ['eibis-spain-2025-regulatory-burden'], dataIncludes: ['84 %', '465 pymes'] },
         { familyId: 'sme-regulatory-compliance-burden', sourceIds: ['eibis-spain-2025-regulatory-burden'], dataIncludes: ['421 pymes', '32 %', '57 %', '11 %'] },
       ],
-      maxReplyWords: 180,
+      maxReplyWords: 120,
     },
   },
   {
@@ -3668,13 +3668,13 @@ export const textAnswerAccuracyCases = [
     now: '2026-11-26T12:00:00Z',
     expected: {
       state: 'insufficient', family: 'sme-regulatory-compliance-burden', verdict: 'insufficient', directSourceIds: [],
-      replyIncludes: ['32 %', '3 %', 'no se puede confirmar que un comercio soporte más que una plataforma'],
+      replyIncludes: ['32 %', '3 %', 'no se puede afirmar que un comercio soporte menos regulación que una plataforma', 'no identifica plataformas ni compara costes por tipo de negocio'],
       replyExcludes: ['las plataformas digitales tienen menos costes regulatorios'],
       evidence: [
-        { familyId: 'sme-regulatory-compliance-burden', sourceIds: ['eibis-spain-2025-regulatory-burden'], dataIncludes: ['84 %', '55 %', '29 %'] },
+        { familyId: 'sme-regulatory-compliance-burden', sourceIds: ['eibis-spain-2025-regulatory-burden'], dataIncludes: ['84 %', '465 pymes'] },
         { familyId: 'sme-regulatory-compliance-burden', sourceIds: ['eibis-spain-2025-regulatory-burden'], dataIncludes: ['421 pymes', '32 %', '57 %', '11 %', '115 grandes empresas', '3 %'] },
       ],
-      maxReplyWords: 180,
+      maxReplyWords: 120,
     },
   },
   {
@@ -3688,7 +3688,7 @@ export const textAnswerAccuracyCases = [
       evidence: [{
         familyId: 'sme-regulatory-compliance-burden',
         sourceIds: ['eibis-spain-2025-regulatory-burden'],
-        dataIncludes: ['421 pymes', '32 %', '57 %', '11 %', 'normas obligatorias o voluntarias'],
+        dataIncludes: ['421 pymes', '32 %', '57 %', '11 %', 'requisitos obligatorios o voluntarios'],
         dimensions: { period: 'EIBIS 2025', geography: 'España', denominator: '421 pymes' },
       }],
       maxReplyWords: 100,
@@ -3700,15 +3700,15 @@ export const textAnswerAccuracyCases = [
     now: '2026-11-26T12:00:00Z',
     expected: {
       state: 'limited', family: 'sme-regulatory-compliance-burden', verdict: 'supported', directSourceIds: ['eibis-spain-2025-regulatory-burden'],
-      replyIncludes: ['84 %', '55 %', '29 %', 'ejercicio anterior'],
-      replyExcludes: ['32 %'],
+      replyIncludes: ['84 %', '465 pymes', 'último ejercicio financiero', 'ponderado por valor añadido'],
+      replyExcludes: ['32 %', '55 %', '27 %'],
       evidence: [{
         familyId: 'sme-regulatory-compliance-burden',
         sourceIds: ['eibis-spain-2025-regulatory-burden'],
-        dataIncludes: ['84 %', '55 %', '29 %', 'obstáculo para invertir'],
-        dimensions: { period: 'EIBIS 2025', geography: 'España', denominator: 'respuestas de pymes' },
+        dataIncludes: ['84 %', '465 pymes', 'obstáculo para invertir'],
+        dimensions: { period: 'EIBIS 2025', geography: 'España', denominator: '465 pymes' },
       }],
-      maxReplyWords: 100,
+      maxReplyWords: 70,
     },
   },
   {

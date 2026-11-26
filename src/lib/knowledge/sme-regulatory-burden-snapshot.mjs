@@ -35,8 +35,8 @@ const claims = {
 };
 
 const facts = [
-  'En la EIBIS 2025, basada en 601 entrevistas a empresas españolas de abril a julio (465 pymes de 5–249 empleados), el 84 % señaló la regulación empresarial como obstáculo para invertir: 55 % importante y 29 % menor. La pregunta se refiere a la inversión del ejercicio anterior.',
-  'Sobre personal de cumplimiento, entre 421 pymes españolas de 5–249 empleados, el 32 % dedicaba más del 10 % de su plantilla, el 57 % hasta el 10 % y el 11 % nada. Entre 115 grandes empresas (250 o más empleados), los porcentajes fueron 3 %, 93 % y 4 %. La pregunta incluye normas obligatorias o voluntarias y tareas de información.',
+  'En la EIBIS 2025, el 84 % de las pymes españolas (5–249 empleados) calificó la regulación empresarial como obstáculo para invertir durante el último ejercicio financiero. La base incluyó 465 pymes; el porcentaje combina obstáculos importantes y menores y está ponderado por valor añadido. Las entrevistas se hicieron entre abril y julio de 2025.',
+  'Sobre personal dedicado a evaluar y cumplir requisitos regulatorios y estándares, y a preparar los informes relacionados, entre 421 pymes españolas (5–249 empleados) el 32 % destinaba más del 10 % de su plantilla, el 57 % hasta el 10 % y el 11 % nada. Entre 115 grandes empresas (250 o más empleados), los porcentajes fueron 3 %, 93 % y 4 %. La pregunta incluye requisitos obligatorios o voluntarios; la base excluye no sabe/no contesta y los porcentajes se ponderan por valor añadido.',
 ];
 
 const factDimensions = [
@@ -45,7 +45,7 @@ const factDimensions = [
     population: 'pymes encuestadas por EIBIS en España; empresas con 5–249 empleados (465 entrevistas SME en la muestra)',
     period: 'EIBIS 2025; pregunta sobre actividades de inversión del ejercicio financiero anterior; entrevistas de abril a julio de 2025',
     geography: 'España',
-    denominator: 'respuestas de pymes; EIBIS publica porcentajes ponderados por valor añadido; incluye obstáculo importante (55 %) y menor (29 %)',
+    denominator: '465 pymes; porcentaje que combina obstáculo importante y menor; ponderado por valor añadido',
     unit: 'porcentaje de empresas encuestadas',
   },
   {
@@ -99,18 +99,17 @@ export const SME_REGULATORY_BURDEN_SNAPSHOT = Object.freeze({
 
     const text = normalise(claim);
     const specificLimit = /\b(gestori\w*|asesori\w*)\b/.test(text)
-      ? 'No se puede confirmar que muchos autónomos deban pagar una gestoría: el informe no mide esos honorarios y su grupo pyme empieza en cinco empleados.'
+      ? 'No se puede confirmar que autónomos sin empleados necesiten contratar una gestoría: el estudio no mide esos honorarios y su muestra pyme empieza en cinco empleados.'
       : /\b(plataform\w*|tiendas?|comerci\w*|barrio)\b/.test(text)
-        ? 'No se puede confirmar que un comercio soporte más que una plataforma: los grupos EIB no identifican plataformas ni comparan sus costes.'
-        : /\b(autonom\w*|impuesto adicional|impuesto encubierto)\b/.test(text)
-          ? 'No se puede concluir que la normativa equivalga a un impuesto: la encuesta no cuantifica costes en euros ni representa a autónomos sin empleados.'
-        : 'No se puede cuantificar el gasto ni concluir que haya un impuesto adicional: el estudio mide respuestas y plantilla de cumplimiento.';
+        ? 'No se puede afirmar que un comercio soporte menos regulación que una plataforma: la encuesta no identifica plataformas ni compara costes por tipo de negocio.'
+        : /\b(autonom\w*|impuesto adicional|impuesto encubierto|impuesto oculto)\b/.test(text)
+          ? 'No se puede concluir que la regulación sea un impuesto: la encuesta mide percepciones y personal, no costes en euros, y no incluye autónomos sin empleados.'
+          : 'No se puede confirmar un coste monetario: la encuesta aporta percepciones y datos de plantilla, pero no mide gastos en euros.';
 
     return [
-      'La EIBIS aporta contexto sobre obstáculos percibidos y personal dedicado a cumplir requisitos; no mide por sí sola el coste que afirma el enunciado.',
-      facts[0],
-      facts[1],
-      `${specificLimit} La encuesta pondera los resultados por valor añadido.`,
+      'La EIBIS 2025 entrevistó a 601 empresas españolas entre abril y julio. De 465 pymes (5–249 empleados), el 84 % señaló la regulación como obstáculo para invertir en el último ejercicio; los resultados se ponderan por valor añadido.',
+      'En la pregunta sobre personal dedicado a evaluar y cumplir requisitos, estándares e informes, entre 421 pymes el 32 % empleaba más del 10 % de su plantilla, el 57 % hasta el 10 % y el 11 % nada. Entre 115 grandes (250 o más empleados), fueron 3 %, 93 % y 4 %.',
+      specificLimit,
     ].join('\n\n');
   },
 });

@@ -312,6 +312,7 @@ for (const claim of [
   'Conseguir una licencia para abrir o reformar un negocio tarda demasiado',
   'El sistema tributario cambia demasiado y obliga a empresas pequeñas a adaptarse continuamente',
   'España tiene demasiados trabajadores dedicados a tareas administrativas y demasiado pocos a servicios directos',
+  'El 84 % de las empresas españolas considera la incertidumbre un obstáculo para invertir',
 ]) assert.notEqual(claimFocusFor(claim)?.id, 'sme-regulatory-compliance-burden', `A nearby tax, licensing, appointment, or public-workforce claim crossed into SME compliance evidence: ${claim}`);
 assert.equal(claimFocusFor('Los ingresos extra pequeños dejan de compensar cuando obligan a asumir costes de autónomo y gestoría')?.id, 'self-employment-cost-viability', 'RETA contributions and side-income viability must keep their own evidence family.');
 
@@ -325,26 +326,52 @@ assert.ok(smeUtcReleaseBoundary.result.sourceLinks.some((source) => source.id ==
 assert.match(smeUtcReleaseBoundary.result.shareableReply, /84 %/);
 const smeUtcReleasePublicResponse = localPublicCheckResponse(smeUtcReleaseBoundary, 'Muchos autónomos necesitan pagar una gestoría solo para cumplir correctamente con Hacienda y Seguridad Social');
 assert.equal(smeUtcReleasePublicResponse.state, 'insufficient', 'Related survey context must not turn an unmeasured gestoría-cost claim into a verified verdict.');
-assert.match(smeUtcReleasePublicResponse.result.reply, /No se puede confirmar que muchos autónomos deban pagar una gestoría/);
+assert.match(smeUtcReleaseBoundary.result.shareableReply, /no se puede confirmar que autónomos sin empleados/i);
 
-for (const claim of [
-  'Muchos autónomos necesitan pagar una gestoría solo para cumplir correctamente con Hacienda y Seguridad Social',
-  'La complejidad administrativa funciona como un impuesto adicional para pequeñas empresas y autónomos',
-  'Los pequeños comercios soportan una carga regulatoria que las grandes plataformas absorben con más facilidad',
-]) {
-  const result = focusedEvidencePlan(claim, { now: Date.parse('2026-11-26T12:00:00Z') });
-  assert.equal(result.answerScope.family, 'sme-regulatory-compliance-burden');
-  assert.equal(result.evidenceLevel, 'limited');
-  assert.equal(result.blocks.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict, 'insufficient');
-  assert.equal(result.sourceLinks.length, 1);
-  assert.equal(result.sourceLinks[0].id, 'eibis-spain-2025-regulatory-burden');
-  assert.match(result.shareableReply, /84 %/);
-  assert.match(result.shareableReply, /32 %/);
-  assert.match(result.shareableReply, /no mide por sí sola el coste/);
+const smeContextClaimGroups = [
+  {
+    claims: [
+      'Muchos autónomos necesitan pagar una gestoría solo para cumplir correctamente con Hacienda y Seguridad Social',
+      'Para cumplir con Hacienda y la Seguridad Social, los autónomos se ven obligados a contratar una asesoría',
+    ],
+    limit: /no se puede confirmar que autónomos sin empleados/i,
+  },
+  {
+    claims: [
+      'La complejidad administrativa funciona como un impuesto adicional para pequeñas empresas y autónomos',
+      'La burocracia es un impuesto oculto para pequeñas empresas y autónomos',
+    ],
+    limit: /no se puede concluir que la regulación sea un impuesto/i,
+  },
+  {
+    claims: [
+      'Los pequeños comercios soportan una carga regulatoria que las grandes plataformas absorben con más facilidad',
+      'Las plataformas digitales cargan con menos burocracia que las tiendas de barrio',
+    ],
+    limit: /no se puede afirmar que un comercio soporte menos regulación/i,
+  },
+];
+for (const { claims, limit } of smeContextClaimGroups) {
+  const plans = claims.map((claim) => focusedEvidencePlan(claim, { now: Date.parse('2026-11-26T12:00:00Z') }));
+  for (const [index, result] of plans.entries()) {
+    assert.equal(result.answerScope.family, 'sme-regulatory-compliance-burden', `A burden paraphrase lost its evidence family: ${claims[index]}`);
+    assert.equal(result.evidenceLevel, 'limited');
+    assert.equal(result.blocks.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict, 'insufficient');
+    assert.equal(result.sourceLinks.length, 1);
+    assert.equal(result.sourceLinks[0].id, 'eibis-spain-2025-regulatory-burden');
+    assert.match(result.shareableReply, /84 %/);
+    assert.match(result.shareableReply, /465 pymes/);
+    assert.match(result.shareableReply, /32 %/);
+    assert.match(result.shareableReply, /421 pymes/);
+    assert.match(result.shareableReply, limit);
+    assert.ok(result.shareableReply.trim().split(/\s+/).length <= 120, 'SME context answers should be concise without dropping survey scope.');
+  }
+  assert.equal(plans[0].shareableReply, plans[1].shareableReply, 'Paraphrases in the same SME burden subfamily should compose the same answer.');
 }
 const directSmeComplianceMeasure = focusedEvidencePlan('¿Qué proporción de las pymes españolas dedica más del 10 % de su plantilla a cumplir requisitos regulatorios?', { now: Date.parse('2026-11-26T12:00:00Z') });
 assert.equal(directSmeComplianceMeasure.blocks.find((block) => block.type === 'claim_breakdown')?.items?.[0]?.verdict, 'supported');
 assert.match(directSmeComplianceMeasure.shareableReply, /32 %/);
+assert.match(directSmeComplianceMeasure.shareableReply, /421 pymes/);
 assert.doesNotMatch(directSmeComplianceMeasure.shareableReply, /84 %/, 'A direct staffing question must select its own measurement rather than the investment-obstacle context.');
 for (const claim of [
   '¿Qué proporción de las pymes españolas dedica personal a cumplir la normativa en 2024?',

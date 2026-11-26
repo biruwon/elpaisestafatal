@@ -1577,9 +1577,9 @@ const businessTaxBurdenComparison = (t) => /\b(multinacional\w*|empresa\w*|negoc
   && /\b(pag\w*|tribut\w*|carg\w*|contribu\w*|compit\w*|compar\w*)\b/.test(t);
 const smeRegulatoryBurden = (t) => {
   const directSurveyQuestion = SME_REGULATORY_BURDEN_SNAPSHOT.directClaimEvidence(t);
-  const namesSmallBusiness = /\b(autonom\w*|pymes?|microempresas?|empresas? peque[nñ]as?|peque[nñ]os? negocios?|peque[nñ]os? comercios?|peque[nñ]as? empresas?)\b/.test(t);
-  const namesComplianceBurden = /\b(gestori\w*|asesori\w*|burocrat\w*|complejidad administrativa|carga administrativa|carga regulatoria|costes? administrativos?|coste de cumplimiento|cumplimiento normativo|cumplir (?:con )?(?:la )?normativa|regulaci[oó]n empresarial|requisitos regulatorios)\b/.test(t);
-  const assessesBurden = /\b(carg\w*|cost\w*|pag\w*|necesit\w*|oblig\w*|obst[aá]cul\w*|barrer\w*|dif[ií]cil|dificult\w*|absor[bv]\w*|impuesto adicional|impuesto encubierto|dedic\w*)\b/.test(t);
+  const namesSmallBusiness = /\b(autonom\w*|pymes?|microempresas?|empresas? peque[nñ]as?|peque[nñ]os? negocios?|peque[nñ]os? comercios?|peque[nñ]as? empresas?|tiendas?)\b/.test(t);
+  const namesComplianceBurden = /\b(gestori\w*|asesori\w*|burocrat\w*|burocraci\w*|complejidad administrativa|carga administrativa|carga regulatoria|costes? administrativos?|coste de cumplimiento|cumplimiento normativo|cumplir (?:con )?(?:la )?normativa|regulaci[oó]n empresarial|requisitos regulatorios)\b/.test(t);
+  const assessesBurden = /\b(carg\w*|cost\w*|pag\w*|necesit\w*|oblig\w*|obst[aá]cul\w*|barrer\w*|dif[ií]cil|dificult\w*|absor[bv]\w*|impuesto adicional|impuesto encubierto|impuesto oculto|dedic\w*)\b/.test(t);
   const outsideThisMeasure = /\b(cita\s+previa|citas? (?:p[uú]blicas?|disponibles?)|ayudas? p[uú]blicas?|subvenciones?|licencias?|permisos?|plazos?|tardar|retras\w*|demor\w*|impuestos? (?:sobre|al) (?:comprar|vender|la vivienda|la vivienda)|sistema tributario cambia|cambios? fiscales?|ingresos? extra\w*|costes? de autonom\w*|cuotas? de autonom\w*|no compens\w*|deja de compens\w*|rentabilidad|rendimientos? netos?)\b/.test(t);
   return !outsideThisMeasure && (directSurveyQuestion || namesSmallBusiness && namesComplianceBurden && assessesBurden);
 };
