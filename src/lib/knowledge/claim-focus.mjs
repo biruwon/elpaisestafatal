@@ -13,6 +13,7 @@ import { PENSION_MEI_SNAPSHOT } from './pension-mei-snapshot.mjs';
 import { MINIMUM_WAGE_COMPRESSION_SNAPSHOT } from './minimum-wage-compression-snapshot.mjs';
 import { EDUCATION_SOCIOECONOMIC_SNAPSHOT } from './education-socioeconomic-snapshot.mjs';
 import { UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT } from './university-graduate-outcomes-snapshot.mjs';
+import { PROFESSIONAL_EMIGRATION_SNAPSHOT } from './professional-emigration-snapshot.mjs';
 import { RAIL_PUNCTUALITY_EVIDENCE, railPunctualityShareableReply } from './rail-punctuality-snapshot.mjs';
 import { RAIL_INVESTMENT_MAINTENANCE_SNAPSHOT, railInvestmentMaintenanceReply } from './rail-investment-maintenance-snapshot.mjs';
 import { ELECTRICITY_BILL_COMPONENTS_SNAPSHOT, electricityBillComponentsReply } from './electricity-bill-components-snapshot.mjs';
@@ -105,6 +106,15 @@ const migrationWageEffects = (t) => migrationPopulation.test(t)
   && /\b(presion\w*|conteng\w*|contener|baj\w*|reduc\w*|afect\w*|compar\w*|menor\w*|mayor\w*|diferenc\w*|mas|menos|a la baja|por debajo)\b/.test(t)
   && /\b(sector\w*|poblacion nativa|trabajador\w* nativ\w*|emplead\w* nativ\w*|trabajador\w* local\w*|resto de trabajador\w*|otro\w* trabajador\w*|otra\w* persona\w*)\b/.test(t)
   && !/\b(fiscal\w*|impuest\w*|recaud\w*|tribut\w*|cotiz\w*)\b/.test(t);
+const professionalEmigration = (t) => {
+  const outwardMovement = /\b(emigr\w*|fuga de cerebros|brain drain|perdid\w* de talent\w*|pierde[n]? talent\w*|trabaj\w* (?:en|fuera de) (?:otro\w* pais\w*|el extranjero|fuera de espana)|se (?:van|marchan|trasladan) (?:a|al) (?:otro\w* pais\w*|extranjero)|se (?:van|marchan) a trabaj\w* a (?:otro\w* pais\w*|el extranjero)|march\w* a (?:otro\w* pais\w*|extranjero))\b/.test(t);
+  const professionalGroup = /\b(profesion\w*|cualificad\w*|titulad\w*|graduad\w*|universitari\w*|cientific\w*|ingenier\w*|talento)\b/.test(t);
+  const inwardMigrantGroup = /\b(inmigr\w*|persona\w* extranjer\w*|trabajador\w* extranjer\w*|ciudadania extranjera|nacionalidad extranjera|nacid\w* fuera de espana)\b/.test(t)
+    && !/\b(espanol\w*|nacionalidad espanola|nacid\w* en espana)\b/.test(t);
+  return outwardMovement && professionalGroup && !inwardMigrantGroup
+    && !migrationCredentialRecognition(t) && !migrationOverqualification(t)
+    && !migrationFiscalContribution(t) && !migrationWageEffects(t);
+};
 const foreignAffiliateSectorSelection = (t) => {
   const hospitality = /\b(turism\w*|turistic\w*|hosteler\w*|hotel\w*|alojamiento\w*)\b/.test(t);
   const agriculture = /\b(agricultur\w*|agrari\w*|agricol\w*|campo|cosech\w*|temporer\w*|jornal\w*)\b/.test(t);
@@ -2954,6 +2964,25 @@ const focuses = [
     needs: ['ingresos fiscales y prestaciones atribuibles a personas comparables por país de nacimiento o ciudadanía', 'nivel de estudios, empleo, salarios y periodo de cada grupo', 'método que calcule contribución neta y no confunda programas o transferencias con el balance fiscal total'],
     explanation: 'Contar prestaciones o comparar salarios no mide la aportación fiscal neta de un grupo. La afirmación necesita ingresos y gastos públicos atribuibles a poblaciones comparables, con una definición explícita de contribución.',
     limitation: 'Los datos de beneficiarios de un programa y las tasas laborales por ciudadanía no permiten concluir qué grupo aporta más al conjunto de las cuentas públicas, ni separar el resultado por cualificación sin una medición específica.',
+  },
+  {
+    id: 'professional-emigration', label: 'emigración de profesionales y motivos salariales',
+    when: professionalEmigration,
+    direct: [], context: [], claimType: 'causal',
+    needs: [
+      'emigración de personas formadas en España, desglosada por titulación, cohorte, ocupación y país de destino',
+      'empleo efectivamente obtenido en destino, separado de la ocupación registrada antes de emigrar',
+      'salarios comparables por ocupación y experiencia, más información que permita identificar el motivo de la salida',
+    ],
+    explanationHeadline: 'El INE observa emigrantes en ocupaciones profesionales; no atribuye sus salidas al salario',
+    explanation: 'La EMCR ofrece contexto sobre la ocupación de algunas personas que emigran desde España, pero no vincula esa ocupación con el lugar donde se formaron, un empleo posterior en destino o el motivo de emigración.',
+    explanationEvidence: PROFESSIONAL_EMIGRATION_SNAPSHOT,
+    shareableReplyForContext: ({ facts }) => [
+      facts[0],
+      'La EMCR clasifica la ocupación, pero no identifica dónde se formó cada persona, si trabajó en destino o por qué emigró.',
+      'Por eso, el 18,3 % no demuestra que salarios poco competitivos causaran esas salidas.',
+    ].filter(Boolean).join('\n\n'),
+    limitation: 'El 18,3 % describe la composición ocupacional de las emigraciones españolas de 2023; no mide cuántas personas tituladas en España trabajan después en otro país ni qué salario habrían recibido si se quedaban.',
   },
   {
     id: 'migration-wage-effects', label: 'salarios y efecto de la inmigración en el mercado laboral',

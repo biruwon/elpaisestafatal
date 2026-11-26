@@ -2457,6 +2457,42 @@ for (const neighbour of [
 }
 assert.notEqual(claimFocusFor('¿Cuál es la tasa de paro estructural en España?')?.id, 'unemployment-wage-pressure', 'A direct unemployment-rate question must not be interpreted as a wage mechanism');
 assert.equal(claimFocusFor('La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores')?.id, 'migration-wage-effects', 'Migration-specific wage claims must retain their distinct evidence contract');
+const professionalEmigrationClaims = [
+  'España forma profesionales que terminan trabajando en otros países por falta de salarios competitivos',
+  'La fuga de cerebros de profesionales españoles se debe a sueldos bajos y poco competitivos',
+  'Muchos titulados formados en España se van a trabajar a otros países porque allí pagan mejor',
+  'Graduados universitarios españoles emigran por la falta de salarios competitivos',
+];
+let professionalEmigrationSourceIds;
+for (const [index, claim] of professionalEmigrationClaims.entries()) {
+  assert.equal(claimFocusFor(claim)?.id, 'professional-emigration', `A professional-emigration paraphrase changed family: ${claim}`);
+  assert.deepEqual([...focusedMetricIdsFor(claim)], [], 'General wage or employment metrics must not stand in for professional-emigration evidence');
+  const plan = focusedEvidencePlan(claim, { observations: [], now: Date.parse('2026-11-26T12:00:00Z') });
+  assert.equal(plan.answerScope.family, 'professional-emigration');
+  assert.deepEqual(plan.answerScope.directMetrics, []);
+  assert.deepEqual(plan.answerScope.contextMetrics, []);
+  assert.equal(plan.evidenceLevel, 'limited');
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  assert.deepEqual(sourceIds, ['ine-emcr-2024-professional-emigration', 'ine-emcr-methodology-faq']);
+  assert.match(plan.shareableReply, /18,3\s*%/);
+  assert.match(plan.shareableReply, /2023/);
+  assert.match(plan.shareableReply, /no identifica.*d[oó]nde se form[oó]|no demuestra que.*salarios.*causaran/i);
+  assert.doesNotMatch(plan.shareableReply, /tasa de empleo|renta disponible mediana|tasa de desempleo/);
+  const response = localPublicCheckResponse({ status: 'complete', requestId: `professional-emigration-${index}`, result: plan }, claim);
+  assert.equal(response.state, 'insufficient', 'Occupational context must not confirm that wages caused emigration');
+  assert.deepEqual(response.result.sources.map((source) => source.id), sourceIds);
+  assert.ok(response.result.arguments.every((item) => item.verdict !== 'supported'), 'The causal claim must not receive a supported verdict');
+  if (professionalEmigrationSourceIds) assert.deepEqual(sourceIds, professionalEmigrationSourceIds, 'Paraphrases must reuse the same official evidence');
+  professionalEmigrationSourceIds = sourceIds;
+}
+for (const neighbour of [
+  'Los salarios de los profesionales españoles son menos competitivos que los de la Unión Europea',
+  'La inmigración de trabajadores de baja cualificación presiona a la baja los salarios de algunos sectores',
+  'La tasa de empleo de titulados universitarios en España supera el 80 %',
+  'Los trabajadores cualificados que vuelven del extranjero aceptan salarios más bajos',
+]) {
+  assert.notEqual(claimFocusFor(neighbour)?.id, 'professional-emigration', `A nearby wage or migration claim crossed into professional emigration: ${neighbour}`);
+}
 for (const query of [
   'Los trabajadores cualificados que vuelven del extranjero suelen tener que aceptar una bajada salarial',
   'Los trabajadores inmigrantes cobran menos desde que aumentó la oferta laboral',
