@@ -1001,11 +1001,22 @@ assert.ok(tertiaryEmploymentNoDatabase.body.result.sources.some((source) => sour
 assert.match(tertiaryEmploymentNoDatabase.body.result.reply, /83,2 %/);
 assert.match(tertiaryEmploymentNoDatabase.body.result.keyFact, /83,2 %/);
 assert.match(tertiaryEmploymentNoDatabase.body.result.reply, /personas residentes de 20 a 64 años/);
+assert.doesNotMatch(tertiaryEmploymentNoDatabase.body.result.reply, /sin una fuente consultable vinculada/i);
 const tertiaryEmploymentParaphrase = await checkWithoutDatabase('¿Qué porcentaje de personas residentes de 20 a 64 años con estudios superiores tenía empleo en España en 2025?');
 assert.equal(tertiaryEmploymentParaphrase.body.state, tertiaryEmploymentNoDatabase.body.state);
 assert.equal(tertiaryEmploymentParaphrase.body.result.answerScope.family, tertiaryEmploymentNoDatabase.body.result.answerScope.family);
 assert.deepEqual(tertiaryEmploymentParaphrase.body.result.sources.map((source) => source.id), tertiaryEmploymentNoDatabase.body.result.sources.map((source) => source.id));
 assert.match(tertiaryEmploymentParaphrase.body.result.reply, /83,2 %/);
+
+const unlinkedSourceClaim = await checkWithoutDatabase('Los jóvenes con salarios españoles compiten por vivienda con trabajadores remotos que cobran salarios extranjeros');
+const unlinkedSourceParaphrase = await checkWithoutDatabase('Los jóvenes que cobran en España compiten por pisos con trabajadores remotos cuyos ingresos proceden del extranjero');
+for (const response of [unlinkedSourceClaim, unlinkedSourceParaphrase]) {
+  assert.equal(response.body.state, 'insufficient');
+  assert.deepEqual(response.body.result.sources, []);
+  assert.match(response.body.result.reply, /sin una fuente consultable vinculada/i);
+  assert.match(response.body.result.reply, /no podemos confirmar ni descartar la afirmación/i);
+  assert.doesNotMatch(response.body.result.reply, /no hay observaciones compatibles suficientes/i);
+}
 
 const touristHousingClaim = 'Los pisos turísticos están retirando demasiada vivienda del alquiler residencial';
 const touristHousingNoDatabase = await checkWithoutDatabase(touristHousingClaim);

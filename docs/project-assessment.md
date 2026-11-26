@@ -2313,3 +2313,27 @@ deterministic route. It returns 7 complete, 120 limited and 173 uncovered
 answers, with 259 public insufficient states and 41 limited states. All 300
 inputs remain unverified; routing, source attachment and reply length do not
 measure factual accuracy or full production-resolver performance.
+
+## Text-first evidence-gap audit — 26 November 2026
+
+A fresh deterministic fallback audit on the current `main` revision routes
+197/300 unverified discovery candidates to a metric or focused family; 103
+have neither route. It produces 7 complete, 121 limited and 172 uncovered
+answers, with 258 public insufficient and 42 limited states. This audit runs
+without the production D1 warehouse or asynchronous resolver. Its routing and
+response counts are not factual-accuracy estimates, and the discovery claims
+remain unverified.
+
+The separate 283-case answer benchmark passes across 74 paraphrase groups. It
+checks source selection, scope, limits and concise replies for reviewed cases;
+it does not establish correctness for arbitrary user text. The highest-priority
+text work therefore remains evidence coverage by reusable measurement family,
+with source, period, geography, population and denominator verified before an
+answer is promoted. A route to a nearby metric is not proof of a broader causal
+or evaluative claim.
+
+The no-source public response now distinguishes missing attribution from a
+measurement that was queried and returned no compatible observations. It says
+when no consultable source is linked and preserves the uncertainty and evidence
+requirements. Paraphrase checks cover that wording, while a sourced employment
+rate question continues to return its value and source.

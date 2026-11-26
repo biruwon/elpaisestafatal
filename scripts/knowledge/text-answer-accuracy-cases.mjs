@@ -1219,7 +1219,7 @@ export const textAnswerAccuracyCases = [
     input: 'El PIB real total aumentó más que el PIB real por habitante entre 2018 y 2025',
     expected: {
       state: 'insufficient', family: 'gdp-total-per-capita', verdict: 'insufficient', directSourceIds: [],
-      replyIncludes: ['no hay observaciones compatibles suficientes', 'no se puede confirmar ni descartar'],
+      replyIncludes: ['sin una fuente consultable vinculada', 'no podemos confirmar ni descartar la afirmación'],
       replyExcludes: ['10,0 %', '4,9 %'], evidence: [], maxReplyWords: 100,
     },
   },
@@ -1228,7 +1228,7 @@ export const textAnswerAccuracyCases = [
     input: 'El PIB real total de Francia aumentó más que el PIB real por habitante entre 2019 y 2025',
     expected: {
       state: 'insufficient', family: 'gdp-total-per-capita', verdict: 'insufficient', directSourceIds: [],
-      replyIncludes: ['no hay observaciones compatibles suficientes', 'territorio y periodo'],
+      replyIncludes: ['sin una fuente consultable vinculada', 'territorio y periodo'],
       replyExcludes: ['10,0 %', '4,9 %'], evidence: [], maxReplyWords: 100,
     },
   },

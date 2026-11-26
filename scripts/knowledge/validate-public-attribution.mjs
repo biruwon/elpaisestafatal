@@ -338,7 +338,8 @@ const limitedContextGapPages = checkFromPlan('Los salarios explican la emigraci�
 const limitedContextGapLocal = localPublicCheckResponse({ status: 'draft', requestId: 'limited-context-gap', result: limitedContextGapPlan }, 'Los salarios explican la emigración profesional');
 for (const response of [limitedContextGapPages, limitedContextGapLocal]) {
   assert.equal(response.state, 'insufficient', 'Unrelated context without an attributable source must not appear as a limited finding');
-  assert.match(response.result.reply, /No hay observaciones compatibles suficientes/i);
+  assert.match(response.result.reply, /Sin una fuente consultable vinculada/i);
+  assert.match(response.result.reply, /no podemos confirmar ni descartar la afirmación/i);
   assert.match(response.result.reply, /flujos de salida por nivel educativo y ocupaci[oó]n/i, 'The answer must retain the claim-specific evidence requirements');
   assert.match(response.result.reply, /una medición de los motivos de salida/i);
   assert.match(response.result.reply, /Qué se necesita para comprobarla:\n\n• /, 'Evidence requirements should be visibly separated from the conclusion');
