@@ -35,7 +35,7 @@ export const UNIVERSITY_GRADUATE_OUTCOMES_SNAPSHOT = Object.freeze({
     unit: 'porcentaje de la distribución por grupo de cotización',
   },
   facts: [
-    'En la cohorte universitaria de Grado y Ciclo 2019–2020, cuatro años después, el 61,29 % de afiliados por cuenta ajena a la Seguridad Social en marzo estaba en el grupo de cotización de titulados universitarios.',
+    'En España, cohorte universitaria de Grado y Ciclo 2019–2020: cuatro años después, el 61,29 % de afiliados por cuenta ajena a la Seguridad Social al menos un día de marzo estaba en el grupo de cotización universitario.',
   ],
   factSourceIds: [['siiu-graduate-contribution-groups-2019-2020']],
   limitation: 'El grupo de cotización aproxima el nivel laboral, pero no prueba que cada puesto exija la titulación concreta. La distribución solo cubre afiliación asalariada en España; excluye el empleo en el extranjero y parte del ejercicio profesional cubierto por mutualidades. No mide vacantes ni evolución.',

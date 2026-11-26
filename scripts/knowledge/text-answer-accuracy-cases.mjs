@@ -499,6 +499,86 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'graduate-qualification-fit-guarantee',
+    equivalenceGroup: 'graduate-qualification-fit-outcomes',
+    input: 'Un título universitario ya no garantiza encontrar un empleo cualificado',
+    expected: {
+      state: 'limited', family: 'education-employment-outcomes', verdict: 'insufficient',
+      directSourceIds: ['eurostat-tertiary-employment', 'eurostat-tertiary-overqualification'],
+      replyIncludes: ['La evidencia no basta para confirmar toda la afirmación', '83,2 %', '20 a 64 años', '34 %', 'medida de sobrecualificación', '61,29 %', 'al menos un día de marzo', 'no los requisitos ni el ajuste por campo'],
+      replyExcludes: ['garantiza el resultado individual'],
+      evidence: [
+        {
+          familyId: 'employment_rate_tertiary_education', sourceIds: ['eurostat-tertiary-employment'],
+          dataIncludes: ['83,2 %', '2025'],
+          dimensions: { period: '2025', geography: 'España', population: '20 a 64 años', denominator: 'todas las personas residentes', unit: '%' },
+        },
+        {
+          familyId: 'tertiary_overqualification_rate', sourceIds: ['eurostat-tertiary-overqualification'],
+          dataIncludes: ['34 %', '2025', 'ISCO 4–9'],
+          dimensions: { period: '2025', geography: 'España', population: 'personas ocupadas de 20 a 64 años', denominator: 'todas las personas ocupadas', unit: '%' },
+        },
+      ],
+      maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'graduate-qualification-fit-guarantee-paraphrase',
+    equivalenceGroup: 'graduate-qualification-fit-outcomes',
+    input: 'Tener estudios superiores no asegura trabajar en un puesto acorde con la titulación',
+    expected: {
+      state: 'limited', family: 'education-employment-outcomes', verdict: 'insufficient',
+      directSourceIds: ['eurostat-tertiary-employment', 'eurostat-tertiary-overqualification'],
+      replyIncludes: ['La evidencia no basta para confirmar toda la afirmación', '83,2 %', '20 a 64 años', '34 %', 'medida de sobrecualificación', '61,29 %', 'al menos un día de marzo', 'no los requisitos ni el ajuste por campo'],
+      replyExcludes: ['garantiza el resultado individual'],
+      evidence: [
+        {
+          familyId: 'employment_rate_tertiary_education', sourceIds: ['eurostat-tertiary-employment'],
+          dataIncludes: ['83,2 %', '2025'],
+          dimensions: { period: '2025', geography: 'España', population: '20 a 64 años', denominator: 'todas las personas residentes', unit: '%' },
+        },
+        {
+          familyId: 'tertiary_overqualification_rate', sourceIds: ['eurostat-tertiary-overqualification'],
+          dataIncludes: ['34 %', '2025', 'ISCO 4–9'],
+          dimensions: { period: '2025', geography: 'España', population: 'personas ocupadas de 20 a 64 años', denominator: 'todas las personas ocupadas', unit: '%' },
+        },
+      ],
+      maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'youth-employment-causal-explanation',
+    equivalenceGroup: 'youth-employment-causal-explanation',
+    input: 'Los jóvenes aceptan empleos por debajo de su cualificación porque no encuentran oportunidades acordes a sus estudios',
+    expected: {
+      state: 'insufficient', family: 'education-employment-outcomes', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['34,4 %', '20 a 34 años', 'no mide ofertas adecuadas', 'no prueba esa causa', 'no equivale a recién graduados'],
+      replyExcludes: ['83,2 %', '61,29 %', 'la falta de oportunidades causó'],
+      evidence: [{
+        familyId: 'tertiary_overqualification_rate_age_20_34', sourceIds: ['eurostat-tertiary-overqualification'],
+        dataIncludes: ['34,4 %', '2025', '20 a 34 años'],
+        dimensions: { period: '2025', geography: 'España', population: 'personas ocupadas de 20 a 34 años', denominator: 'todas las personas ocupadas de 20 a 34 años', unit: '%' },
+      }],
+      maxReplyWords: 90,
+    },
+  },
+  {
+    id: 'youth-employment-causal-explanation-paraphrase',
+    equivalenceGroup: 'youth-employment-causal-explanation',
+    input: 'La falta de puestos acordes lleva a jóvenes titulados a aceptar empleos por debajo de su preparación',
+    expected: {
+      state: 'insufficient', family: 'education-employment-outcomes', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['34,4 %', '20 a 34 años', 'no mide ofertas adecuadas', 'no prueba esa causa', 'no equivale a recién graduados'],
+      replyExcludes: ['83,2 %', '61,29 %', 'la falta de oportunidades causó'],
+      evidence: [{
+        familyId: 'tertiary_overqualification_rate_age_20_34', sourceIds: ['eurostat-tertiary-overqualification'],
+        dataIncludes: ['34,4 %', '2025', '20 a 34 años'],
+        dimensions: { period: '2025', geography: 'España', population: 'personas ocupadas de 20 a 34 años', denominator: 'todas las personas ocupadas de 20 a 34 años', unit: '%' },
+      }],
+      maxReplyWords: 90,
+    },
+  },
+  {
     id: 'working-poverty-part-time-above-threshold',
     input: 'En 2025 el riesgo de pobreza entre las personas ocupadas a jornada parcial superó el 15 %',
     expected: {

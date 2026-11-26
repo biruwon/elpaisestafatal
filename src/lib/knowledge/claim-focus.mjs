@@ -3137,29 +3137,56 @@ const focuses = [
       when: educationSiiuGraduateOutcomes,
     },
     shareableReplyForContext: ({ claim, facts, metricFacts, scopeNotes = [] }) => {
+      const normalizedClaim = normalize(claim);
+      const metricValue = (fact) => new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 }).format(fact.value);
       const metricFinding = (fact) => {
         if (!Number.isFinite(fact.value) || !fact.period) return fact.text;
-        const value = new Intl.NumberFormat('es-ES', { maximumFractionDigits: 2 }).format(fact.value);
+        const value = metricValue(fact);
         const scope = `${fact.geography || 'España'}, ${fact.period}`;
-        if (fact.id === 'employment_rate_tertiary_education') return `${fact.publisher || 'Eurostat'} (${scope}): el ${value} % de residentes de 20 a 64 años con educación terciaria tenía empleo.`;
+        if (fact.id === 'employment_rate_tertiary_education') return `${fact.publisher || 'Eurostat'} (${scope}): el ${value} % de las personas residentes de 20 a 64 años con educación terciaria tenía empleo.`;
         if (fact.id === 'unemployment_rate_tertiary_education') return `${fact.publisher || 'Eurostat'} (${scope}): el ${value} % de la población activa de 20 a 64 años con educación terciaria estaba en paro.`;
-        if (fact.id === 'tertiary_overqualification_rate') return `Sobrecualificación (${scope}): el ${value} % de personas ocupadas de 20 a 64 años con educación terciaria trabajaba en ocupaciones ISCO 4–9, de cualificación baja o media.`;
-        if (fact.id === 'tertiary_overqualification_rate_age_20_34') return `Sobrecualificación (${scope}): el ${value} % de personas ocupadas de 20 a 34 años con educación terciaria trabajaba en ocupaciones ISCO 4–9, de cualificación baja o media.`;
+        if (fact.id === 'tertiary_overqualification_rate') return `Sobrecualificación (${scope}): el ${value} % de las personas ocupadas de 20 a 64 años con educación terciaria trabajaba en ocupaciones ISCO 4–9, de cualificación baja o media.`;
+        if (fact.id === 'tertiary_overqualification_rate_age_20_34') return `Sobrecualificación (${scope}): el ${value} % de las personas ocupadas de 20 a 34 años con educación terciaria trabajaba en ocupaciones ISCO 4–9, de cualificación baja o media.`;
         return fact.text;
       };
-      const selectedMetricFindings = metricFacts?.map(metricFinding).filter(Boolean) || [];
-      const conciseScopeNotes = scopeNotes.map((note) => note.startsWith('La fuente señala que la definición de este dato difiere')
+      const employment = metricFacts?.find((fact) => fact.id === 'employment_rate_tertiary_education');
+      const generalOverqualification = metricFacts?.find((fact) => fact.id === 'tertiary_overqualification_rate');
+      const alignedEmploymentAndOverqualification = employment && generalOverqualification
+        && employment.period === generalOverqualification.period
+        && employment.geography === generalOverqualification.geography
+        && Number.isFinite(employment.value) && Number.isFinite(generalOverqualification.value);
+      const selectedMetricFindings = alignedEmploymentAndOverqualification
+        ? [`Eurostat (${employment.geography || 'España'}, ${employment.period}): el ${metricValue(employment)} % de las personas residentes de 20 a 64 años con educación terciaria tenía empleo. En la medida de sobrecualificación, entre las personas ocupadas de ese grupo, el ${metricValue(generalOverqualification)} % trabajaba en ISCO 4–9 (cualificación baja o media).`]
+        : metricFacts?.map(metricFinding).filter(Boolean) || [];
+      const conciseScopeNotes = [...new Set(scopeNotes.map((note) => note.startsWith('La fuente señala que la definición de este dato difiere')
         ? 'La fuente señala una diferencia de definición; compara años con cautela.'
-        : note);
-      const normalizedClaim = normalize(claim);
-      const individualGuaranteeLimit = /\bgarant\w*\b/.test(normalizedClaim) ? 'Son resultados de grupo, no una garantía individual.' : '';
-      const temporalLimit = /\b(ya no|antes|ahora|cada vez|ha aumentado|ha subido|ha bajado|evoluci\w*)\b/.test(normalizedClaim)
-        ? 'No compara cohortes previas ni acredita un cambio temporal.'
+        : note))];
+      const factsText = facts.join(' ');
+      if (!selectedMetricFindings.length && !factsText) return '';
+      const causalClaim = /\b(?:caus\w*|provoc\w*|porque|ya que|debido a|por culpa|empuj\w*|oblig\w* a|conduc\w* a|llev\w* a|por falta de|ante la falta de|por no (?:encontr\w*|hall\w*|consegu\w*))\b/.test(normalizedClaim);
+      const qualificationFit = educationJobFit(normalizedClaim);
+      const individualGuaranteeLimit = /\bgarant\w*\b/.test(normalizedClaim) ? 'El promedio del grupo no garantiza el resultado de una persona.' : '';
+      const youthPopulationLimit = /\b(joven\w*|juvenil)\b/.test(normalizedClaim)
+        ? 'El grupo de 20 a 34 años no equivale a recién graduados.'
         : '';
-      const measurementSummary = [...selectedMetricFindings, ...conciseScopeNotes].filter(Boolean).join(' ');
-      const outcomeLimit = [individualGuaranteeLimit, temporalLimit].filter(Boolean).join(' ');
-      return [measurementSummary, facts.join(' '),
-        'El grupo de cotización aproxima el nivel del puesto, pero no confirma los requisitos ni el ajuste por campo. El SIIU cubre afiliados por cuenta ajena en España, no empleo exterior. Medir el ajuste requiere vincular estudios y tareas del puesto.',
+      const temporalLimit = /\b(ya no|antes|ahora|cada vez|ha aumentado|ha subido|ha bajado|evoluci\w*)\b/.test(normalizedClaim)
+        ? 'El dato de 2025 no acredita un cambio temporal.'
+        : '';
+      const measurementLimit = causalClaim
+        ? 'La tasa solo incluye a personas ocupadas: no mide ofertas adecuadas ni por qué aceptaron esos puestos, y no prueba esa causa.'
+        : qualificationFit
+          ? factsText
+            ? 'El grupo de cotización aproxima el nivel laboral, no los requisitos ni el ajuste por campo; medirlo exige vincular estudios y tareas. Solo cubre afiliación asalariada en España, no empleo exterior ni parte de mutualidades.'
+            : 'La sobrecualificación clasifica ocupaciones por nivel; no mide los requisitos del puesto ni el ajuste con los estudios.'
+          : '';
+      const outcomeLimit = individualGuaranteeLimit && temporalLimit
+        ? 'Los datos de grupo no garantizan el resultado individual ni demuestran un cambio temporal.'
+        : [individualGuaranteeLimit, temporalLimit].filter(Boolean).join(' ');
+      return [
+        [...selectedMetricFindings, ...conciseScopeNotes].filter(Boolean).join(' '),
+        factsText,
+        measurementLimit,
+        youthPopulationLimit,
         outcomeLimit,
       ].filter(Boolean).join('\n\n');
     },

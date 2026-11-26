@@ -71,7 +71,7 @@ export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
   const explicitlyBoundsWholeClaim = /\b(?:no (?:permite|basta para) confirmar toda la afirmaci[oó]n|no demuestra toda la afirmaci[oó]n)\b/i.test(text)
     || /\b(?:la afirmaci[oó]n|la predicci[oó]n)\b[^.!?]{0,100}\bno (?:queda|est[aá]) (?:demostrad\w*|acreditad\w*|confirmad\w*)\b/i.test(text)
     || /\bno significa que (?:todas las personas|todo el mundo)\b/i.test(text);
-  const contextualLimit = /\bno (?:confirma|confirman|demuestra|demuestran|prueba|prueban|mide|miden|indica|indican|informa|informan|muestra|muestran|publica|publican|compara|comparan|cuenta|identifica|identifican|incluye|desglosa|estima|representa|establece|define|separa|separan)\b|\bsolo incluye\b|\bexcluye\b|\bexcluyen\b/i.test(text)
+  const contextualLimit = /\bno (?:confirma|confirman|demuestra|demuestran|prueba|prueban|mide|miden|indica|indican|informa|informan|muestra|muestran|publica|publican|compara|comparan|cuenta|identifica|identifican|incluye|desglosa|estima|representa|establece|define|separa|separan)\b|\bsolo (?:incluye|cubre|abarca)\b|\bexcluye\b|\bexcluyen\b|\bno (?:los|las|el|la)\b[^.!?]{0,80}\b(?:requisit\w*|ajuste|campo de estudios|vacantes?|denominador|evoluci[oó]n)\b/i.test(text)
     || /\bno (?:define|fija|establece)\b[^.!?]{0,100}\b(?:umbral|criterio|regla|est[aá]ndar|una tendencia)\b/i.test(text)
     || /\bsolo (?:es|son|resulta|resultan) comparables? si\b/i.test(text)
     || /\bno demuestra\b[^.!?]{0,120}\b(?:universal|a todas las personas|para todo el mundo)\b/i.test(text);

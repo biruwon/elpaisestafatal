@@ -405,9 +405,9 @@ try {
     assert.equal(result.result.arguments?.[0]?.verdict, 'insufficient');
     assert.deepEqual(result.result.arguments?.[0]?.evidenceIds, []);
     assert.match(result.result.reply, /34,4 % de las personas ocupadas de 20 a 34 a[nñ]os/);
-    assert.match(result.result.reply, /no mide si la falta de oportunidades acordes llev[oó] a aceptar esos puestos/);
-    assert.match(result.result.reply, /denominador son solo las personas ocupadas de ese grupo/);
-    assert.match(result.result.reply, /definici[oó]n de este dato difiere/);
+    assert.match(result.result.reply, /no mide ofertas adecuadas ni por qu[eé] aceptaron esos puestos/);
+    assert.match(result.result.reply, /34,4 % de las personas ocupadas de 20 a 34 a[nñ]os con educaci[oó]n terciaria/);
+    assert.match(result.result.reply, /fuente señala una diferencia de definici[oó]n; compara a[nñ]os con cautela/);
     assert.deepEqual(result.result.criteria.map((criterion) => criterion.label), ['Contexto']);
     const [overqualificationSource] = result.result.sources;
     assert.equal(result.result.sources.length, 1);

@@ -243,8 +243,8 @@ if (graduateOutcome.status !== 'partial' || graduateOutcome.result?.evidenceLeve
   || !graduateOutcomeClaimFinding.includes('83,2 %') || !graduateOutcome.result?.shareableReply?.includes('34 %')
   || !graduateOutcome.result?.shareableReply?.includes('España, 2025')
   || !graduateOutcome.result?.shareableReply?.includes('diferencia de definición')
-  || !/no compara cohortes previas/i.test(graduateOutcome.result?.shareableReply || '')
-  || !graduateOutcome.result?.shareableReply?.includes('no una garantía individual')
+  || !/no garantizan el resultado individual ni demuestran un cambio temporal/i.test(graduateOutcome.result?.shareableReply || '')
+  || !graduateOutcome.result?.shareableReply?.includes('no garantizan el resultado individual')
   || !graduateOutcome.result?.sourceIds?.includes('eurostat-tertiary-employment')
   || !graduateOutcome.result?.sourceIds?.includes('eurostat-tertiary-overqualification')
   || graduateOutcome.result?.sourceIds?.includes('eurostat-tertiary-unemployment')
@@ -269,9 +269,8 @@ const graduateUnemployment = deterministicApiFallback({
 });
 if (graduateUnemployment.status !== 'partial' || graduateUnemployment.result?.answerScope?.directMetrics?.join(',') !== 'unemployment_rate_tertiary_education'
   || !graduateUnemployment.result?.shareableReply?.includes('6,4 %')
-  || !graduateUnemployment.result?.shareableReply?.includes('población activa')
-  || !graduateUnemployment.result?.shareableReply?.includes('denominador')
-  || !graduateUnemployment.result?.shareableReply?.includes('definición de este dato difiere')
+  || !graduateUnemployment.result?.shareableReply?.includes('de la población activa de 20 a 64 años')
+  || !graduateUnemployment.result?.shareableReply?.includes('fuente señala una diferencia de definición; compara años con cautela')
   || !graduateUnemployment.result?.sourceIds?.includes('eurostat-tertiary-unemployment')
   || graduateUnemployment.result?.sourceIds?.includes('eurostat-tertiary-employment')
   || graduateUnemployment.result?.sourceIds?.includes('eurostat-tertiary-overqualification')) {
@@ -293,7 +292,7 @@ const youthGraduate = deterministicApiFallback({ text: youthGraduateClaim, input
 if (youthGraduate.status !== 'partial' || youthGraduate.result?.answerScope?.directMetrics?.join(',') !== 'tertiary_overqualification_rate_age_20_34'
   || !youthGraduate.result?.shareableReply?.includes('34,4 %')
   || !youthGraduate.result?.shareableReply?.includes('20 a 34 años')
-  || !youthGraduate.result?.shareableReply?.includes('denominador son solo las personas ocupadas de ese grupo')
+  || !youthGraduate.result?.shareableReply?.includes('34,4 % de las personas ocupadas de 20 a 34 años con educación terciaria')
   || !youthGraduate.result?.shareableReply?.includes('no equivale a recién graduados')
   || youthGraduate.result?.shareableReply?.includes('34 % de las personas ocupadas de 20 a 64 años')
   || youthGraduate.result?.sourceIds?.includes('eurostat-tertiary-employment')) {

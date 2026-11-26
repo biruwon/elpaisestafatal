@@ -2843,7 +2843,7 @@ assert.deepEqual(graduateUnemployment.answerScope.directMetrics, ['unemployment_
 assert.equal(graduateUnemployment.sourceLinks.length, 1);
 assert.match(graduateUnemployment.shareableReply, /6,4 % de la poblaci[oó]n activa/);
 assert.match(graduateUnemployment.shareableReply, /no compara dos periodos/);
-assert.match(graduateUnemployment.shareableReply, /definici[oó]n de este dato difiere/);
+assert.match(graduateUnemployment.shareableReply, /fuente señala una diferencia de definici[oó]n; compara a[nñ]os con cautela/);
 assert.doesNotMatch(graduateUnemployment.shareableReply, /10 %|34 %/);
 const employmentSource = { id: 'eurostat-tertiary-employment', title: 'Employment rates by educational attainment level · Eurostat', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_ergaedn', retrievedAt: '2026-11-16' };
 const overqualificationSource = { id: 'eurostat-tertiary-overqualification', title: 'Over-qualification rates by citizenship · Eurostat', publisher: 'Eurostat', url: 'https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/lfsa_eoqgan', retrievedAt: '2026-11-16' };
@@ -2859,21 +2859,25 @@ assert.equal(graduateMatch.evidenceLevel, 'limited', 'The official overqualifica
 assert.deepEqual(graduateMatch.answerScope.directMetrics, ['employment_rate_tertiary_education', 'tertiary_overqualification_rate']);
 assert.deepEqual(graduateMatch.answerScope.contextMetrics, []);
 assert.equal(graduateMatch.sourceLinks.length, 4);
-assert.match(graduateMatch.shareableReply, /Eurostat \(España, 2025\): el 83,2 % de residentes de 20 a 64 a[nñ]os con educaci[oó]n terciaria/);
-assert.match(graduateMatch.shareableReply, /sobrecualificaci[oó]n/i);
-assert.match(graduateMatch.shareableReply, /34 % de personas ocupadas de 20 a 64 a[nñ]os/);
-assert.match(graduateMatch.shareableReply, /ocupaciones ISCO 4–9, de cualificaci[oó]n baja o media/);
-assert.match(graduateMatch.shareableReply, /grupo de cotizaci[oó]n aproxima el nivel del puesto/);
-assert.match(graduateMatch.shareableReply, /cohorte universitaria de Grado y Ciclo 2019–2020/);
-assert.match(graduateMatch.shareableReply, /no confirma los requisitos ni el ajuste por campo/);
+assert.match(graduateMatch.shareableReply, /Eurostat \(España, 2025\): el 83,2 % de las personas residentes de 20 a 64 a[nñ]os con educaci[oó]n terciaria/);
+assert.match(graduateMatch.shareableReply, /medida de sobrecualificaci[oó]n, entre las personas ocupadas de ese grupo, el 34 %/);
+assert.match(graduateMatch.shareableReply, /trabajaba en ISCO 4–9 \(cualificaci[oó]n baja o media\)/);
+assert.match(graduateMatch.shareableReply, /En España, cohorte universitaria de Grado y Ciclo 2019–2020/);
+assert.match(graduateMatch.shareableReply, /61,29 % de afiliados por cuenta ajena a la Seguridad Social al menos un d[ií]a de marzo/);
+assert.match(graduateMatch.shareableReply, /grupo de cotizaci[oó]n aproxima el nivel laboral/);
+assert.match(graduateMatch.shareableReply, /no los requisitos ni el ajuste por campo/);
 assert.ok(graduateMatch.shareableReply.trim().split(/\s+/).length < 150, 'The recent-cohort context and Eurostat measure should remain concise together');
-assert.match(graduateMatch.shareableReply, /No compara cohortes previas ni acredita un cambio temporal/);
+assert.match(graduateMatch.shareableReply, /no garantizan el resultado individual ni demuestran un cambio temporal/);
 assert.match(graduateMatch.shareableReply, /diferencia de definici[oó]n; compara a[nñ]os con cautela/);
 assert.doesNotMatch(graduateMatch.shareableReply, /50 %|10 %|17 €/);
 const graduatePublic = localPublicCheckResponse({ status: 'complete', requestId: 'graduate-employment', result: graduateMatch }, 'Un título universitario ya no garantiza encontrar un empleo cualificado');
 assert.equal(graduatePublic.state, 'limited');
 assert.deepEqual(graduatePublic.result.sources.map((source) => source.url), graduateMatch.sourceLinks.map((source) => source.url));
+assert.match(graduatePublic.result.reply, /La evidencia no basta para confirmar toda la afirmaci[oó]n/);
 assert.match(graduatePublic.result.reply, /34 %/);
+assert.match(graduatePublic.result.reply, /61,29 %.*al menos un d[ií]a de marzo/);
+assert.match(graduatePublic.result.reply, /no los requisitos ni el ajuste por campo/);
+assert.ok(graduatePublic.result.reply.trim().split(/\s+/).length < 150, 'Public rendering must preserve the scoped explanation and stay concise');
 assert.equal(focusedEvidencePlan('Un título universitario ya no garantiza encontrar un empleo cualificado en Francia')?.sourceLinks.length, 0, 'Spain-specific overqualification data must not appear for France');
 const siiuGraduateFitParaphrases = [
   'Un título universitario ya no garantiza encontrar un empleo cualificado',
@@ -2886,13 +2890,16 @@ for (const claim of siiuGraduateFitParaphrases) {
   assert.equal(plan.evidenceLevel, 'limited', `SIIU context must remain limited: ${claim}`);
   assert.ok(plan.sourceLinks.some((source) => source.id === 'siiu-graduate-contribution-groups-2019-2020'), `Missing SIIU outcome source for: ${claim}`);
   assert.ok(plan.sourceLinks.some((source) => source.id === 'siiu-graduate-employment-methodology-2019-2020'), `Missing SIIU scope methodology for: ${claim}`);
-  assert.match(plan.shareableReply, /cohorte universitaria de Grado y Ciclo 2019–2020/);
-  assert.match(plan.shareableReply, /61,29 % de afiliados por cuenta ajena a la Seguridad Social en marzo/);
+  assert.match(plan.shareableReply, /En España, cohorte universitaria de Grado y Ciclo 2019–2020/);
+  assert.match(plan.shareableReply, /61,29 % de afiliados por cuenta ajena a la Seguridad Social al menos un d[ií]a de marzo/);
   assert.doesNotMatch(plan.shareableReply, /46,96 %|74,15 %|89,09 %/, 'Do not select field examples when the claim asks about graduate outcomes in general');
-  assert.match(plan.shareableReply, /no confirma los requisitos ni el ajuste por campo/);
-  assert.match(plan.shareableReply, /Medir el ajuste requiere vincular estudios y tareas del puesto/);
+  assert.match(plan.shareableReply, /no los requisitos ni el ajuste por campo/);
+  assert.match(plan.shareableReply, /medirlo exige vincular estudios y tareas/);
   assert.ok(plan.shareableReply.trim().split(/\s+/).length < 150, `SIIU context should stay readable: ${claim}`);
-  assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'siiu-graduate-outcomes', result: plan }, claim).state, 'insufficient', 'Contextual contribution-group data must not support a claim about exact job requirements or degree demand');
+  const publicPlan = localPublicCheckResponse({ status: 'complete', requestId: 'siiu-graduate-outcomes', result: plan }, claim);
+  assert.equal(publicPlan.state, 'insufficient', 'Contextual contribution-group data must not support a claim about exact job requirements or degree demand');
+  assert.match(publicPlan.result.reply, /61,29 %.*al menos un d[ií]a de marzo/, `Public rendering dropped SIIU context for: ${claim}`);
+  assert.match(publicPlan.result.reply, /no los requisitos ni el ajuste por campo/, `Public rendering dropped the measurement limit for: ${claim}`);
 }
 for (const neighbor of [
   'Cada vez se exige un máster para trabajos que antes pedían solo una carrera',
@@ -3348,9 +3355,9 @@ for (const claim of youngOverqualificationParaphrases) {
   assert.deepEqual(answer.answerScope.directMetrics, ['tertiary_overqualification_rate_age_20_34'], claim);
   assert.deepEqual(answer.sourceLinks.map((source) => source.id), [youngOverqualificationSource.id], claim);
   assert.match(answer.shareableReply, /34,4 % de las personas ocupadas de 20 a 34 a[nñ]os/);
-  assert.match(answer.shareableReply, /denominador son solo las personas ocupadas de ese grupo/);
-  assert.match(answer.shareableReply, /no equivale a reci[eé]n graduados/);
-  assert.match(answer.shareableReply, /definici[oó]n de este dato difiere/);
+  assert.match(answer.shareableReply, /34,4 % de las personas ocupadas de 20 a 34 a[nñ]os con educaci[oó]n terciaria/);
+  if (/j[oó]ven|juvenil/.test(claim.toLocaleLowerCase('es'))) assert.match(answer.shareableReply, /no equivale a reci[eé]n graduados/);
+  assert.match(answer.shareableReply, /fuente señala una diferencia de definici[oó]n; compara a[nñ]os con cautela/);
 }
 const youthEmploymentCauseParaphrases = [
   'Los jóvenes aceptan empleos por debajo de su cualificación porque no encuentran oportunidades acordes a sus estudios',
@@ -3379,9 +3386,9 @@ for (const claim of youthEmploymentCauseParaphrases) {
   assert.ok(causalGap?.missing.some((item) => /oportunidades disponibles.*puestos aceptados.*motivos/.test(item)), claim);
   assert.match(causalGap?.nextAction || '', /Relacionar oportunidades laborales, puestos aceptados y motivos de la decisi[oó]n/);
   assert.match(plan.shareableReply, /34,4 % de las personas ocupadas de 20 a 34 a[nñ]os/);
-  assert.match(plan.shareableReply, /no mide si la falta de oportunidades acordes llev[oó] a aceptar esos puestos/);
+  assert.match(plan.shareableReply, /no mide ofertas adecuadas ni por qu[eé] aceptaron esos puestos/);
   assert.match(plan.shareableReply, /el 34,4 % de las personas ocupadas de 20 a 34 a[nñ]os con educaci[oó]n terciaria/);
-  assert.match(plan.shareableReply, /definici[oó]n de este dato difiere/);
+  assert.match(plan.shareableReply, /fuente señala una diferencia de definici[oó]n; compara a[nñ]os con cautela/);
   assert.ok(plan.shareableReply.split(/\s+/).length < 180, 'The causal qualification should remain short enough to digest');
   assert.ok(validateAnswerPlan(plan).ok, JSON.stringify(validateAnswerPlan(plan).errors));
   const publicAnswer = localPublicCheckResponse({ status: 'partial', requestId: 'youth-employment-cause', result: plan }, claim);

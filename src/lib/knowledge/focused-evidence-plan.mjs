@@ -1305,7 +1305,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     : explanation
       ? explanationSupportsClaim ? explanationFacts.join('\n\n') : [focusedExplanation, `Como contexto: ${explanationFacts.join('\n\n')}`].filter(Boolean).join('\n\n')
       : focusedExplanation;
-  const shareableContextReply = explanation && typeof focus.shareableReplyForContext === 'function'
+  const useEducationContextComposer = educationOutcome && !directThresholdAssessment;
+  const shareableContextReply = (educationOutcome ? useEducationContextComposer : Boolean(explanation)) && typeof focus.shareableReplyForContext === 'function'
     ? focus.shareableReplyForContext({
       claim,
       facts: explanationFacts,
