@@ -22,10 +22,11 @@ for (const claim of [...paraphrases, 'El mantenimiento ferroviario recibe menos 
   const plan = focusedEvidencePlan(claim, { now, propositions, allowReviewedSnapshotFallback: true });
   assert.equal(plan?.answerScope?.family, 'rail-investment-maintenance', claim);
   assert.equal(plan.evidenceLevel, 'limited', claim);
-  assert.match(plan.shareableReply, /1\.429,8 millones.*1\.974,5 millones/s, claim);
-  assert.match(plan.shareableReply, /974,3 millones.*600,6 millones.*373,7 millones/s, claim);
-  assert.match(plan.shareableReply, /inversión de capital y gasto de explotación son partidas distintas/i, claim);
-  assert.match(plan.shareableReply, /no miden si el mantenimiento bastaba/i, claim);
+  assert.match(plan.shareableReply, /En España, en 2023.*1\.429,8 millones.*1\.974,5 millones/s, claim);
+  assert.match(plan.shareableReply, /974,3 millones.*600,6.*373,7.*sin IVA/s, claim);
+  assert.match(plan.shareableReply, /son partidas distintas/i, claim);
+  assert.match(plan.shareableReply, /no indican si el mantenimiento era suficiente ni qu[eé] prioridad recibi[oó] cada red/i, claim);
+  assert.ok(plan.shareableReply.trim().split(/\s+/).length <= 90, 'Rail investment context should stay concise while retaining the spending categories and scope.');
   assert.deepEqual(plan.sourceIds, ['adif-rail-investment-maintenance-2023']);
   assert.deepEqual(plan.answerScope.directMetrics, []);
   const item = plan.blocks.find((block) => block.type === 'claim_breakdown').items[0];

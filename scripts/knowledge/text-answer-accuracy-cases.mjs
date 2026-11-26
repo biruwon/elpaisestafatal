@@ -3422,23 +3422,23 @@ export const textAnswerAccuracyCases = [
     now: '2026-11-25T12:00:00Z',
     expected: {
       state: 'insufficient', family: 'rail-investment-maintenance', verdict: 'insufficient', directSourceIds: [],
-      replyIncludes: ['1.429,8 millones de euros', '1.974,5 millones', '974,3 millones', '600,6 millones', '373,7 millones', 'partidas distintas', 'no miden si el mantenimiento bastaba'],
+      replyIncludes: ['En España, en 2023', '1.429,8 millones de euros', '1.974,5 millones', '974,3 millones', '600,6', '373,7', 'sin IVA', 'son partidas distintas', 'no indican si el mantenimiento era suficiente', 'qué prioridad recibió cada red'],
       replyExcludes: ['prueba que se descuidó la red', 'demuestra una prioridad política'],
       evidence: [
         {
           familyId: 'rail-investment-maintenance',
           sourceIds: ['adif-rail-investment-maintenance-2023'],
-          dataIncludes: ['1.429,8 millones de euros de inversión en la red convencional', '1.974,5 millones en nuevas líneas y en la red de alta velocidad en explotación'],
+          dataIncludes: ['1.429,8 millones de euros en la red convencional', '1.974,5 millones en nuevas líneas y alta velocidad en explotación'],
           dimensions: { period: '2023', geography: 'España', unit: 'millones de euros, sin IVA' },
         },
         {
           familyId: 'rail-investment-maintenance',
           sourceIds: ['adif-rail-investment-maintenance-2023'],
-          dataIncludes: ['974,3 millones de euros de gastos de explotación', '600,6 millones en la red convencional', '373,7 millones en la de alta velocidad'],
+          dataIncludes: ['974,3 millones de euros', '600,6 en la red convencional', '373,7 en alta velocidad'],
           dimensions: { period: '2023', geography: 'España', unit: 'millones de euros, sin IVA' },
         },
       ],
-      maxReplyWords: 180,
+      maxReplyWords: 100,
     },
   },
   {
@@ -3448,9 +3448,9 @@ export const textAnswerAccuracyCases = [
     now: '2026-11-25T12:00:00Z',
     expected: {
       state: 'insufficient', family: 'rail-investment-maintenance', verdict: 'insufficient', directSourceIds: [],
-      replyIncludes: ['1.429,8 millones de euros', '1.974,5 millones', '974,3 millones', 'la comparación da contexto'],
+      replyIncludes: ['1.429,8 millones de euros', '1.974,5 millones', '974,3 millones', 'son partidas distintas', 'sin IVA'],
       replyExcludes: ['prueba que se descuidó la red', 'demuestra una prioridad política'],
-      evidence: [], maxReplyWords: 180,
+      evidence: [], maxReplyWords: 100,
     },
   },
   {
@@ -3459,9 +3459,9 @@ export const textAnswerAccuracyCases = [
     now: '2026-11-25T12:00:00Z',
     expected: {
       state: 'insufficient', family: 'rail-investment-maintenance', verdict: 'insufficient', directSourceIds: [],
-      replyIncludes: ['1.429,8 millones de euros', '1.974,5 millones', '974,3 millones', 'la comparación da contexto'],
+      replyIncludes: ['1.429,8 millones de euros', '1.974,5 millones', '974,3 millones', 'son partidas distintas', 'sin IVA'],
       replyExcludes: ['prueba que se descuidó la red', 'demuestra una prioridad política'],
-      evidence: [], maxReplyWords: 180,
+      evidence: [], maxReplyWords: 100,
     },
   },
   {

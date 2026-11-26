@@ -31,8 +31,8 @@ const railInvestmentMaintenanceSnapshotFits = (claim) => {
   return requestedGeographyScopes(claim).every(({ id }) => id === 'ES');
 };
 
-const investmentByNetwork = `En España, en 2023, ADIF y ADIF AV ejecutaron ${format(1_429.8)} millones de euros de inversión en la red convencional y ${format(1_974.5)} millones en nuevas líneas y en la red de alta velocidad en explotación. La nota de ADIF describe la inversión convencional como récord de la compañía.`;
-const maintenanceByNetwork = `En 2023, ADIF y ADIF AV registraron ${format(974.3)} millones de euros de gastos de explotación en conservación y mantenimiento: ${format(600.6)} millones en la red convencional y ${format(373.7)} millones en la de alta velocidad. Las cifras publicadas excluyen el IVA.`;
+const investmentByNetwork = `En España, en 2023, ADIF y ADIF AV ejecutaron ${format(1_429.8)} millones de euros en la red convencional y ${format(1_974.5)} millones en nuevas líneas y alta velocidad en explotación; ADIF calificó de récord la inversión convencional.`;
+const maintenanceByNetwork = `En conservación y mantenimiento, el gasto de explotación fue ${format(974.3)} millones de euros: ${format(600.6)} en la red convencional y ${format(373.7)} en alta velocidad, sin IVA.`;
 
 const investmentDimensions = {
   subject: 'inversión ejecutada en red convencional frente a nuevas líneas y red de alta velocidad en explotación',
@@ -72,5 +72,5 @@ export const RAIL_INVESTMENT_MAINTENANCE_SNAPSHOT = Object.freeze({
 export const railInvestmentMaintenanceReply = ({ facts }) => [
   facts[0],
   facts[1],
-  'La comparación da contexto sobre importes ejecutados, pero inversión de capital y gasto de explotación son partidas distintas. Estas cifras no miden si el mantenimiento bastaba para las necesidades de cada red ni qué atención política recibieron; para eso hacen falta datos de estado y uso de los activos, necesidades de conservación y decisiones presupuestarias comparables.',
+  'Son partidas distintas: los totales no indican si el mantenimiento era suficiente ni qué prioridad recibió cada red. Para evaluarlo hay que comparar kilómetros, tráfico, estado y necesidades de conservación.',
 ].join('\n\n');
