@@ -993,6 +993,27 @@ const valueAddedUnavailable = await check(valueAddedClaim, brokenDatabase);
 assert.equal(valueAddedUnavailable.body.state, 'unavailable', 'A failed D1 read must remain distinct from a successful empty read');
 assert.doesNotMatch(valueAddedUnavailable.body.result?.reply || '', /83,0 %|34,5 €/);
 
+const tertiaryEmploymentClaim = '¿Cuál fue la tasa de empleo en España de las personas de 20 a 64 años con educación terciaria en 2025?';
+const tertiaryEmploymentNoDatabase = await checkWithoutDatabase(tertiaryEmploymentClaim);
+assert.ok(['limited', 'supported'].includes(tertiaryEmploymentNoDatabase.body.state), 'A current reviewed snapshot should answer without a D1 binding');
+assert.equal(tertiaryEmploymentNoDatabase.body.result.answerScope.family, 'education-employment-outcomes');
+assert.ok(tertiaryEmploymentNoDatabase.body.result.sources.some((source) => source.id === 'eurostat-tertiary-employment'));
+assert.match(tertiaryEmploymentNoDatabase.body.result.reply, /83,2 %/);
+assert.match(tertiaryEmploymentNoDatabase.body.result.keyFact, /83,2 %/);
+assert.match(tertiaryEmploymentNoDatabase.body.result.reply, /personas residentes de 20 a 64 años/);
+const tertiaryEmploymentParaphrase = await checkWithoutDatabase('¿Qué porcentaje de personas residentes de 20 a 64 años con estudios superiores tenía empleo en España en 2025?');
+assert.equal(tertiaryEmploymentParaphrase.body.state, tertiaryEmploymentNoDatabase.body.state);
+assert.equal(tertiaryEmploymentParaphrase.body.result.answerScope.family, tertiaryEmploymentNoDatabase.body.result.answerScope.family);
+assert.deepEqual(tertiaryEmploymentParaphrase.body.result.sources.map((source) => source.id), tertiaryEmploymentNoDatabase.body.result.sources.map((source) => source.id));
+assert.match(tertiaryEmploymentParaphrase.body.result.reply, /83,2 %/);
+
+const touristHousingClaim = 'Los pisos turísticos están retirando demasiada vivienda del alquiler residencial';
+const touristHousingNoDatabase = await checkWithoutDatabase(touristHousingClaim);
+assert.equal(touristHousingNoDatabase.body.state, 'insufficient', 'Contextual snapshots must not decide the unsupported causal claim');
+assert.equal(touristHousingNoDatabase.body.result.answerScope.family, 'tourist-housing-supply');
+assert.deepEqual(touristHousingNoDatabase.body.result.sources.map((source) => source.id), ['ine-tourist-count', 'ine-tourist-share']);
+assert.match(touristHousingNoDatabase.body.result.reply, /no mide viviendas que dejaron el alquiler residencial/i);
+
 for (const claim of [
   'La supuesta falta de camareros es en realidad una falta de empleos con salario y horario aceptables',
   'Los salarios y horarios de los puestos ofrecidos explican la escasez de camareros',

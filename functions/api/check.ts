@@ -16,7 +16,6 @@ import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care
 import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/tourism-employment-snapshot.mjs';
 import { FOREIGN_AFFILIATE_SECTOR_SNAPSHOT } from '../../src/lib/knowledge/foreign-affiliate-sector-snapshot.mjs';
 import { WAITER_VACANCY_SNAPSHOT } from '../../src/lib/knowledge/waiter-vacancy-snapshot.mjs';
-import { SECTORAL_VALUE_ADDED_SNAPSHOT } from '../../src/lib/knowledge/sectoral-value-added-snapshot.mjs';
 import { snapshotLifecycle } from '../../src/lib/knowledge/snapshot-lifecycle.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import type { AnswerPlan, ResolveResult } from '../../src/lib/knowledge/contracts';
@@ -78,7 +77,7 @@ const cacheKeyFor = (body: { text: string; inputType: InputType; file?: File; cl
   // Names, sizes and lossy text fingerprints cannot identify submitted content.
   // Uploads and fetched pages are never shared through this response cache.
   if (body.file || body.inputType !== 'text') return '';
-  return JSON.stringify([responseCacheVersion, 'sectoral-value-added-reviewed-snapshot-fallback-2026-11', RUNTIME_VERSIONS.fallbackKnowledge, RUNTIME_VERSIONS.warehouseKnowledge, body.text.normalize('NFC'), body.clarification || null, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue']);
+  return JSON.stringify([responseCacheVersion, 'text-reviewed-snapshot-fallback-measurement-answer-2026-11', RUNTIME_VERSIONS.fallbackKnowledge, RUNTIME_VERSIONS.warehouseKnowledge, body.text.normalize('NFC'), body.clarification || null, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue']);
 };
 
 const json = (body: PublicCheckResponse, status = 200): Response => Response.json(body, {
@@ -343,24 +342,19 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       const metricIds = vacancyMetrics.length ? vacancyMetrics : [...(focusedMetricIdsFor(effectiveClaim) || [])];
       const warehouseUnavailableMessage = 'No hemos podido consultar las series estadísticas ahora. Inténtalo de nuevo; todavía no sabemos si hay una medición compatible.';
       const localResolverAvailable = Boolean(env.LOCAL_CLASSIFIER_ENDPOINT && env.LOCAL_CLASSIFIER_TOKEN && localCircuitOpenUntil <= Date.now());
+      const focusDatabase = focus.id === 'tourism-seasonal-employment' ? env.SEASONAL_DB : env.DB;
       if (focus.id === 'rental-price-amount' && (!env.DB || !metricIds.length)) return json(unavailableCheck(effectiveClaim, 'No podemos consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'));
-      if (!env.DB && focus.id === 'foreign-affiliation-in-tourism-and-agriculture' && snapshotLifecycle(FOREIGN_AFFILIATE_SECTOR_SNAPSHOT).usable) {
-        const snapshotObservations = FOREIGN_AFFILIATE_SECTOR_SNAPSHOT.observations.filter((item) => metricIds.includes(item.metricId));
-        const plan = focusedEvidencePlan(effectiveClaim, { observations: snapshotObservations }) as AnswerPlan | undefined;
-        if (plan) return json(checkFromPlan(effectiveClaim, plan));
-      }
-      if (!env.DB && focus.id === 'waiter-vacancy-and-conditions' && snapshotLifecycle(WAITER_VACANCY_SNAPSHOT).usable) {
-        const snapshotObservations = WAITER_VACANCY_SNAPSHOT.observations.filter((item) => metricIds.includes(item.metricId));
-        const plan = focusedEvidencePlan(effectiveClaim, { observations: snapshotObservations }) as AnswerPlan | undefined;
-        if (plan) return json(checkFromPlan(effectiveClaim, plan));
-      }
-      if (!env.DB && focus.id === 'employment-value-added-by-activity' && snapshotLifecycle(SECTORAL_VALUE_ADDED_SNAPSHOT).usable) {
-        const plan = focusedEvidencePlan(effectiveClaim, { observations: [], allowReviewedSnapshotFallback: true }) as AnswerPlan | undefined;
-        if (plan) return json(checkFromPlan(effectiveClaim, plan));
+      if (!focusDatabase && metricIds.length) {
+        // Reuse the same reviewed, expiring text snapshots as deterministic fallback.
+        // Only a result with cited sources and visible findings can replace the
+        // missing warehouse; an empty evidence gap remains unavailable here.
+        const reviewedFallback = fallbackResponse(effectiveClaim, 'text');
+        const reviewedResult = reviewedFallback.state === 'supported' || reviewedFallback.state === 'limited' || reviewedFallback.state === 'insufficient'
+          ? reviewedFallback.result : undefined;
+        if (reviewedResult?.sources.length && reviewedResult.whatWeKnow.length) return json(reviewedFallback);
       }
       // A focused metric family with no D1 binding has not been checked. Do not
       // turn missing retrieval infrastructure into an evidence-gap conclusion.
-      const focusDatabase = focus.id === 'tourism-seasonal-employment' ? env.SEASONAL_DB : env.DB;
       if (metricIds.length && !focusDatabase) {
         warehouseUnavailableResponse = unavailableCheck(effectiveClaim, warehouseUnavailableMessage);
         if (!localResolverAvailable || focus.id === 'tourism-seasonal-employment') return json(warehouseUnavailableResponse);

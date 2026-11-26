@@ -47,6 +47,11 @@ const criteriaFromPlan = (plan: AnswerPlan): CheckCriterion[] => plan.blocks.fil
   if (!('items' in block) || !Array.isArray(block.items)) return [];
   return block.items.slice(0, 12).map((item, itemIndex) => ({ id: `scorecard-${index + 1}-${itemIndex + 1}`, label: item.label, finding: [item.baseline?.value && `${item.baseline.period}: ${item.baseline.value}`, item.comparison?.value && `${item.comparison.period}: ${item.comparison.value}`, item.change].filter(Boolean).join(' → ') || item.caveat || 'Indicador sin comparación compatible', sourceIds: sourcesForEvidenceIds(plan, item.evidenceIds || []) }));
 }));
+const asksForMeasuredValue = (claim: string): boolean => {
+  const text = String(claim || '').trim();
+  return /^(?:¿\s*)?(?:cu[aá]l(?:es)?|cu[aá]nt[oa]s?|qu[eé]\s+(?:tasa|porcentaje|proporci[oó]n|n[uú]mero|cantidad|importe|media|promedio|valor|[ií]ndice|cifra)\b)/i.test(text)
+    || /^(?:what\s+(?:is|was)|how\s+(?:many|much)|which\s+(?:rate|percentage|proportion|number|amount|average|value|index)\b)/i.test(text);
+};
 const visualFromCatalogue = (entry: CatalogueEntry | RuntimeCatalogueEntry): CheckVisual | undefined => {
   const visual = 'visual' in entry ? entry.visual : undefined;
   if (!visual || visual.type === 'none' || !visual.labels?.length || !visual.values?.length || visual.labels.length !== visual.values.length) return undefined;
@@ -160,8 +165,14 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
     ? `El cuadro de datos compara ${scorecardItems.baseline.period} con ${scorecardItems.comparison.period}: ${improved} indicadores mejoran y ${worsened} empeoran. Esa evidencia permite valorar resultados concretos, pero no convierte por sí sola la comparación en una clasificación histórica objetiva.`
     : 'La tesis se evalúa mejor separando sus argumentos y comparando resultados concretos con un periodo y criterios definidos.';
   const scorecard = scorecardFromPlan(plan, sources);
-  const claimNeedsQualification = requiresPublicClaimQualification(plan, argumentsList);
-  const answerNeedsQualification = claimNeedsQualification || plan.evidenceLevel === 'insufficient';
+  const sourcedMeasurementAnswer = plan.answerScope?.kind === 'measurement'
+    && asksForMeasuredValue(claim)
+    && plan.evidenceLevel !== 'insufficient'
+    && Boolean(plan.shareableReply?.trim())
+    && sources.length > 0
+    && criteria.some((criterion) => Boolean(criterion.finding.trim()) && Boolean(criterion.sourceIds?.length));
+  const claimNeedsQualification = !sourcedMeasurementAnswer && requiresPublicClaimQualification(plan, argumentsList);
+  const answerNeedsQualification = !sourcedMeasurementAnswer && (claimNeedsQualification || plan.evidenceLevel === 'insufficient');
   const reviewedScopeGap = plan.answerScope?.family === 'waiter-vacancy-and-conditions' && Boolean(plan.shareableReply?.trim());
   const replyQualityNotes = [...new Set((plan.evidenceSummary?.families || []).flatMap((family) => family.qualityNotes || []))];
   const originalReply = plan.shareableReply?.trim() || replyFromPlan(plan);
@@ -185,6 +196,10 @@ export const checkFromPlan = (claim: string, plan: AnswerPlan, requestId?: strin
     : reply);
   const publicLimitation = 'La respuesta no contiene hallazgos atribuibles a una fuente que se pueda consultar.';
   const result: CheckResult = { claim, interpretation, nextQuestion: plan.clarificationQuestion, thesis: evaluative ? { text: claim, kind: 'evaluative', conclusion: thesisConclusion, criteria: ['resultados económicos y sociales', 'calidad institucional', 'cumplimiento legal', 'comparación con otros gobiernos'] } : undefined, reply: publicReply, answer: publicReply || plan.summary || plan.headline, shareableReply: suppressShareableReply ? undefined : plan.shareableReply ? reply : undefined, shareableSourceIds: suppressShareableReply ? undefined : plan.shareableSourceIds, keyFact: answerNeedsQualification ? 'La evidencia no basta para confirmar toda la afirmación' : plan.headline, criteria, arguments: argumentsList.length ? argumentsList : undefined, coverageSummary: argumentsList.length ? { total: argumentsList.length, supported: counts.supported, contradicted: counts.contradicted, mixed: counts.mixed, insufficient: counts.insufficient, notVerifiable: counts.not_verifiable } : undefined, whatWeKnow: criteria.map((item) => item.finding), limitations: sources.length ? [plan.limitation].filter((value): value is string => Boolean(value)) : [publicLimitation], scope: { checkedAt: plan.asOf }, answerScope: plan.answerScope, sources, visual: visuals[0], visuals: visuals.length > 1 ? visuals : undefined, scorecard, evidenceSummary: publicEvidenceSummary(plan.evidenceSummary) };
+  if (sourcedMeasurementAnswer) {
+    const measurementFinding = criteria.find((criterion) => criterion.sourceIds?.length)?.finding;
+    if (measurementFinding) result.keyFact = measurementFinding;
+  }
   const reviewedContextFamily = ['foreign-affiliation-in-tourism-and-agriculture', 'waiter-vacancy-and-conditions', 'employment-value-added-by-activity', 'tourism-seasonal-employment'].includes(plan.answerScope?.family || '');
   const argumentEvidence = argumentsList.reduce((count, item) => count + item.evidenceIds.length
     + (reviewedContextFamily ? item.contextSourceIds?.length || 0 : 0), 0);
