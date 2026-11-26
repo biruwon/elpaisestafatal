@@ -104,6 +104,10 @@ const migrationFiscalContribution = (t) => migrationPopulation.test(t)
 const migrationPersonalBenefitReceipt = (t) => {
   if (!migrationPopulation.test(t)
     || !/\b(prestacion\w*|ayud\w*|benefici\w*|subsidios?|transferencias? sociales?|proteccion social)\b/.test(t)) return false;
+  const recipientFrame = /\b(recib\w*|cobr\w*|percib\w*|receptor\w*|beneficiari\w*|titular\w*|perceptor\w*)\b/.test(t)
+    || /\b(?:proporcion|porcentaje|fraccion|tasa)\b.{0,70}\b(?:ingresos? personales?|prestacion\w*|ayud\w*)\b/.test(t)
+    || /\bingresos? personales?\b/.test(t);
+  if (!recipientFrame) return false;
   const denominatorIsAllRecipients = /\b(?:parte|proporcion|porcentaje|fraccion)\b.{0,45}\b(?:del|de todas? las?)\s+(?:total\s+de\s+)?(?:personas? beneficiari\w*|beneficiari\w*|receptores? de prestaciones|quienes reciben|personas que reciben)\b/.test(t)
     || /\b(?:beneficiari\w*|receptores? de prestaciones|quienes reciben)\b.{0,45}\b(?:inmigr\w*|migr\w*|extranjer\w*|nacid\w* fuera)\b/.test(t)
     || /\b(?:parte|proporcion|porcentaje|fraccion)\b.{0,35}\b(?:de )?(?:todas? las?|total de las?|conjunto de las?)\s+(?:prestacion\w*|ayud\w*|subsidios?)\b/.test(t)
@@ -112,8 +116,8 @@ const migrationPersonalBenefitReceipt = (t) => {
   const amountOrCost = /\b(euros?|eur|cuantia\w*|importe\w*|cuanto dinero|cantidad de dinero|gasto por persona|coste por persona|valor monetario)\b/.test(t);
   const absoluteCount = /\b(?:cuantos?|numero|cantidad|recuento|total)\b.{0,35}\b(personas?|beneficiari\w*|receptores?)\b/.test(t)
     || /\bmas personas\b.{0,35}\b(?:recib\w*|cobr\w*|benefici\w*)\b/.test(t);
-  const causalOrNormative = /\b(caus\w*|provoc\w*|por culpa|debido a|porque|merec\w*|deberian?|tendrian que|prioridad|fraud\w*|fraude|ilegal\w*|derecho a|requisit\w*|elegibilidad|conced\w*|deneg\w*|rechaz\w*|impid\w*|acceso|acced\w*|solicit\w*|tramit\w*)\b/.test(t);
-  const trend = /\b(cada vez|ha aumentado|aument\w* desde|crec\w* desde|baj\w* desde|disminu\w* desde|tendencia|evoluci\w*|entre (?:19|20|21)\d{2})\b/.test(t);
+  const causalOrNormative = /\b(caus\w*|provoc\w*|colaps\w*|satur\w*|dispar\w*|sobrecarg\w*|desbord\w*|por culpa|debido a|porque|merec\w*|deberian?|tendrian que|prioridad|fraud\w*|fraude|ilegal\w*|derecho a|requisit\w*|elegibilidad|conced\w*|deneg\w*|rechaz\w*|impid\w*|acceso|acced\w*|solicit\w*|tramit\w*)\b/.test(t);
+  const trend = /\b(cada vez|ha aumentado|aument\w*|increment\w*|crec\w*|baj\w*|disminu\w*|tendencia|evoluci\w*|entre (?:19|20|21)\d{2})\b/.test(t);
   const fiscal = /\b(fiscal\w*|impuest\w*|hacienda|recaud\w*|tribut\w*|cotiz\w*|balance fiscal|arcas publicas|cuentas publicas|gasto publico total|contribucion neta)\b/.test(t);
   return !denominatorIsAllRecipients && !namedProgram && !amountOrCost && !absoluteCount && !causalOrNormative && !trend && !fiscal;
 };

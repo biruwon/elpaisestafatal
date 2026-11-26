@@ -349,12 +349,15 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       if (focus.id === 'rental-price-amount' && (!env.DB || !metricIds.length)) return json(unavailableCheck(effectiveClaim, 'No podemos consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'));
       if (!focusDatabase && metricIds.length) {
         // Reuse the same reviewed, expiring text snapshots as deterministic fallback.
-        // Only a result with cited sources and visible findings can replace the
-        // missing warehouse; an empty evidence gap remains unavailable here.
+        // Inline fallback data for other metric families is not a substitute
+        // for a warehouse read. The sectoral value-added family is explicitly
+        // reviewed for this path; other families need snapshot-mode evidence.
         const reviewedFallback = fallbackResponse(effectiveClaim, 'text');
         const reviewedResult = reviewedFallback.state === 'supported' || reviewedFallback.state === 'limited' || reviewedFallback.state === 'insufficient'
           ? reviewedFallback.result : undefined;
-        if (reviewedResult?.sources.length && reviewedResult.whatWeKnow.length) return json(reviewedFallback);
+        const reviewedSnapshotAvailable = reviewedResult?.evidenceSummary?.mode === 'snapshot'
+          || focus.id === 'employment-value-added-by-activity';
+        if (reviewedSnapshotAvailable && reviewedResult?.sources.length && reviewedResult.whatWeKnow.length) return json(reviewedFallback);
       }
       // A focused metric family with no D1 binding has not been checked. Do not
       // turn missing retrieval infrastructure into an evidence-gap conclusion.
