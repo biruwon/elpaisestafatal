@@ -1,4 +1,4 @@
-import { knownSubnationalGeographyIds, requestedGeographyScopes } from './geography-scope.mjs';
+import { knownSubnationalGeographyIds } from './geography-scope.mjs';
 
 const source = {
   id: 'bank-spain-housing-mobility-annual-2025',
@@ -55,14 +55,11 @@ export const HOUSING_LABOUR_MOBILITY_EVIDENCE = {
     },
   ],
   sources: [source],
-  shareableReplyForContext: ({ claim, facts }) => {
-    const localScopeRequested = requestedGeographyScopes(claim).some(({ type }) => type === 'region');
+  shareableReplyForContext: () => {
     return [
-      facts[0],
-      facts[1],
-      facts[2],
-      ...(localScopeRequested ? ['Aunque el análisis utiliza movimientos entre provincias, la cifra publicada es un coeficiente agrupado para España; no permite atribuir ese efecto a la ciudad o provincia mencionada.'] : []),
-      'El estudio aporta contexto sobre la elección de destino residencial; no demuestra que el encarecimiento cause menos movilidad laboral ni que obligue a profesionales cualificados a marcharse. Para comprobarlo hacen falta datos de trabajadores por ocupación, lugar de origen y destino, junto con motivos de mudanza y costes de vivienda comparables.',
+      'El Banco de España estudió mudanzas entre provincias durante 2014–2024. Separó los grupos por edad (menores de 35 o 35 y más) y lugar de nacimiento (España o extranjero), no por ocupación.',
+      'En el modelo, un alquiler real un 1 % más alto frente a destinos alternativos se asocia con un flujo relativo de migración interna un 0,6 % menor hacia esa provincia. Compara el mismo origen, grupo y año y controla por salario y población del destino; no es un recuento de trabajadores.',
+      'Es un resultado agregado para España, sin desglose por ciudad o provincia. Mide mudanzas residenciales, no movilidad laboral: no demuestra que el alquiler frene cambios de trabajo ni obligue a profesionales a marcharse.',
     ].join('\n\n');
   },
 };

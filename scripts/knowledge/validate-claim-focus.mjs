@@ -416,23 +416,27 @@ assert.deepEqual(housingMobilityPlan.sourceLinks.map((source) => source.id), hou
 assert.match(housingMobilityPlan.shareableReply, /2014–2024/);
 assert.match(housingMobilityPlan.shareableReply, /0,6 %/);
 assert.match(housingMobilityPlan.shareableReply, /flujo relativo/i);
-assert.match(housingMobilityPlan.shareableReply, /no por profesi[oó]n|no desglosa.*ocupaci[oó]n/i);
-assert.match(housingMobilityPlan.shareableReply, /motivo de cada mudanza/i);
+assert.match(housingMobilityPlan.shareableReply, /menores de 35 o 35 y m[aá]s/);
+assert.match(housingMobilityPlan.shareableReply, /lugar de nacimiento.*no por ocupaci[oó]n/i);
+assert.match(housingMobilityPlan.shareableReply, /mismo origen, grupo y a[nñ]o.*controla por salario y poblaci[oó]n/i);
+assert.match(housingMobilityPlan.shareableReply, /no es un recuento de trabajadores/i);
+assert.ok(housingMobilityPlan.shareableReply.trim().split(/\s+/).length <= 120, 'The contextual answer should stay brief while retaining its scope and limits');
 for (const paraphrase of housingMobilityParaphrases.slice(1)) {
   const plan = focusedEvidencePlan(paraphrase, { now: Date.parse('2026-11-25') });
   assert.equal(plan.answerScope.family, 'housing-labour-mobility', `A housing and labor-mobility paraphrase changed family: ${paraphrase}`);
   assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
   assert.deepEqual(plan.sourceLinks.map((source) => source.id), housingMobilitySourceIds, `A paraphrase changed the primary source: ${paraphrase}`);
   assert.match(plan.shareableReply, /0,6 %/);
+  assert.equal(plan.shareableReply, housingMobilityPlan.shareableReply, `A paraphrase changed the reviewed answer: ${paraphrase}`);
 }
 const skilledHousingMobility = focusedEvidencePlan(housingMobilityParaphrases[1], { now: Date.parse('2026-11-25') });
-assert.match(skilledHousingMobility.shareableReply, /no separa cada provincia o ciudad/i);
-assert.match(skilledHousingMobility.shareableReply, /no demuestra que el encarecimiento cause menos movilidad laboral ni que obligue a profesionales cualificados a marcharse/i);
+assert.match(skilledHousingMobility.shareableReply, /sin desglose por ciudad o provincia/i);
+assert.match(skilledHousingMobility.shareableReply, /no demuestra que el alquiler frene cambios de trabajo ni obligue a profesionales a marcharse/i);
 const housingMobilityPublic = localPublicCheckResponse({
   status: 'complete', requestId: 'housing-labour-mobility-text-evidence', result: skilledHousingMobility,
 }, housingMobilityParaphrases[1]);
 assert.equal(housingMobilityPublic.state, 'insufficient', 'A contextual provincial estimate must not confirm the named skilled-worker claim');
-assert.match(housingMobilityPublic.result.reply, /2014–2024.*0,6 %.*no demuestra que el encarecimiento cause menos movilidad laboral/s, 'The public answer should preserve the scoped estimate, period and causal limit');
+assert.match(housingMobilityPublic.result.reply, /2014–2024.*0,6 %.*no demuestra que el alquiler frene cambios de trabajo/s, 'The public answer should preserve the scoped estimate, period and causal limit');
 assert.deepEqual(housingMobilityPublic.result.sources.map((source) => source.id), housingMobilitySourceIds);
 const housingMobilityOutsidePeriod = focusedEvidencePlan('En 2026 el alquiler está frenando la movilidad laboral entre ciudades', { now: Date.parse('2026-11-25') });
 assert.equal(housingMobilityOutsidePeriod.evidenceLevel, 'insufficient', 'The 2014–2024 estimate must not be shown as evidence for a 2026 claim');
