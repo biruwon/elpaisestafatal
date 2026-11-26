@@ -5,7 +5,7 @@ export const RUNTIME_VERSIONS = Object.freeze({
   evidencePacketSchema: '1',
   compilerContract: '3',
   knowledge: '2026-08-04.2',
-  fallbackKnowledge: 'deterministic-fallback-83-oecd-job-mobility-context-2026-11',
-  warehouseKnowledge: 'warehouse-2026-11-26.43-oecd-job-mobility-context',
+  fallbackKnowledge: 'deterministic-fallback-84-tax-service-perception-context-2026-11',
+  warehouseKnowledge: 'warehouse-2026-11-26.44-tax-service-perception-context',
   indexKnowledge: 'index-only-2026-08-05.9',
 });

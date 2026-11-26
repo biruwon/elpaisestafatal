@@ -2081,3 +2081,46 @@ focused family and leaves 113 without either route. It reports 7 complete,
 108 limited and 185 uncovered answers; public states remain 263 insufficient
 and 37 limited. All discovery claims remain unverified. These counts measure
 routing and answer structure, not factual accuracy across arbitrary user text.
+
+## Tax revenue and public-service perceptions — 26 November 2026
+
+The focused text resolver now recognizes claims that pair rising taxes or
+aggregate revenue with worsening or non-improving perceptions of general public
+services. The European Commission's [Spain country table in Taxation Trends
+2025](https://taxation-customs.ec.europa.eu/document/download/5afc4182-d362-4635-9ffb-8bfba8fe8548_en?filename=Summary-tables-by-country-List-of-tables.pdf)
+reports taxes and social contributions at 32.3% of GDP in 2012 and 36.5% in
+2023. This is government revenue relative to GDP; it does not measure the tax
+bill of the average taxpayer.
+
+For perception, CIS study 2950 reports 47.3% of respondents rated overall
+public-service functioning very or fairly satisfactory in June–July 2012.
+Study 3430 reports 45.3% in November–December 2023. The population definition
+and interview mode changed between the waves: 2012 covered resident adults and
+used in-home interviews; 2023 covered Spanish adults, applied weights and used
+telephone interviews. The two percentage-point difference is smaller than the
+published whole-sample margins (±2.0 and ±1.0 points under a simple-random-
+sample assumption), so it alone does not establish a meaningful decline. Both
+questions measure reported general perception rather than objective service
+quality.
+
+The answer links these sources only as context. It stays insufficient because
+the sources do not connect an individual's taxes with their perception, or
+show that aggregate revenue caused public services to worsen. Tax-only claims,
+perception-only claims, named-service claims, current claims and periods beyond
+the two survey years do not inherit the combined context.
+
+Held-out paraphrases now check source and period consistency, survey bases,
+denominators, and the distinction between aggregate revenue and an individual
+taxpayer's bill. Nearby tax-only, service-only and specific-health-service
+claims are checked to prevent cross-routing. These checks evaluate this
+family's boundary and answer wording; they do not establish accuracy for every
+tax or public-service claim.
+
+The held-out text benchmark passes 260/260 cases across 68 paraphrase groups;
+the claim-focus suite checks 382 formulations and nearby claims. The refreshed
+300-claim discovery audit routes 188 candidates to a metric or focused family
+and leaves 112 without either route. It reports 7 complete, 110 limited and
+183 uncovered answers, with public states of 263 insufficient and 37 limited;
+43 claims retain structured multi-part answers. All discovery claims remain
+unverified. Routing and answer-state counts do not measure factual accuracy
+across arbitrary text.

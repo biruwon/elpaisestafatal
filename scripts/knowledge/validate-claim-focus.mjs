@@ -248,6 +248,55 @@ for (const nearby of [
 const wageProgressionPlan = focusedEvidencePlan('Los trabajadores jóvenes encadenan años de salarios de entrada sin progresión real', { now: wageMobilityNow });
 assert.equal(wageProgressionPlan.answerScope.family, 'wage-progression');
 assert.deepEqual(wageProgressionPlan.sourceLinks, [], 'Wage progression without an employer move must not inherit mobility context');
+const publicTaxServiceClaims = [
+  'El contribuyente medio paga más impuestos pero percibe peores servicios que hace unos años',
+  'La recaudación aumenta aunque los ciudadanos no noten una mejora equivalente en los servicios públicos',
+  'Suben los tributos y la satisfacción general con los servicios públicos no mejora al mismo ritmo',
+];
+const publicTaxServiceSourceIds = [
+  'ec-taxation-trends-spain-2025',
+  'cis-public-services-quality-2012-study-2950',
+  'cis-public-services-quality-2012-methodology',
+  'cis-public-services-quality-2023-study-3430',
+  'cis-public-services-quality-2023-methodology',
+];
+const publicTaxServiceNow = Date.parse('2026-11-26T12:00:00Z');
+for (const claim of publicTaxServiceClaims) {
+  assert.equal(claimFocusFor(claim)?.id, 'tax-service-perception', `A tax/service perception paraphrase changed family: ${claim}`);
+  const plan = focusedEvidencePlan(claim, { now: publicTaxServiceNow });
+  assert.equal(plan.answerScope.family, 'tax-service-perception');
+  assert.equal(plan.claimType, 'comparative');
+  assert.equal(plan.evidenceLevel, 'limited', 'Aggregate tax revenue and survey context must not directly verify a combined claim');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), publicTaxServiceSourceIds);
+  assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.sourceIds, [],
+    'Neither the aggregate ratio nor separate surveys directly link average payments with service perception');
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
+  assert.match(plan.shareableReply, /32,3 % del PIB en 2012 .*36,5 % en 2023/);
+  assert.match(plan.shareableReply, /47,3 % .*2012 .*45,3 % .*2023/);
+  assert.match(plan.shareableReply, /no lo que paga una persona media/);
+  assert.match(plan.shareableReply, /no demuestra por sí solo una caída significativa|no demuestra por sí sola una caída significativa/);
+  validateAnswerPlan(plan);
+}
+for (const outsideScope of [
+  'La recaudación aumenta aunque los ciudadanos no noten una mejora equivalente en los servicios públicos entre 2024 y 2025',
+  'En Francia, la recaudación aumenta aunque los ciudadanos no noten una mejora equivalente en los servicios públicos',
+  'Hoy el contribuyente medio paga más impuestos pero percibe peores servicios públicos',
+]) {
+  const plan = focusedEvidencePlan(outsideScope, { now: publicTaxServiceNow });
+  assert.equal(plan.answerScope.family, 'tax-service-perception');
+  assert.deepEqual(plan.sourceLinks, [], `Tax/service context escaped its period or territory scope: ${outsideScope}`);
+  assert.doesNotMatch(plan.shareableReply, /32,3 %|36,5 %|47,3 %|45,3 %/, `Out-of-scope tax/service figures appeared: ${outsideScope}`);
+}
+for (const nearby of [
+  'La recaudación tributaria ha aumentado en España desde 2012',
+  'La recaudación aumenta, pero la satisfacción con la sanidad pública empeora',
+  'Los españoles están menos satisfechos con los servicios públicos que hace unos años',
+]) assert.notEqual(claimFocusFor(nearby)?.id, 'tax-service-perception', `A nearby tax-only, service-specific, or perception-only claim crossed into combined tax/service evidence: ${nearby}`);
+const publicTaxServicePublic = localPublicCheckResponse({
+  status: 'partial', requestId: 'public-tax-service-context', result: focusedEvidencePlan(publicTaxServiceClaims[0], { now: publicTaxServiceNow }),
+}, publicTaxServiceClaims[0]);
+assert.equal(publicTaxServicePublic.state, 'insufficient');
+assert.deepEqual(publicTaxServicePublic.result.sources.map((source) => source.id), publicTaxServiceSourceIds);
 for (const claim of [
   'En España es más fácil pagar un impuesto que conseguir una ayuda pública',
   'La cita previa obligatoria ha convertido trámites básicos en una barrera',

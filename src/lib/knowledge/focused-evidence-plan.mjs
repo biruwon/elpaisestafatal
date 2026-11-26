@@ -669,6 +669,20 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const sameHealthPerceptionOutcomeCompound = focus.id === 'health-perception-outcomes'
     && propositions.length >= 2 && propositions.length <= 3
     && propositions.every((proposition) => /\b(sanidad|sanitari\w*|salud|esperanza de vida|mortalidad|resultad\w*)\b/.test(normalize(proposition.text)));
+  const sameTaxServicePerceptionCompound = focus.id === 'tax-service-perception'
+    && propositions.length === 2
+    && /\b(pero|aunque|mientras|sin embargo|a pesar)\b/.test(normalizedClaim)
+    && propositions.some((proposition) => {
+      const text = normalize(proposition.text);
+      return /\b(impuest\w*|tribut\w*|recaudaci\w*|ingresos? fiscales?|presion fiscal|carga fiscal|contribuyente\w*)\b/.test(text)
+        && /\b(pag\w*|sub\w*|aument\w*|crec\w*|increment\w*|mas|mayor\w*)\b/.test(text);
+    })
+    && propositions.some((proposition) => {
+      const text = normalize(proposition.text);
+      return /\bservicios?\b/.test(text)
+        && /\b(peor\w*|empeor\w*|deterior\w*|no (?:se )?(?:mejor\w*|not\w*|percib\w*|observ\w*)|sin (?:notar|mejor\w*|percibir)|menos (?:satisfac\w*|calidad|servicios?)|equivalent\w*|proporci\w*|al mismo ritmo)\b/.test(text);
+    })
+    && !/\b(caus\w*|provoc\w*|gener(?:ar|a|an|o|aba|aron|ando|ado|aria|aran|en)|debido|porque|por culpa|hace que|lleva a|conllev\w*|produce)\b/.test(normalizedClaim);
   const dentalCostBarrierCompound = focus.id === 'dental-care-cost-barrier'
     && propositions.length === 2
     && /\b(porque|ya que|debido a que|por culpa de)\b/.test(normalizedClaim)
@@ -797,7 +811,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       || sameEuropeanPriceWageConvergence
       || sameHicpBasketComparison
       || sameProductivityComparison && /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(clauseText)) return true;
-    if (sameLandlordMotive) return true;
+    if (sameLandlordMotive || sameTaxServicePerceptionCompound) return true;
     if (samePensionPrivateSavingsCompound) return true;
     if (housingInvestmentReason || firmWageMechanism || businessSizeProductivityMechanism || railInvestmentMaintenanceCompound || electricityBillComponentsCompound || pensionWageMechanism || samePensionMeiCompound || sameHealthPerceptionOutcomeCompound || dentalCostBarrierCompound || unemploymentSupplyExplanation || sameEmployerContributionVisibility) return true;
     if (educationOutcomeCauseClause) return true;

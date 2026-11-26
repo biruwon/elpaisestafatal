@@ -36,6 +36,7 @@ import { PENSION_WAGE_DISTRIBUTION_SNAPSHOT, pensionWageDistributionReply } from
 import { BUSINESS_SIZE_PRODUCTIVITY_SNAPSHOT, businessSizeProductivityReply, firmWageCapacityProductivityContextReply } from './business-size-productivity-snapshot.mjs';
 import { SME_REGULATORY_BURDEN_SNAPSHOT } from './sme-regulatory-burden-snapshot.mjs';
 import { WAGE_GROWTH_JOB_MOBILITY_SNAPSHOT } from './wage-growth-job-mobility-snapshot.mjs';
+import { PUBLIC_TAX_SERVICE_PERCEPTION_SNAPSHOT } from './public-tax-service-perception-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -984,6 +985,18 @@ const inflationTaxBracketCreep = (t) => /\b(inflaci[oó]n|subida de precios)\b/.
   && /\b(irpf|impuest\w*|carga fiscal|recaudaci[oó]n tributaria)\b/.test(t)
   && /\b(tramos?|deduccion\w*|m[ií]nimo exento|par[aá]metros? (?:nominales?|del irpf)|progresividad en fr[ií]o)\b/.test(t)
   && /\b(no se actualiz\w*|no actualiz\w*|al mismo ritmo|progresividad en fr[ií]o|eleva\w*|aument\w*|increment\w*|sub\w*)\b/.test(t);
+const taxServicePerceptionChange = (t) => {
+  const tax = /\b(impuest\w*|tribut\w*|recaudaci\w*|ingresos? fiscales?|presion fiscal|carga fiscal|contribuyente\w*|cotiz\w*)\b/;
+  const publicServices = /\bservicios? public\w*\b|\bservicios?\b/.test(t);
+  const serviceSpecific = /\b(privad\w*|sanidad|sistema sanitari\w*|salud|hospital\w*|atencion primaria|educaci\w*|escuelas?|colegios?|transporte|justicia|policia|seguridad ciudadana|tramites?|citas?)\b/.test(t);
+  const taxIncrease = /\b(?:pagan?|pagamos|contribuyente\w*)\b.{0,50}\b(?:mas|mayor\w*)\b/.test(t)
+    || /\b(?:mas|mayor\w*)\b.{0,35}\b(?:impuest\w*|tribut\w*|cotiz\w*)\b/.test(t)
+    || /\b(?:impuest\w*|tribut\w*|recaudaci\w*|ingresos? fiscales?|presion fiscal|carga fiscal)\b.{0,45}\b(?:sub\w*|aument\w*|crec\w*|increment\w*|mas|mayor\w*)\b/.test(t)
+    || /\b(?:sub\w*|aument\w*|crec\w*|increment\w*)\b[\w\s]{0,30}\b(?:impuest\w*|tribut\w*|recaudaci\w*|ingresos? fiscales?|presion fiscal|carga fiscal)\b/.test(t);
+  const serviceWorseningOrStall = /\b(peor\w*|empeor\w*|deterior\w*|disminu\w*|baj\w*|no (?:se )?(?:mejor\w*|not\w*|percib\w*|observ\w*)|sin (?:notar|mejor\w*|percibir)|menos (?:satisfac\w*|calidad|servicios?)|recib\w* menos|equivalent\w*|proporci\w*|al mismo ritmo)\b/.test(t);
+  const causal = /\b(caus\w*|provoc\w*|gener(?:ar|a|an|o|aba|aron|ando|ado|aria|aran|en)|debido|porque|por culpa|hace que|lleva a|conllev\w*|produce)\b/.test(t);
+  return tax.test(t) && publicServices && !serviceSpecific && !causal && taxIncrease && serviceWorseningOrStall;
+};
 const housingInvestmentReturnComparison = (t) => /\b(viviend\w*|inmobiliari\w*|inmuebl\w*|ladrillo|alquiler\w*)\b/.test(t)
   && /\b(rentabil\w*|rendimient\w*|retorno\w*|benefici\w*|invert\w*|inversion\w*)\b/.test(t)
   && /\b(negocio\w*|empres\w*|productiv\w*|economia real|capital productiv\w*)\b/.test(t)
@@ -1853,6 +1866,21 @@ const focuses = [
       sources: [{ id: 'fiscal-drag-bde', title: 'Progresividad en frío: impacto de la inflación sobre la recaudación por IRPF', publisher: 'Banco de España', url: 'https://www.bde.es/wbe/es/publicaciones/analisis-economico-investigacion/documentos-ocasionales/progresividad-en-frio--el-impacto-heterogeneo-de-la-inflacion-sobre-la-recaudacion-por-irpf.html', publishedAt: '2024-06-14', retrievedAt: '2026-11-17', role: 'primary' }],
     },
     limitation: 'La estimación describe la progresividad en frío del IRPF bajo supuestos concretos. No mide cuánto paga cada familia ni demuestra que toda inflación, cualquier impuesto o toda deducción produzca el mismo efecto.',
+  },
+  {
+    id: 'tax-service-perception', label: 'ingresos fiscales agregados y percepción de los servicios públicos',
+    when: taxServicePerceptionChange,
+    direct: [], context: [], claimType: 'comparative',
+    needs: [
+      'impuestos y cotizaciones efectivamente pagados por contribuyentes comparables en ambos periodos',
+      'encuestas repetidas sobre la percepción general con población, pregunta y modo de entrevista consistentes',
+      'resultados objetivos de los servicios mencionados y un análisis que los vincule con los ingresos públicos',
+    ],
+    explanationHeadline: 'La recaudación agregada subió como parte del PIB; la satisfacción apenas cambió en encuestas no idénticas',
+    explanation: 'La ratio de ingresos públicos y la satisfacción declarada son medidas distintas. Su coincidencia temporal no vincula lo que paga cada persona con la calidad que recibe.',
+    explanationEvidence: PUBLIC_TAX_SERVICE_PERCEPTION_SNAPSHOT,
+    shareableReplyForContext: PUBLIC_TAX_SERVICE_PERCEPTION_SNAPSHOT.shareableReplyForContext,
+    limitation: 'Los ingresos agregados sobre el PIB no miden el pago medio individual. La pregunta CIS mide percepción general, no resultados objetivos de cada servicio; dos encuestas con universos y métodos diferentes no bastan para atribuir un deterioro ni relacionarlo con los impuestos.',
   },
   {
     id: 'labour-productivity-and-growth', label: 'Productividad laboral real y crecimiento económico',
