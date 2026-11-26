@@ -35,6 +35,7 @@ import { HEALTH_PERCEPTION_OUTCOMES_SNAPSHOT } from './health-perception-outcome
 import { PENSION_WAGE_DISTRIBUTION_SNAPSHOT, pensionWageDistributionReply } from './pension-wage-distribution-snapshot.mjs';
 import { BUSINESS_SIZE_PRODUCTIVITY_SNAPSHOT, businessSizeProductivityReply, firmWageCapacityProductivityContextReply } from './business-size-productivity-snapshot.mjs';
 import { SME_REGULATORY_BURDEN_SNAPSHOT } from './sme-regulatory-burden-snapshot.mjs';
+import { WAGE_GROWTH_JOB_MOBILITY_SNAPSHOT } from './wage-growth-job-mobility-snapshot.mjs';
 import { requestedGeographyScopes } from './geography-scope.mjs';
 
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/[^a-z0-9]+/g, ' ').trim();
@@ -1679,9 +1680,9 @@ const internshipLabourSubstitutionEvidence = {
     'No se deben sumar ni dividir estos recuentos: cubren periodos y poblaciones distintos. Las altas registran alumnado; las inspecciones no ofrecen un total de prácticas como denominador. Estas cifras no miden la frecuencia de sustitución de puestos de entrada ni el ahorro empresarial. Para comprobar esa afirmación hacen falta tareas y planes formativos, puestos y costes comparables, y un denominador representativo de empresas y prácticas.',
   ].join('\n\n'),
 };
-const wageGrowthJobMobility = (t) => /\b(salari\w*|sueld\w*|remuner\w*|nomina\w*)\b/.test(t)
-  && /\b(subid\w*|aument\w*|mejor\w*|crec\w*|increment\w*)\b/.test(t)
-  && /\b(cambi\w* de (?:empresa|trabajo|empleo)|cambio de (?:empresa|trabajo|empleo)|moverse de empresa|pasar a otra empresa)\b/.test(t);
+const wageGrowthJobMobility = (t) => (/\b(salari\w*|sueld\w*|remuner\w*|nomina\w*)\b/.test(t) || /\b(cobr\w*|pag\w*)\b/.test(t))
+  && /\b(sub\w*|aument\w*|mejor\w*|crec\w*|increment\w*|mas|mayor\w*)\b/.test(t)
+  && /\b(cambi\w* (?:de|a) (?:la )?(?:empresa|trabajo|empleo|empleador|compania)|cambio de (?:la )?(?:empresa|trabajo|empleo|empleador|compania)|pasar (?:a|de) (?:otra )?(?:empresa|empleador)|moverse (?:de empresa|a otra empresa|entre empresas)|salt\w* a otra empresa|movilidad entre empresas|transicion\w* entre empresas|salto entre empresas)\b/.test(t);
 const namedSector = /\b(turis\w*|hosteler\w*|hotel\w*|alojam\w*|agricultur\w*|sector primario|construcci\w*|industri\w*|manufactur\w*|comerci\w*|transporte|financier\w*|finanzas?|sector tecnolog\w*|tecnolog\w*\s+(?:sector|industria))\b/;
 const sectorSalaryReference = (t) => /\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|gan\w*)\b/.test(t)
   || /\b(cobr\w*|pag\w*)\b/.test(t) && /\bpor hora\b/.test(t)
@@ -3232,8 +3233,11 @@ const focuses = [
     when: wageGrowthJobMobility,
     direct: [], context: [], claimType: 'causal',
     needs: ['salario de las mismas personas antes y después de cambiar de empresa', 'ocupación, jornada, antigüedad y periodo comparables', 'grupo de comparación que permaneció en su empleo'],
-    explanation: 'Comparar salarios de personas que cambiaron de empresa con quienes no lo hicieron no demuestra cuánto causó el cambio; sus ocupaciones y trayectorias también pueden diferir.',
-    limitation: 'Una mediana salarial nacional o una encuesta sectorial transversal no mide la subida que obtiene una persona al cambiar de empresa.',
+    explanation: 'Una descomposición agregada puede medir cuánto aporta la reasignación entre empresas al crecimiento total, pero no cuánto sube el sueldo de una persona concreta al cambiarse.',
+    explanationHeadline: 'La OCDE mide una contribución agregada de la movilidad entre empresas, no una subida individual',
+    explanationEvidence: WAGE_GROWTH_JOB_MOBILITY_SNAPSHOT,
+    shareableReplyForContext: WAGE_GROWTH_JOB_MOBILITY_SNAPSHOT.shareableReplyForContext,
+    limitation: 'La OCDE ofrece un promedio agregado de 17 países para 2000–2019 y una descripción de España; no estima una subida típica individual ni demuestra que cambiar sea la única vía. La muestra española cubre 2006–2019.',
   },
   {
     id: 'wage-progression', label: 'progresión salarial al inicio de la carrera laboral',

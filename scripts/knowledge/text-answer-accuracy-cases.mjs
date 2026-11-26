@@ -1213,6 +1213,74 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'wage-mobility-only-way-context',
+    equivalenceGroup: 'oecd-wage-mobility-context',
+    input: 'Cambiar de empresa es la única forma de conseguir una subida salarial importante',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'wage-growth-job-mobility', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['OCDE', '17 países', '2000–2019', '0,9 puntos porcentuales', '0,3 puntos porcentuales', 'España', 'pequeña o negativa', 'no permiten confirmar que cambiar de empresa sea la única vía', 'no una subida salarial personal'],
+      evidence: [
+        { familyId: 'wage-growth-job-mobility', sourceIds: ['oecd-employment-outlook-2025-job-mobility'], dataIncludes: ['0,9 puntos porcentuales', 'promedio entre países'], dimensions: { period: '2000–2019', geography: 'promedio entre 17 países de la OCDE', denominator: 'no es un aumento individual', unit: '0,9 puntos porcentuales anuales' } },
+        { familyId: 'wage-growth-job-mobility', sourceIds: ['oecd-employment-outlook-2025-job-mobility'], dataIncludes: ['0,3 puntos porcentuales anuales', 'relaciones trabajador-empresa que continuaron'], dimensions: { period: '2000–2019', geography: 'promedio entre 17 países de la OCDE', unit: '0,3 puntos porcentuales anuales' } },
+        { familyId: 'wage-growth-job-mobility', sourceIds: ['oecd-employment-outlook-2025-job-mobility'], dataIncludes: ['España aparece', 'MCVL-CDF', 'muestra aleatoria del 4 %'], dimensions: { period: '2006–2019', geography: 'España', population: 'muestra aleatoria del 4 % de trabajadores' } },
+      ],
+      maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'wage-mobility-employer-paraphrase',
+    equivalenceGroup: 'oecd-wage-mobility-context',
+    input: 'Cambiar de empleador permite cobrar más',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'wage-growth-job-mobility', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['0,9 puntos porcentuales', '0,3 puntos porcentuales', 'no permiten confirmar que cambiar de empresa sea la única vía', 'no una subida salarial personal'],
+      replyExcludes: ['el cambio aumenta el sueldo personal en 0,9 puntos'],
+      evidence: [{ familyId: 'wage-growth-job-mobility', sourceIds: ['oecd-employment-outlook-2025-job-mobility'], dataIncludes: ['0,9 puntos porcentuales', 'promedio entre países'] }],
+      maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'wage-mobility-salary-increase-paraphrase',
+    equivalenceGroup: 'oecd-wage-mobility-context',
+    input: 'Al cambiar de empresa, la nómina sube',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'wage-growth-job-mobility', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['0,9 puntos porcentuales', '0,3 puntos porcentuales', 'no permiten confirmar que cambiar de empresa sea la única vía'],
+      evidence: [{ familyId: 'wage-growth-job-mobility', sourceIds: ['oecd-employment-outlook-2025-job-mobility'], dataIncludes: ['0,9 puntos porcentuales', 'promedio entre países'] }],
+      maxReplyWords: 150,
+    },
+  },
+  {
+    id: 'wage-mobility-current-period-neighbour',
+    input: 'Entre 2021 y 2024 el sueldo aumenta más al cambiar de trabajo',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'wage-growth-job-mobility', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['0,9 puntos porcentuales', '0,3 puntos porcentuales', 'MCVL-CDF'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'wage-mobility-current-claim-does-not-inherit-historical-data',
+    input: 'Hoy el sueldo aumenta más al cambiar de trabajo',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'wage-growth-job-mobility', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['0,9 puntos porcentuales', '0,3 puntos porcentuales', 'MCVL-CDF'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'wage-progression-does-not-inherit-mobility-evidence',
+    input: 'Los trabajadores jóvenes encadenan años de salarios de entrada sin progresión real',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'wage-progression', verdict: 'insufficient', directSourceIds: [],
+      replyExcludes: ['0,9 puntos porcentuales', '0,3 puntos porcentuales', 'MCVL-CDF'], evidence: [], maxReplyWords: 100,
+    },
+  },
+  {
     id: 'unreported-hours-vs-unpaid-overtime',
     equivalenceGroup: 'unreported-hours-vs-unpaid-overtime-hospitality',
     input: 'En hostelería se declaran menos horas de las que realmente se trabajan',

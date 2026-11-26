@@ -203,6 +203,51 @@ for (const [family, paraphrases] of cases) for (const claim of paraphrases) {
   assert.equal(claimFocusFor(claim)?.id, family, claim);
   assert.equal(broadDomainPacketsFor(claim).length, 0, `A precise claim inherited a broad packet: ${claim}`);
 }
+const wageMobilityParaphrases = [
+  'Cambiar de empresa es la única forma de conseguir una subida salarial importante',
+  'El sueldo aumenta más al cambiar de trabajo que permaneciendo en la misma empresa',
+  'Quienes cambian de empleo logran mejores subidas de salario',
+  'Cambiar de empleador permite cobrar más',
+  'Al cambiar de empresa, la nómina sube',
+  'La movilidad entre empresas ayuda a mejorar los salarios',
+];
+const wageMobilitySourceId = 'oecd-employment-outlook-2025-job-mobility';
+const wageMobilityNow = Date.parse('2026-11-26T12:00:00Z');
+for (const claim of wageMobilityParaphrases) {
+  assert.equal(claimFocusFor(claim)?.id, 'wage-growth-job-mobility', `A wage-mobility paraphrase changed family: ${claim}`);
+  const plan = focusedEvidencePlan(claim, { now: wageMobilityNow });
+  assert.equal(plan.answerScope.family, 'wage-growth-job-mobility');
+  assert.equal(plan.claimType, 'causal');
+  assert.equal(plan.evidenceLevel, 'limited', 'OECD findings are contextual and must not verify an individual raise claim');
+  assert.deepEqual(plan.sourceLinks.map((source) => source.id), [wageMobilitySourceId]);
+  assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.sourceIds, [],
+    'The OECD aggregate source must remain context rather than direct evidence for the submitted claim');
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown')?.items[0]?.verdict, 'insufficient');
+  assert.match(plan.shareableReply, /0,9 puntos porcentuales/);
+  assert.match(plan.shareableReply, /0,3 puntos porcentuales/);
+  assert.match(plan.shareableReply, /España.*pequeña o negativa/);
+  assert.match(plan.shareableReply, /no permiten confirmar que cambiar de empresa sea la [uú]nica v[ií]a/);
+  validateAnswerPlan(plan);
+}
+const wageMobilityPublic = localPublicCheckResponse({
+  status: 'partial', requestId: 'oecd-wage-mobility-context', result: focusedEvidencePlan(wageMobilityParaphrases[0], { now: wageMobilityNow }),
+}, wageMobilityParaphrases[0]);
+assert.equal(wageMobilityPublic.state, 'insufficient');
+assert.deepEqual(wageMobilityPublic.result.sources.map((source) => source.id), [wageMobilitySourceId]);
+const wageMobilityOutsidePeriod = focusedEvidencePlan('Entre 2021 y 2024 el sueldo aumenta más al cambiar de trabajo', { now: wageMobilityNow });
+assert.deepEqual(wageMobilityOutsidePeriod.sourceLinks, [], 'An aggregate result for 2000–2019 must not be used as evidence for 2021–2024');
+const wageMobilityCurrent = focusedEvidencePlan('Hoy el sueldo aumenta más al cambiar de trabajo', { now: wageMobilityNow });
+assert.deepEqual(wageMobilityCurrent.sourceLinks, [], 'Historical OECD evidence must not be presented as current-period evidence');
+const wageMobilityOtherCountry = focusedEvidencePlan('En Francia el sueldo aumenta más al cambiar de trabajo', { now: wageMobilityNow });
+assert.deepEqual(wageMobilityOtherCountry.sourceLinks, [], 'A multi-country average is not a France-specific wage estimate');
+for (const nearby of [
+  'Los trabajadores jóvenes encadenan años de salarios de entrada sin progresión real',
+  'Los salarios de los trabajadores jóvenes se estancan durante los primeros años de carrera',
+  'Las empresas productivas contienen los salarios de sus plantillas',
+]) assert.notEqual(claimFocusFor(nearby)?.id, 'wage-growth-job-mobility', `A nearby wage claim crossed into job-mobility evidence: ${nearby}`);
+const wageProgressionPlan = focusedEvidencePlan('Los trabajadores jóvenes encadenan años de salarios de entrada sin progresión real', { now: wageMobilityNow });
+assert.equal(wageProgressionPlan.answerScope.family, 'wage-progression');
+assert.deepEqual(wageProgressionPlan.sourceLinks, [], 'Wage progression without an employer move must not inherit mobility context');
 for (const claim of [
   'En España es más fácil pagar un impuesto que conseguir una ayuda pública',
   'La cita previa obligatoria ha convertido trámites básicos en una barrera',
@@ -1078,7 +1123,17 @@ for (const [family, claim] of crossTopicClaims) {
   const plan = focusedEvidencePlan(claim, { observations: [irrelevantWageObservation], propositions: deterministicFallbackCompiler(claim).explicitPropositions });
   assert.deepEqual(plan.answerScope.directMetrics, [], `A nearby salary statistic became direct evidence: ${claim}`);
   assert.deepEqual(plan.answerScope.contextMetrics, family === 'education-pay-comparison' ? ['mean_hourly_earnings_by_education'] : [], `A nearby salary statistic became context for a different claim: ${claim}`);
-  if (family === 'unpaid-overtime') {
+  if (family === 'wage-growth-job-mobility') {
+    assert.equal(plan.evidenceLevel, 'limited', 'The OECD aggregate can provide bounded context without measuring an individual raise');
+    assert.deepEqual(plan.sourceLinks.map((source) => source.id), [wageMobilitySourceId]);
+    assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+    assert.deepEqual(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].sourceIds, []);
+    assert.doesNotMatch(plan.shareableReply, /17 €/);
+    const publicResponse = localPublicCheckResponse({ status: 'complete', requestId: `gap-${family}`, result: plan }, claim);
+    assert.equal(publicResponse.state, 'insufficient', 'Aggregate wage context must not verify an individual salary increase');
+    assert.match(publicResponse.result.reply, /no permiten confirmar que cambiar de empresa sea la única vía/);
+    assert.deepEqual(publicResponse.result.sources.map((source) => source.id), [wageMobilitySourceId]);
+  } else if (family === 'unpaid-overtime') {
     assert.equal(plan.evidenceLevel, 'limited', 'A salary observation must not erase the independently sourced EPA overtime measurement');
     assert.deepEqual(plan.sourceLinks.map((source) => source.id), ['ine-epa-unpaid-overtime-2026', 'ine-epa-questionnaire-2021']);
     assert.doesNotMatch(plan.shareableReply, /17 €/);

@@ -2051,3 +2051,33 @@ focused family, 113 match neither, and deterministic results are 7 complete,
 107 limited and 186 uncovered. Public states are 263 insufficient and 37
 limited. All 300 discovery claims remain unverified; these counts measure
 routing and answer structure, not factual accuracy across arbitrary user text.
+
+## Wage changes and job mobility — 26 November 2026
+
+The focused text family for claims that switching employers is the only or
+best way to raise pay now uses context from the [OECD Employment Outlook
+2025](https://www.oecd.org/en/publications/oecd-employment-outlook-2025_194a947b-en/full-report/reviving-growth-in-a-time-of-workforce-ageing-the-role-of-job-mobility_6fdecf3a.html).
+Its linked worker-employer analysis covers 17 OECD countries, including Spain,
+from 2000 to 2019. Job-to-job mobility contributed 0.9 percentage points to
+average annual aggregate wage and productivity growth; all job reallocation,
+including moves into and out of employment, contributed 0.3 points net. The
+remaining growth came from continuing worker-firm matches. These are aggregate
+contributions in percentage points, not a typical individual's raise. Spain's
+data use the MCVL-CDF, a random 4% sample of workers covering 2006–2019; the
+OECD describes total reallocation's role in Spain as small or negative during
+the low-wage-growth period.
+
+The public answer keeps its verdict insufficient and labels the OECD results
+as context. It states that the figures cannot show that changing employers is
+the only route to higher pay or calculate an individual's gain. The same
+evidence is selected across employer-change paraphrases; requests for current
+results or 2021–2024 data do not inherit the historical source. Wage
+progression without an employer change remains a separate family.
+
+The held-out text benchmark passes 260/260 cases across 68 paraphrase groups;
+the claim-focus validator checks 382 formulations and nearby claims. The
+refreshed 300-claim discovery audit routes 187 candidates to a metric or
+focused family and leaves 113 without either route. It reports 7 complete,
+108 limited and 185 uncovered answers; public states remain 263 insufficient
+and 37 limited. All discovery claims remain unverified. These counts measure
+routing and answer structure, not factual accuracy across arbitrary user text.
