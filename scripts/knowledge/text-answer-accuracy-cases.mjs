@@ -3788,6 +3788,16 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'waiter-vacancy-unavailable-year-2025-spain',
+    now: '2026-11-26T12:00:00Z',
+    input: '¿Cuántas vacantes de camareros había en España en 2025?',
+    expected: {
+      state: 'limited', family: 'waiter-vacancy-and-conditions', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['No se ha localizado una estimación compatible para 2025', 'No presentamos una cifra de otro periodo o territorio'],
+      replyExcludes: ['5,12 mil', '4,73 mil'], evidence: [], maxReplyWords: 60,
+    },
+  },
+  {
     id: 'waiter-vacancy-unavailable-year-2026',
     now: '2026-11-26T12:00:00Z',
     input: '¿Cuántas vacantes de camareros había en España en 2026?',

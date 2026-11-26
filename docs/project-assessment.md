@@ -2185,7 +2185,8 @@ ISCO-08 OC513 (waiters and bartenders). Eurostat marks 2024 with `b` for a
 break in the series, so the answer does not calculate or describe a change as
 a trend. The estimates use online job advertisements and EU-LFS employment
 data; they cover the occupation across activities and cannot isolate
-hospitality vacancies. Sources: [Eurostat dataset](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/jvs_a_isco3_r1?geo=ES&freq=A&isco08=OC513&indic_em=JOBVAC&unit=THS&sinceTimePeriod=2023),
+hospitality vacancies. A direct Spain query returns no 2025 observation for
+this occupation. Sources: [Eurostat dataset](https://ec.europa.eu/eurostat/api/dissemination/statistics/1.0/data/jvs_a_isco3_r1?geo=ES&freq=A&isco08=OC513&indic_em=JOBVAC&unit=THS&sinceTimePeriod=2023),
 [methodology](https://ec.europa.eu/eurostat/cache/metadata/EN/jvs_a_isco3_r1_esmsip2.htm).
 
 The published Spanish NUTS 1 cells for this occupation are flagged `C`
@@ -2196,9 +2197,9 @@ conditions, applications, hiring outcomes or reasons posts remain open. A
 2026 request also receives no 2024 substitute.
 
 Held-out checks cover equivalent causal paraphrases, the exact 2024 count, the
-2023–2024 break, Madrid's confidential regional cell, an unavailable 2026
-period and nearby non-vacancy claims. The text-answer benchmark passes 272/272
-cases across 70 paraphrase groups, and the claim-focus suite checks 385
+2023–2024 break, Madrid's confidential regional cell, unavailable 2025 and
+2026 periods, and nearby non-vacancy claims. The text-answer benchmark passes
+273/273 cases across 70 paraphrase groups, and the claim-focus suite checks 385
 formulations and nearby claims. The reviewed-snapshot API validator and Astro
 type check pass.
 
