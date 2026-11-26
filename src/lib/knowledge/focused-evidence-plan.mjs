@@ -1532,6 +1532,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   })();
   const mentalHealthPsychologistCountReply = (() => {
     if (focus.id !== 'public-mental-health-psychologist-count') return undefined;
+    if (explanationFacts.length) return [
+      explanationFacts[0],
+      'Es un recuento de la categoría Psicología en atención primaria; no es el total de psicólogos clínicos de todo el SNS.',
+    ].filter(Boolean).join('\n\n');
     return [
       'No hay un recuento directo en la evidencia consultada; el total de profesionales sanitarios no identifica esta profesión.',
       `Para responder hace falta ${needs.join('; ')}.`,
@@ -1539,6 +1543,11 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   })();
   const mentalHealthPsychologistCapacityReply = (() => {
     if (focus.id !== 'public-mental-health-psychologist-capacity') return undefined;
+    if (explanationFacts.length) return [
+      explanationFacts[0],
+      explanationFacts[1],
+      'Por eso, el dato no permite concluir si la plantilla es suficiente o insuficiente para atender la demanda.',
+    ].filter(Boolean).join('\n\n');
     return [
       'Un recuento aislado de psicólogos clínicos no permite determinar si la plantilla pública cubre la demanda.',
       `La comprobación requiere: ${needs.join('; ')}.`,

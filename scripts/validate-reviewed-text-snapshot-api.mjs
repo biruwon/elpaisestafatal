@@ -887,6 +887,16 @@ assert.deepEqual(primaryCareTrend.body.result.arguments[0].evidenceIds, []);
 assert.match(primaryCareTrend.body.result.reply, /no establece una tendencia|oleadas comparables/);
 assert.match(primaryCareTrend.body.result.reply, /9,71 días/);
 
+const psychologistCapacity = await check('La salud mental pública tiene demasiados pocos psicólogos clínicos para la demanda existente');
+assert.equal(psychologistCapacity.body.state, 'insufficient');
+assert.equal(psychologistCapacity.body.result.answerScope.family, 'public-mental-health-psychologist-capacity');
+assert.equal(psychologistCapacity.body.result.arguments[0].verdict, 'insufficient');
+assert.deepEqual(psychologistCapacity.body.result.sources.map((source) => source.id), ['ministry-sns-psychology-primary-care-2023']);
+assert.match(psychologistCapacity.body.result.reply, /548 profesionales.*con datos de 2023/s);
+assert.match(psychologistCapacity.body.result.reply, /no desglosa cuántos son especialistas en Psicología Clínica ni equivalentes a jornada completa/);
+assert.match(psychologistCapacity.body.result.reply, /Tampoco mide solicitudes, pacientes en espera o demanda no atendida/);
+assert.match(psychologistCapacity.body.result.reply, /no permite concluir si la plantilla es suficiente o insuficiente/);
+
 const unavailable = await check('Trabajar a jornada completa no impide estar en riesgo de pobreza', brokenDatabase);
 assert.equal(unavailable.body.state, 'unavailable');
 assert.match(unavailable.body.message, /no hemos podido consultar las series estadísticas/i);

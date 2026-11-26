@@ -33,6 +33,7 @@ import { ROOM_RENTAL_MARKET_SNAPSHOT, roomRentalMarketClaimFor, roomRentalMarket
 import { PUBLIC_SERVICE_DIGITAL_ACCESS_SNAPSHOT, publicServiceDigitalAccessClaimFor, publicServiceDigitalAccessMeasureFor } from './public-service-digital-access-snapshot.mjs';
 import { PUBLIC_DOCUMENT_REUSE_SNAPSHOT, publicDocumentReuseClaimFor, publicDocumentReuseLegalQuestionFor } from './public-document-reuse-snapshot.mjs';
 import { HEALTH_PERCEPTION_OUTCOMES_SNAPSHOT } from './health-perception-outcomes-snapshot.mjs';
+import { PUBLIC_MENTAL_HEALTH_STAFFING_SNAPSHOT } from './mental-health-staffing-snapshot.mjs';
 import { PENSION_WAGE_DISTRIBUTION_SNAPSHOT, pensionWageDistributionReply } from './pension-wage-distribution-snapshot.mjs';
 import { BUSINESS_SIZE_PRODUCTIVITY_SNAPSHOT, businessSizeProductivityReply, firmWageCapacityProductivityContextReply } from './business-size-productivity-snapshot.mjs';
 import { SME_REGULATORY_BURDEN_SNAPSHOT } from './sme-regulatory-burden-snapshot.mjs';
@@ -3032,7 +3033,9 @@ const focuses = [
     when: publicMentalHealthPsychologistCount,
     direct: [], context: [], claimType: 'descriptive',
     needs: ['un recuento oficial de psicólogos clínicos empleados en el sistema público, distinguiendo personas y equivalentes a jornada completa, con territorio y periodo'],
-    explanation: 'Un dato agregado de profesionales sanitarios no responde cuántos psicólogos clínicos trabajan en la sanidad pública; hace falta un recuento por profesión y ámbito asistencial.',
+    explanationHeadline: 'En 2023, el SNS registró 548 profesionales en Psicología de atención primaria; no es el total clínico',
+    explanation: 'El Ministerio ofrece un recuento de personal clasificado en Psicología en atención primaria, pero no un total de psicólogos clínicos de todo el SNS.',
+    explanationEvidence: PUBLIC_MENTAL_HEALTH_STAFFING_SNAPSHOT,
     limitation: 'Sin un recuento oficial con profesión, sistema, territorio y periodo no se puede dar una cifra de psicólogos clínicos de la sanidad pública.',
   },
   {
@@ -3040,7 +3043,9 @@ const focuses = [
     when: publicMentalHealthPsychologistCapacity,
     direct: [], context: [], claimType: 'comparative',
     needs: ['dotación de psicólogos clínicos del sistema público en equivalentes a jornada completa, por territorio y periodo', 'población atendida y demanda medida mediante solicitudes, derivaciones, pacientes en espera y tiempos de espera', 'un criterio explícito de cobertura suficiente para la misma población y periodo'],
-    explanation: 'El número de psicólogos clínicos por sí solo no permite saber si la atención pública cubre la demanda; hay que medir la dotación y la necesidad asistencial con bases comparables.',
+    explanationHeadline: 'El SNS registró 548 profesionales en Psicología de atención primaria en 2023; falta medir la demanda',
+    explanation: 'El recuento de personal en Psicología de atención primaria aporta contexto, pero no permite saber si la atención pública cubre la demanda.',
+    explanationEvidence: PUBLIC_MENTAL_HEALTH_STAFFING_SNAPSHOT,
     limitation: 'Sin datos comparables de dotación, población atendida, demanda no cubierta y un criterio de suficiencia no se puede valorar si faltan profesionales.',
   },
   {
