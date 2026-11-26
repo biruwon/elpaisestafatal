@@ -5,7 +5,7 @@ import { traceabilityFor } from './evaluation-metrics.mjs';
 import { textAnswerAccuracyCases } from './text-answer-accuracy-cases.mjs';
 import { localPublicCheckResponse } from '../lib/local-public-check-response.mjs';
 
-const now = Date.parse('2026-11-24T12:00:00Z');
+const now = Date.parse('2026-11-26T12:00:00Z');
 const normalize = (value) => String(value || '').toLocaleLowerCase('es').normalize('NFD').replace(/[\u0300-\u036f]/g, '').replace(/ñ/g, 'n');
 const sorted = (values) => [...new Set(values || [])].sort();
 const errors = [];

@@ -2262,8 +2262,17 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
       })()
     : focus?.id === 'education-employment-outcomes' && educationMetricIds.length > 0
       && snapshotLifecycle(EDUCATION_EMPLOYMENT_SNAPSHOT).usable
-      && !observations.some((item) => educationMetricIds.includes(item.metricId))
-      ? [...observations, ...EDUCATION_EMPLOYMENT_SNAPSHOT.observations]
+      ? (() => {
+        const selectedMetrics = new Set(educationMetricIds);
+        const observationKey = (item) => {
+          const dimensions = JSON.stringify(Object.entries(item.dimensions || {}).sort(([left], [right]) => left.localeCompare(right)));
+          return [item.metricId || '', item.period || '', dimensions].join('|');
+        };
+        const observed = new Set(observations.map(observationKey));
+        const missingSnapshotObservations = EDUCATION_EMPLOYMENT_SNAPSHOT.observations
+          .filter((item) => selectedMetrics.has(item.metricId) && !observed.has(observationKey(item)));
+        return [...observations, ...missingSnapshotObservations];
+      })()
     : focus?.id === 'education-pay-comparison' && snapshotLifecycle(EDUCATION_EARNINGS_SNAPSHOT).usable
       && !observations.some((item) => item.metricId === 'mean_hourly_earnings_by_education')
       ? [...observations, ...EDUCATION_EARNINGS_SNAPSHOT.observations]

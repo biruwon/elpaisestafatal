@@ -2812,6 +2812,59 @@ assert.deepEqual(graduateRate.answerScope.contextMetrics, []);
 assert.deepEqual(graduateRate.answerScope.directMetrics, ['unemployment_rate_tertiary_education']);
 assert.equal(graduateRate.sourceLinks.length, 0, 'General unemployment and overqualification among employed graduates must not answer an education-specific unemployment claim');
 assert.doesNotMatch(graduateRate.shareableReply, /10 %|34 %/);
+const recentGraduateRateClaims = [
+  '¿Qué porcentaje de recién graduados tenía empleo en España en 2025?',
+  '¿Qué parte de quienes se graduaron hace poco estaba trabajando en España durante 2025?',
+  '¿Qué tasa de empleo tuvieron los jóvenes recién graduados en España en 2025?',
+];
+let recentGraduateRateSources;
+for (const claim of recentGraduateRateClaims) {
+  const plan = focusedEvidencePlan(claim, { observations: EDUCATION_EMPLOYMENT_SNAPSHOT.observations });
+  assert.equal(claimFocusFor(claim)?.id, 'education-employment-outcomes', claim);
+  assert.deepEqual(plan.answerScope.directMetrics, ['recent_graduate_employment_rate'], claim);
+  assert.deepEqual(plan.answerScope.contextMetrics, [], claim);
+  assert.equal(plan.evidenceLevel, 'limited', claim);
+  assert.equal(plan.sourceLinks.length, 1, claim);
+  assert.match(plan.shareableReply, /81,2 %.*20 a 34 a[nñ]os.*ISCED 3–8.*1 y 3 a[nñ]os antes/s, claim);
+  assert.match(plan.shareableReply, /No mide el tiempo hasta el primer empleo ni la calidad del puesto/);
+  assert.match(plan.shareableReply, /Eurostat marca las observaciones espa[nñ]olas con una diferencia de definici[oó]n/);
+  const sourceIds = plan.sourceLinks.map((source) => source.id);
+  if (recentGraduateRateSources) assert.deepEqual(sourceIds, recentGraduateRateSources, `Recent-graduate paraphrases changed sources: ${claim}`);
+  recentGraduateRateSources = sourceIds;
+}
+assert.deepEqual([...focusedMetricIdsFor('¿Qué tasa de empleo tuvieron los recién titulados de formación profesional y universidad en España en 2025?')], [
+  'employment_rate_recent_graduates_vocational', 'employment_rate_recent_graduates_tertiary',
+]);
+assert.deepEqual([...focusedMetricIdsFor('Employment rates of recent vocational and university graduates in Spain in 2025')], [
+  'employment_rate_recent_graduates_vocational', 'employment_rate_recent_graduates_tertiary',
+]);
+for (const claim of [
+  'La Formación Profesional permite encontrar el primer empleo más rápido que la universidad',
+  'La tasa de desempleo de recién graduados universitarios es alta',
+  'La sobrecualificación afecta a los recién titulados universitarios',
+  'El empleo de recién graduados de formación profesional es mayor en la Unión Europea que en España',
+  'La tasa de empleo de recién graduados de 25 a 34 años es alta',
+  'Los graduados de FP tienen más calidad de empleo que los universitarios',
+]) {
+  assert.deepEqual([...focusedMetricIdsFor(claim)], [], `A nearby claim must not use the recent-graduate employment-rate snapshot: ${claim}`);
+}
+const recentGraduatePathRateComparison = focusedEvidencePlan(
+  'En 2025, la tasa de empleo de los recién graduados de FP fue mayor que la de los universitarios en España',
+  { observations: EDUCATION_EMPLOYMENT_SNAPSHOT.observations },
+);
+assert.deepEqual(recentGraduatePathRateComparison.answerScope.directMetrics, [
+  'employment_rate_recent_graduates_vocational', 'employment_rate_recent_graduates_tertiary',
+]);
+assert.equal(recentGraduatePathRateComparison.claimType, 'comparative');
+assert.equal(recentGraduatePathRateComparison.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'contradicted');
+assert.match(recentGraduatePathRateComparison.shareableReply, /68,8 %.*FP.*86,1 %.*educaci[oó]n terciaria/s);
+assert.match(recentGraduatePathRateComparison.shareableReply, /17,3 puntos porcentuales/);
+assert.match(recentGraduatePathRateComparison.shareableReply, /no coincide con la comparaci[oó]n afirmada/);
+const firstJobTimingGap = focusedEvidencePlan('La Formación Profesional permite encontrar el primer empleo más rápido que la universidad', { observations: EDUCATION_EMPLOYMENT_SNAPSHOT.observations });
+assert.equal(firstJobTimingGap.claimType, 'comparative');
+assert.deepEqual(firstJobTimingGap.answerScope.directMetrics, []);
+assert.deepEqual(firstJobTimingGap.sourceLinks, [], 'An employment rate must not be presented as evidence about time to first job');
+assert.match(firstJobTimingGap.shareableReply, /no indica cu[aá]nto tardan.*primer trabajo/);
 const skillDemandClaim = 'Los idiomas y competencias digitales pesan más en el empleo que muchas asignaturas del título';
 const skillDemand = focusedEvidencePlan(skillDemandClaim, { observations: [
   { id: 'tertiary-employment-neighbour', metricId: 'employment_rate_tertiary_education', value: 83.2, period: '2025', unit: '%', geography: 'España' },
@@ -3427,7 +3480,7 @@ assert.equal(focusedEvidencePlan(unrelatedEducationCause, {
 assert.notEqual(claimFocusFor('Los jóvenes no encuentran empleo porque hay pocas vacantes')?.id,
   'education-employment-outcomes', 'A general youth vacancy claim must not be routed to overqualification data');
 const youthEmploymentCauseFallback = deterministicApiFallback({
-  text: youthEmploymentCauseParaphrases[0], inputType: 'text', now: Date.parse('2026-11-24'),
+  text: youthEmploymentCauseParaphrases[0], inputType: 'text', now: Date.parse('2026-11-26'),
 });
 assert.equal(youthEmploymentCauseFallback.status, 'partial');
 assert.equal(youthEmploymentCauseFallback.result.answerScope.family, 'education-employment-outcomes');

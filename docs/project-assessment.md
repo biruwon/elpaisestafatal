@@ -2337,3 +2337,29 @@ measurement that was queried and returned no compatible observations. It says
 when no consultable source is linked and preserves the uncertainty and evidence
 requirements. Paraphrase checks cover that wording, while a sourced employment
 rate question continues to return its value and source.
+
+## Recent-graduate employment evidence — 26 November 2026
+
+The text answer path now includes Eurostat's 2025 recent-graduate employment
+measure from `edat_lfse_24`. For Spain it reports 81.2% for graduates at ISCED
+levels 3–8, 68.8% for vocational levels 35/45, and 86.1% for tertiary levels
+5–8. The denominator is people aged 20–34 who were not in education or
+training and had completed their highest qualification 1–3 years before the
+survey. Eurostat marks the Spanish observations with `d`; the answer retains
+that quality note and the source, period, population and education-level
+limits.
+
+The FP-versus-tertiary comparison is assessed only when both matching
+observations share the same period, territory, unit and source. The result is
+limited to the dataset's vocational levels 35/45; it does not generalize to
+all Spanish FP qualifications. An employment rate does not measure time to a
+first job or job quality, so faster-entry claims still receive an evidence
+gap instead of inheriting the employment-rate comparison.
+
+Regression coverage checks Spanish and English paraphrases, the 2025 rates,
+the scoped comparison, partial D1 fallback and nearby unemployment,
+overqualification, job-quality, geography, age and first-job-timing claims.
+The focused evidence suite passes 385 cases, the reviewed Pages fallback
+passes, and the held-out answer benchmark remains 283/283 across 74 paraphrase
+groups. These are regression checks, not a claim that arbitrary text has been
+fact-checked.

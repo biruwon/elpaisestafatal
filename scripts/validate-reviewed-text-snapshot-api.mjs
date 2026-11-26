@@ -3,6 +3,7 @@ import { build } from 'esbuild';
 import { LABOUR_PRODUCTIVITY_SNAPSHOT } from '../src/lib/knowledge/labour-productivity-snapshot.mjs';
 import { HICP_BASKET_SNAPSHOT } from '../src/lib/knowledge/hicp-basket-snapshot.mjs';
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../src/lib/knowledge/education-earnings-snapshot.mjs';
+import { EDUCATION_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/education-employment-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from '../src/lib/knowledge/tourist-housing-snapshot.mjs';
 import { SECTORAL_VALUE_ADDED_SNAPSHOT } from '../src/lib/knowledge/sectoral-value-added-snapshot.mjs';
 
@@ -1007,6 +1008,65 @@ assert.equal(tertiaryEmploymentParaphrase.body.state, tertiaryEmploymentNoDataba
 assert.equal(tertiaryEmploymentParaphrase.body.result.answerScope.family, tertiaryEmploymentNoDatabase.body.result.answerScope.family);
 assert.deepEqual(tertiaryEmploymentParaphrase.body.result.sources.map((source) => source.id), tertiaryEmploymentNoDatabase.body.result.sources.map((source) => source.id));
 assert.match(tertiaryEmploymentParaphrase.body.result.reply, /83,2 %/);
+
+const recentGraduateEmploymentClaim = '¿Qué porcentaje de recién graduados tenía empleo en España en 2025?';
+const recentGraduateEmploymentNoDatabase = await checkWithoutDatabase(recentGraduateEmploymentClaim);
+assert.equal(recentGraduateEmploymentNoDatabase.body.state, 'limited');
+assert.equal(recentGraduateEmploymentNoDatabase.body.result.answerScope.family, 'education-employment-outcomes');
+assert.deepEqual(recentGraduateEmploymentNoDatabase.body.result.answerScope.directMetrics, ['recent_graduate_employment_rate']);
+assert.match(recentGraduateEmploymentNoDatabase.body.result.reply, /81,2 %.*20 a 34 años.*ISCED 3–8.*1 y 3 años antes/s);
+assert.ok(recentGraduateEmploymentNoDatabase.body.result.sources.some((source) => source.id === 'eurostat-recent-graduate-employment'));
+for (const paraphrase of [
+  '¿Qué parte de quienes se graduaron hace poco estaba trabajando en España durante 2025?',
+  'En España, ¿cuál fue en 2025 la tasa de empleo de los titulados recientes?',
+]) {
+  const answer = await checkWithoutDatabase(paraphrase);
+  assert.equal(answer.body.state, recentGraduateEmploymentNoDatabase.body.state);
+  assert.deepEqual(answer.body.result.answerScope.directMetrics, ['recent_graduate_employment_rate']);
+  assert.deepEqual(answer.body.result.sources.map((source) => source.id), recentGraduateEmploymentNoDatabase.body.result.sources.map((source) => source.id));
+  assert.match(answer.body.result.reply, /81,2 %/);
+}
+const recentGraduatePathRateClaim = 'En 2025, la tasa de empleo de los recién graduados de FP fue mayor que la de los universitarios en España';
+const recentGraduatePathRateNoDatabase = await checkWithoutDatabase(recentGraduatePathRateClaim);
+assert.deepEqual(recentGraduatePathRateNoDatabase.body.result.answerScope.directMetrics, [
+  'employment_rate_recent_graduates_vocational', 'employment_rate_recent_graduates_tertiary',
+]);
+assert.equal(recentGraduatePathRateNoDatabase.body.result.arguments[0].verdict, 'contradicted');
+assert.match(recentGraduatePathRateNoDatabase.body.result.reply, /68,8 %.*FP.*86,1 %.*educación terciaria/s);
+assert.match(recentGraduatePathRateNoDatabase.body.result.reply, /no coincide con la comparación afirmada/);
+
+const recentVocationalRows = EDUCATION_EMPLOYMENT_SNAPSHOT.observations
+  .filter((item) => item.metricId === 'employment_rate_recent_graduates_vocational')
+  .map((item) => ({
+    id: item.id, kind: 'observation', dataset_id: item.source.title, metric: item.metric,
+    metric_id: item.metricId, value: item.value, unit: item.unit, period: item.period,
+    geography: item.geography, population: item.population, dimensions_json: JSON.stringify(item.dimensions),
+    dimension_labels_json: JSON.stringify(item.dimensionLabels || {}), url: null, excerpt: null,
+    payload_json: JSON.stringify({ denominator: item.denominator, dataKind: 'observed', status: item.status }),
+    source_id: item.source.id, publisher: item.source.publisher, title: item.source.title, source_url: item.source.url,
+    published_at: null, retrieved_at: item.source.retrievedAt, trust_tier: 'primary', aliases_json: '[]',
+  }));
+const partialRecentGraduateDatabase = {
+  prepare() {
+    let metricId;
+    return {
+      bind(value) { metricId = value; return this; },
+      async all() { return { results: recentVocationalRows.filter((row) => row.metric_id === metricId) }; },
+      async run() { return {}; },
+    };
+  },
+};
+const partialRecentGraduatePathRate = await check(recentGraduatePathRateClaim, partialRecentGraduateDatabase);
+assert.equal(partialRecentGraduatePathRate.body.result.arguments[0].verdict, 'contradicted');
+assert.match(partialRecentGraduatePathRate.body.result.reply, /68,8 %.*FP.*86,1 %.*educación terciaria/s, 'A partial D1 result should be completed only with the missing reviewed series for the same metric comparison');
+assert.deepEqual(partialRecentGraduatePathRate.body.result.sources.map((source) => source.id), ['eurostat-recent-graduate-employment']);
+const recentGraduateTimingClaim = 'La Formación Profesional permite encontrar el primer empleo más rápido que la universidad';
+const recentGraduateTimingGap = await checkWithoutDatabase(recentGraduateTimingClaim);
+assert.equal(recentGraduateTimingGap.body.state, 'insufficient');
+assert.deepEqual(recentGraduateTimingGap.body.result.sources, []);
+assert.deepEqual(recentGraduateTimingGap.body.result.answerScope.directMetrics, []);
+assert.match(recentGraduateTimingGap.body.result.reply, /tiempo desde terminar FP o universidad hasta el primer empleo/);
+assert.doesNotMatch(recentGraduateTimingGap.body.result.reply, /68,8 %|86,1 %|81,2 %/);
 
 const unlinkedSourceClaim = await checkWithoutDatabase('Los jóvenes con salarios españoles compiten por vivienda con trabajadores remotos que cobran salarios extranjeros');
 const unlinkedSourceParaphrase = await checkWithoutDatabase('Los jóvenes que cobran en España compiten por pisos con trabajadores remotos cuyos ingresos proceden del extranjero');

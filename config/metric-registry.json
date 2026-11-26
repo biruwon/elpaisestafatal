@@ -940,6 +940,63 @@
       "sources": [{"id": "definition-employment-rate-tertiary-education", "title": "Eurostat · Employment rates by educational attainment level and citizenship (lfsa_ergaedn)", "publisher": "Eurostat", "url": "https://ec.europa.eu/eurostat/databrowser/view/lfsa_ergaedn/default/table?lang=en", "retrievedAt": "2026-11-16"}]
     }
   },
+  "recent_graduate_employment_rate": {
+    "name": "Employment rate of recent graduates aged 20 to 34, ISCED levels 3 to 8",
+    "aliases": ["tasa de empleo de recién graduados", "porcentaje de recién titulados con empleo", "empleo de graduados en los primeros años", "tasa de inserción laboral de recién graduados"],
+    "unit": "percent of recently graduated population",
+    "population": "people aged 20 to 34, not in education or training, whose highest level of education (ISCED 3 to 8) was completed 1 to 3 years before the EU-LFS interview",
+    "denominator": "all people aged 20 to 34 not in education or training whose highest educational attainment was completed 1 to 3 years before the EU-LFS interview",
+    "notEquivalentTo": ["employment_rate_tertiary_education", "employment_rate_recent_graduates_vocational", "employment_rate_recent_graduates_tertiary", "unemployment_rate_tertiary_education"],
+    "dimensions": ["freq", "duration", "isced11", "age", "sex", "unit", "geo", "time"],
+    "dimensionConstraints": {"freq": "A", "duration": "Y1-3", "isced11": "ED3-8", "age": "Y20-34", "sex": "T", "unit": "PC", "geo": "ES"},
+    "supports": ["descriptive", "comparative"],
+    "limitations": ["The rate is the share employed under the ILO definition; it does not measure time to first job, job quality, or the outcome of an individual.", "The Spanish 2025 observation carries Eurostat's definition-difference flag (d); review the dataset metadata before comparisons with other countries or periods."],
+    "definition": {
+      "label": "Tasa de empleo de recién graduados",
+      "explanation": "Proporción ocupada de las personas de 20 a 34 años que no estaban en educación o formación y que completaron su nivel educativo más alto entre 1 y 3 años antes de la encuesta. Este indicador no mide cuánto tardaron en conseguir el primer empleo.",
+      "numerator": "personas ocupadas según la definición de la OIT dentro del grupo definido",
+      "denominator": "todas las personas de 20 a 34 años que cumplen las condiciones de nivel educativo, tiempo desde la titulación y ausencia de educación o formación",
+      "sources": [{"id": "eurostat-recent-graduate-employment", "title": "Employment rates of young persons not in education and training by educational attainment level and years since completion of highest level of education (edat_lfse_24)", "publisher": "Eurostat", "url": "https://ec.europa.eu/eurostat/databrowser/view/edat_lfse_24/default/table?lang=en", "retrievedAt": "2026-11-26"}]
+    }
+  },
+  "employment_rate_recent_graduates_vocational": {
+    "name": "Employment rate of recent upper secondary and post-secondary non-tertiary vocational graduates aged 20 to 34",
+    "aliases": ["tasa de empleo de recién graduados de FP", "empleo de recién titulados de formación profesional", "inserción laboral de FP entre 1 y 3 años después de graduarse"],
+    "unit": "percent of recently graduated population",
+    "population": "people aged 20 to 34, not in education or training, whose highest level of education was vocational upper secondary or post-secondary non-tertiary education (ISCED levels 35 and 45), completed 1 to 3 years before the EU-LFS interview",
+    "denominator": "all people aged 20 to 34 not in education or training whose highest educational attainment was vocational ISCED level 35 or 45, completed 1 to 3 years before the EU-LFS interview",
+    "notEquivalentTo": ["recent_graduate_employment_rate", "employment_rate_recent_graduates_tertiary", "employment_rate_tertiary_education", "unemployment_rate_tertiary_education"],
+    "dimensions": ["freq", "duration", "isced11", "age", "sex", "unit", "geo", "time"],
+    "dimensionConstraints": {"freq": "A", "duration": "Y1-3", "isced11": "ED35_45", "age": "Y20-34", "sex": "T", "unit": "PC", "geo": "ES"},
+    "supports": ["descriptive", "comparative"],
+    "limitations": ["This category covers vocational ISCED levels 35 and 45, not every Spanish vocational qualification or every FP pathway.", "The rate does not measure time to first job or job quality. The Spanish 2025 observation carries Eurostat's definition-difference flag (d); review the dataset metadata before comparisons with other countries or periods."],
+    "definition": {
+      "label": "Tasa de empleo de recién graduados de formación profesional de niveles ISCED 35 y 45",
+      "explanation": "Proporción ocupada de personas de 20 a 34 años, fuera de educación o formación, cuya titulación profesional más alta era de nivel ISCED 35 o 45 y se había completado entre 1 y 3 años antes de la encuesta. No representa todos los niveles o itinerarios españoles de FP.",
+      "numerator": "personas ocupadas según la definición de la OIT dentro del grupo definido",
+      "denominator": "todas las personas de 20 a 34 años que cumplen las condiciones de nivel educativo profesional, tiempo desde la titulación y ausencia de educación o formación",
+      "sources": [{"id": "eurostat-recent-graduate-employment", "title": "Employment rates of young persons not in education and training by educational attainment level and years since completion of highest level of education (edat_lfse_24)", "publisher": "Eurostat", "url": "https://ec.europa.eu/eurostat/databrowser/view/edat_lfse_24/default/table?lang=en", "retrievedAt": "2026-11-26"}]
+    }
+  },
+  "employment_rate_recent_graduates_tertiary": {
+    "name": "Employment rate of recent tertiary graduates aged 20 to 34",
+    "aliases": ["tasa de empleo de recién graduados universitarios", "empleo de recién titulados universitarios", "inserción laboral de recién titulados superiores"],
+    "unit": "percent of recently graduated population",
+    "population": "people aged 20 to 34, not in education or training, whose highest level of education was tertiary (ISCED levels 5 to 8), completed 1 to 3 years before the EU-LFS interview",
+    "denominator": "all people aged 20 to 34 not in education or training whose highest educational attainment was tertiary (ISCED levels 5 to 8), completed 1 to 3 years before the EU-LFS interview",
+    "notEquivalentTo": ["recent_graduate_employment_rate", "employment_rate_recent_graduates_vocational", "employment_rate_tertiary_education", "unemployment_rate_tertiary_education"],
+    "dimensions": ["freq", "duration", "isced11", "age", "sex", "unit", "geo", "time"],
+    "dimensionConstraints": {"freq": "A", "duration": "Y1-3", "isced11": "ED5-8", "age": "Y20-34", "sex": "T", "unit": "PC", "geo": "ES"},
+    "supports": ["descriptive", "comparative"],
+    "limitations": ["The rate does not measure time to first job, job quality, or the outcome of an individual.", "The Spanish 2025 observation carries Eurostat's definition-difference flag (d); review the dataset metadata before comparisons with other countries or periods."],
+    "definition": {
+      "label": "Tasa de empleo de recién graduados con educación terciaria",
+      "explanation": "Proporción ocupada de personas de 20 a 34 años, fuera de educación o formación, cuya titulación más alta era educación terciaria ISCED 5–8 y se había completado entre 1 y 3 años antes de la encuesta. No mide cuánto tardaron en encontrar su primer empleo.",
+      "numerator": "personas ocupadas según la definición de la OIT dentro del grupo definido",
+      "denominator": "todas las personas de 20 a 34 años que cumplen las condiciones de educación terciaria, tiempo desde la titulación y ausencia de educación o formación",
+      "sources": [{"id": "eurostat-recent-graduate-employment", "title": "Employment rates of young persons not in education and training by educational attainment level and years since completion of highest level of education (edat_lfse_24)", "publisher": "Eurostat", "url": "https://ec.europa.eu/eurostat/databrowser/view/edat_lfse_24/default/table?lang=en", "retrievedAt": "2026-11-26"}]
+    }
+  },
   "unemployment_rate_tertiary_education": {
     "name": "Unemployment rate among the labour force aged 20 to 64 with tertiary education",
     "aliases": ["tasa de paro de titulados superiores", "paro de personas con estudios terciarios", "desempleo de personas con educación terciaria"],

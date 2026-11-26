@@ -16,6 +16,7 @@ import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care
 import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/tourism-employment-snapshot.mjs';
 import { FOREIGN_AFFILIATE_SECTOR_SNAPSHOT } from '../../src/lib/knowledge/foreign-affiliate-sector-snapshot.mjs';
 import { WAITER_VACANCY_SNAPSHOT } from '../../src/lib/knowledge/waiter-vacancy-snapshot.mjs';
+import { EDUCATION_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/education-employment-snapshot.mjs';
 import { snapshotLifecycle } from '../../src/lib/knowledge/snapshot-lifecycle.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import type { AnswerPlan, ResolveResult } from '../../src/lib/knowledge/contracts';
@@ -32,7 +33,7 @@ const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse
 // Bump this when response-selection semantics change. The cache key also
 // includes the central knowledge versions so answer revisions cannot reuse an
 // older public response from a warm Worker isolate.
-const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-education-earnings-tourist-housing-snapshots-rail-punctuality-sourced-family-selection-intergenerational-housing-landlord-context-pension-finance-routing-energy-price-pass-through-fixed-discontinuous-status-price-wage-eu-convergence-real-wage-living-standard-reported-worked-hours-rural-health-access-retirement-age-61-pension-private-savings-62-rent-series-scope-advertised-rent-claim-scope-metric-quality-notes-adult-conviction-rate-nationality-2026-11-scoped-source-2026-11-direct-metric-d1-2026-11-second-home-scope-2026-11-pension-wage-distribution-2026-11-business-size-productivity-context-2026-11-foreign-affiliation-sector-snapshot-2026-11-waiter-vacancy-experimental-context-2026-11-sectoral-value-added-activity-2026-11-tourism-seasonal-employment-2026-11-professional-emigration-2026-11-regional-housing-context-2026-11-professional-medical-emigration-context-2026-11-mental-health-psychology-context-2026-11-housing-mobility-concise-2026-11-sme-regulatory-evidence-correction-2026-11-internship-substitution-answer-2026-11-rental-regulation-context-2026-11-rail-maintenance-concise-2026-11-tourism-urban-cost-concise-2026-11-graduate-outcomes-public-reply-2026-11';
+const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-education-earnings-tourist-housing-snapshots-rail-punctuality-sourced-family-selection-intergenerational-housing-landlord-context-pension-finance-routing-energy-price-pass-through-fixed-discontinuous-status-price-wage-eu-convergence-real-wage-living-standard-reported-worked-hours-rural-health-access-retirement-age-61-pension-private-savings-62-rent-series-scope-advertised-rent-claim-scope-metric-quality-notes-adult-conviction-rate-nationality-2026-11-scoped-source-2026-11-direct-metric-d1-2026-11-second-home-scope-2026-11-pension-wage-distribution-2026-11-business-size-productivity-context-2026-11-foreign-affiliation-sector-snapshot-2026-11-waiter-vacancy-experimental-context-2026-11-sectoral-value-added-activity-2026-11-tourism-seasonal-employment-2026-11-professional-emigration-2026-11-regional-housing-context-2026-11-professional-medical-emigration-context-2026-11-mental-health-psychology-context-2026-11-housing-mobility-concise-2026-11-sme-regulatory-evidence-correction-2026-11-internship-substitution-answer-2026-11-rental-regulation-context-2026-11-rail-maintenance-concise-2026-11-tourism-urban-cost-concise-2026-11-graduate-outcomes-public-reply-2026-11-recent-graduate-employment-evidence-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -77,7 +78,7 @@ const cacheKeyFor = (body: { text: string; inputType: InputType; file?: File; cl
   // Names, sizes and lossy text fingerprints cannot identify submitted content.
   // Uploads and fetched pages are never shared through this response cache.
   if (body.file || body.inputType !== 'text') return '';
-  return JSON.stringify([responseCacheVersion, 'text-reviewed-snapshot-fallback-measurement-answer-2026-11', RUNTIME_VERSIONS.fallbackKnowledge, RUNTIME_VERSIONS.warehouseKnowledge, body.text.normalize('NFC'), body.clarification || null, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue']);
+  return JSON.stringify([responseCacheVersion, 'text-reviewed-snapshot-fallback-recent-graduate-employment-2026-11', RUNTIME_VERSIONS.fallbackKnowledge, RUNTIME_VERSIONS.warehouseKnowledge, body.text.normalize('NFC'), body.clarification || null, env.LOCAL_MODEL_VERSION || 'local', env.CATALOGUE_VERSION || 'catalogue']);
 };
 
 const json = (body: PublicCheckResponse, status = 200): Response => Response.json(body, {
@@ -385,6 +386,17 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
             // infrastructure failure are not interchangeable.
             warehouseFocusedResponse = fallbackResponse(effectiveClaim, 'text');
           } else {
+            if (focus.id === 'education-employment-outcomes' && snapshotLifecycle(EDUCATION_EMPLOYMENT_SNAPSHOT).usable) {
+              const selectedMetrics = new Set(metricIds);
+              const observationKey = (item: Record<string, unknown>): string => {
+                const dimensions = item.dimensions as Record<string, unknown> | undefined;
+                const dimensionKey = JSON.stringify(Object.entries(dimensions || {}).sort(([left], [right]) => left.localeCompare(right)));
+                return [item.metricId || '', item.period || '', dimensionKey].join('|');
+              };
+              const observed = new Set(focusedObservations.map((item) => observationKey(item as Record<string, unknown>)));
+              focusedObservations = [...focusedObservations, ...EDUCATION_EMPLOYMENT_SNAPSHOT.observations
+                .filter((item) => selectedMetrics.has(item.metricId) && !observed.has(observationKey(item as unknown as Record<string, unknown>)))];
+            }
             if (focus.id.startsWith('primary-care-wait-') || focus.id === 'primary-care-waits') {
               // Keep the reviewed latest wave available while the scheduled
               // source refresh catches up with an older but non-empty D1 row.

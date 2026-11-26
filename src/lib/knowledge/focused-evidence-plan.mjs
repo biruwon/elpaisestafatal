@@ -58,7 +58,9 @@ const observationFitsClaim = (claim) => {
     }
     const population = normalize([item.population, JSON.stringify(item.dimensions || {}), JSON.stringify(item.dimensionLabels || {})].join(' '));
     const youthOverqualification = item.metricId === 'tertiary_overqualification_rate_age_20_34' && item.dimensions?.age === 'Y20-34';
-    if (/\b(jovenes|juvenil|menores de 30)\b/.test(text) && !youthOverqualification
+    const recentGraduateEmployment = ['recent_graduate_employment_rate', 'employment_rate_recent_graduates_vocational', 'employment_rate_recent_graduates_tertiary'].includes(item.metricId)
+      && item.dimensions?.age === 'Y20-34' && item.dimensions?.duration === 'Y1-3';
+    if (/\b(jovenes|juvenil|menores de 30)\b/.test(text) && !youthOverqualification && !recentGraduateEmployment
       && !/\b(youth|juvenil|jovenes|15 24|16 29|y15 24|y16 29)\b/.test(population)) return false;
     return true;
   };
@@ -81,6 +83,9 @@ const labels = {
   industrial_electricity_price: 'Precio eléctrico para grandes consumidores no domésticos · banda ID',
   industrial_electricity_price_europe: 'Precio eléctrico para grandes consumidores no domésticos · banda ID',
   education_personnel: 'Personal docente',
+  recent_graduate_employment_rate: 'Tasa de empleo de recién graduados con educación ISCED 3–8',
+  employment_rate_recent_graduates_vocational: 'Tasa de empleo de recién graduados de formación profesional ISCED 35 y 45',
+  employment_rate_recent_graduates_tertiary: 'Tasa de empleo de recién graduados con educación terciaria ISCED 5–8',
   employment_rate_tertiary_education: 'Tasa de empleo de personas con estudios terciarios',
   unemployment_rate_tertiary_education: 'Tasa de paro de personas con estudios terciarios',
   tertiary_overqualification_rate: 'Tasa de sobrecualificación entre personas con estudios terciarios ocupadas',
@@ -395,11 +400,61 @@ const educationOutcomeFinding = (fact) => {
   const period = periodLabel(item.period);
   const place = placeLabel(item) || 'el territorio consultado';
   const source = item.source?.publisher || 'Eurostat';
+  if (fact.id === 'recent_graduate_employment_rate') return `${source}: en ${place}, el ${value} de las personas residentes de 20 a 34 años fuera de educación o formación, que completaron su nivel educativo más alto (ISCED 3–8) entre 1 y 3 años antes de la encuesta, estaba ocupada en ${period}.`;
+  if (fact.id === 'employment_rate_recent_graduates_vocational') return `${source}: en ${place}, el ${value} de las personas residentes de 20 a 34 años fuera de educación o formación, con educación profesional ISCED 35 o 45 completada entre 1 y 3 años antes de la encuesta, estaba ocupada en ${period}.`;
+  if (fact.id === 'employment_rate_recent_graduates_tertiary') return `${source}: en ${place}, el ${value} de las personas residentes de 20 a 34 años fuera de educación o formación, con educación terciaria ISCED 5–8 completada entre 1 y 3 años antes de la encuesta, estaba ocupada en ${period}.`;
   if (fact.id === 'employment_rate_tertiary_education') return `${source}: en ${place}, el ${value} de las personas residentes de 20 a 64 años con educación terciaria estaba ocupada en ${period}.`;
   if (fact.id === 'unemployment_rate_tertiary_education') return `${source}: en ${place}, el ${value} de la población activa de 20 a 64 años con educación terciaria (ISCED 5–8) estaba en paro en ${period}.`;
   if (fact.id === 'tertiary_overqualification_rate') return `${source} (${place}, ${period}), sobrecualificación: el ${value} de las personas ocupadas de 20 a 64 años con educación terciaria trabajaba en ocupaciones ISCO 4–9, que no requieren ese nivel.`;
   if (fact.id === 'tertiary_overqualification_rate_age_20_34') return `${source}: tasa de sobrecualificación en ${place}, ${period}: el ${value} de las personas ocupadas de 20 a 34 años con educación terciaria trabajaba en ocupaciones ISCO 4–9, que no requieren ese nivel.`;
   return fact.finding;
+};
+const recentGraduateEmploymentComparison = (claim, facts, question) => {
+  if (!question?.recentGraduateEmploymentRate || !question.comparesEducationPaths || question.asksFirstJobTiming) return undefined;
+  const vocational = facts.find((fact) => fact.id === 'employment_rate_recent_graduates_vocational');
+  const tertiary = facts.find((fact) => fact.id === 'employment_rate_recent_graduates_tertiary');
+  if (!vocational || !tertiary) return undefined;
+  const left = vocational.latest;
+  const right = tertiary.latest;
+  const comparableDimensions = (item) => JSON.stringify(Object.fromEntries(Object.entries(item.dimensions || {})
+    .filter(([key]) => !['isced11', 'time', 'period', 'year'].includes(key)).sort(([a], [b]) => a.localeCompare(b))));
+  if (left.period !== right.period || (left.geography || left.dimensions?.geo) !== (right.geography || right.dimensions?.geo)
+    || left.unit !== right.unit || left.source?.id !== right.source?.id || left.source?.url !== right.source?.url
+    || comparableDimensions(left) !== comparableDimensions(right)
+    || !Number.isFinite(left.value) || !Number.isFinite(right.value) || left.value === right.value) return undefined;
+
+  const text = normalize(claim);
+  const firstMention = (pattern, metricId) => {
+    const match = pattern.exec(text);
+    return match ? { metricId, index: match.index, end: match.index + match[0].length } : undefined;
+  };
+  const mentions = [
+    firstMention(/\b(?:fp|formacion profesional|grado medio|grado superior|ciclo formativo|ciclos formativos)\b/, 'employment_rate_recent_graduates_vocational'),
+    firstMention(/\b(?:universidad\w*|universitari\w*|carrer\w*|estudios superiores|educacion terciaria)\b/, 'employment_rate_recent_graduates_tertiary'),
+  ].filter(Boolean).sort((a, b) => a.index - b.index);
+  if (mentions.length !== 2) return undefined;
+  const [first, second] = mentions;
+  const between = text.slice(first.end, second.index);
+  if (!/\b(que|frente a|vs|versus|comparad\w*|compar\w*)\b/.test(between)) return undefined;
+  const comparisonText = text.slice(Math.max(0, first.index - 35), second.end + 25);
+  if (/\bno\b.{0,30}\b(mas|mayor|superior|mejor|menos|menor|inferior|peor)\b/.test(comparisonText)) return undefined;
+  const saysHigher = /\b(mas|mayor|superior|mejor|alta|alto|elevad\w*|supera\w*|mas probab\w*)\b/.test(comparisonText);
+  const saysLower = /\b(menos|menor|inferior|peor|baj\w*|reducid\w*|menos probab\w*)\b/.test(comparisonText);
+  if (saysHigher === saysLower) return undefined;
+  const firstFact = facts.find((fact) => fact.id === first.metricId);
+  const secondFact = facts.find((fact) => fact.id === second.metricId);
+  if (!firstFact || !secondFact) return undefined;
+  const firstActuallyHigher = firstFact.latest.value > secondFact.latest.value;
+  const supported = firstActuallyHigher === saysHigher;
+  const delta = Math.abs(Number((vocational.latest.value - tertiary.latest.value).toFixed(2)));
+  const higherGroup = vocational.latest.value > tertiary.latest.value ? 'FP de niveles ISCED 35 y 45' : 'educación terciaria ISCED 5–8';
+  const place = placeLabel(left) || 'España';
+  const period = periodLabel(left.period);
+  return {
+    verdict: supported ? 'supported' : 'contradicted',
+    headline: `Empleo de recién graduados en ${place} · ${period}`,
+    assessment: `En ${period}, la tasa de empleo fue mayor en ${higherGroup}, por ${number(delta, vocational.id)} puntos porcentuales. Esa dirección ${supported ? 'coincide' : 'no coincide'} con la comparación afirmada.`,
+  };
 };
 const specialistOutpatientMagnitudeNotAssessed = (claim) => {
   const text = normalize(claim);
@@ -580,35 +635,41 @@ const workingPovertyWorktimeComparison = (facts) => {
 };
 const educationOutcomeQuestion = (claim) => {
   const text = normalize(claim);
+  const recentGraduateEmploymentRate = /\b(tasa|porcentaje|proporcion|por ciento|employment rate|emple\w*|trabaj\w*|ocupaci\w*)\b/.test(text)
+    && /\b(recien titulad\w*|recien graduad\w*|recien egresad\w*|gradu\w* (?:hace poco|recientemente)|graduad\w* recientes?|titulad\w* recientes?|egresad\w* recientes?|1 a 3 anos|de 1 a 3 anos|tras graduarse|despues de graduarse|recent(?: university| vocational| tertiary)?(?: and (?:university|vocational|tertiary))? graduates?|recently graduated)\b/.test(text);
   return {
     text,
-    recentGraduates: /\b(recien titulad\w*|recien graduad\w*|primer empleo|cohorte universitaria)\b/.test(text),
+    recentGraduates: /\b(recien titulad\w*|recien graduad\w*|recien egresad\w*|gradu\w* (?:hace poco|recientemente)|graduad\w* recientes?|titulad\w* recientes?|egresad\w* recientes?|primer (?:empleo|trabajo|puesto)|cohorte universitaria|1 a 3 anos|de 1 a 3 anos|tras graduarse|despues de graduarse|recent(?: university| vocational| tertiary)?(?: and (?:university|vocational|tertiary))? graduates?|recently graduated)\b/.test(text),
+    recentGraduateEmploymentRate,
     asksDegreeDemand: /\b(demanda laboral|demanda de titulaciones|salidas? laborales|empleabilidad)\b/.test(text),
     asksQualificationFit: /\b(sobrecualific\w*|desajust\w*|desencaj\w*|no requier\w*|no exig\w*|acorde\w*|adecuad\w*|relacionad\w*|correspond\w*|encaj\w*|ajust\w*|por debajo|nivel de estudios|campo de estudios)\b/.test(text),
     asksCredentialRequirements: /\b(master|maestria|doctorad\w*)\b/.test(text)
       && /\b(exig\w*|requier\w*|pid\w*|ped\w*|anunci\w*|ofert\w*)\b/.test(text),
-    asksFirstJobTiming: /\b(entr\w* antes|antes al mercado laboral|primer empleo|tiempo.{0,24}empleo|tard\w*.{0,24}empleo|mas rapido|rapidamente)\b/.test(text),
+    asksFirstJobTiming: /\b(entr\w* antes|antes al mercado laboral|primer (?:empleo|trabajo|puesto)|tiempo.{0,24}(?:empleo|trabajo)|tard\w*.{0,24}(?:empleo|trabajo)|meses? hasta (?:el )?(?:empleo|trabajo)|mas rapido|mas pronto|rapidamente|tardan? menos|time to first job|faster|sooner)\b/.test(text),
     asksEmploymentProspects: /\b(salida laboral|salidas laborales|empleabilidad|perspectivas laborales)\b/.test(text),
     asksTrend: /\b(ya no|antes|ahora|cada vez|ha aumentado|ha subido|ha bajado|desde \d{4}|evoluci\w*)\b/.test(text),
-    comparesEducationPaths: /\b(formacion profesional|fp)\b/.test(text)
-      && /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|estudios superiores)\b/.test(text)
-      && /\b(mas|menos|mejor|peor|mayor|menor|frente|compar\w*|diferenc\w*|que|y)\b/.test(text),
+    comparesEducationPaths: /\b(formacion profesional|fp|grado medio|grado superior|ciclo formativo|vocational(?: education| graduates?)?)\b/.test(text)
+      && /\b(universidad\w*|universitari\w*|university|universities|carrer\w*|titul\w*|estudios superiores|tertiary education)\b/.test(text)
+      && /\b(mas|menos|mejor|peor|mayor|menor|frente|compar\w*|diferenc\w*|que|y|and|vs|versus|between)\b/.test(text),
   };
 };
 const educationOutcomeLimitForQuestion = (question) => {
   if (question.asksDegreeDemand && !question.comparesEducationPaths) return 'La afiliación de una cohorte describe algunos resultados laborales, pero no mide cuántas vacantes existen por titulación ni si hay «demasiadas» carreras. Para comprobar demanda hacen falta egresados, vacantes y contrataciones por campo, territorio y periodo comparables.';
   if (question.asksCredentialRequirements) return 'Las tasas de empleo y sobrecualificación no muestran qué titulación piden las ofertas. Para saber si ahora se exige más formación hay que comparar anuncios de las mismas ocupaciones, territorios y periodos.';
   if (question.asksFirstJobTiming) return 'Una tasa de empleo no indica cuánto tardan las personas tituladas en encontrar su primer trabajo. Hace falta medir el tiempo desde la graduación y comparar cohortes de FP y universidad en el mismo territorio y periodo.';
-  if (question.comparesEducationPaths) return 'La tasa de empleo disponible describe solo a residentes de 20 a 64 años con educación terciaria; no compara por sí sola los grupos que menciona la afirmación. Hace falta medirlos con el mismo resultado, territorio, periodo y criterios de graduación.';
+  if (question.recentGraduateEmploymentRate) return 'Esta medida cubre a personas de 20 a 34 años que completaron su nivel educativo más alto entre 1 y 3 años antes y no estudiaban ni se formaban. La tasa muestra qué proporción tenía empleo; no mide el tiempo hasta el primer empleo ni la calidad del puesto.';
+  if (question.comparesEducationPaths && !question.recentGraduateEmploymentRate) return 'La tasa de empleo disponible describe solo a residentes de 20 a 64 años con educación terciaria; no compara por sí sola los grupos que menciona la afirmación. Hace falta medirlos con el mismo resultado, territorio, periodo y criterios de graduación.';
   if (question.asksEmploymentProspects) return 'La tasa de empleo terciaria no mide las salidas laborales de FP ni garantiza la contratación de una persona. Para valorar la empleabilidad hace falta una tasa de empleo de titulados con edad, tiempo desde la graduación y denominador definidos.';
   return '';
 };
 const educationOutcomeLimitation = (ids, fallback, question, causalClaim = false) => {
+  const recentGraduateEmployment = ids.some((id) => ['recent_graduate_employment_rate', 'employment_rate_recent_graduates_vocational', 'employment_rate_recent_graduates_tertiary'].includes(id));
   const employment = ids.includes('employment_rate_tertiary_education');
   const unemployment = ids.includes('unemployment_rate_tertiary_education');
   const overqualification = ids.includes('tertiary_overqualification_rate');
   const youthOverqualification = ids.includes('tertiary_overqualification_rate_age_20_34');
-  const scope = youthOverqualification ? 'Aquí, «jóvenes» se interpreta con el grupo estadístico de Eurostat de 20 a 34 años. El denominador son solo las personas ocupadas de ese grupo con educación terciaria: no equivale a recién graduados, no cuenta a quienes siguen desempleados y no mide si el puesto coincide con el campo de estudios ni qué titulación piden los anuncios.'
+  const scope = recentGraduateEmployment ? 'La tasa mide si esas personas estaban ocupadas, no cuánto tardaron en conseguir su primer empleo ni la calidad o adecuación del puesto. «Recién graduados» se limita aquí a personas de 20 a 34 años que completaron el nivel educativo más alto 1 a 3 años antes de la encuesta y no estaban estudiando ni formándose.'
+    : youthOverqualification ? 'Aquí, «jóvenes» se interpreta con el grupo estadístico de Eurostat de 20 a 34 años. El denominador son solo las personas ocupadas de ese grupo con educación terciaria: no equivale a recién graduados, no cuenta a quienes siguen desempleados y no mide si el puesto coincide con el campo de estudios ni qué titulación piden los anuncios.'
     : employment && overqualification ? 'Estas tasas describen grupos, no garantizan el resultado de cada persona. La tasa de empleo abarca a residentes de 20 a 64 años, no solo a recién graduados; la de sobrecualificación solo cuenta a quienes ya trabajan y no mide si el puesto coincide con el campo de estudios.'
       : unemployment ? 'La tasa de paro usa como denominador a la población activa de 20 a 64 años con educación terciaria, no a todas las personas tituladas. No se limita a recién graduados ni predice el resultado de una persona.'
         : overqualification ? 'La tasa de sobrecualificación solo cuenta a personas ocupadas de 20 a 64 años con educación terciaria. No mide a quienes siguen desempleados, el ajuste del campo de estudios ni las titulaciones exigidas en anuncios de empleo.'
@@ -623,6 +684,7 @@ const educationOutcomeNeedsForClaim = (claim, fallback) => {
   if (question.asksDegreeDemand && !question.comparesEducationPaths) return ['egresados, vacantes y contrataciones por titulación o campo de estudio en el mismo territorio y periodo para medir demanda laboral'];
   if (question.asksCredentialRequirements) return ['anuncios de las mismas ocupaciones en periodos comparables, contando qué proporción exige un máster'];
   if (question.asksFirstJobTiming) return ['tiempo desde terminar FP o universidad hasta el primer empleo, por cohorte, territorio y periodo comparables'];
+  if (question.recentGraduateEmploymentRate) return ['tasa de empleo entre personas de 20 a 34 años fuera de educación o formación que completaron su nivel educativo más alto entre 1 y 3 años antes, con itinerario, periodo y territorio definidos'];
   if (recentGraduates) return ['medición de sobrecualificación o ajuste laboral entre recién graduados, con el tiempo transcurrido desde que terminaron los estudios y un denominador definido'];
   if (question.comparesEducationPaths) return ['tasas de empleo de los grupos de titulaciones comparados, con edad, tiempo desde la titulación, territorio y periodo compatibles'];
   if (question.asksEmploymentProspects) return ['tasa de empleo de titulados de la formación indicada, con edad, tiempo desde la graduación, territorio y denominador definidos'];
@@ -643,6 +705,7 @@ const educationOutcomeNextAction = (question, causalClaim = false) => {
   if (question.asksDegreeDemand && !question.comparesEducationPaths) return 'Buscar datos oficiales comparables de egresados, vacantes y contrataciones por campo de estudio, territorio y periodo.';
   if (question.asksCredentialRequirements) return 'Comparar anuncios de las mismas ocupaciones en varios periodos y contar los requisitos formativos.';
   if (question.asksFirstJobTiming) return 'Medir el tiempo desde la graduación hasta el primer empleo por cohorte y tipo de estudios.';
+  if (question.recentGraduateEmploymentRate) return 'Consultar una tasa de empleo de recién graduados que especifique edad, nivel educativo, tiempo desde la titulación, territorio y denominador.';
   if (question.comparesEducationPaths) return 'Comparar ambos itinerarios con la misma población, territorio, periodo y resultado laboral.';
   if (question.recentGraduates) return 'Medir ajuste y empleo desde la graduación, con cohorte y denominador definidos.';
   if (question.asksQualificationFit) return 'Vincular los estudios de las personas con el nivel, tareas o requisitos de sus puestos.';
@@ -996,7 +1059,13 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         : focus.id === 'foreign-affiliation-in-tourism-and-agriculture' ? foreignAffiliateExactShareClaim ? ids : []
           : focus.direct;
   const asksAboutMakingEndsMeet = focus.id === 'working-poverty' && /\b(fin de mes|alcanza para vivir|llega para vivir|cubrir (?:los )?gastos)\b/.test(normalize(claim));
-  const educationNeedForMetric = (id) => id === 'employment_rate_tertiary_education'
+  const educationNeedForMetric = (id) => id === 'recent_graduate_employment_rate'
+    ? 'tasa de empleo de personas de 20 a 34 años fuera de educación o formación que completaron su nivel educativo más alto (ISCED 3–8) entre 1 y 3 años antes; denominador: todas las personas de ese grupo'
+    : id === 'employment_rate_recent_graduates_vocational'
+      ? 'tasa de empleo de personas de 20 a 34 años fuera de educación o formación que completaron educación profesional ISCED 35 o 45 entre 1 y 3 años antes; denominador: todas las personas de ese grupo'
+      : id === 'employment_rate_recent_graduates_tertiary'
+        ? 'tasa de empleo de personas de 20 a 34 años fuera de educación o formación que completaron educación terciaria ISCED 5–8 entre 1 y 3 años antes; denominador: todas las personas de ese grupo'
+        : id === 'employment_rate_tertiary_education'
     ? 'tasa de empleo entre residentes de 20 a 64 años con educación terciaria; denominador: toda la población residente de ese grupo'
     : id === 'unemployment_rate_tertiary_education'
       ? 'tasa de paro entre personas activas de 20 a 64 años con educación terciaria; denominador: ocupados más desempleados de ese grupo'
@@ -1063,6 +1132,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     return order(left) - order(right);
   });
   const educationQuestion = educationOutcome ? educationOutcomeQuestion(claim) : undefined;
+  const educationRecentGraduateComparison = educationOutcome
+    ? recentGraduateEmploymentComparison(claim, facts, educationQuestion) : undefined;
   const specialistMagnitudeNotAssessed = focus.id === 'specialist-outpatient-regional-waits'
     && specialistOutpatientMagnitudeNotAssessed(claim);
   let limitation = tourismRegionalSectorComparison
@@ -1121,6 +1192,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const claimType = tourismRegionalSectorComparison ? 'comparative'
     : typeof focus.claimTypeFor === 'function' ? focus.claimTypeFor(normalizedClaim)
     : educationOutcomeCausalClaim ? 'causal'
+    : educationRecentGraduateComparison || educationOutcome && educationQuestion?.comparesEducationPaths ? 'comparative'
     : focus.id === 'working-poverty' && workingPovertyWorktimeComparisonRequested ? 'comparative'
     : focus.id === 'working-poverty' && workingPovertyTrendRequested ? 'trend'
     : focus.id === 'private-healthcare-access'
@@ -1326,12 +1398,16 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         period: fact.latest.period,
         geography: fact.latest.geography || fact.latest.dimensionLabels?.geo,
         publisher: fact.latest.source?.publisher,
+        sourceId: fact.latest.source?.id,
+        unit: fact.latest.unit,
       })) : [],
       scopeNotes,
       needs,
       limitation,
     })
     : undefined;
+  const educationRecentGraduateComparisonReply = educationRecentGraduateComparison && shareableContextReply
+    ? [shareableContextReply, educationRecentGraduateComparison.assessment].join('\n\n') : undefined;
   const findingLead = direct.length ? 'Datos de la fuente: ' : focus.id === 'sector-wage-comparison' ? '' : 'Como contexto: ';
   const primaryCareCausalityReply = (() => {
     if (focus.id !== 'primary-care-wait-causes') return undefined;
@@ -1611,7 +1687,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       return `El dato (${number(directThresholdAssessment.actual, fact.id)}${suffix}) ${position}; ${directThresholdAssessment.verdict === 'supported' ? 'respalda' : 'contradice'} esa parte.`;
     })()
     : '';
-  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || foreignAffiliateSectorReply || waiterVacancyReply || tourismEmploymentReply || workingPovertyEndsMeetReply || tourismUrbanHousingCostReply || touristHousingReply || educationPayReply || electricityIndustryCostsReply || ruralUrbanAccessReply || mentalHealthPsychologistCountReply || mentalHealthPsychologistCapacityReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || foreignAffiliateSectorReply || waiterVacancyReply || tourismEmploymentReply || workingPovertyEndsMeetReply || tourismUrbanHousingCostReply || touristHousingReply || educationPayReply || electricityIndustryCostsReply || ruralUrbanAccessReply || mentalHealthPsychologistCountReply || mentalHealthPsychologistCapacityReply || educationRecentGraduateComparisonReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
     directThresholdComparisonNote,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const hasReviewedForeignAffiliateContext = focus.id === 'foreign-affiliation-in-tourism-and-agriculture'
@@ -1706,7 +1782,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   }
   return {
     id: `measurement-${focus.id}`, schemaVersion: '1', evidenceLevel, coverage: facts.length || explanation ? 'qualified' : 'insufficient',
-    claimType, headline: subjectivePovertyHeadline || specialistOutpatientComparisonHeadline || workingPovertyComparison?.headline || workingPovertyTrends.get(direct[0]?.id)?.headline || tourismEmploymentHeadline || foreignAffiliateSectorHeadline || waiterVacancyHeadline
+    claimType, headline: educationRecentGraduateComparison?.headline || subjectivePovertyHeadline || specialistOutpatientComparisonHeadline || workingPovertyComparison?.headline || workingPovertyTrends.get(direct[0]?.id)?.headline || tourismEmploymentHeadline || foreignAffiliateSectorHeadline || waiterVacancyHeadline
       || (focus.id === 'working-poverty' && direct.length
         ? fullTime && partTime ? 'Datos de riesgo de pobreza por jornada'
           : fullTime ? 'El empleo a jornada completa no elimina el riesgo de pobreza'
@@ -1722,7 +1798,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         verdict: explanationMeasuresClaim ? explanation.claimVerdictFor?.(claim) || explanation.claimVerdict || specialistOutpatientComparison?.verdict || 'mixed'
           : waiterVacancyExactCountMeasured ? 'supported'
           : foreignAffiliateExactShareMeasured ? 'supported'
-          : educationOutcome ? directThresholdAssessment?.verdict || 'insufficient'
+          : educationOutcome ? educationRecentGraduateComparison?.verdict || directThresholdAssessment?.verdict || 'insufficient'
             : directThresholdAssessment?.verdict || (focus.id === 'working-poverty' ? workingPovertyVerdict : 'insufficient'), evidenceLevel: directEvidenceIds.length && !educationOutcomeCausalClaim || contextualWaiterVacancySourceIds.length ? 'limited' : 'none',
         finding: educationOutcomeCausalClaim ? undefined : explanationMeasuresClaim ? explanationFacts.join(' ') : workingPovertyComparison?.finding || (direct.length ? direct.slice(0, 2).map(factFinding).join(' ') : contextualWaiterVacancyFinding || undefined) }], propositionIds: ['submitted-claim'] },
       ...explanationBlocks,

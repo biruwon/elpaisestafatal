@@ -846,10 +846,10 @@ const lowValueAddedEmploymentClaim = (t) => {
     && !labourProductivityTrend(t)
     && !/\b(?:antiguedad|presentismo|empres\w* peque\w*|pymes?|salari\w*|sueld\w*)\b/.test(t);
 };
-const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|carrer\w*|titul\w*|graduad\w*|estudios?|formaci\w*|preparaci\w*|educacion (?:superior|terciaria)|cualific\w*|sobrecualific\w*|fp)\b/.test(t)
+const educationEmploymentOutcome = (t) => /\b(universidad\w*|universitari\w*|university|universities|carrer\w*|titul\w*|gradu\w*|graduate\w*|estudios?|education|formaci\w*|vocational|preparaci\w*|educacion (?:superior|terciaria)|cualific\w*|sobrecualific\w*|fp)\b/.test(t)
   && !migrationPopulation.test(t) && !healthcareWorkforceCausality(t)
   && !/\b(estigma|estereotip\w*|prestigio|percepcion\w*|reputacion\w*)\b/.test(t)
-  && (/\b(emple\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*|salida laboral|salidas laborales|empleabilidad|perspectivas laborales|demanda laboral)\b/.test(t) || /\bsobrecualific\w*\b/.test(t));
+  && (/\b(emple\w*|employment|work|job\w*|trabaj\w*|ocupaci\w*|puesto\w*|mercado laboral|paro|desemple\w*|salida laboral|salidas laborales|empleabilidad|perspectivas laborales|demanda laboral)\b/.test(t) || /\bsobrecualific\w*\b/.test(t));
 const educationSocioeconomicPerformance = (t) => /\b(recursos? (?:economicos?|materiales?) (?:de la familia|familiares?|del hogar|del entorno familiar)|ingresos? (?:familiares?|del hogar|bajos?)|nivel socioeconomico|estatus socioeconomico|origen socioeconomico|origen social|situacion socioeconomica|situacion economica familiar|posicion socioeconomica|contexto socioeconomico|riqueza (?:familiar|del hogar)|renta (?:familiar|del hogar|baja)|familias? (?:pobres?|de bajos? ingresos|con bajos? ingresos|con rentas? bajas|con pocos recursos|con escasos recursos|con dinero|con mas recursos|con menos recursos)|hogares? (?:pobres?|de bajos? ingresos|con bajos? ingresos|con pocos recursos)|(?:estudiantes?|alumn\w*) en situacion de pobreza)\b/.test(t)
   && /\b(rendimient\w*|resultados? academ\w*|notas?|calificacion\w*|puntuacion\w*|aprendizaje|desempeno academ\w*|desempeno escolar|resultados? escolares?|pruebas? pisa|rendimiento en ciencias)\b/.test(t)
   && !/\b(emple\w*|trabaj\w*|ocupaci\w*|salari\w*|sueld\w*|mercado laboral|universidad\w*|universitari\w*|formacion profesional|\bfp\b)\b/.test(t);
@@ -867,7 +867,7 @@ const educationSkillsVsCurriculum = (t) => /\b(idiom\w*|competenci\w*|habilidad\
 const educationJobFit = (t) => /\b(cualific\w*|acorde\w*|relacionad\w*|adecuad\w*|sobrecualific\w*|desajust\w*|desencaj\w*|nivel de estudios|campo de estudios|preparaci\w*)\b/.test(t)
   || /\b(?:puesto\w*|empleo\w*|trabajo\w*|ocupaci\w*)\b[\s\w]{0,55}\b(?:no requier\w*|no exig\w*|requiere? menos|exige menos)\b/.test(t)
   || /\b(?:no requier\w*|no exig\w*|requiere? menos|exige menos)\b[\s\w]{0,55}\b(?:nivel|estudios|titulaci\w*|formaci\w*|cualificaci\w*)\b/.test(t)
-  || /\b(?:por debajo|inferior|menor)\b[\s\w]{0,35}\b(?:formaci\w*|preparaci\w*|cualificaci\w*|nivel de estudios|estudios?)\b/.test(t);
+  || /\b(?:por debajo|inferior|menor)\b[\s\w]{0,35}\b(?:formaci\w*|preparaci\w*|cualificaci\w*|titulaci\w*|nivel de estudios|estudios?)\b/.test(t);
 const educationSiiuGraduateOutcomes = (t) => {
   const asksExactOverqualificationRate = /\b(tasa|porcentaje|proporcion|cuota)\b.{0,45}\bsobrecualific\w*\b/.test(t)
     || /\bsobrecualific\w*\b.{0,45}\b(tasa|porcentaje|proporcion|cuota)\b/.test(t);
@@ -889,12 +889,31 @@ const educationCrossGroupComparison = (t) => /\b(?:mas|menos|mayor|menor|mejor|p
   || /\b(?:en comparacion con|comparad\w* con|que quienes)\b/.test(t);
 const educationOutcomeMetrics = (claim) => {
   const t = normalize(claim);
+  const recentGraduateCue = /\b(recien (?:titulad\w*|graduad\w*|egresad\w*)|gradu\w* (?:hace poco|recientemente)|graduad\w* recientes?|titulad\w* recientes?|egresad\w* recientes?|tras (?:graduarse|titularse|terminar (?:los )?estudios)|despues de (?:graduarse|titularse|terminar (?:los )?estudios)|de 1 a 3 a[nñ]os (?:de|desde|tras)|1 a 3 a[nñ]os antes de la encuesta|recent(?: university| vocational| tertiary)?(?: and (?:university|vocational|tertiary))? graduates?|recently graduated)\b/.test(t);
+  const recentGraduateTimingClaim = /\b(primer (?:empleo|trabajo|puesto)|antes al mercado laboral|mas rapido|mas pronto|rapidamente|tardan? menos|tiempo.{0,24}(?:empleo|trabajo)|meses? hasta (?:el )?(?:empleo|trabajo)|weeks? to (?:a )?job|time to first job|faster|sooner)\b/.test(t);
+  const vocationalPath = /\b(formacion profesional|fp|grado medio|grado superior|ciclo formativo|ciclos formativos|vocational(?: education| graduates?)?|medium vocational)\b/.test(t);
+  const tertiaryPath = /\b(universidad\w*|universitari\w*|university|universities|carrer\w*|educacion terciaria|estudios superiores|tertiary education)\b/.test(t);
+  const recentGraduateUnemploymentClaim = /\b(paro|desemple\w*|unemployment)\b/.test(t);
+  const recentGraduateEmploymentClaim = recentGraduateCue && !recentGraduateUnemploymentClaim
+    && /\b(emple\w*|trabaj\w*|ocupaci\w*|employment|work)\b/.test(t);
+  const qualificationFit = educationJobFit(t);
+  const requestedAgeRanges = [...String(claim).matchAll(/\b(\d{1,2})\s*(?:[-–—]|a|hasta|to|y)\s*(\d{1,2})\b/gi)];
+  const ageScopeFitsRecentGraduateMeasure = requestedAgeRanges.length === 0
+    || requestedAgeRanges.length === 1 && requestedAgeRanges[0][1] === '20' && requestedAgeRanges[0][2] === '34';
+  const territoryScopeFitsRecentGraduateMeasure = requestedGeographyScopes(t).every(({ id, type }) => type === 'country' && id === 'ES');
+  const asksGraduateCount = /\b(cuantos|cuantas|numero de|recuento|how many)\b/.test(t);
+  if (recentGraduateEmploymentClaim) {
+    if (recentGraduateTimingClaim || qualificationFit || asksGraduateCount || !ageScopeFitsRecentGraduateMeasure || !territoryScopeFitsRecentGraduateMeasure) return [];
+    if (vocationalPath && tertiaryPath) return ['employment_rate_recent_graduates_vocational', 'employment_rate_recent_graduates_tertiary'];
+    if (vocationalPath) return ['employment_rate_recent_graduates_vocational'];
+    if (tertiaryPath) return ['employment_rate_recent_graduates_tertiary'];
+    return ['recent_graduate_employment_rate'];
+  }
   const unsupportedEducationOrTerritory = /\b(formacion profesional|fp|grado medio|grado superior|ciclo formativo|recien titulad\w*|recien graduad\w*|primer empleo|europa|europe[oa]s?|ue|union europea)\b/.test(t);
   const degreeDemandClaim = /\b(demanda laboral|salidas? laborales|empleabilidad)\b/.test(t);
   const youthReference = /\b(joven\w*|juvenil)\b/.test(t);
   const belowThirty = /\bmenores? de \d+\b/.test(t);
   const requestedAges = [...String(claim).matchAll(/\b(\d{2})\s*(?:[-–—]|a|hasta|to|y)\s*(\d{2})\b/gi)];
-  const qualificationFit = educationJobFit(t);
   const age20To34Requested = requestedAges.length === 1 && requestedAges[0][1] === '20' && requestedAges[0][2] === '34';
   const age20To64Requested = requestedAges.length === 1 && requestedAges[0][1] === '20' && requestedAges[0][2] === '64';
   if (educationJobRequirement(t) || educationLevelComparison(t) || unsupportedEducationOrTerritory || degreeDemandClaim
@@ -907,7 +926,7 @@ const educationOutcomeMetrics = (claim) => {
   // never let its rate stand in for recent graduates, unemployment, or all
   // people with tertiary education.
   if (qualificationFit && (youthReference || age20To34Requested)) return ['tertiary_overqualification_rate_age_20_34'];
-  const unemployment = /\b(paro|desemple\w*)\b/.test(t);
+  const unemployment = /\b(paro|desemple\w*|unemployment)\b/.test(t);
   const employmentAccess = /\b(tasa de empleo|encontr\w*|consegu\w*|garantiz\w*|asegur\w*|acced\w*|menos empleo|mas empleo|mayor empleo|menor empleo)\b/.test(t);
   const metrics = [];
   if (unemployment) metrics.push('unemployment_rate_tertiary_education');
@@ -3151,29 +3170,51 @@ const focuses = [
       };
       const employment = metricFacts?.find((fact) => fact.id === 'employment_rate_tertiary_education');
       const generalOverqualification = metricFacts?.find((fact) => fact.id === 'tertiary_overqualification_rate');
+      const recentVocationalEmployment = metricFacts?.find((fact) => fact.id === 'employment_rate_recent_graduates_vocational');
+      const recentTertiaryEmployment = metricFacts?.find((fact) => fact.id === 'employment_rate_recent_graduates_tertiary');
+      const recentGraduateRateAvailable = metricFacts?.some((fact) => ['recent_graduate_employment_rate', 'employment_rate_recent_graduates_vocational', 'employment_rate_recent_graduates_tertiary'].includes(fact.id));
+      const alignedRecentGraduatePathRates = recentVocationalEmployment && recentTertiaryEmployment
+        && recentVocationalEmployment.period === recentTertiaryEmployment.period
+        && recentVocationalEmployment.geography === recentTertiaryEmployment.geography
+        && recentVocationalEmployment.sourceId === recentTertiaryEmployment.sourceId
+        && recentVocationalEmployment.unit === recentTertiaryEmployment.unit
+        && Number.isFinite(recentVocationalEmployment.value) && Number.isFinite(recentTertiaryEmployment.value);
       const alignedEmploymentAndOverqualification = employment && generalOverqualification
         && employment.period === generalOverqualification.period
         && employment.geography === generalOverqualification.geography
         && Number.isFinite(employment.value) && Number.isFinite(generalOverqualification.value);
-      const selectedMetricFindings = alignedEmploymentAndOverqualification
+      const selectedMetricFindings = alignedRecentGraduatePathRates
+        ? (() => {
+          const difference = Math.abs(recentVocationalEmployment.value - recentTertiaryEmployment.value);
+          const higher = recentVocationalEmployment.value > recentTertiaryEmployment.value ? 'FP de niveles ISCED 35 y 45' : 'educación terciaria ISCED 5–8';
+          return [`Eurostat (${recentVocationalEmployment.geography || 'España'}, ${recentVocationalEmployment.period}): entre las personas de 20 a 34 años que no estudiaban ni se formaban y habían completado su nivel educativo más alto 1–3 años antes, la tasa de empleo fue ${metricValue(recentVocationalEmployment)} % en FP (ISCED 35 y 45) y ${metricValue(recentTertiaryEmployment)} % en educación terciaria (ISCED 5–8). Fue ${metricValue({ value: difference })} puntos porcentuales mayor en ${higher}.`];
+        })()
+        : alignedEmploymentAndOverqualification
         ? [`Eurostat (${employment.geography || 'España'}, ${employment.period}): el ${metricValue(employment)} % de las personas residentes de 20 a 64 años con educación terciaria tenía empleo. En la medida de sobrecualificación, entre las personas ocupadas de ese grupo, el ${metricValue(generalOverqualification)} % trabajaba en ISCO 4–9 (cualificación baja o media).`]
         : metricFacts?.map(metricFinding).filter(Boolean) || [];
       const conciseScopeNotes = [...new Set(scopeNotes.map((note) => note.startsWith('La fuente señala que la definición de este dato difiere')
-        ? 'La fuente señala una diferencia de definición; compara años con cautela.'
+        ? recentGraduateRateAvailable
+          ? 'Eurostat marca las observaciones españolas con una diferencia de definición; conviene revisar los metadatos antes de compararlas con otros países o periodos.'
+          : 'La fuente señala una diferencia de definición; compara años con cautela.'
         : note))];
       const factsText = facts.join(' ');
       if (!selectedMetricFindings.length && !factsText) return '';
       const causalClaim = /\b(?:caus\w*|provoc\w*|porque|ya que|debido a|por culpa|empuj\w*|oblig\w* a|conduc\w* a|llev\w* a|por falta de|ante la falta de|por no (?:encontr\w*|hall\w*|consegu\w*))\b/.test(normalizedClaim);
       const qualificationFit = educationJobFit(normalizedClaim);
       const individualGuaranteeLimit = /\bgarant\w*\b/.test(normalizedClaim) ? 'El promedio del grupo no garantiza el resultado de una persona.' : '';
-      const youthPopulationLimit = /\b(joven\w*|juvenil)\b/.test(normalizedClaim)
+      const youthPopulationLimit = !recentGraduateRateAvailable && /\b(joven\w*|juvenil)\b/.test(normalizedClaim)
         ? 'El grupo de 20 a 34 años no equivale a recién graduados.'
+        : '';
+      const recentGraduateMeasureLimit = recentGraduateRateAvailable
+        ? 'La tasa mide si había empleo. No mide el tiempo hasta el primer empleo ni la calidad del puesto.'
         : '';
       const temporalLimit = /\b(ya no|antes|ahora|cada vez|ha aumentado|ha subido|ha bajado|evoluci\w*)\b/.test(normalizedClaim)
         ? 'El dato de 2025 no acredita un cambio temporal.'
         : '';
       const measurementLimit = causalClaim
-        ? 'La tasa solo incluye a personas ocupadas: no mide ofertas adecuadas ni por qué aceptaron esos puestos, y no prueba esa causa.'
+        ? recentGraduateRateAvailable
+          ? 'La tasa de empleo no mide por qué las personas aceptaron sus puestos ni las oportunidades disponibles, y no prueba esa causa.'
+          : 'La tasa solo incluye a personas ocupadas: no mide ofertas adecuadas ni por qué aceptaron esos puestos, y no prueba esa causa.'
         : qualificationFit
           ? factsText
             ? 'El grupo de cotización aproxima el nivel laboral, no los requisitos ni el ajuste por campo; medirlo exige vincular estudios y tareas. Solo cubre afiliación asalariada en España, no empleo exterior ni parte de mutualidades.'
@@ -3187,6 +3228,7 @@ const focuses = [
         factsText,
         measurementLimit,
         youthPopulationLimit,
+        recentGraduateMeasureLimit,
         outcomeLimit,
       ].filter(Boolean).join('\n\n');
     },
