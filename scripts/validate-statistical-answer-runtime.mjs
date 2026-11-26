@@ -496,7 +496,10 @@ try {
   assert.match(urbanPlanningDelay.result.reply, /no mide cu[aá]ntos d[ií]as tard[oó] cada expediente/);
   assert.equal(urbanPlanningDelay.result.shareableReply?.split(/\n{2,}/).length, 2);
   assert.deepEqual(urbanPlanningDelay.result.sources.map((source) => source.id), ['ine-building-permits-methodology']);
+  const receivedBeforeSelfEmployment = (await fetch(`http://127.0.0.1:${port}/healthz`).then((health) => health.json())).metrics.received;
   const selfEmploymentCost = await check('La cuota y los costes fijos hacen inviable ser autónomo con ingresos bajos o irregulares', undefined, { DB: emptyD1 });
+  const receivedAfterSelfEmployment = (await fetch(`http://127.0.0.1:${port}/healthz`).then((health) => health.json())).metrics.received;
+  assert.equal(receivedAfterSelfEmployment, receivedBeforeSelfEmployment, 'A context-only family with no warehouse metric should return its reviewed scope without queuing a generic resolver search');
   assert.equal(selfEmploymentCost.state, 'insufficient');
   assert.equal(selfEmploymentCost.result.answerScope?.family, 'self-employment-cost-viability');
   assert.match(selfEmploymentCost.result.reply, /hasta 670 €.*653,59 € a 718,94 €.*205,88 € al mes/s);

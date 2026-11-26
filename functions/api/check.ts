@@ -419,10 +419,13 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       } else if (focus.id !== 'rental-price-amount' && focus.direct.length === 0 && metricIds.length === 0) {
         // If no warehouse metric is defined for this family, its reviewed
         // explanation can identify the missing measurement without a lookup.
+        // A generic resolver cannot add direct evidence when the family has
+        // no registered metric, so return the scoped context instead of
+        // queuing an unrelated warehouse search.
         const plan = focusedEvidencePlan(effectiveClaim, { observations: [], allowReviewedSnapshotFallback: true }) as AnswerPlan | undefined;
         if (plan) {
           warehouseFocusedResponse = checkFromPlan(effectiveClaim, plan);
-          if (!env.LOCAL_CLASSIFIER_ENDPOINT || !env.LOCAL_CLASSIFIER_TOKEN || localCircuitOpenUntil > Date.now()) return json(warehouseFocusedResponse);
+          return json(warehouseFocusedResponse);
         }
       }
     }
