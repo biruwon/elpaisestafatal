@@ -17,6 +17,21 @@ for (const metric of report.metrics || []) {
 if (report.summary.metrics !== report.metrics.length) errors.push('metric summary count does not match records');
 if (report.summary.fedMetrics !== report.metrics.filter((item) => item.status === 'fed').length) errors.push('fed metric summary count does not match records');
 if (report.summary.comparativeMetrics !== report.metrics.filter((item) => item.hasEuropeVariant).length) errors.push('comparative metric summary count does not match records');
+if (ids.has('job_vacancy_count')) {
+  const expectedConfigured = [
+    'job_vacancy_count', 'occupied_job_post_count', 'job_vacancy_rate_quarterly_change', 'subjective_poverty_rate',
+    'tourist_housing_count', 'tourist_housing_share', 'tourism_characteristic_employment_share',
+    'foreign_affiliate_share_hospitality_rg', 'foreign_affiliate_share_agriculture_rg', 'foreign_affiliate_share_agricultural_special_system',
+  ];
+  for (const id of expectedConfigured) {
+    if (!report.metrics.find((metric) => metric.id === id && metric.status === 'fed')) errors.push(`${id}: configured source family is missing from coverage report`);
+  }
+  const subjectivePoverty = report.metrics.find((metric) => metric.id === 'subjective_poverty_rate');
+  if (!subjectivePoverty?.inputMetricIds?.includes('subjective_poverty_difficulty_rate')
+    || !subjectivePoverty?.inputMetricIds?.includes('subjective_poverty_great_difficulty_rate')) {
+    errors.push('subjective_poverty_rate: derived source-composition inputs are missing');
+  }
+}
 const warehouseDir = process.env.COVERAGE_WAREHOUSE_DIR || join(root, '.local/source-warehouse/records');
 try {
   const files = (await readdir(warehouseDir)).filter((file) => file.endsWith('.json'));
@@ -36,7 +51,10 @@ try {
   if (requireMaterialized) {
     for (const metric of report.metrics || []) {
       if (metric.status !== 'fed' || metric.id.startsWith('official_')) continue;
-      if (!materialized.has(metric.id) && !['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'crime_rate_by_group', 'public_housing_allocations_by_group', 'public_housing_actions', 'wildfire_incidents', 'wildfire_surface_affected', 'emergency_wait_declared'].includes(metric.id)) errors.push(`${metric.id}: configured feed has no materialized warehouse record`);
+      const derivedInputsMaterialized = Array.isArray(metric.inputMetricIds) && metric.inputMetricIds.length > 0
+        && metric.inputMetricIds.every((inputId) => materialized.has(inputId));
+      if (!materialized.has(metric.id) && !derivedInputsMaterialized
+        && !['benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'crime_rate_by_group', 'public_housing_allocations_by_group', 'public_housing_actions', 'wildfire_incidents', 'wildfire_surface_affected', 'emergency_wait_declared'].includes(metric.id)) errors.push(`${metric.id}: configured feed has no materialized warehouse record`);
     }
   }
 } catch (error) {

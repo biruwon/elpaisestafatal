@@ -21,6 +21,186 @@ const numberFor = (value) => {
   return Number.isFinite(parsed) ? parsed : null;
 };
 
+const decodeHtml = (value) => String(value || '')
+  .replace(/&#(\d+);/g, (_, code) => String.fromCodePoint(Number(code)))
+  .replace(/&#x([\da-f]+);/gi, (_, code) => String.fromCodePoint(Number.parseInt(code, 16)))
+  .replace(/&nbsp;|&#160;/gi, ' ')
+  .replace(/&quot;/gi, '"')
+  .replace(/&#39;|&apos;/gi, "'")
+  .replace(/&amp;/gi, '&')
+  .replace(/&aacute;/gi, 'á').replace(/&eacute;/gi, 'é').replace(/&iacute;/gi, 'í')
+  .replace(/&oacute;/gi, 'ó').replace(/&uacute;/gi, 'ú').replace(/&ntilde;/gi, 'ñ')
+  .replace(/&Aacute;/g, 'Á').replace(/&Eacute;/g, 'É').replace(/&Iacute;/g, 'Í')
+  .replace(/&Oacute;/g, 'Ó').replace(/&Uacute;/g, 'Ú').replace(/&Ntilde;/g, 'Ñ');
+
+const htmlText = (value) => decodeHtml(String(value || '')
+  .replace(/<(script|style)[^>]*>[\s\S]*?<\/\1>/gi, ' ')
+  .replace(/<br\s*\/?\s*>/gi, ' ')
+  .replace(/<[^>]*>/g, ' '))
+  .replace(/\s+/g, ' ').trim();
+
+const htmlParagraphs = (html) => [...String(html || '').matchAll(/<p\b[^>]*>([\s\S]*?)<\/p>/gi)]
+  .map((match) => htmlText(match[1])).filter(Boolean);
+
+const spanishMonths = new Map([
+  ['enero', 1], ['febrero', 2], ['marzo', 3], ['abril', 4], ['mayo', 5], ['junio', 6],
+  ['julio', 7], ['agosto', 8], ['septiembre', 9], ['setiembre', 9], ['octubre', 10],
+  ['noviembre', 11], ['diciembre', 12],
+]);
+
+const affiliationPeriodIn = (value, publicationDate = '') => {
+  const normalized = normalise(decodeHtml(value).replace(/%20/gi, ' ')).replace(/_/g, ' ');
+  const monthEntry = [...spanishMonths].find(([month]) => new RegExp(`\\b${month}\\b`, 'i').test(normalized));
+  if (!monthEntry) return null;
+  const yearMatch = normalized.match(/\b(20\d{2})\b/);
+  let year = yearMatch ? Number(yearMatch[1]) : Number(String(publicationDate).slice(0, 4));
+  if (!year || year < 2000 || year > 2100) return null;
+  const pubMonth = Number(String(publicationDate).slice(5, 7));
+  if (!yearMatch && monthEntry[1] === 12 && pubMonth === 1) year -= 1;
+  return `${year}M${String(monthEntry[1]).padStart(2, '0')}`;
+};
+
+const publicationDateNear = (html, index) => {
+  const nearby = htmlText(String(html).slice(index, index + 2200));
+  const match = nearby.match(/\b(\d{1,2})\/(\d{1,2})\/(20\d{2})\b/);
+  if (!match) return null;
+  const day = Number(match[1]);
+  const month = Number(match[2]);
+  if (day < 1 || day > 31 || month < 1 || month > 12) return null;
+  return `${match[3]}-${String(month).padStart(2, '0')}-${String(day).padStart(2, '0')}`;
+};
+
+export const selectLatestForeignAffiliationRelease = (archiveHtml, archiveUrl) => {
+  const byUrl = new Map();
+  for (const match of String(archiveHtml || '').matchAll(/<a\b[^>]*href\s*=\s*(["'])(.*?)\1[^>]*>([\s\S]*?)<\/a>/gi)) {
+    let url;
+    try { url = new URL(decodeHtml(match[2]), archiveUrl); } catch { continue; }
+    if (url.protocol !== 'https:' || url.hostname !== 'revista.seg-social.es' || !url.pathname.startsWith('/-/')) continue;
+    const title = htmlText(match[3]);
+    const identity = normalise(`${decodeURIComponent(url.pathname)} ${title}`);
+    if (!/afiliacion|afiliados/.test(identity) || !/extranjer/.test(identity)) continue;
+    const publishedAt = publicationDateNear(archiveHtml, match.index + match[0].length);
+    const previous = byUrl.get(url.href);
+    byUrl.set(url.href, {
+      url: url.href,
+      title: title || previous?.title || '',
+      publishedAt: publishedAt || previous?.publishedAt || null,
+    });
+  }
+  const candidates = [...byUrl.values()].filter((candidate) => candidate.title || candidate.publishedAt);
+  candidates.sort((left, right) => (Date.parse(right.publishedAt || '') || 0) - (Date.parse(left.publishedAt || '') || 0));
+  const latest = candidates[0];
+  if (!latest) throw new Error('Official foreign-affiliation tag archive contained no dated article candidates');
+  const period = affiliationPeriodIn(`${decodeURIComponent(new URL(latest.url).pathname)} ${latest.title}`, latest.publishedAt);
+  if (!period) throw new Error('Latest official foreign-affiliation article did not identify its reference month');
+  if (!latest.title || !latest.publishedAt) throw new Error('Latest official foreign-affiliation article is missing its headline or publication date');
+  return { ...latest, period };
+};
+
+export const parseForeignAffiliationReleaseHtml = (html, source) => {
+  const period = String(source.period || '');
+  if (!/^20\d{2}M(?:0[1-9]|1[0-2])$/.test(period)) throw new Error('Foreign-affiliation release is missing a valid reference month');
+  const paragraphs = htmlParagraphs(html);
+  const contextualParagraphs = paragraphs.map((paragraph, index) => ({
+    paragraph,
+    context: paragraphs.slice(Math.max(0, index - 2), index + 1).join(' '),
+  }));
+  const general = contextualParagraphs.filter(({ paragraph, context }) => /hosteler[ií]a/i.test(paragraph)
+    && /agricultura/i.test(paragraph) && /r[eé]gimen general de la seguridad social/i.test(context) && /extranjer/i.test(context));
+  if (general.length !== 1) throw new Error('Foreign-affiliation article did not contain one unambiguous General Regime sector paragraph');
+  const percentageAfter = (text, label) => {
+    const escaped = label.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+    const match = text.match(new RegExp(`\\b${escaped}\\b[^%]{0,100}?(\\d{1,2}(?:[.,]\\d{1,2})?)\\s*%`, 'i'));
+    return match ? numberFor(match[1]) : null;
+  };
+  const hospitality = percentageAfter(general[0].paragraph, 'Hostelería');
+  const agriculture = percentageAfter(general[0].paragraph, 'Agricultura');
+  const specialText = contextualParagraphs.filter(({ paragraph, context }) => /sistema especial de trabajadores agrarios/i.test(paragraph)
+    && /extranjer/i.test(context)).map(({ paragraph }) => paragraph);
+  const specialMatches = specialText.flatMap((paragraph) => [...paragraph.matchAll(/(\d{1,2}(?:[.,]\d{1,2})?)\s*%\s+(?:del|de los afiliados al)\s+Sistema Especial de Trabajadores Agrarios/gi)]
+    .map((match) => numberFor(match[1])));
+  const specialAgriculture = specialMatches.length === 1 ? specialMatches[0] : null;
+  const values = [hospitality, agriculture, specialAgriculture];
+  if (values.some((value) => value === null || value < 0 || value > 100)) {
+    throw new Error('Foreign-affiliation article did not provide all three sector shares with distinct labels');
+  }
+  const rows = [
+    ['foreign_affiliate_share_hospitality_rg', hospitality, 'hospitality', 'general', 'Affiliates with foreign nationality in hospitality under Spain\'s General Social Security Regime', 'All affiliates in hospitality under Spain\'s General Social Security Regime'],
+    ['foreign_affiliate_share_agriculture_rg', agriculture, 'agriculture', 'general', 'Affiliates with foreign nationality in agriculture under Spain\'s General Social Security Regime', 'All affiliates in agriculture under Spain\'s General Social Security Regime'],
+    ['foreign_affiliate_share_agricultural_special_system', specialAgriculture, 'agricultural_special_system', 'special_agricultural', 'Affiliates with foreign nationality in Spain\'s Special Agricultural Workers System', 'All affiliates in Spain\'s Special Agricultural Workers System'],
+  ];
+  return rows.map(([metricId, value, industryScope, regime, population, denominator]) => ({
+    id: `${source.id}-${metricId}-${period}`,
+    kind: 'observation',
+    sourceId: source.id,
+    datasetId: source.title,
+    metricId,
+    metric: metricId === 'foreign_affiliate_share_hospitality_rg'
+      ? 'Share of hospitality affiliates in the General Regime with foreign nationality'
+      : metricId === 'foreign_affiliate_share_agriculture_rg'
+        ? 'Share of agricultural affiliates in the General Regime with foreign nationality'
+        : 'Share of affiliates in the Special Agricultural Workers System with foreign nationality',
+    value,
+    unit: 'percent',
+    period,
+    geography: 'España',
+    population,
+    denominator,
+    dimensions: { geo: 'ES', time: period, industry_scope: industryScope, regime, nationality: 'foreign', denominator },
+    url: source.url,
+  }));
+};
+
+export const parseIneTourismEmploymentHtml = (html, source) => {
+  if (!normalise(htmlText(html)).includes('cuenta_satelite_del_turismo')) throw new Error('INE CSTE source identity was not present in the release page');
+  const blocks = [...String(html || '').matchAll(/<textarea\b[^>]*>([\s\S]*?)<\/textarea>/gi)];
+  const tables = [];
+  for (const block of blocks) {
+    try {
+      const table = JSON.parse(htmlText(block[1]));
+      if (table?.mode === 'table' && Array.isArray(table.category) && Array.isArray(table.data)
+        && Array.isArray(table.row) && Array.isArray(table.col)) tables.push(table);
+    } catch { /* Charts and publisher widgets are not statistical tables. */ }
+  }
+  const candidates = tables.flatMap((table) => {
+    const rowIndexes = table.row.flatMap((row, rowIndex) => {
+      const labels = row.map((index) => table.category[Number(index)] || '');
+      return labels.some((label) => normalise(label).replace(/_/g, ' ') === 'porcentaje sobre el total del empleo de la economia') ? [rowIndex] : [];
+    });
+    return rowIndexes.map((rowIndex) => ({ table, rowIndex }));
+  });
+  if (candidates.length !== 1) throw new Error('INE CSTE release did not contain one uniquely labelled tourism-employment share row');
+  const { table, rowIndex } = candidates[0];
+  const years = table.col.map((column) => String(table.category[Number(column?.[0])] || '').trim());
+  if (!years.length || years.some((year) => !/^20\d{2}(?:\s*\([PA]\))?$/.test(year))) throw new Error('INE CSTE table did not provide labelled annual periods');
+  const start = rowIndex * years.length;
+  const rawValues = table.data.slice(start, start + years.length);
+  if (rawValues.length !== years.length) throw new Error('INE CSTE annual share row is incomplete');
+  const values = rawValues.map(numberFor);
+  if (values.some((value) => value === null || value < 0 || value > 100)) throw new Error('INE CSTE annual share row contains invalid percentage values');
+  return years.map((rawYear, index) => {
+    const period = rawYear.match(/20\d{2}/)[0];
+    const status = rawYear.match(/\(([PA])\)/)?.[1]?.toLowerCase();
+    return {
+      id: `${source.id}-tourism-characteristic-employment-share-${period}`,
+      kind: 'observation',
+      sourceId: source.id,
+      datasetId: source.title,
+      metricId: 'tourism_characteristic_employment_share',
+      metric: 'Employment in tourism-characteristic branches as a share of total employment',
+      value: values[index],
+      unit: 'percent',
+      period,
+      geography: 'España',
+      population: 'Employment in economic branches characteristic of tourism',
+      denominator: 'Total employment in the Spanish economy',
+      dimensions: { geo: 'ES', time: period, industry_scope: 'tourism_characteristic_branches', denominator: 'total_economy_employment' },
+      url: source.url,
+      ...(status ? { status } : {}),
+    };
+  });
+};
+
 const common = (row, source, index) => ({
   id: `${source.id}-domain-${index}`,
   kind: 'observation',

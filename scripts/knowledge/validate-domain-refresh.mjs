@@ -10,7 +10,7 @@ const errors = [];
 
 if (!Array.isArray(feeds) || feeds.length === 0) errors.push('feeds must be a non-empty array');
 const ids = new Set();
-const domains = new Set(['immigration_benefits', 'immigration_crime', 'public_housing_allocation', 'tourist_housing', 'wildfire_statistics', 'health_emergency_wait', 'health_primary_care', 'pension_finance']);
+const domains = new Set(['immigration_benefits', 'immigration_crime', 'public_housing_allocation', 'tourist_housing', 'tourism_employment', 'foreign_affiliation', 'wildfire_statistics', 'health_emergency_wait', 'health_primary_care', 'pension_finance']);
 const schedules = new Set(['daily', 'weekly', 'monthly', 'quarterly', 'semiannual', 'yearly']);
 const modes = new Set(['active', 'discovery']);
 
@@ -22,6 +22,7 @@ for (const feed of feeds ?? []) {
   ids.add(feed.id);
   if (!domains.has(feed.domain)) errors.push(`unsupported domain: ${feed.domain}`);
   if (feed.metricId !== undefined && (typeof feed.metricId !== 'string' || !metricRegistry[feed.metricId])) errors.push(`unknown metricId for feed ${feed.id}`);
+  if (feed.publishedAt !== undefined && (typeof feed.publishedAt !== 'string' || !/^20\d{2}-\d{2}-\d{2}$/.test(feed.publishedAt) || !Number.isFinite(Date.parse(feed.publishedAt)))) errors.push(`invalid publishedAt for ${feed.id}`);
   if (!schedules.has(feed.schedule)) errors.push(`unsupported schedule for ${feed.id}`);
   if (!modes.has(feed.mode)) errors.push(`unsupported mode for ${feed.id}`);
   try {

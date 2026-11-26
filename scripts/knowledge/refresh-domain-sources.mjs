@@ -53,6 +53,7 @@ const environmentFor = async (feed) => {
 const run = async (feed) => {
   const args = ['scripts/knowledge/ingest-domain-source.mjs', '--domain', feed.domain, '--url', feed.url, '--title', feed.title];
   if (feed.schedule) args.push('--schedule', feed.schedule);
+  if (feed.publishedAt) args.push('--published-at', feed.publishedAt);
   const env = await environmentFor(feed);
   return new Promise((resolveRun, reject) => {
     const child = spawn(process.execPath, args, { env, stdio: ['ignore', 'pipe', 'pipe'] });

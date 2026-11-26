@@ -1,0 +1,40 @@
+export const domainMetricIds = Object.freeze({
+  immigration_benefits: [
+    'benefit_recipients_by_group', 'imv_title_holders_by_nationality', 'imv_title_holder_share_by_nationality',
+    'imv_comparable_population_by_nationality', 'imv_title_holder_rate_by_nationality', 'unemployment_rate_by_nationality',
+    'unemployment_beneficiaries_by_nationality', 'unemployment_beneficiaries_by_programme_nationality',
+    'unemployment_benefit_share_by_nationality', 'unemployment_benefit_coverage_by_nationality',
+    'survey_selected_social_transfer_rate_by_nationality', 'imv_beneficiary_average_age',
+  ],
+  immigration_crime: [
+    'crime_rate_by_group', 'crime_detentions_investigations_by_nationality', 'crime_standardised_conviction_offence_rate_by_nationality',
+    'crime_convictions_by_nationality', 'crime_convictions_by_sex_nationality', 'resident_population_18_plus_by_sex_nationality',
+    'crime_conviction_rate_by_nationality', 'crime_conviction_rate_by_sex_nationality', 'crime_conviction_rate_minor_by_nationality',
+  ],
+  public_housing_allocation: [
+    'public_housing_allocations_by_group', 'public_housing_allocations_by_programme', 'public_housing_allocation_rate_by_programme',
+    'public_housing_allocations_by_nationality', 'public_housing_allocations_by_documentation', 'public_housing_actions',
+    'public_housing_applications', 'public_housing_applications_by_nationality', 'housing_tenure_by_household_nationality',
+    'housing_tenure_by_reference_nationality',
+  ],
+  tourist_housing: ['tourist_housing_count', 'tourist_housing_share'],
+  tourism_employment: ['tourism_characteristic_employment_share'],
+  foreign_affiliation: [
+    'foreign_affiliate_share_hospitality_rg', 'foreign_affiliate_share_agriculture_rg',
+    'foreign_affiliate_share_agricultural_special_system',
+  ],
+  wildfire_statistics: ['wildfire_incidents', 'wildfire_surface_affected'],
+  health_emergency_wait: ['emergency_wait_declared'],
+  health_primary_care: ['primary_care_wait_days', 'primary_care_wait_over_one_day_rate'],
+  pension_finance: [
+    'social_security_contributory_pension_expenditure', 'social_security_current_revenue', 'social_security_current_expenditure',
+    'social_security_current_balance', 'social_security_contributions', 'social_security_current_transfers',
+    'social_security_budget_total_balance', 'pension_contributory_income_projected', 'pension_public_transfers_projected',
+    'pension_contributory_expenditure_projected', 'pension_noncontributory_expenditure_projected', 'pension_system_income_projected',
+    'pension_system_expenditure_projected', 'pension_system_balance_projected', 'pension_implicit_transfers_projected',
+    'social_security_contributory_pension_budget', 'social_security_pension_complements_minimum_budget',
+    'social_security_noncontributory_pension_budget', 'social_security_pension_budget_total',
+    'social_security_minimum_complements_transfer_budget', 'social_security_noncontributory_transfer_budget',
+    'social_security_pact_toledo_transfer_budget',
+  ],
+});

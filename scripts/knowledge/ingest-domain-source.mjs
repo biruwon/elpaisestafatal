@@ -1,7 +1,7 @@
 import { createHash } from 'node:crypto';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { join } from 'node:path';
-import { parseAirefPensionProjectionWorkbook, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseEuskadiHousingDocumentationText, parseEuskadiHousingNationalityText, parseGencatHousingDemandText, parseHealthEmergencyReportText, parseImvWorkbookBuffer, parseIneAdultPopulationBySexNationality, parseIneConvictionPressText, parseIneHousingTenureNationalityText, parseIneHousingTenureReferenceTable, parseIneUnemploymentRateTable, parseMadridPlanViveText, parseMadridSpecialNeedHousingText, parsePdfText, parsePublicHousingActionsText, parseSepeForeignBenefitsText, parseSocialSecurityPensionBudgetWorkbook, parseSocialSecurityPensionFinanceText, parseSocialSecurityPensionTransfersText, parseSpreadsheetBuffer, parseWildfireReportText } from './domain-connectors.mjs';
+import { parseAirefPensionProjectionWorkbook, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseEuskadiHousingDocumentationText, parseEuskadiHousingNationalityText, parseForeignAffiliationReleaseHtml, parseGencatHousingDemandText, parseHealthEmergencyReportText, parseImvWorkbookBuffer, parseIneAdultPopulationBySexNationality, parseIneConvictionPressText, parseIneHousingTenureNationalityText, parseIneHousingTenureReferenceTable, parseIneTourismEmploymentHtml, parseIneUnemploymentRateTable, parseMadridPlanViveText, parseMadridSpecialNeedHousingText, parsePdfText, parsePublicHousingActionsText, parseSepeForeignBenefitsText, parseSocialSecurityPensionBudgetWorkbook, parseSocialSecurityPensionFinanceText, parseSocialSecurityPensionTransfersText, parseSpreadsheetBuffer, parseWildfireReportText, selectLatestForeignAffiliationRelease } from './domain-connectors.mjs';
 import { sourceForHost } from './source-registry.mjs';
 import { parsePrimaryCareBarometerWorkbook } from './domain-connectors.mjs';
 
@@ -16,12 +16,13 @@ if (!domain || !url) throw new Error('Usage: node scripts/knowledge/ingest-domai
 const sourceUrl = new URL(url);
 if (sourceUrl.protocol !== 'https:') throw new Error('Domain sources must use HTTPS');
 const fetchSource = async (candidate) => {
-  const response = await fetch(candidate, { headers: { accept: 'application/json,text/csv,text/plain;q=0.9,text/html;q=0.8' }, signal: AbortSignal.timeout(30000) });
+  const candidateUrl = new URL(candidate);
+  const response = await fetch(candidateUrl, { headers: { accept: 'application/json,text/csv,text/plain;q=0.9,text/html;q=0.8' }, signal: AbortSignal.timeout(30000) });
   if (!response.ok) throw new Error(`Source returned ${response.status}`);
   const contentType = response.headers.get('content-type') || '';
   const bytes = Buffer.from(await response.arrayBuffer());
   if (bytes.length > 25 * 1024 * 1024) throw new Error('Source exceeds 25 MB limit');
-  return { candidate, contentType, bytes };
+  return { candidate: candidateUrl, contentType, bytes };
 };
 const extractLinkedDataUrls = (html, baseUrl) => [...String(html).matchAll(/(?:href|data-url)=["']([^"']+)["']/gi)]
   .map((match) => { try { return new URL(match[1], baseUrl); } catch { return null; } })
@@ -29,8 +30,26 @@ const extractLinkedDataUrls = (html, baseUrl) => [...String(html).matchAll(/(?:h
   .filter((candidate) => candidate.hostname === baseUrl.hostname || sourceForHost(candidate.hostname))
   .filter((candidate, index, all) => all.findIndex((item) => item.href === candidate.href) === index)
   .slice(0, 12);
+let resolvedTitle = title;
+let sourcePublishedAt = args.get('published-at') || null;
 let fetched = await fetchSource(sourceUrl);
-if (fetched.contentType.includes('html') && !(domain === 'public_housing_allocation' && /euskadi|documentation|identification|plan vive/i.test(title))) {
+let specializedPayload = null;
+if (domain === 'foreign_affiliation') {
+  if (!fetched.contentType.includes('html')) throw new Error('Foreign-affiliation archive did not return HTML');
+  const release = selectLatestForeignAffiliationRelease(fetched.bytes.toString('utf8'), sourceUrl.toString());
+  fetched = await fetchSource(release.url);
+  if (!fetched.contentType.includes('html')) throw new Error('Latest foreign-affiliation article did not return HTML');
+  resolvedTitle = release.title;
+  sourcePublishedAt = release.publishedAt;
+  specializedPayload = { __records: parseForeignAffiliationReleaseHtml(fetched.bytes.toString('utf8'), {
+    id: 'pending', title: resolvedTitle, url: fetched.candidate.toString(), period: release.period, publishedAt: release.publishedAt,
+  }) };
+} else if (domain === 'tourism_employment') {
+  if (!fetched.contentType.includes('html')) throw new Error('INE CSTE source did not return HTML');
+  specializedPayload = { __records: parseIneTourismEmploymentHtml(fetched.bytes.toString('utf8'), {
+    id: 'pending', title: resolvedTitle, url: fetched.candidate.toString(),
+  }) };
+} else if (fetched.contentType.includes('html') && !(domain === 'public_housing_allocation' && /euskadi|documentation|identification|plan vive/i.test(title))) {
   const linked = extractLinkedDataUrls(fetched.bytes.toString('utf8'), sourceUrl);
   let selected = null;
   for (const candidate of linked) {
@@ -48,7 +67,8 @@ const bytes = response.bytes;
 const text = bytes.toString('utf8');
 let payload;
 try {
-  if (domain === 'public_housing_allocation' && /plan vive/i.test(title) && contentType.includes('html')) payload = { __records: parseMadridPlanViveText(text, { id: 'pending', title, url: response.url.toString() }) };
+  if (specializedPayload) payload = specializedPayload;
+  else if (domain === 'public_housing_allocation' && /plan vive/i.test(title) && contentType.includes('html')) payload = { __records: parseMadridPlanViveText(text, { id: 'pending', title, url: response.url.toString() }) };
   else if (domain === 'health_primary_care') payload = { __records: await parsePrimaryCareBarometerWorkbook(bytes, { id: 'pending', title, url: response.url.toString() }) };
   else if (domain === 'immigration_benefits' && (contentType.includes('spreadsheet') || /\.xlsx?(?:$|[?#])/i.test(response.url.pathname))) payload = { __records: await parseImvWorkbookBuffer(bytes, { id: 'pending', title, url: response.url.toString() }) };
   else if (domain === 'pension_finance' && /AIReF.*2026.*series/i.test(title)) payload = { __records: await parseAirefPensionProjectionWorkbook(bytes, { id: 'pending', title, url: response.url.toString() }) };
@@ -80,7 +100,16 @@ try {
 } catch (error) { throw new Error(`Source could not be parsed as JSON, CSV, XLSX, or PDF: ${error instanceof Error ? error.message : String(error)}`); }
 const hash = createHash('sha256').update(bytes).digest('hex');
 const definition = sourceForHost(response.url.hostname) || sourceForHost(sourceUrl.hostname);
-const source = { id: `domain-${hash.slice(0, 16)}`, title, publisher: definition?.publisher || title, url: response.url.toString(), landingUrl: sourceUrl.toString(),
+const semanticSourceHash = specializedPayload ? createHash('sha256').update(JSON.stringify({
+  domain,
+  url: response.url.toString(),
+  title: resolvedTitle,
+  publishedAt: sourcePublishedAt,
+  records: payload.__records.map(({ metricId, value, unit, period, geography, population, denominator, dimensions, status }) => ({ metricId, value, unit, period, geography, population, denominator, dimensions, status })),
+})).digest('hex') : null;
+const identityHash = semanticSourceHash || hash;
+const source = { id: `domain-${identityHash.slice(0, 16)}`, title: resolvedTitle, publisher: definition?.publisher || resolvedTitle, url: response.url.toString(), landingUrl: sourceUrl.toString(),
+  ...(sourcePublishedAt ? { publishedAt: sourcePublishedAt } : {}),
   sourceRegistryId: definition?.id, schedule: args.get('schedule') || definition?.schedule || 'monthly', trust: definition ? 'approved-domain' : 'discovery-only', connector: `domain-${domain}`, parserVersion: 'domain-v2' };
 const records = payload?.__records
   ? payload.__records.map((record) => ({ ...record, sourceId: source.id, id: record.id.replace('pending', source.id) }))
@@ -89,7 +118,7 @@ const root = process.env.SOURCE_WAREHOUSE_ROOT || new URL('../../.local/source-w
 await mkdir(join(root, 'records'), { recursive: true });
 const outputPath = join(root, 'records', `${source.id}.json`);
 await mkdir(join(root, 'objects'), { recursive: true });
-const objectPath = join(root, 'objects', hash);
+const objectPath = join(root, 'objects', identityHash);
 await writeFile(objectPath, bytes);
 const manifest = { ...source, domain, contentType, sha256: hash, objectPath, retrievedAt: new Date().toISOString(), recordCount: records.length, metricIds: [...new Set(records.map((record) => record.metricId).filter(Boolean))], recordPath: outputPath };
 await writeFile(outputPath, JSON.stringify({ source: manifest, records }, null, 2));

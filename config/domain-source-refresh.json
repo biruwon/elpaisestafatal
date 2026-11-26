@@ -215,6 +215,23 @@
       "title": "INE tourist dwellings as a share of housing stock by province and period, table 39365"
     },
     {
+      "id": "ine-tourism-employment-share-cste-2024",
+      "domain": "tourism_employment",
+      "url": "https://www.ine.es/dyngs/Prensa/es/CSTE2024.htm",
+      "schedule": "yearly",
+      "mode": "active",
+      "publishedAt": "2025-12-22",
+      "title": "INE Cuenta Satélite del Turismo: employment share in tourism-characteristic branches, 2021–2024"
+    },
+    {
+      "id": "tgss-foreign-affiliation-sector-shares",
+      "domain": "foreign_affiliation",
+      "url": "https://revista.seg-social.es/tag-search?p_r_p_tag=afiliaci%C3%B3n%20de%20extranjeros",
+      "schedule": "monthly",
+      "mode": "active",
+      "title": "Social Security monthly affiliation shares by foreign nationality and sector"
+    },
+    {
       "id": "igvs-protected-housing-awards",
       "domain": "public_housing_allocation",
       "url": "https://igvs.xunta.gal/es/vivienda-protegida/adjudicaciones-sorteos-de-vivienda-protegida",

@@ -1,4 +1,4 @@
-import { domainConnectorIds, parseAirefPensionProjectionWorkbook, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseEuskadiHousingDocumentationText, parseEuskadiHousingNationalityText, parseGencatHousingDemandText, parseIneAdultPopulationBySexNationality, parseIneHousingTenureNationalityText, parseIneHousingTenureReferenceTable, parseIneTempusSnapshot, parseIneConvictionTable, parseIneConvictionPressText, parseIneUnemploymentRateTable, parseImvWorkbookBuffer, parseInteriorDetentionsTable, parseMadridPlanViveText, parseMadridSpecialNeedHousingText, parseOberaxeImvCrosstabText, parsePdfText, parsePublicHousingActionsText, parseSepeForeignBenefitsText, parseSocialSecurityPensionBudgetWorkbook, parseSocialSecurityPensionFinanceText, parseSocialSecurityPensionTransfersText, parseSpreadsheetBuffer, parseWildfireReportText, parseHealthEmergencyReportText } from './domain-connectors.mjs';
+import { domainConnectorIds, parseAirefPensionProjectionWorkbook, parseCrimeSeriesText, parseDelimited, parseDomainPayload, parseEuskadiHousingDocumentationText, parseEuskadiHousingNationalityText, parseForeignAffiliationReleaseHtml, parseGencatHousingDemandText, parseIneAdultPopulationBySexNationality, parseIneHousingTenureNationalityText, parseIneHousingTenureReferenceTable, parseIneTempusSnapshot, parseIneConvictionTable, parseIneConvictionPressText, parseIneTourismEmploymentHtml, parseIneUnemploymentRateTable, parseImvWorkbookBuffer, parseInteriorDetentionsTable, parseMadridPlanViveText, parseMadridSpecialNeedHousingText, parseOberaxeImvCrosstabText, parsePdfText, parsePublicHousingActionsText, parseSepeForeignBenefitsText, parseSocialSecurityPensionBudgetWorkbook, parseSocialSecurityPensionFinanceText, parseSocialSecurityPensionTransfersText, parseSpreadsheetBuffer, parseWildfireReportText, parseHealthEmergencyReportText, selectLatestForeignAffiliationRelease } from './domain-connectors.mjs';
 import * as XLSX from 'xlsx';
 
 const source = { id: 'fixture-source', title: 'Fixture source', url: 'https://official.example/data' };
@@ -45,6 +45,39 @@ for (const domain of domainConnectorIds()) {
   const records = parseDomainPayload(domain, fixtures[domain], source);
   if (records[0].value === null || !records[0].period || !records[0].geography) throw new Error(`${domain}: dimensions were not preserved`);
 }
+const affiliationArchive = '<div class="card"><a href="https://revista.seg-social.es/-/afiliacion-extranjeros-octubre-2026">La Seguridad Social registra afiliados extranjeros</a><p>13/11/2026</p></div><div class="card"><a href="https://revista.seg-social.es/-/afiliacion-extranjeros-septiembre-2026-record">Los afiliados extranjeros alcanzan un máximo</a><p>13/10/2026</p></div>';
+const latestAffiliation = selectLatestForeignAffiliationRelease(affiliationArchive, 'https://revista.seg-social.es/tag-search?p_r_p_tag=afiliaci%C3%B3n%20de%20extranjeros');
+if (latestAffiliation.period !== '2026M10' || latestAffiliation.publishedAt !== '2026-11-13' || !latestAffiliation.title.includes('afiliados extranjeros')) throw new Error('Social Security archive selection lost release period, order, or headline');
+const affiliationHtml = '<p>En el conjunto de la afiliación representan el 16,4% de los trabajadores. La aportación de los trabajadores extranjeros resulta especialmente relevante en algunos sectores del Régimen General de la Seguridad Social. En Hostelería suponen el 33,5 % de los afiliados; en Agricultura, el 29,1%; en Construcción, el 28,9%. También tienen un peso destacado los Sistemas Especiales: representan el 50,3% de los afiliados al Sistema Especial de Empleados de Hogar y el 42,7% del Sistema Especial de Trabajadores Agrarios.</p>';
+const affiliationRows = parseForeignAffiliationReleaseHtml(affiliationHtml, { ...source, id: 'tgss-fixture', period: '2026M10' });
+if (affiliationRows.length !== 3
+  || affiliationRows.find((row) => row.metricId === 'foreign_affiliate_share_hospitality_rg')?.value !== 33.5
+  || affiliationRows.find((row) => row.metricId === 'foreign_affiliate_share_agriculture_rg')?.value !== 29.1
+  || affiliationRows.find((row) => row.metricId === 'foreign_affiliate_share_agricultural_special_system')?.value !== 42.7
+  || affiliationRows.find((row) => row.metricId === 'foreign_affiliate_share_agricultural_special_system')?.denominator !== "All affiliates in Spain's Special Agricultural Workers System") throw new Error('Social Security affiliation parser lost sector values or separate denominator scopes');
+let rejectedForeignAffiliationNeighbour = false;
+try { parseForeignAffiliationReleaseHtml(affiliationHtml.replace('Régimen General de la Seguridad Social', 'la actividad económica'), { ...source, period: '2026M10' }); } catch { rejectedForeignAffiliationNeighbour = true; }
+if (!rejectedForeignAffiliationNeighbour) throw new Error('Social Security parser accepted a nearby sector claim without the General Regime scope');
+const tourismTable = {
+  mode: 'table',
+  category: ['2021', '2022', '2023 (P)', '2024 (A)', 'Precios corrientes', 'Gasto', 'Consumo', 'VAB', 'VAB directo', 'PIB directo', 'PIB turístico', 'Porcentaje sobre el PIB', 'PIB turístico', 'Miles de puestos de trabajo', 'Empleo turístico', 'Porcentaje sobre el total del empleo de la economía'],
+  col: [['0'], ['1'], ['2'], ['3']],
+  row: [...Array.from({ length: 9 }, () => ['4']), ['15', '14']],
+  data: [...Array(36).fill('0'), '10,8', '12,1', '12,2', '12,3'],
+};
+const tourismHtml = `<h1>Cuenta Satélite del Turismo de España</h1><textarea>${JSON.stringify(tourismTable)}</textarea>`;
+const tourismShareRows = parseIneTourismEmploymentHtml(tourismHtml, { ...source, id: 'ine-tourism-fixture' });
+if (tourismShareRows.length !== 4
+  || tourismShareRows.map((row) => row.value).join(',') !== '10.8,12.1,12.2,12.3'
+  || tourismShareRows[2].status !== 'p' || tourismShareRows[3].status !== 'a'
+  || tourismShareRows[3].denominator !== 'Total employment in the Spanish economy') throw new Error('INE CSTE parser lost annual values, estimate status, or denominator');
+let rejectedTourismWageNeighbour = false;
+try {
+  const unrelatedTable = structuredClone(tourismTable);
+  unrelatedTable.category[15] = 'Porcentaje sobre el total del PIB';
+  parseIneTourismEmploymentHtml(`<h1>Cuenta Satélite del Turismo de España</h1><textarea>${JSON.stringify(unrelatedTable)}</textarea>`, source);
+} catch { rejectedTourismWageNeighbour = true; }
+if (!rejectedTourismWageNeighbour) throw new Error('INE tourism parser accepted an unrelated percentage row');
 const csv = parseDelimited('period;territorio;grupo;beneficiarios\n2025;España;total;100');
 if (csv.length !== 1 || csv[0].beneficiarios !== '100') throw new Error('Delimited source parsing failed');
 const pdfRows = parsePdfText('Period  Territory  Group  Value\n2025  España  extranjeros  1200');
