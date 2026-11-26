@@ -13,6 +13,21 @@ export const publicEvidenceGapReply = (plan, { attributionUnavailable = false, c
   const gap = plan?.blocks?.find((block) => block?.type === 'evidence_gap');
   if (!gap || plan?.evidenceLevel !== 'insufficient' && !attributionUnavailable) return undefined;
 
+  // Focused family composers can explain a measurement gap more precisely
+  // than the generic checklist. Preserve that wording only when it carries no
+  // evidence or source IDs, so it cannot publish unattributed numeric claims.
+  const hasTraceableEvidence = Boolean(plan.evidenceIds?.length || plan.sourceIds?.length || plan.sourceLinks?.length
+    || plan.shareableSourceIds?.length
+    || plan.blocks.some((block) => block?.evidenceIds?.length
+      || ['confirmed', 'data_finding'].includes(block?.type) && block?.points?.length)
+    || plan.evidenceSummary?.families?.some((family) => family?.evidenceIds?.length || family?.sourceIds?.length || family?.data?.length));
+  if (plan.answerScope?.family === 'tourism-urban-housing-cost'
+    && !hasTraceableEvidence
+    && typeof plan.shareableReply === 'string'
+    && plan.shareableReply.trim()) {
+    return plan.shareableReply.trim();
+  }
+
   const limitation = meaningfulLimitation(plan.limitation);
   const opening = attributionUnavailable
     ? 'No hay observaciones compatibles suficientes. Eso no demuestra que la afirmación sea falsa; no se puede confirmar ni descartar con lo disponible.'

@@ -2559,6 +2559,41 @@ export const textAnswerAccuracyCases = [
     },
   },
   {
+    id: 'tourism-city-centre-housing-cost-gap',
+    equivalenceGroup: 'tourism-city-centre-luxury-gap',
+    input: 'El turismo masivo ha hecho que vivir en el centro de algunas ciudades sea un lujo',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'tourism-urban-housing-cost', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['no compara los precios o costes de vivienda e ingresos netos de residentes', 'actividad turística en los mismos barrios y periodos', 'no permite atribuir el coste al turismo', 'umbral explícito de asequibilidad'],
+      replyExcludes: ['341.001', '1,28 %', 'Censo de 2021', 'INE (España'],
+      evidence: [], maxReplyWords: 70,
+    },
+  },
+  {
+    id: 'tourism-city-centre-housing-cost-paraphrase',
+    equivalenceGroup: 'tourism-city-centre-luxury-gap',
+    input: 'La presión turística convierte la vivienda del centro en un lujo para quienes viven allí',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'tourism-urban-housing-cost', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['no compara los precios o costes de vivienda e ingresos netos de residentes', 'actividad turística en los mismos barrios y periodos', 'no permite atribuir el coste al turismo', 'umbral explícito de asequibilidad'],
+      replyExcludes: ['341.001', '1,28 %', 'Censo de 2021', 'INE (España'],
+      evidence: [], maxReplyWords: 70,
+    },
+  },
+  {
+    id: 'tourism-visited-zones-housing-and-services-gap',
+    input: 'El turismo masivo eleva el coste de vivienda y servicios en las zonas más visitadas',
+    now: '2026-11-26T12:00:00Z',
+    expected: {
+      state: 'insufficient', family: 'tourism-urban-housing-cost', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['precios o costes de vivienda y los precios de los servicios mencionados', 'actividad turística en los mismos barrios y periodos', 'no permite atribuir el coste al turismo'],
+      replyExcludes: ['341.001', '1,28 %', 'Censo de 2021', 'INE (España'],
+      evidence: [], maxReplyWords: 65,
+    },
+  },
+  {
     id: 'tourism-regional-employment-loss-claim',
     equivalenceGroup: 'tourism-regional-employment-counterfactual-spain-2024',
     input: 'Reducir drásticamente el turismo destruiría empleo en regiones muy dependientes de él',

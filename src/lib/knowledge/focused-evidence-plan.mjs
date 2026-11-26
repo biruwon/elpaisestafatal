@@ -1492,6 +1492,30 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       'El dato nacional no describe barrios o municipios.',
     ].join('\n\n');
   })();
+  const tourismUrbanHousingCostReply = (() => {
+    if (focus.id !== 'tourism-urban-housing-cost') return undefined;
+    const count = primaryFacts.find((fact) => fact.id === 'tourist_housing_count');
+    const share = primaryFacts.find((fact) => fact.id === 'tourist_housing_share');
+    const aligned = count && share && count.latest.period === share.latest.period
+      && count.latest.geography === share.latest.geography;
+    const context = aligned
+      ? `${count.latest.source?.publisher || 'INE'} (${count.latest.geography}, ${periodLabel(count.latest.period)}): ${number(count.latest.value, count.id)} viviendas turísticas estimadas; ${number(share.latest.value, share.id)} % del parque total, con el Censo de 2021 como denominador.`
+      : count
+        ? `${count.latest.source?.publisher || 'INE'} (${count.latest.geography}, ${periodLabel(count.latest.period)}): ${number(count.latest.value, count.id)} viviendas turísticas estimadas.`
+        : share
+          ? `${share.latest.source?.publisher || 'INE'} (${share.latest.geography}, ${periodLabel(share.latest.period)}): ${number(share.latest.value, share.id)} % del parque total; el denominador es el Censo de 2021.`
+          : '';
+    const housingMeasure = /\b(alquil\w*|arrendam\w*|rent\w*)\b/.test(normalizedClaim)
+      ? 'el alquiler residencial' : 'los precios o costes de vivienda';
+    const serviceCosts = /\b(servici\w*|coste de vida)\b/.test(normalizedClaim);
+    const residentCosts = `${housingMeasure}${serviceCosts ? ' y los precios de los servicios mencionados' : ''}`;
+    const luxuryThreshold = /\blujo\b/.test(normalizedClaim)
+      ? ' «Lujo» requiere un umbral explícito de asequibilidad frente a los ingresos netos de residentes.' : '';
+    const interpretation = context
+      ? `Estas estimaciones de alojamiento no miden ${residentCosts} ni los ingresos de hogares residentes, y no prueban un efecto turístico. Para medirlo, compara ${residentCosts} e ingresos netos con la actividad turística en los mismos barrios y periodos, controlando cambios de oferta y demanda.${luxuryThreshold}`
+      : `La evidencia consultada no compara ${residentCosts} e ingresos netos de residentes con la actividad turística en los mismos barrios y periodos; no permite atribuir el coste al turismo. Para medirlo, controla cambios de oferta y demanda.${luxuryThreshold}`;
+    return [context ? `Como contexto: ${context}` : '', interpretation].filter(Boolean).join('\n\n');
+  })();
   const educationPayReply = (() => {
     if (focus.id !== 'education-pay-comparison') return undefined;
     const earnings = primaryFacts.find((fact) => fact.id === 'mean_hourly_earnings_by_education');
@@ -1577,7 +1601,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       return `El dato (${number(directThresholdAssessment.actual, fact.id)}${suffix}) ${position}; ${directThresholdAssessment.verdict === 'supported' ? 'respalda' : 'contradice'} esa parte.`;
     })()
     : '';
-  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || foreignAffiliateSectorReply || waiterVacancyReply || tourismEmploymentReply || workingPovertyEndsMeetReply || touristHousingReply || educationPayReply || electricityIndustryCostsReply || ruralUrbanAccessReply || mentalHealthPsychologistCountReply || mentalHealthPsychologistCapacityReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || foreignAffiliateSectorReply || waiterVacancyReply || tourismEmploymentReply || workingPovertyEndsMeetReply || tourismUrbanHousingCostReply || touristHousingReply || educationPayReply || electricityIndustryCostsReply || ruralUrbanAccessReply || mentalHealthPsychologistCountReply || mentalHealthPsychologistCapacityReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
     directThresholdComparisonNote,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
   const hasReviewedForeignAffiliateContext = focus.id === 'foreign-affiliation-in-tourism-and-agriculture'

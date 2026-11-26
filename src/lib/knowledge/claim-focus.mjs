@@ -2697,14 +2697,20 @@ const focuses = [
     id: 'tourism-urban-housing-cost', label: 'presión turística sobre el coste de la vivienda para residentes',
     when: tourismUrbanHousingCostPressure,
     direct: [], context: ['tourist_housing_count', 'tourist_housing_share'], claimType: 'causal',
-    needs: [
-      'definir «lujo» o falta de asequibilidad mediante el coste de vivienda respecto a los ingresos netos de residentes',
-      'alquileres residenciales e ingresos de residentes para los mismos barrios y periodos',
-      'viviendas turísticas o estancias en esos mismos lugares y periodos',
-      'una comparación que separe el efecto del turismo de la oferta, la demanda, los ingresos y otros factores',
-    ],
-    explanation: 'El número de viviendas turísticas puede describir actividad de alojamiento, pero no mide el coste de vivir para residentes ni demuestra que el turismo lo haya causado.',
-    limitation: 'La estimación experimental del INE cuenta anuncios de tres plataformas y su porcentaje usa como denominador el parque total del Censo de 2021. Ninguno de esos datos mide alquileres e ingresos disponibles de hogares residentes, a escala nacional o de barrio, ni permite atribuir al turismo los cambios de coste.',
+    needsForClaim: (claim) => {
+      const text = normalize(claim);
+      const housingMeasure = /\b(alquil\w*|arrendam\w*|rent\w*)\b/.test(text)
+        ? 'alquileres residenciales' : 'precios o costes de vivienda';
+      const serviceCosts = /\b(servici\w*|coste de vida)\b/.test(text);
+      return [
+        `${housingMeasure}${serviceCosts ? ' y precios de los servicios mencionados' : ''} e ingresos netos de residentes en los mismos barrios y periodos`,
+        'actividad turística medida en esos mismos lugares y periodos',
+        'una comparación que separe el turismo de cambios de oferta, demanda e ingresos',
+        ...(/\blujo\b/.test(text) ? ['un umbral explícito de asequibilidad para interpretar «lujo»'] : []),
+      ];
+    },
+    explanation: 'Un recuento de alojamientos turísticos no mide el coste residencial de los hogares ni demuestra su causa.',
+    limitation: 'Sin precios locales e ingresos de residentes comparables, los recuentos turísticos no permiten atribuir al turismo un cambio de alquiler o coste de vida.',
   },
   {
     id: 'tourism-seasonal-employment', label: 'variación trimestral de la ocupación en alojamiento y comidas',

@@ -1519,16 +1519,27 @@ assert.equal(tourismHousingCostPlan.evidenceLevel, 'insufficient');
 assert.equal(tourismHousingCostPlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
 assert.equal(tourismHousingCostPlan.sourceLinks.length, 2, 'Tourist-dwelling sources may be cited only as contextual evidence');
 assert.match(tourismHousingCostPlan.shareableReply, /Como contexto:/);
-assert.match(tourismHousingCostPlan.shareableReply, /341\.001 viviendas.*1,28 %.*mayo de 2026/s);
-assert.match(tourismHousingCostPlan.shareableReply, /coste de vivir|coste.*residentes|no mide.*residentes/i);
-assert.match(tourismHousingCostPlan.limitation, /Censo.*2021/);
-assert.ok(tourismHousingCostPlan.evidenceSummary.missingDimensions.some((item) => /alquileres residenciales e ingresos de residentes/.test(item)));
+assert.match(tourismHousingCostPlan.shareableReply, /INE \(Espa[nñ]a, mayo de 2026\).*341\.001 viviendas.*1,28 %/s);
+assert.match(tourismHousingCostPlan.shareableReply, /Censo de 2021 como denominador/);
+assert.match(tourismHousingCostPlan.shareableReply, /no miden los precios o costes de vivienda ni los ingresos de hogares residentes/i);
+assert.ok(tourismHousingCostPlan.shareableReply.trim().split(/\s+/).length <= 80, 'National tourist-housing context should be concise and retain the denominator.');
+assert.ok(tourismHousingCostPlan.evidenceSummary.missingDimensions.some((item) => /precios o costes de vivienda e ingresos netos de residentes/.test(item)));
 assert.equal(localPublicCheckResponse({ status: 'complete', requestId: 'tourism-housing-cost', result: tourismHousingCostPlan }, tourismHousingCostClaim).state, 'insufficient');
 validateAnswerPlan(tourismHousingCostPlan);
 const tourismCityCentreClaim = 'El turismo masivo ha hecho que vivir en el centro de algunas ciudades sea un lujo';
 const tourismCityCentrePlan = focusedEvidencePlan(tourismCityCentreClaim, { observations: touristHousingObservations });
 assert.equal(tourismCityCentrePlan.answerScope.family, 'tourism-urban-housing-cost');
 assert.equal(tourismCityCentrePlan.sourceLinks.length, 0, 'National and provincial tourist-housing aggregates cannot answer a city-centre housing-cost claim');
+assert.match(tourismCityCentrePlan.shareableReply, /precios o costes de vivienda e ingresos netos de residentes.*actividad tur[ií]stica.*mismos barrios y periodos/s);
+assert.match(tourismCityCentrePlan.shareableReply, /«Lujo» requiere un umbral expl[ií]cito de asequibilidad/);
+assert.doesNotMatch(tourismCityCentrePlan.shareableReply, /INE|341\.001|1,28 %|Censo de 2021/);
+assert.ok(tourismCityCentrePlan.shareableReply.trim().split(/\s+/).length <= 60, 'Un unsupported city-level tourism claim should get a concise, source-free evidence gap.');
+const tourismCityCentreParaphrase = focusedEvidencePlan('La presión turística convierte la vivienda del centro en un lujo para quienes viven allí', { observations: touristHousingObservations });
+assert.equal(tourismCityCentreParaphrase.shareableReply, tourismCityCentrePlan.shareableReply, 'City-centre luxury paraphrases should use the same evidence gap and scope.');
+const tourismCityCentrePublic = localPublicCheckResponse({ status: 'uncovered', requestId: 'tourism-city-centre', result: tourismCityCentrePlan }, tourismCityCentreClaim);
+assert.equal(tourismCityCentrePublic.result.reply, tourismCityCentrePlan.shareableReply, 'The public gap composer should preserve the focused, source-free explanation.');
+assert.equal(tourismCityCentrePublic.result.sources.length, 0, 'The concise gap reply must not introduce unsupported citations.');
+assert.equal(tourismCityCentrePublic.result.evidenceLevel, 'insufficient');
 const secondHomePressureClaims = [
   'Las segundas residencias también presionan la vivienda local aunque no sean pisos turísticos',
   'Las viviendas secundarias encarecen el alquiler para residentes aunque no se ofrezcan como alojamientos turísticos',
@@ -1556,6 +1567,10 @@ validateAnswerPlan(secondHomePressurePlan);
 const tourismVisitedZonesPlan = focusedEvidencePlan('El turismo masivo eleva el coste de vivienda y servicios en las zonas más visitadas', { observations: touristHousingObservations });
 assert.equal(tourismVisitedZonesPlan.answerScope.family, 'tourism-urban-housing-cost');
 assert.equal(tourismVisitedZonesPlan.sourceLinks.length, 0, 'A national aggregate cannot answer a claim about more visited zones');
+assert.match(tourismVisitedZonesPlan.shareableReply, /precios o costes de vivienda y los precios de los servicios mencionados/i);
+assert.match(tourismVisitedZonesPlan.shareableReply, /actividad tur[ií]stica en los mismos barrios y periodos/);
+assert.doesNotMatch(tourismVisitedZonesPlan.shareableReply, /341\.001|1,28 %|Censo de 2021/);
+assert.ok(tourismVisitedZonesPlan.shareableReply.trim().split(/\s+/).length <= 55, 'A high-visit-zone claim should not inherit national tourism statistics.');
 const tourismEmploymentParaphrases = [
   'España depende demasiado del turismo para sostener el empleo',
   'El turismo representa una parte excesiva del empleo español',
