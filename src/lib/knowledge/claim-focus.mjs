@@ -105,6 +105,30 @@ const migrationWageEffects = (t) => migrationPopulation.test(t)
   && /\b(presion\w*|conteng\w*|contener|baj\w*|reduc\w*|afect\w*|compar\w*|menor\w*|mayor\w*|diferenc\w*|mas|menos|a la baja|por debajo)\b/.test(t)
   && /\b(sector\w*|poblacion nativa|trabajador\w* nativ\w*|emplead\w* nativ\w*|trabajador\w* local\w*|resto de trabajador\w*|otro\w* trabajador\w*|otra\w* persona\w*)\b/.test(t)
   && !/\b(fiscal\w*|impuest\w*|recaud\w*|tribut\w*|cotiz\w*)\b/.test(t);
+const foreignAffiliateSectorSelection = (t) => {
+  const hospitality = /\b(turism\w*|turistic\w*|hosteler\w*|hotel\w*|alojamiento\w*)\b/.test(t);
+  const agriculture = /\b(agricultur\w*|agrari\w*|agricol\w*|campo|cosech\w*|temporer\w*|jornal\w*)\b/.test(t);
+  const generalAgricultureRegime = /\b(regimen general)\b/.test(t);
+  const specialAgricultureRegime = /\b(sistema especial|regimen especial|seta)\b/.test(t);
+  return [
+    ...(hospitality ? ['foreign_affiliate_share_hospitality_rg'] : []),
+    ...(agriculture ? [
+      ...(!specialAgricultureRegime || generalAgricultureRegime ? ['foreign_affiliate_share_agriculture_rg'] : []),
+      ...(!generalAgricultureRegime || specialAgricultureRegime ? ['foreign_affiliate_share_agricultural_special_system'] : []),
+    ] : []),
+  ];
+};
+const foreignAffiliateSectorPresence = (t) => migrationPopulation.test(t)
+  && foreignAffiliateSectorSelection(t).length > 0
+  && /\b(emple\w*|trabaj\w*|mano de obra|personal|afiliad\w*|ocupad\w*|temporer\w*|jornal\w*|cosech\w*|vacant\w*|puesto\w*|depend\w*|necesit\w*|cubrir|contrat\w*|estacional\w*|condicion\w*)\b/.test(t)
+  && !migrationWageEffects(t)
+  && !/\b(salari\w*|sueld\w*|nomina\w*|remuner\w*|fiscal\w*|impuest\w*|recaud\w*|tribut\w*|cotiz\w*)\b/.test(t);
+const exactForeignAffiliateShareQuestion = (t) => foreignAffiliateSectorPresence(t)
+  && /\b(afiliad\w*|afiliacion)\b/.test(t)
+  && /\b(porcentaj\w*|proporcion|cuota|por ciento|parte)\b/.test(t)
+  && /\b(regimen general|sistema especial)\b/.test(t)
+  && !/\b(depend\w*|necesit\w*|vacant\w*|condicion\w*|estacional\w*|caus\w*|provoc\w*|porque|debido|por culpa)\b/.test(t);
+export { exactForeignAffiliateShareQuestion };
 const adultConvictionRateByNationality = (t) => /\b(tasa|por cada mil|por cada 1000|por mil|por 1000)\b/.test(t)
   && /\b(condenad\w*|condena firme|sentencia firme)\b/.test(t)
   && /\b(nacionalidad|extranjer\w*|espanol\w*)\b/.test(t)
@@ -1728,7 +1752,7 @@ const tourismEmploymentContribution = (t) => {
     && /\b(que|a|al|frente a|respecto a)\b/.test(t)
     && !/\b(crec\w*|aument\w*|increment\w*|evoluc\w*|variac\w*)\b/.test(t);
   const differentFamily = /\b(viviend\w*|alquil\w*|arrendam\w*|salari\w*|sueld\w*|productiv\w*|pernoctacion\w*|noches? de hotel)\b/.test(t);
-  return !unpaidOvertime(t) && !reportedVsWorkedHours(t) && tourism && employment && (contributionOrDependence || regionalSectorComparison)
+  return !foreignAffiliateSectorPresence(t) && !unpaidOvertime(t) && !reportedVsWorkedHours(t) && tourism && employment && (contributionOrDependence || regionalSectorComparison)
     && (!sectorEmploymentComparison(t) || regionalSectorComparison) && !differentFamily;
 };
 const selfEmploymentCostViability = (t) => {
@@ -2630,6 +2654,23 @@ const focuses = [
     explanation: 'La Cuenta Satélite del Turismo mide el peso del empleo en las ramas económicas características del turismo.',
     evidenceGap: 'La cuota de empleo mide el tamaño de esas ramas, pero no establece un umbral estadístico para decidir si su peso es excesivo.',
     limitation: 'Las cifras cuentan empleo en ramas económicas características del turismo; no identifican qué puestos fueron causados por visitantes ni miden su calidad o estacionalidad.',
+  },
+  {
+    id: 'foreign-affiliation-in-tourism-and-agriculture', label: 'afiliación de nacionalidad extranjera en hostelería y agricultura',
+    when: foreignAffiliateSectorPresence,
+    direct: [], context: [],
+    claimTypeFor: (t) => /\b(depend\w*|necesit\w*|vacant\w*|condicion\w*|estacional\w*|caus\w*|provoc\w*|porque|debido|por culpa|no se cubr\w*|sin cubrir)\b/.test(t) ? 'causal'
+      : /\b(mas|menos|mayor\w*|menor\w*|compar\w*|frente a|respecto a)\b/.test(t) ? 'comparative' : 'descriptive',
+    needsForClaim: (claim) => exactForeignAffiliateShareQuestion(normalize(claim)) ? [
+      'afiliaciones del régimen solicitado, sector y periodo por nacionalidad extranjera',
+    ] : [
+      'vacantes y puestos cubiertos por sector, territorio y periodo',
+      'candidatos disponibles y sus cualificaciones para las mismas vacantes',
+      'salarios, jornada, estabilidad y condiciones ofrecidas en esos puestos',
+      'datos comparables que permitan determinar si las condiciones explican vacantes o dependencia',
+    ],
+    explanation: 'La afiliación a la Seguridad Social por nacionalidad describe quién está registrado en determinados regímenes y actividades. No mide por sí sola la dependencia de un sector respecto a trabajadores extranjeros ni por qué quedan vacantes.',
+    limitation: 'La fuente clasifica por nacionalidad, no por país de nacimiento, y cuenta afiliaciones, no todas las personas que trabajan. La hostelería es una parte del turismo. En agricultura, el dato del Régimen General y el del Sistema Especial de Trabajadores Agrarios tienen denominadores distintos y no se deben combinar. Ninguna de estas cuotas mide estacionalidad, puestos sin cubrir, calidad laboral o si las condiciones ofrecidas causan vacantes.',
   },
   {
     id: 'tourist-housing-supply', label: 'efecto de las viviendas turísticas sobre la oferta residencial',
@@ -3828,6 +3869,7 @@ export const focusedMetricIdsFor = (claim) => {
     ? /\bcon dificultad\b/.test(text) && !/\bgran dificultad\b/.test(text) ? 'subjective_poverty_difficulty_rate'
       : /\bgran dificultad\b/.test(text) && !/\bcon dificultad\b/.test(text) ? 'subjective_poverty_great_difficulty_rate' : undefined
     : undefined;
+  const foreignAffiliateMetrics = focus.id === 'foreign-affiliation-in-tourism-and-agriculture' ? foreignAffiliateSectorSelection(text) : [];
   const direct = focus.id === 'subjective-financial-strain' && subjectiveResponseMetric ? [subjectiveResponseMetric]
     : focus.id === 'labour-productivity-and-growth' ? ['real_labour_productivity_per_person', 'real_labour_productivity_per_hour']
     : focus.id === 'household-inflation-basket' && !/\b(alquil\w*|arrendam\w*|viviend\w*)\b/.test(text) ? ['annual_hicp_food_index']
@@ -3850,6 +3892,7 @@ export const focusedMetricIdsFor = (claim) => {
   const productivityEmploymentContext = focus.id === 'labour-productivity-and-growth'
     && /\b(?:aumento (?:de|del) empleo|crecimiento (?:de|del) empleo|creacion de empleo|mas empleo|mas puestos de trabajo|empleo total|personas ocupadas|personas empleadas|hay mas personas trabajando)\b/.test(text);
   const selectedContext = focus.id === 'subjective-financial-strain' && subjectiveResponseMetric ? []
+    : focus.id === 'foreign-affiliation-in-tourism-and-agriculture' ? foreignAffiliateMetrics
     : focus.id === 'labour-productivity-and-growth' ? [
       ...(productivityMacroContext || productivityPopulationContext ? ['gdp_real_annual'] : []),
       ...(productivityPopulationContext ? ['gdp_real_per_capita_annual'] : []),

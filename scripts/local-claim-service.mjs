@@ -48,6 +48,7 @@ import { detectCurrentEvent, buildNeutralQueries, classifyEventSearchLeads, even
 import { latestGovernmentPeriod, scorecardMetrics, makeScorecard, makePopulationScorecard } from './knowledge/scorecard.mjs';
 import { GOVERNMENT_SCORECARD_SNAPSHOT, snapshotScorecard } from '../src/lib/knowledge/scorecard-snapshot.mjs';
 import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/tourism-employment-snapshot.mjs';
+import { FOREIGN_AFFILIATE_SECTOR_SNAPSHOT } from '../src/lib/knowledge/foreign-affiliate-sector-snapshot.mjs';
 import { EDUCATION_EMPLOYMENT_SNAPSHOT } from '../src/lib/knowledge/education-employment-snapshot.mjs';
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../src/lib/knowledge/education-earnings-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from '../src/lib/knowledge/tourist-housing-snapshot.mjs';
@@ -2244,6 +2245,13 @@ const toResolveResult = (text, classified, source, resultRequestId = requestId(t
         .filter((item) => !observedPeriods.has(`${item.metricId}|${item.period}`));
       return [...observations, ...missingSnapshotObservations];
     })()
+    : focus?.id === 'foreign-affiliation-in-tourism-and-agriculture' && snapshotLifecycle(FOREIGN_AFFILIATE_SECTOR_SNAPSHOT).usable
+      ? (() => {
+        const observed = new Set(observations.map((item) => `${item.metricId || ''}|${item.period || ''}`));
+        const missingSnapshotObservations = FOREIGN_AFFILIATE_SECTOR_SNAPSHOT.observations
+          .filter((item) => !observed.has(`${item.metricId}|${item.period}`));
+        return [...observations, ...missingSnapshotObservations];
+      })()
     : focus?.id === 'education-employment-outcomes' && educationMetricIds.length > 0
       && snapshotLifecycle(EDUCATION_EMPLOYMENT_SNAPSHOT).usable
       && !observations.some((item) => educationMetricIds.includes(item.metricId))

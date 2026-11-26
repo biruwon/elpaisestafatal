@@ -14,6 +14,7 @@ import { parsePrimaryCareBarometerWorkbook } from './domain-connectors.mjs';
 import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care-wait-snapshot.mjs';
 import { WORKING_POVERTY_SNAPSHOT } from '../../src/lib/knowledge/working-poverty-snapshot.mjs';
 import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/tourism-employment-snapshot.mjs';
+import { FOREIGN_AFFILIATE_SECTOR_SNAPSHOT } from '../../src/lib/knowledge/foreign-affiliate-sector-snapshot.mjs';
 import { EDUCATION_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/education-employment-snapshot.mjs';
 import { EDUCATION_EARNINGS_SNAPSHOT } from '../../src/lib/knowledge/education-earnings-snapshot.mjs';
 import { TOURIST_HOUSING_SNAPSHOT } from '../../src/lib/knowledge/tourist-housing-snapshot.mjs';
@@ -139,6 +140,11 @@ const cases = [
   ['tourist-housing-supply', ['Los pisos turísticos están quitando viviendas del alquiler residencial', 'Los apartamentos turísticos reducen la oferta para quienes viven en las ciudades', 'La vivienda turística desplaza alquileres de larga duración']],
   ['tourism-urban-housing-cost', ['El turismo masivo ha hecho que vivir en el centro de algunas ciudades sea un lujo', 'La presión turística convierte la vivienda del centro en un lujo para quienes viven allí', 'Los pisos turísticos encarecen el alquiler para residentes de barrios céntricos', 'Las viviendas turísticas han hecho más caro el alquiler en España']],
   ['tourism-employment-contribution', ['España depende demasiado del turismo para sostener el empleo', 'El turismo representa una parte excesiva del empleo español', 'El empleo en España depende demasiado de las actividades turísticas']],
+  ['foreign-affiliation-in-tourism-and-agriculture', [
+    'El modelo de turismo y hostelería necesita inmigración porque muchos puestos no se cubren con las condiciones ofrecidas',
+    'En los hoteles hay vacantes por las condiciones de trabajo y se recurre a personal extranjero',
+    'La agricultura española depende en gran medida de mano de obra inmigrante estacional',
+  ]],
   ['sector-employment-growth-comparison', ['El empleo crece más en la industria que en la hostelería', 'La contratación aumenta más en la construcción que en la agricultura', 'La ocupación cae menos en el comercio que en el transporte']],
   ['sector-employment-level-comparison', ['El turismo genera más empleo que la agricultura', 'Hay más puestos de trabajo en la industria que en la hostelería', 'El transporte emplea a menos personas que la construcción']],
   ['residential-gentrification-displacement', ['La gentrificación está expulsando a residentes de barrios donde han vivido toda su vida', 'El aumento del alquiler obliga a vecinos de toda la vida a abandonar el barrio', 'La renovación de zonas céntricas termina desplazando a quienes ya vivían allí']],
@@ -1520,6 +1526,62 @@ assert.ok(!focusedMetricIdsFor(tourismWageNeighbour)?.has('tourism_characteristi
 assert.ok(!focusedMetricIdsFor(tourismWageNeighbour)?.has('tourism_characteristic_employment_jobs'));
 assert.equal(claimFocusFor('El turismo encarece los alquileres en España')?.id, 'tourism-urban-housing-cost');
 assert.equal(claimFocusFor('El turismo aporta muchas pernoctaciones'), undefined, 'Tourism-night claims must not inherit employment evidence');
+const migrantHospitalityClaims = [
+  'El modelo de turismo y hostelería necesita inmigración porque muchos puestos no se cubren con las condiciones ofrecidas',
+  'En los hoteles hay vacantes por las condiciones de trabajo y se recurre a personal extranjero',
+];
+let migrantHospitalitySourceIds;
+for (const claim of migrantHospitalityClaims) {
+  assert.equal(claimFocusFor(claim)?.id, 'foreign-affiliation-in-tourism-and-agriculture');
+  assert.deepEqual([...focusedMetricIdsFor(claim)], ['foreign_affiliate_share_hospitality_rg']);
+  const plan = focusedEvidencePlan(claim, { observations: FOREIGN_AFFILIATE_SECTOR_SNAPSHOT.observations, now: Date.parse('2026-11-26') });
+  assert.equal(plan.answerScope.family, 'foreign-affiliation-in-tourism-and-agriculture');
+  assert.equal(plan.claimType, 'causal');
+  assert.equal(plan.evidenceLevel, 'limited');
+  assert.deepEqual(plan.answerScope.directMetrics, [], 'Sector affiliation shares are context for vacancy and dependence claims');
+  assert.deepEqual(plan.answerScope.contextMetrics, ['foreign_affiliate_share_hospitality_rg']);
+  assert.equal(plan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'insufficient');
+  assert.match(plan.shareableReply, /33,5 %/);
+  if (/turismo/i.test(claim)) assert.match(plan.shareableReply, /La hosteler[ií]a es solo una parte del turismo/i);
+  else assert.doesNotMatch(plan.shareableReply, /La hosteler[ií]a es solo una parte del turismo/i);
+  assert.match(plan.shareableReply, /no prueban dependencia ni explican vacantes sin cubrir/);
+  assert.deepEqual(plan.sourceIds, ['tgss-foreign-affiliates-sector-shares-2026-10']);
+  if (migrantHospitalitySourceIds) assert.deepEqual(plan.sourceIds, migrantHospitalitySourceIds, 'Hospitality paraphrase changed its source');
+  migrantHospitalitySourceIds = plan.sourceIds;
+}
+const migrantAgriculture = 'La agricultura española depende en gran medida de mano de obra inmigrante estacional';
+assert.equal(claimFocusFor(migrantAgriculture)?.id, 'foreign-affiliation-in-tourism-and-agriculture');
+assert.deepEqual([...focusedMetricIdsFor(migrantAgriculture)], ['foreign_affiliate_share_agriculture_rg', 'foreign_affiliate_share_agricultural_special_system']);
+const migrantAgriculturePlan = focusedEvidencePlan(migrantAgriculture, { observations: FOREIGN_AFFILIATE_SECTOR_SNAPSHOT.observations, now: Date.parse('2026-11-26') });
+assert.deepEqual(migrantAgriculturePlan.answerScope.directMetrics, []);
+assert.deepEqual(migrantAgriculturePlan.answerScope.contextMetrics, ['foreign_affiliate_share_agriculture_rg', 'foreign_affiliate_share_agricultural_special_system']);
+assert.match(migrantAgriculturePlan.shareableReply, /Agricultura \(Régimen General\): 29,1 %.*Sistema Especial de Trabajadores Agrarios: 42,7 %/s);
+assert.match(migrantAgriculturePlan.shareableReply, /denominadores distintos/);
+assert.match(migrantAgriculturePlan.shareableReply, /no miden estacionalidad/);
+const exactForeignAffiliationShare = '¿Qué porcentaje de afiliados del Régimen General en hostelería tiene nacionalidad extranjera?';
+const exactForeignAffiliationSharePlan = focusedEvidencePlan(exactForeignAffiliationShare, { observations: FOREIGN_AFFILIATE_SECTOR_SNAPSHOT.observations, now: Date.parse('2026-11-26') });
+assert.deepEqual(exactForeignAffiliationSharePlan.answerScope.directMetrics, ['foreign_affiliate_share_hospitality_rg']);
+assert.equal(exactForeignAffiliationSharePlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported');
+assert.match(exactForeignAffiliationSharePlan.shareableReply, /33,5 %/);
+assert.doesNotMatch(exactForeignAffiliationSharePlan.shareableReply, /29,1 %|42,7 %/);
+const exactAgricultureGeneralAffiliateShare = '¿Qué porcentaje de afiliados del Régimen General en agricultura tiene nacionalidad extranjera?';
+const exactAgricultureGeneralAffiliateSharePlan = focusedEvidencePlan(exactAgricultureGeneralAffiliateShare, { observations: FOREIGN_AFFILIATE_SECTOR_SNAPSHOT.observations, now: Date.parse('2026-11-26') });
+assert.deepEqual(exactAgricultureGeneralAffiliateSharePlan.answerScope.directMetrics, ['foreign_affiliate_share_agriculture_rg']);
+assert.equal(exactAgricultureGeneralAffiliateSharePlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported');
+assert.match(exactAgricultureGeneralAffiliateSharePlan.shareableReply, /29,1 %/);
+assert.doesNotMatch(exactAgricultureGeneralAffiliateSharePlan.shareableReply, /33,5 %|42,7 %/);
+const exactAgricultureSpecialAffiliateShare = '¿Qué porcentaje de afiliados extranjeros hay en el Sistema Especial de Trabajadores Agrarios?';
+const exactAgricultureSpecialAffiliateSharePlan = focusedEvidencePlan(exactAgricultureSpecialAffiliateShare, { observations: FOREIGN_AFFILIATE_SECTOR_SNAPSHOT.observations, now: Date.parse('2026-11-26') });
+assert.deepEqual(exactAgricultureSpecialAffiliateSharePlan.answerScope.directMetrics, ['foreign_affiliate_share_agricultural_special_system']);
+assert.equal(exactAgricultureSpecialAffiliateSharePlan.blocks.find((block) => block.type === 'claim_breakdown').items[0].verdict, 'supported');
+assert.match(exactAgricultureSpecialAffiliateSharePlan.shareableReply, /42,7 %/);
+assert.doesNotMatch(exactAgricultureSpecialAffiliateSharePlan.shareableReply, /33,5 %|29,1 %/);
+assert.equal(claimFocusFor('La inmigración presiona a la baja los salarios de los trabajadores nativos del sector de la hostelería')?.id, 'migration-wage-effects');
+assert.notEqual(claimFocusFor('Las vacantes de hostelería no se cubren por las condiciones que ofrece el sector')?.id, 'foreign-affiliation-in-tourism-and-agriculture', 'A claim about vacancies without foreign workers must not borrow nationality shares');
+assert.equal(claimFocusFor('El turismo genera más empleo que la agricultura')?.id, 'sector-employment-level-comparison');
+const expiredForeignAffiliateFallback = deterministicApiFallback({ text: migrantAgriculture, inputType: 'text', now: Date.parse('2027-01-01') });
+assert.equal(expiredForeignAffiliateFallback.status, 'uncovered');
+assert.doesNotMatch(expiredForeignAffiliateFallback.result?.shareableReply || '', /33,5 %|29,1 %|42,7 %/, 'Expired nationality shares must not be returned as current data');
 const tourismEmploymentFallback = deterministicApiFallback({ text: tourismEmploymentParaphrases[0], inputType: 'text', now: Date.parse('2026-11-24') });
 assert.equal(tourismEmploymentFallback.status, 'partial');
 assert.deepEqual(tourismEmploymentFallback.result.sourceIds, tourismEmploymentPlan.sourceIds);

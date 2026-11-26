@@ -14,6 +14,7 @@ import { focusedEvidencePlan } from '../../src/lib/knowledge/focused-evidence-pl
 import { deterministicApiFallback } from '../../src/lib/knowledge/deterministic-api-fallback.mjs';
 import { PRIMARY_CARE_WAIT_SNAPSHOT } from '../../src/lib/knowledge/primary-care-wait-snapshot.mjs';
 import { TOURISM_EMPLOYMENT_SNAPSHOT } from '../../src/lib/knowledge/tourism-employment-snapshot.mjs';
+import { FOREIGN_AFFILIATE_SECTOR_SNAPSHOT } from '../../src/lib/knowledge/foreign-affiliate-sector-snapshot.mjs';
 import { snapshotLifecycle } from '../../src/lib/knowledge/snapshot-lifecycle.mjs';
 import { publicResolveResponse } from '../../src/lib/knowledge/public-response.mjs';
 import type { AnswerPlan, ResolveResult } from '../../src/lib/knowledge/contracts';
@@ -28,7 +29,7 @@ import { vacancyMeasurementClarificationMetricIdsForQuery, vacancyMeasurementMet
 const cache = new Map<string, { expiresAt: number; response: PublicCheckResponse }>();
 // Bump this when response-selection semantics change so a warm Worker isolate
 // cannot serve a result produced by an older precedence rule.
-const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-education-earnings-tourist-housing-snapshots-rail-punctuality-sourced-family-selection-intergenerational-housing-landlord-context-pension-finance-routing-energy-price-pass-through-fixed-discontinuous-status-price-wage-eu-convergence-real-wage-living-standard-reported-worked-hours-rural-health-access-retirement-age-61-pension-private-savings-62-rent-series-scope-advertised-rent-claim-scope-metric-quality-notes-adult-conviction-rate-nationality-2026-11-scoped-source-2026-11-direct-metric-d1-2026-11-second-home-scope-2026-11-pension-wage-distribution-2026-11-business-size-productivity-context-2026-11';
+const responseCacheVersion = 'claim-causal-tourist-housing-evidence-store-availability-education-health-snapshot-gap-replies-housing-supply-semantic-family-compound-support-mortgage-entry-vacancy-metric-clarification-education-earnings-tourist-housing-snapshots-rail-punctuality-sourced-family-selection-intergenerational-housing-landlord-context-pension-finance-routing-energy-price-pass-through-fixed-discontinuous-status-price-wage-eu-convergence-real-wage-living-standard-reported-worked-hours-rural-health-access-retirement-age-61-pension-private-savings-62-rent-series-scope-advertised-rent-claim-scope-metric-quality-notes-adult-conviction-rate-nationality-2026-11-scoped-source-2026-11-direct-metric-d1-2026-11-second-home-scope-2026-11-pension-wage-distribution-2026-11-business-size-productivity-context-2026-11-foreign-affiliation-sector-snapshot-2026-11';
 const storeResponse = (key: string, value: { expiresAt: number; response: PublicCheckResponse }): void => {
   if (!key) return;
   while (cache.size >= 200) cache.delete(cache.keys().next().value!);
@@ -273,7 +274,9 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
   const effectiveClaim = body.clarification?.interpretation?.normalizedClaim || body.clarification?.prompt || body.text;
   if (effectiveClaim.length > INPUT_LIMITS.maxTextCharacters || (body.clarification?.prompt.length || 0) > INPUT_LIMITS.maxTextCharacters) return json(unavailableCheck('', inputErrorMessage('text_too_large')), 413);
   if (body.inputType === 'text' && isMissingTextClaim(effectiveClaim)) return json(missingTextClaimResponse(body.text));
-  const vacancyRoute = body.inputType === 'text' ? vacancyMeasurementMetricIdsForQuery(effectiveClaim) : undefined;
+  const initialFocus = body.inputType === 'text' ? claimFocusFor(effectiveClaim) : undefined;
+  const vacancyRoute = body.inputType === 'text' && initialFocus?.id !== 'foreign-affiliation-in-tourism-and-agriculture'
+    ? vacancyMeasurementMetricIdsForQuery(effectiveClaim) : undefined;
   if (vacancyRoute && vacancyRoute.size === 0) return json(vacancyClarificationFor(effectiveClaim));
   const vacancyMetrics = [...(vacancyRoute || [])].filter((id) => vacancyMetricIds.has(id));
   const submissionFallback = (): PublicCheckResponse => body.inputType === 'text'
@@ -310,7 +313,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       if (!bypassResponseCache) storeResponse(cacheKey, { expiresAt: Date.now() + 15 * 60_000, response });
       return json(response);
     }
-    const focus = vacancyMetrics.length ? undefined : claimFocusFor(effectiveClaim);
+    const focus = vacancyMetrics.length ? undefined : initialFocus;
     const localResolverAvailable = Boolean(env.LOCAL_CLASSIFIER_ENDPOINT && env.LOCAL_CLASSIFIER_TOKEN && localCircuitOpenUntil <= Date.now());
     const warehouseUnavailableMessage = 'No hemos podido consultar las series estadísticas ahora. Inténtalo de nuevo; todavía no sabemos si hay una medición compatible.';
     if (vacancyMetrics.length) {
@@ -337,6 +340,11 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
       const warehouseUnavailableMessage = 'No hemos podido consultar las series estadísticas ahora. Inténtalo de nuevo; todavía no sabemos si hay una medición compatible.';
       const localResolverAvailable = Boolean(env.LOCAL_CLASSIFIER_ENDPOINT && env.LOCAL_CLASSIFIER_TOKEN && localCircuitOpenUntil <= Date.now());
       if (focus.id === 'rental-price-amount' && (!env.DB || !metricIds.length)) return json(unavailableCheck(effectiveClaim, 'No podemos consultar la serie estadística ahora. No presentamos un importe sin una fuente que mida alquileres en euros.'));
+      if (!env.DB && focus.id === 'foreign-affiliation-in-tourism-and-agriculture' && snapshotLifecycle(FOREIGN_AFFILIATE_SECTOR_SNAPSHOT).usable) {
+        const snapshotObservations = FOREIGN_AFFILIATE_SECTOR_SNAPSHOT.observations.filter((item) => metricIds.includes(item.metricId));
+        const plan = focusedEvidencePlan(effectiveClaim, { observations: snapshotObservations }) as AnswerPlan | undefined;
+        if (plan) return json(checkFromPlan(effectiveClaim, plan));
+      }
       // A focused metric family with no D1 binding has not been checked. Do not
       // turn missing retrieval infrastructure into an evidence-gap conclusion.
       if (metricIds.length && !env.DB) {
@@ -361,7 +369,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
           if (!localResolverAvailable) return json(warehouseUnavailableResponse);
           focusedObservations = undefined;
         } else {
-          if (['working-poverty', 'education-employment-outcomes', 'education-pay-comparison', 'primary-care-waits', 'primary-care-wait-trend', 'primary-care-wait-causes', 'real-wages', 'collective-agreement-wages', 'gdp-total-per-capita-comparison', 'labour-productivity-and-growth', 'household-inflation-basket', 'tourism-employment-contribution', 'tourist-housing-registration', 'tourist-housing-count', 'tourist-housing-share', 'tourist-housing-supply', 'tourism-urban-housing-cost'].includes(focus.id) && focusedObservations.length === 0) {
+          if (['working-poverty', 'education-employment-outcomes', 'education-pay-comparison', 'primary-care-waits', 'primary-care-wait-trend', 'primary-care-wait-causes', 'real-wages', 'collective-agreement-wages', 'gdp-total-per-capita-comparison', 'labour-productivity-and-growth', 'household-inflation-basket', 'tourism-employment-contribution', 'foreign-affiliation-in-tourism-and-agriculture', 'tourist-housing-registration', 'tourist-housing-count', 'tourist-housing-share', 'tourist-housing-supply', 'tourism-urban-housing-cost'].includes(focus.id) && focusedObservations.length === 0) {
             // Reviewed text snapshots can answer from their own dated source
             // when a successful warehouse lookup has no rows. A failed D1
             // query still follows the unavailable path above; absence and
@@ -380,6 +388,11 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
               // and job count; the source API refreshes the count separately.
               // Keep the same dated share available while that refresh runs.
               focusedObservations = [...focusedObservations, ...TOURISM_EMPLOYMENT_SNAPSHOT.observations];
+            }
+            if (focus.id === 'foreign-affiliation-in-tourism-and-agriculture' && snapshotLifecycle(FOREIGN_AFFILIATE_SECTOR_SNAPSHOT).usable) {
+              const observed = new Set(focusedObservations.map((item) => `${item.metricId || ''}|${item.period || ''}`));
+              focusedObservations = [...focusedObservations, ...FOREIGN_AFFILIATE_SECTOR_SNAPSHOT.observations
+                .filter((item) => !observed.has(`${item.metricId}|${item.period}`))];
             }
             const plan = focusedEvidencePlan(effectiveClaim, {
               observations: focusedObservations as never[],
@@ -430,7 +443,7 @@ export const onRequestPost = async (context: Context): Promise<Response> => {
     // from the mirror populated by the daily refresh workflow.
     let warehouseRecords: Record<string, unknown>[] | undefined;
     if (env.DB && body.inputType === 'text') {
-      const focus = vacancyMetrics.length ? undefined : claimFocusFor(effectiveClaim);
+      const focus = vacancyMetrics.length ? undefined : initialFocus;
       const comparisonMetrics = vacancyMetrics.length ? vacancyMetrics : focus
         ? [...(focusedMetricIdsFor(effectiveClaim) || [])]
         : [...directMetricIdsForQuery(effectiveClaim)];

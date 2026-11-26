@@ -2140,3 +2140,38 @@ submission lifecycle check and Astro type check pass. The rendered local page
 returns HTTP 200 with the 4,000-character text counter, over-limit warning
 region and no textarea truncation attribute. This improves input fidelity; it
 does not change evidence coverage or the 300-claim routing totals.
+
+## Foreign-nationality affiliation in hospitality and agriculture — 26 November 2026
+
+Text claims about foreign workers in hospitality or agriculture now use the
+Social Security Administration's [October 2026 average-affiliation release](https://revista.seg-social.es/-/afiliacion-extranjeros-octubre-2026),
+published 13 November 2026. It reports that people of foreign nationality made
+up 33.5% of Hospitality affiliates and 29.1% of Agriculture affiliates in the
+General Regime. It separately reports 42.7% in the Special Agricultural
+Workers System. The two agricultural percentages have different regime
+denominators and are not a combined share.
+
+The measure counts Social Security affiliations by nationality; it does not
+count every worker or classify people by country of birth. These percentages
+do not measure seasonality, unfilled vacancies, job quality, sector dependence
+on foreign workers or why vacancies remain open. Exact questions that name the
+sector and regime can receive the measured percentage. Claims about dependence,
+seasonal work or hard-to-fill vacancies receive the figures as limited context
+and an explicit explanation of what additional vacancy and job-condition data
+would be needed.
+
+Held-out checks cover two hospitality paraphrases, an agriculture claim, a
+direct percentage question, regional-scope rejection and nearby wage and
+employment claims. Hospitality paraphrases select the same family and source;
+the regional query does not inherit national figures. Context claims remain
+insufficient at the claim level. Exact sector-and-regime percentage questions
+are supported at the proposition level; their public state remains limited
+because the measure counts affiliations. The text-answer benchmark passes
+266/266 cases across 69 paraphrase groups. The claim-focus suite checks 385
+formulations and nearby claims. The refreshed 300-claim discovery audit routes
+192 candidates to a metric or focused family and leaves 108 without either
+route. It reports 7 complete, 113 limited and 180 uncovered answers. Public
+states are 260 insufficient and 40 limited. Forty-three claims retain
+structured multi-part answers. All discovery claims remain unverified. These
+counts describe routing and response structure, not population-wide factual
+accuracy.

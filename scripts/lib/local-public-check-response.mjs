@@ -141,8 +141,10 @@ export const localPublicCheckResponse = (payload, claim = '') => {
   const claimNeedsQualification = requiresPublicClaimQualification(plan, argumentsList);
   const answerNeedsQualification = claimNeedsQualification || plan.evidenceLevel === 'insufficient';
   const evidenceLevel = missingPublicEvidence ? 'insufficient' : plan.evidenceLevel === 'supported' && criteria.length && sources.length ? 'supported' : plan.evidenceLevel === 'insufficient' ? 'insufficient' : 'limited';
-  const claimHasDirectEvidence = argumentsList.some((item) => item.evidenceIds.length > 0);
-  const publicEvidenceLevel = evidenceLevel === 'limited' && claimItems.length > 0 && !claimHasDirectEvidence
+  const affiliateContextCanSupportLimitedState = plan.answerScope?.family === 'foreign-affiliation-in-tourism-and-agriculture';
+  const claimHasTraceableEvidence = argumentsList.some((item) => item.evidenceIds.length > 0
+    || affiliateContextCanSupportLimitedState && (item.contextSourceIds?.length || 0) > 0);
+  const publicEvidenceLevel = evidenceLevel === 'limited' && claimItems.length > 0 && !claimHasTraceableEvidence
     ? 'insufficient'
     : publicEvidenceLevelForArguments(evidenceLevel, plan, argumentsList);
   const publicReply = coverageGapReply

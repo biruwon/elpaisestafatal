@@ -2264,5 +2264,62 @@
     "limitations": [
       "This count covers tourism-characteristic economic branches; it is not the number of jobs caused by visitors or tourism demand and does not measure job quality or seasonality."
     ]
+  },
+  "foreign_affiliate_share_hospitality_rg": {
+    "name": "Share of Spanish General Regime hospitality affiliates with foreign nationality",
+    "displayName": "Afiliados del Régimen General en hostelería con nacionalidad extranjera",
+    "aliases": [
+      "porcentaje de afiliados del régimen general de hostelería con nacionalidad extranjera",
+      "proporción de afiliados extranjeros en hostelería del régimen general",
+      "cuota de nacionalidad extranjera entre afiliados de hostelería"
+    ],
+    "unit": "percent",
+    "population": "Affiliates with foreign nationality in hospitality under Spain's General Social Security Regime",
+    "dimensions": ["period", "geo", "industry_scope", "regime", "nationality", "denominator"],
+    "dimensionConstraints": {"geo": "ES", "industry_scope": "hospitality", "regime": "general", "nationality": "foreign"},
+    "denominator": "All affiliates in hospitality under Spain's General Social Security Regime",
+    "notEquivalentTo": ["foreign_affiliate_share_agriculture_rg", "foreign_affiliate_share_agricultural_special_system"],
+    "supports": ["descriptive", "comparative", "trend"],
+    "limitations": [
+      "This is a monthly affiliation share by nationality within hospitality in the General Regime. It is not a share of all tourism jobs, does not classify by country of birth, and does not measure vacancies, seasonal work, job quality, or dependence on foreign workers."
+    ]
+  },
+  "foreign_affiliate_share_agriculture_rg": {
+    "name": "Share of Spanish General Regime agricultural affiliates with foreign nationality",
+    "displayName": "Afiliados del Régimen General en agricultura con nacionalidad extranjera",
+    "aliases": [
+      "porcentaje de afiliados del régimen general de agricultura con nacionalidad extranjera",
+      "proporción de afiliados extranjeros en agricultura del régimen general",
+      "cuota de nacionalidad extranjera entre afiliados de agricultura"
+    ],
+    "unit": "percent",
+    "population": "Affiliates with foreign nationality in agriculture under Spain's General Social Security Regime",
+    "dimensions": ["period", "geo", "industry_scope", "regime", "nationality", "denominator"],
+    "dimensionConstraints": {"geo": "ES", "industry_scope": "agriculture", "regime": "general", "nationality": "foreign"},
+    "denominator": "All affiliates in agriculture under Spain's General Social Security Regime",
+    "notEquivalentTo": ["foreign_affiliate_share_hospitality_rg", "foreign_affiliate_share_agricultural_special_system"],
+    "supports": ["descriptive", "comparative", "trend"],
+    "limitations": [
+      "This is a monthly affiliation share by nationality within agriculture in the General Regime. The separately reported Special Agricultural Workers System has a different denominator. Neither figure classifies by country of birth or measures seasonal work, vacancies, job quality, or dependence on foreign workers."
+    ]
+  },
+  "foreign_affiliate_share_agricultural_special_system": {
+    "name": "Share of Spanish Special Agricultural Workers System affiliates with foreign nationality",
+    "displayName": "Afiliados al Sistema Especial de Trabajadores Agrarios con nacionalidad extranjera",
+    "aliases": [
+      "porcentaje de afiliados extranjeros al sistema especial de trabajadores agrarios",
+      "proporción de nacionalidad extranjera en el sistema especial agrario",
+      "cuota de afiliados extranjeros del sistema especial agrario"
+    ],
+    "unit": "percent",
+    "population": "Affiliates with foreign nationality in Spain's Special Agricultural Workers System",
+    "dimensions": ["period", "geo", "industry_scope", "regime", "nationality", "denominator"],
+    "dimensionConstraints": {"geo": "ES", "industry_scope": "agricultural_special_system", "regime": "special_agricultural", "nationality": "foreign"},
+    "denominator": "All affiliates in Spain's Special Agricultural Workers System",
+    "notEquivalentTo": ["foreign_affiliate_share_hospitality_rg", "foreign_affiliate_share_agriculture_rg"],
+    "supports": ["descriptive", "comparative", "trend"],
+    "limitations": [
+      "This is a monthly nationality share within the Special Agricultural Workers System, reported separately from the General Regime agriculture share. The percentages cannot be combined without compatible affiliate counts and do not measure seasonal work or dependence on foreign workers."
+    ]
   }
 }

@@ -1,4 +1,13 @@
 import { publicResolveResponse } from '../src/lib/knowledge/public-response.mjs';
+import { publicClaimQualification, qualifyPublicClaimReply } from '../src/lib/knowledge/public-arguments.mjs';
+
+const contextualCausalLimit = 'Afiliación extranjera en octubre de 2026: 33,5 % en hostelería del Régimen General. La cifra no prueba que las condiciones ofrecidas causen vacantes sin cubrir.';
+if (qualifyPublicClaimReply(contextualCausalLimit, [{ kind: 'causal', verdict: 'insufficient', evidenceIds: [], sourceIds: [] }]) !== contextualCausalLimit) {
+  throw new Error('A sourced, explicitly bounded causal answer was replaced with a generic warning');
+}
+if (qualifyPublicClaimReply('La inmigración causa vacantes sin cubrir.', [{ kind: 'causal', verdict: 'insufficient', evidenceIds: [], sourceIds: [] }]) !== publicClaimQualification) {
+  throw new Error('An unsupported causal assertion was not qualified');
+}
 
 const valid = publicResolveResponse({
   status: 'partial',

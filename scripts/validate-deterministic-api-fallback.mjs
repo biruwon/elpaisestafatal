@@ -14,8 +14,9 @@ for (const claim of [
   const compiled = deterministicFallbackCompiler(claim);
   const breakdown = result.result?.blocks?.find((block) => block.type === 'claim_breakdown');
   const items = breakdown?.items || [];
-  if (result.status !== 'uncovered' || result.result?.evidenceLevel !== 'insufficient') {
-    throw new Error(`An ungrounded compound claim was not left explicitly insufficient: ${claim}`);
+  if (result.status !== 'partial' || result.result?.evidenceLevel !== 'limited'
+    || result.result?.answerScope?.family !== 'tax-service-perception') {
+    throw new Error(`The focused tax and service context was not labelled limited: ${claim}`);
   }
   if (items.length !== compiled.explicitPropositions.length + 1 || items[0]?.text !== claim || items[0]?.type !== compiled.claimType
     || compiled.explicitPropositions.some((proposition, index) => items[index + 1]?.text !== proposition.text)) {
@@ -23,6 +24,10 @@ for (const claim of [
   }
   if (items.some((item) => item.verdict !== 'insufficient' || item.evidenceLevel !== 'none' || item.evidenceIds?.length || item.sourceIds?.length)) {
     throw new Error(`The compound fallback attached support to an unevidenced clause: ${claim}`);
+  }
+  if (!result.result?.blocks?.some((block) => block.type === 'cannot_conclude' && block.evidenceIds?.length === 0)
+    || !result.result?.blocks?.some((block) => block.type === 'data_finding' && block.dataKind === 'context')) {
+    throw new Error(`The compound fallback lost contextual evidence or the explicit limit on its conclusion: ${claim}`);
   }
   if (!result.result?.blocks?.some((block) => block.type === 'evidence_gap' && block.missing?.length)) {
     throw new Error(`The compound fallback hid its missing evidence dimensions: ${claim}`);

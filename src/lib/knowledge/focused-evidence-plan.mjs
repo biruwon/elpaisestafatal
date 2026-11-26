@@ -1,4 +1,4 @@
-import { claimFocusFor, focusedMetricIdsFor, privateHealthcareAccessClaimType, tertiaryOverqualificationCitizenshipFitsClaim } from './claim-focus.mjs';
+import { claimFocusFor, exactForeignAffiliateShareQuestion, focusedMetricIdsFor, privateHealthcareAccessClaimType, tertiaryOverqualificationCitizenshipFitsClaim } from './claim-focus.mjs';
 import measurementDefinitions, { metricVocabulary } from './measurement-definitions.generated.mjs';
 import { RUNTIME_VERSIONS } from './runtime-versions.mjs';
 import { realWagePlan } from './real-wage-comparison.mjs';
@@ -46,6 +46,10 @@ const observationFitsClaim = (claim) => {
     if (/^tourist_housing_(?:count|share)$/.test(item.metricId || '')
       && /\b(?:barri\w*|distrit\w*|municipi\w*|ciudad\w*|zonas?|centro|casco urbano)\b/.test(text)
       && item.dimensions?.geographyLevel !== 'municipality') return false;
+    if (item.metricId?.startsWith('foreign_affiliate_share_')) {
+      const requestedSectorMetrics = new Set(focusedMetricIdsFor(claim));
+      if (!requestedSectorMetrics.has(item.metricId)) return false;
+    }
     const population = normalize([item.population, JSON.stringify(item.dimensions || {}), JSON.stringify(item.dimensionLabels || {})].join(' '));
     const youthOverqualification = item.metricId === 'tertiary_overqualification_rate_age_20_34' && item.dimensions?.age === 'Y20-34';
     if (/\b(jovenes|juvenil|menores de 30)\b/.test(text) && !youthOverqualification
@@ -85,6 +89,9 @@ const labels = {
   tourist_housing_share: 'Viviendas turísticas como parte del parque total de viviendas',
   tourism_characteristic_employment_share: 'Empleo en ramas características del turismo como parte del empleo total',
   tourism_characteristic_employment_jobs: 'Puestos de trabajo en ramas características del turismo',
+  foreign_affiliate_share_hospitality_rg: 'Afiliados del Régimen General en hostelería con nacionalidad extranjera',
+  foreign_affiliate_share_agriculture_rg: 'Afiliados del Régimen General en agricultura con nacionalidad extranjera',
+  foreign_affiliate_share_agricultural_special_system: 'Afiliados del Sistema Especial de Trabajadores Agrarios con nacionalidad extranjera',
 };
 const unitFor = (item) => /^(?:household|industrial)_electricity_price/.test(item.metricId || '') && item.dimensions?.currency && (item.dimensions?.unit === 'KWH' || /^(?:kilowatt-hour|kwh)$/i.test(item.unit || ''))
   ? `${item.dimensions.currency === 'EUR' ? '€' : item.dimensions.currency}/kWh`
@@ -638,6 +645,14 @@ const educationOutcomeNextAction = (question, causalClaim = false) => {
 // This composer reports only the supplied observations. It cannot turn a
 // contextual proxy into a verdict on a different measurement or silently
 // infer a real-wage change from unmatched wage and price periods.
+/**
+ * @param {string} claim
+ * @param {object} options
+ * @param {Array<Record<string, any>>} [options.observations]
+ * @param {Array<Record<string, any>>} [options.propositions]
+ * @param {number} [options.now]
+ * @param {boolean} [options.allowReviewedSnapshotFallback]
+ */
 export const focusedEvidencePlan = (claim, { observations = [], propositions = [], now = Date.now(), allowReviewedSnapshotFallback = false } = {}) => {
   const focus = claimFocusFor(claim);
   if (!focus) return undefined;
@@ -669,6 +684,18 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const sameHealthPerceptionOutcomeCompound = focus.id === 'health-perception-outcomes'
     && propositions.length >= 2 && propositions.length <= 3
     && propositions.every((proposition) => /\b(sanidad|sanitari\w*|salud|esperanza de vida|mortalidad|resultad\w*)\b/.test(normalize(proposition.text)));
+    const sameForeignAffiliateWorkforceCompound = focus.id === 'foreign-affiliation-in-tourism-and-agriculture'
+      && propositions.length === 2
+      && /\b(porque|ya que|debido a que|por culpa de|ante la falta de)\b/.test(normalizedClaim)
+      && propositions.some((proposition) => claimFocusFor(proposition.text)?.id === focus.id)
+      && propositions.every((proposition) => {
+        const text = normalize(proposition.text);
+        const sameSectorLabourClaim = /\b(inmigr\w*|migr\w*|extranjer\w*)\b/.test(text)
+          && /\b(turism\w*|turistic\w*|hosteler\w*|hotel\w*|alojamiento\w*|agricultur\w*|agrari\w*|agricol\w*|campo|cosech\w*|temporer\w*|jornal\w*)\b/.test(text);
+        const linkedWorkplaceCondition = /\b(emple\w*|trabaj\w*|mano de obra|personal|vacant\w*|puesto\w*|contrat\w*)\b/.test(text)
+          && /\b(condicion\w*|salari\w*|sueld\w*|jornada\w*|horario\w*|contrat\w*|cubrir|encontr\w*)\b/.test(text);
+        return sameSectorLabourClaim || linkedWorkplaceCondition;
+      });
   const sameTaxServicePerceptionCompound = focus.id === 'tax-service-perception'
     && propositions.length === 2
     && /\b(pero|aunque|mientras|sin embargo|a pesar)\b/.test(normalizedClaim)
@@ -811,7 +838,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       || sameEuropeanPriceWageConvergence
       || sameHicpBasketComparison
       || sameProductivityComparison && /\b(productividad|pib|producto interior bruto|crecimiento|economia|poblacion|empleo)\b/.test(clauseText)) return true;
-    if (sameLandlordMotive || sameTaxServicePerceptionCompound) return true;
+    if (sameLandlordMotive || sameTaxServicePerceptionCompound || sameForeignAffiliateWorkforceCompound) return true;
     if (samePensionPrivateSavingsCompound) return true;
     if (housingInvestmentReason || firmWageMechanism || businessSizeProductivityMechanism || railInvestmentMaintenanceCompound || electricityBillComponentsCompound || pensionWageMechanism || samePensionMeiCompound || sameHealthPerceptionOutcomeCompound || dentalCostBarrierCompound || unemploymentSupplyExplanation || sameEmployerContributionVisibility) return true;
     if (educationOutcomeCauseClause) return true;
@@ -925,12 +952,16 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     && /\b(pag\w*\s+(?:las?\s+)?pension\w*|cotiz\w*|contribu\w*|financ\w*)\b/.test(normalizedClaim)
     && /\b(decad\w*|durante|jubil\w*|retir\w*)\b/.test(normalizedClaim);
   const ids = tourismRegionalSectorComparison ? [] : [...focusedMetricIdsFor(claim)];
+  const foreignAffiliateExactShareClaim = focus.id === 'foreign-affiliation-in-tourism-and-agriculture'
+    && exactForeignAffiliateShareQuestion(normalizedClaim);
   const allowedDirect = tourismRegionalScopeClaim ? []
     : educationOutcome ? ids
     : focus.id === 'subjective-financial-strain' ? ids
     : focus.id === 'working-poverty' && fullTime && partTime ? ['in_work_poverty_full_time_rate', 'in_work_poverty_part_time_rate']
       : focus.id === 'working-poverty' && fullTime ? ['in_work_poverty_full_time_rate']
-      : focus.id === 'working-poverty' && partTime ? ['in_work_poverty_part_time_rate'] : focus.direct;
+      : focus.id === 'working-poverty' && partTime ? ['in_work_poverty_part_time_rate']
+        : focus.id === 'foreign-affiliation-in-tourism-and-agriculture' ? foreignAffiliateExactShareClaim ? ids : []
+          : focus.direct;
   const asksAboutMakingEndsMeet = focus.id === 'working-poverty' && /\b(fin de mes|alcanza para vivir|llega para vivir|cubrir (?:los )?gastos)\b/.test(normalize(claim));
   const educationNeedForMetric = (id) => id === 'employment_rate_tertiary_education'
     ? 'tasa de empleo entre residentes de 20 a 64 años con educación terciaria; denominador: toda la población residente de ese grupo'
@@ -1057,6 +1088,8 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const direct = facts.filter((fact) => directIds.includes(fact.id)
     && (!workingPovertyWorktimeComparisonRequested || Boolean(workingPovertyComparison))
     && (!workingPovertyTrendRequested || workingPovertyTrends.has(fact.id)));
+  const foreignAffiliateExactShareMeasured = foreignAffiliateExactShareClaim
+    && direct.length === ids.length && ids.length > 0;
   const context = facts.filter((fact) => !direct.includes(fact));
   const factFinding = (fact) => educationOutcome ? educationOutcomeFinding(fact)
     : fact.id === 'subjective_poverty_rate' ? subjectivePovertyFinding(fact)
@@ -1129,6 +1162,10 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   const directEvidenceIds = [...new Set([...direct.flatMap((fact) => fact.items.map((item) => item.id)), ...(explanationSupportsClaim ? explanationSourceIds : [])].filter(Boolean))];
   const directSourceIds = [...new Set([...direct.flatMap((fact) => fact.sourceIds), ...(explanationSupportsClaim ? explanationSourceIds : [])])];
   const contextualExplanationSourceIds = explanationSupportsClaim ? [] : explanationSourceIds;
+  const contextualForeignAffiliateSourceIds = focus.id === 'foreign-affiliation-in-tourism-and-agriculture'
+    ? [...new Set(context.flatMap((fact) => fact.sourceIds))] : [];
+  const contextualForeignAffiliateFinding = focus.id === 'foreign-affiliation-in-tourism-and-agriculture'
+    ? context.map((fact) => factFinding(fact)).join(' ') : '';
   const explanationMeasuresClaim = Boolean(explanationSupportsClaim && explanationFacts.length && explanation.sources?.length);
   const subjectivePovertyHeadline = focus.id === 'subjective-financial-strain' && direct.length === 1
     ? (() => {
@@ -1301,6 +1338,32 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       'La estadística cuenta personas con sentencia firme, no todos los delitos registrados. El desglose es por nacionalidad, no por país de nacimiento o situación administrativa, y no demuestra que la inmigración cause delincuencia.',
     ].join('\n\n');
   })();
+  const foreignAffiliateSectorReply = (() => {
+    if (focus.id !== 'foreign-affiliation-in-tourism-and-agriculture') return undefined;
+    const hospitality = facts.find((fact) => fact.id === 'foreign_affiliate_share_hospitality_rg');
+    const agricultureGeneral = facts.find((fact) => fact.id === 'foreign_affiliate_share_agriculture_rg');
+    const agricultureSpecial = facts.find((fact) => fact.id === 'foreign_affiliate_share_agricultural_special_system');
+    const exactShareQuestion = exactForeignAffiliateShareQuestion(normalizedClaim);
+    const period = facts[0]?.latest.period;
+    const date = period ? periodLabel(period) : 'el periodo disponible';
+    const findings = [
+      hospitality ? `Hostelería (Régimen General): ${number(hospitality.latest.value, hospitality.id)} % de sus afiliaciones correspondía a personas de nacionalidad extranjera.` : '',
+      agricultureGeneral ? `Agricultura (Régimen General): ${number(agricultureGeneral.latest.value, agricultureGeneral.id)} % de sus afiliaciones correspondía a personas de nacionalidad extranjera.` : '',
+      agricultureSpecial ? `Sistema Especial de Trabajadores Agrarios: ${number(agricultureSpecial.latest.value, agricultureSpecial.id)} % de sus afiliaciones correspondía a personas de nacionalidad extranjera.` : '',
+    ].filter(Boolean);
+    if (!findings.length) return [gapForReply, `Para responder hacen falta ${needs.join('; ')}.`].filter(Boolean).join('\n\n');
+    const allSamePeriod = facts.every((fact) => fact.latest.period === period);
+    return [
+      `Seguridad Social, afiliación media en España${allSamePeriod ? ` · ${date}` : ''}:`,
+      ...findings,
+      hospitality && /\bturism/.test(normalizedClaim) ? 'La hostelería es solo una parte del turismo.' : '',
+      agricultureGeneral && agricultureSpecial ? 'Los porcentajes agrícolas usan regímenes y denominadores distintos; no se suman ni forman una cuota única.' : '',
+      exactShareQuestion
+        ? 'La clasificación es por nacionalidad y el dato cuenta afiliaciones medias, no todas las personas trabajadoras.'
+        : 'La clasificación es por nacionalidad, no por país de nacimiento. Estas afiliaciones no miden estacionalidad, vacantes ni condiciones laborales; por sí solas no prueban dependencia ni explican vacantes sin cubrir.',
+      !exactShareQuestion ? 'Para comprobar esa explicación hacen falta datos comparables de vacantes, contrataciones y condiciones por sector, territorio y periodo.' : '',
+    ].filter(Boolean).join('\n\n');
+  })();
   const workingPovertyEndsMeetReply = (() => {
     if (focus.id !== 'working-poverty' || !asksAboutMakingEndsMeet) return undefined;
     const povertyFact = primaryFacts.find((fact) => /^in_work_poverty_/.test(fact.id));
@@ -1387,6 +1450,9 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
         : 'Faltan datos compatibles sobre el empleo en ramas turísticas';
     })()
     : undefined;
+  const foreignAffiliateSectorHeadline = focus.id === 'foreign-affiliation-in-tourism-and-agriculture' && facts.length
+    ? `Afiliación extranjera por sector · ${periodLabel(facts[0].latest.period)}`
+    : undefined;
   const directThresholdComparisonNote = directThresholdAssessment
     ? (() => {
       const fact = direct.find((item) => item.id === directThresholdAssessment.metricId);
@@ -1398,10 +1464,12 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
       return `El dato (${number(directThresholdAssessment.actual, fact.id)}${suffix}) ${position}; ${directThresholdAssessment.verdict === 'supported' ? 'respalda' : 'contradice'} esa parte.`;
     })()
     : '';
-  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || tourismEmploymentReply || workingPovertyEndsMeetReply || touristHousingReply || educationPayReply || electricityIndustryCostsReply || ruralUrbanAccessReply || mentalHealthPsychologistCountReply || mentalHealthPsychologistCapacityReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
+  const reply = primaryCareCausalityReply || adultConvictionRateNationalityReply || foreignAffiliateSectorReply || tourismEmploymentReply || workingPovertyEndsMeetReply || touristHousingReply || educationPayReply || electricityIndustryCostsReply || ruralUrbanAccessReply || mentalHealthPsychologistCountReply || mentalHealthPsychologistCapacityReply || shareableContextReply || [explanationReply, findingText ? `${findingLead}${findingText}` : explanationMeasuresClaim ? '' : gapForReply,
     directThresholdComparisonNote,
     direct.length || explanationMeasuresClaim ? scopeNotes.join(' ') : [gapForReply && findingText ? gapForReply : '', scopeNotes.join(' ')].filter(Boolean).join(' '), limitation].filter(Boolean).join('\n\n');
-  const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length ? 'limited' : 'insufficient';
+  const hasReviewedForeignAffiliateContext = focus.id === 'foreign-affiliation-in-tourism-and-agriculture'
+    && context.some((fact) => fact.sourceIds.length > 0);
+  const evidenceLevel = directEvidenceIds.length || contextualExplanationSourceIds.length || hasReviewedForeignAffiliateContext ? 'limited' : 'insufficient';
   const families = displayIds.map((id) => {
     const matching = facts.filter((fact) => fact.id === id);
     return {
@@ -1489,7 +1557,7 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
   }
   return {
     id: `measurement-${focus.id}`, schemaVersion: '1', evidenceLevel, coverage: facts.length || explanation ? 'qualified' : 'insufficient',
-    claimType, headline: subjectivePovertyHeadline || specialistOutpatientComparisonHeadline || workingPovertyComparison?.headline || workingPovertyTrends.get(direct[0]?.id)?.headline || tourismEmploymentHeadline
+    claimType, headline: subjectivePovertyHeadline || specialistOutpatientComparisonHeadline || workingPovertyComparison?.headline || workingPovertyTrends.get(direct[0]?.id)?.headline || tourismEmploymentHeadline || foreignAffiliateSectorHeadline
       || (focus.id === 'working-poverty' && direct.length
         ? fullTime && partTime ? 'Datos de riesgo de pobreza por jornada'
           : fullTime ? 'El empleo a jornada completa no elimina el riesgo de pobreza'
@@ -1500,12 +1568,14 @@ export const focusedEvidencePlan = (claim, { observations = [], propositions = [
     interpretation: { kind: claimType === 'causal' ? 'causal' : claimType === 'comparative' ? 'comparative' : claimType === 'legal' ? 'legal' : 'quantitative', subject: focus.label, predicate: claimType === 'causal' ? 'requires_causal_design' : claimType === 'legal' ? 'requires_legal_basis' : 'requires_compatible_measurement', normalizedClaim: claim, evidenceNeeds: needs },
     blocks: [
       { type: 'claim_breakdown', items: [{ text: claim, type: claimType, explicit: true, evidenceIds: educationOutcomeCausalClaim ? [] : directEvidenceIds, sourceIds: educationOutcomeCausalClaim ? [] : directSourceIds,
+        ...(contextualForeignAffiliateSourceIds.length ? { contextSourceIds: contextualForeignAffiliateSourceIds, contextFinding: contextualForeignAffiliateFinding } : {}),
         verdict: explanationMeasuresClaim ? explanation.claimVerdictFor?.(claim) || explanation.claimVerdict || specialistOutpatientComparison?.verdict || 'mixed'
+          : foreignAffiliateExactShareMeasured ? 'supported'
           : educationOutcome ? directThresholdAssessment?.verdict || 'insufficient'
             : directThresholdAssessment?.verdict || (focus.id === 'working-poverty' ? workingPovertyVerdict : 'insufficient'), evidenceLevel: directEvidenceIds.length && !educationOutcomeCausalClaim ? 'limited' : 'none',
         finding: educationOutcomeCausalClaim ? undefined : explanationMeasuresClaim ? explanationFacts.join(' ') : workingPovertyComparison?.finding || (direct.length ? direct.slice(0, 2).map(factFinding).join(' ') : undefined) }], propositionIds: ['submitted-claim'] },
       ...explanationBlocks,
-      ...facts.map((fact) => ({ type: 'data_finding', ...(educationOutcomeCausalClaim ? { dataKind: 'context' } : {}), evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [factFinding(fact)] })),
+      ...facts.map((fact) => ({ type: 'data_finding', ...(educationOutcomeCausalClaim || context.includes(fact) ? { dataKind: 'context' } : {}), evidenceIds: fact.items.map((item) => item.id).filter(Boolean), points: [factFinding(fact)] })),
       ...(missing.length ? [{ type: 'evidence_gap', missing, needed: missing, nextAction: tourismRegionalSectorComparison
         ? 'Buscar una fuente regional con recuentos comparables de empleo en turismo y agricultura para el mismo año.'
         : educationOutcome ? educationOutcomeNextAction(educationQuestion, educationOutcomeCausalClaim)

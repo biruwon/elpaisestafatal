@@ -39,10 +39,6 @@ const assertsUnsupportedCausalPart = (text, argumentsList) => {
 export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
   const text = String(reply || '').trim();
   if (!text) return publicClaimQualification;
-  if (assertsUnsupportedCausalPart(text, argumentsList)) return publicClaimQualification;
-  // A sourced contradiction already has a specific, evidence-backed answer.
-  // Keep that answer and label the result instead of replacing it with the
-  // generic qualification, which otherwise hides the measured value and scope.
   const directlyContradicted = argumentsList[0]?.verdict === 'contradicted'
     && argumentsList[0].evidenceIds?.length > 0
     && argumentsList[0].sourceIds?.length > 0;
@@ -55,6 +51,10 @@ export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
     const measuredFinding = findingText && !replyText.includes(findingText) && !sourceMeasuresAlsoShown ? `${finding}\n\n` : '';
     return `La fuente contradice la afirmación.\n\n${measuredFinding}${text}`;
   }
+  const explicitCausalLimit = /\bno (?:demuestra|demuestran|acredita|acreditan|prueba|prueban|establece|establecen) que\b[^.!?]{0,180}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|determin\w*|explique\w*)\b/i.test(text)
+    || /\bno mide\b[^.!?]{0,120}\bsi\b[^.!?]{0,100}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|urgencias?)\b/i.test(text);
+  if (explicitCausalLimit) return text;
+  if (assertsUnsupportedCausalPart(text, argumentsList)) return publicClaimQualification;
   const alreadyStatesNonConclusion = /\bno (?:se puede|permite|permiten|podemos|alcanza a)\s+(?:confirmar|descartar|demostrar|sostener|afirmar|concluir|determinar|medir|calcular|contar|comparar|establecer|atribuir|saber|evaluar)\b/i.test(text);
   const sourcedLegalExceptionAlreadyExplained = argumentsList.length === 1
     && argumentsList[0].kind === 'legal'
@@ -66,8 +66,6 @@ export const qualifyPublicClaimReply = (reply, argumentsList = []) => {
   const missingEvidenceAlreadyExplained = /\b(?:no se ha localizado|no hemos localizado|no hemos encontrado)\b[^.!?]{0,120}\b(?:medici[oó]n|evidencia|datos?|fuente|respaldo)\b[^.!?]{0,120}\b(?:no demuestra|no permite|no se puede|no podemos|no alcanza|falta|pendiente)\b/i.test(text)
     || /\b(?:no se ha localizado|no hemos localizado|no hemos encontrado)\b[^.!?]{0,160}\b(?:medici[oó]n|evidencia|datos?|fuente|respaldo)\b[^.!?]*[.!?]\s*(?:esto\s+)?no demuestra que la afirmaci[oó]n sea falsa\b/i.test(text)
     || /\bpara comprobar\b[^.!?]{0,100}\b(?:hay que indicar|hace falta|se necesita)\b[^.!?]{0,120}\b(?:periodo|periodos|a[nñ]o|serie|dato|medida)\b/i.test(text);
-  const explicitCausalLimit = /\bno (?:demuestra|acredita|prueba|establece) que\b[^.!?]{0,180}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|determin\w*|explique\w*)\b/i.test(text)
-    || /\bno mide\b[^.!?]{0,120}\bsi\b[^.!?]{0,100}\b(?:caus\w*|provoqu\w*|oblig\w*|empuj\w*|lleve?\w*|gener\w*|urgencias?)\b/i.test(text);
   const explicitlyBoundsWholeClaim = /\b(?:no (?:permite|basta para) confirmar toda la afirmaci[oó]n|no demuestra toda la afirmaci[oó]n)\b/i.test(text)
     || /\b(?:la afirmaci[oó]n|la predicci[oó]n)\b[^.!?]{0,100}\bno (?:queda|est[aá]) (?:demostrad\w*|acreditad\w*|confirmad\w*)\b/i.test(text)
     || /\bno significa que (?:todas las personas|todo el mundo)\b/i.test(text);

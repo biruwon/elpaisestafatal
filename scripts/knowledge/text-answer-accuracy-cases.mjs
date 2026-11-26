@@ -2,6 +2,106 @@
 // answer's evidence, scope, value, and uncertainty rather than route recall.
 export const textAnswerAccuracyCases = [
   {
+    id: 'foreign-hospitality-workforce-context',
+    equivalenceGroup: 'foreign-hospitality-workforce-context-spain-2026-10',
+    now: '2026-11-26',
+    input: 'El modelo de turismo y hostelería necesita inmigración porque muchos puestos no se cubren con las condiciones ofrecidas',
+    expected: {
+      state: 'limited', family: 'foreign-affiliation-in-tourism-and-agriculture', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['octubre de 2026', 'Hostelería (Régimen General)', '33,5 %', 'nacionalidad', 'no miden estacionalidad', 'ni explican vacantes sin cubrir'],
+      replyExcludes: ['29,1 %', '42,7 %', 'la migración causa las vacantes'],
+      evidence: [{
+        familyId: 'foreign_affiliate_share_hospitality_rg', sourceIds: ['tgss-foreign-affiliates-sector-shares-2026-10'],
+        dataIncludes: ['33,5 % (octubre de 2026)'],
+        dimensions: { period: '2026M10', geography: 'España', denominator: 'All affiliates in hospitality under Spain\'s General Social Security Regime', unit: '%' },
+      }],
+      maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'foreign-hospitality-workforce-context-paraphrase',
+    equivalenceGroup: 'foreign-hospitality-workforce-context-spain-2026-10',
+    now: '2026-11-26',
+    input: 'En los hoteles hay vacantes por las condiciones de trabajo y se recurre a personal extranjero',
+    expected: {
+      state: 'limited', family: 'foreign-affiliation-in-tourism-and-agriculture', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['octubre de 2026', '33,5 %', 'Régimen General', 'no prueban dependencia', 'datos comparables de vacantes'],
+      replyExcludes: ['29,1 %', '42,7 %'],
+      evidence: [{
+        familyId: 'foreign_affiliate_share_hospitality_rg', sourceIds: ['tgss-foreign-affiliates-sector-shares-2026-10'],
+        dataIncludes: ['33,5 % (octubre de 2026)'],
+        dimensions: { period: '2026M10', geography: 'España', denominator: 'All affiliates in hospitality under Spain\'s General Social Security Regime', unit: '%' },
+      }],
+      maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'foreign-agriculture-seasonal-dependence-context',
+    now: '2026-11-26',
+    input: 'La agricultura española depende en gran medida de mano de obra inmigrante estacional',
+    expected: {
+      state: 'limited', family: 'foreign-affiliation-in-tourism-and-agriculture', verdict: 'insufficient', directSourceIds: [],
+      replyIncludes: ['29,1 %', '42,7 %', 'regímenes y denominadores distintos', 'no miden estacionalidad'],
+      replyExcludes: ['la cuota total de agricultura es 42,7 %', 'las personas inmigrantes son exactamente el 42,7 % de trabajadores agrícolas'],
+      evidence: [
+        { familyId: 'foreign_affiliate_share_agriculture_rg', sourceIds: ['tgss-foreign-affiliates-sector-shares-2026-10'], dataIncludes: ['29,1 % (octubre de 2026)'], dimensions: { period: '2026M10', denominator: 'All affiliates in agriculture under Spain\'s General Social Security Regime', unit: '%' } },
+        { familyId: 'foreign_affiliate_share_agricultural_special_system', sourceIds: ['tgss-foreign-affiliates-sector-shares-2026-10'], dataIncludes: ['42,7 % (octubre de 2026)'], dimensions: { period: '2026M10', denominator: "All affiliates in Spain's Special Agricultural Workers System", unit: '%' } },
+      ],
+      maxReplyWords: 180,
+    },
+  },
+  {
+    id: 'foreign-hospitality-exact-affiliate-share',
+    now: '2026-11-26',
+    input: '¿Qué porcentaje de afiliados del Régimen General en hostelería tiene nacionalidad extranjera?',
+    expected: {
+      state: 'limited', family: 'foreign-affiliation-in-tourism-and-agriculture', verdict: 'supported',
+      directSourceIds: ['tgss-foreign-affiliates-sector-shares-2026-10'],
+      replyIncludes: ['33,5 %', 'octubre de 2026', 'afiliación media'],
+      replyExcludes: ['29,1 %', '42,7 %', 'unfilled vacancies'],
+      evidence: [{
+        familyId: 'foreign_affiliate_share_hospitality_rg', sourceIds: ['tgss-foreign-affiliates-sector-shares-2026-10'],
+        dataIncludes: ['33,5 % (octubre de 2026)'],
+        dimensions: { period: '2026M10', geography: 'España', denominator: 'All affiliates in hospitality under Spain\'s General Social Security Regime', unit: '%' },
+      }],
+      maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'foreign-agriculture-general-regime-exact-share',
+    now: '2026-11-26',
+    input: '¿Qué porcentaje de afiliados del Régimen General en agricultura tiene nacionalidad extranjera?',
+    expected: {
+      state: 'limited', family: 'foreign-affiliation-in-tourism-and-agriculture', verdict: 'supported',
+      directSourceIds: ['tgss-foreign-affiliates-sector-shares-2026-10'],
+      replyIncludes: ['29,1 %', 'octubre de 2026', 'Agricultura (Régimen General)', 'afiliación media'],
+      replyExcludes: ['33,5 %', '42,7 %'],
+      evidence: [{
+        familyId: 'foreign_affiliate_share_agriculture_rg', sourceIds: ['tgss-foreign-affiliates-sector-shares-2026-10'],
+        dataIncludes: ['29,1 % (octubre de 2026)'],
+        dimensions: { period: '2026M10', geography: 'España', denominator: 'All affiliates in agriculture under Spain\'s General Social Security Regime', unit: '%' },
+      }],
+      maxReplyWords: 100,
+    },
+  },
+  {
+    id: 'foreign-agriculture-special-system-exact-share',
+    now: '2026-11-26',
+    input: '¿Qué porcentaje de afiliados extranjeros hay en el Sistema Especial de Trabajadores Agrarios?',
+    expected: {
+      state: 'limited', family: 'foreign-affiliation-in-tourism-and-agriculture', verdict: 'supported',
+      directSourceIds: ['tgss-foreign-affiliates-sector-shares-2026-10'],
+      replyIncludes: ['42,7 %', 'octubre de 2026', 'Sistema Especial de Trabajadores Agrarios', 'afiliación media'],
+      replyExcludes: ['33,5 %', '29,1 %'],
+      evidence: [{
+        familyId: 'foreign_affiliate_share_agricultural_special_system', sourceIds: ['tgss-foreign-affiliates-sector-shares-2026-10'],
+        dataIncludes: ['42,7 % (octubre de 2026)'],
+        dimensions: { period: '2026M10', geography: 'España', denominator: 'All affiliates in Spain\'s Special Agricultural Workers System', unit: '%' },
+      }],
+      maxReplyWords: 100,
+    },
+  },
+  {
     id: 'room-rental-only-option-context',
     equivalenceGroup: 'room-rental-worker-only-option',
     input: 'El alquiler de una habitación se ha convertido en la única opción viable para muchos trabajadores adultos',
